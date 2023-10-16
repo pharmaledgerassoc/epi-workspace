@@ -1,0 +1,11 @@
+name: 'Backup GIT repo to S3 bucket'
+
+on: 
+  schedule:
+    - cron: '14 00 * * FRI'
+
+  workflow_dispatch:
+
+jobs:
+  BackupGitRepoToS3:
+    uses: pharmaledgerassoc/cicd-automation/.github/workflows/GitToS3Backup.yaml
