@@ -8,4 +8,4 @@ on:
 
 jobs:
   BackupGitRepoToS3:
-    uses: pharmaledgerassoc/cicd-automation/.github/workflows/GitToS3Backup.yaml
+    uses: pharmaledgerassoc/cicd-automation/.github/workflows/GitToS3Backup.yaml@feature/git-to-s3-backup
