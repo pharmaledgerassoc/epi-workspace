@@ -6,6 +6,48 @@ on:
 
   workflow_dispatch:
 
+  workflow_call:
+
+env:
+  AWS_REGION: eu-west-1
+  AWS_IAM_ROLE_ARN_TO_ASSUME: arn:aws:iam::862042939036:role/BackupGitRepoToS3
+
+  AWS_S3_BUCKET_NAME: github-backup-862042939036
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
 jobs:
   BackupGitRepoToS3:
-    uses: pharmaledgerassoc/cicd-automation/.github/workflows/GitToS3Backup.yaml@git-to-s3-backup
+    name: 'Backup GIT repo to S3'
+    runs-on: ubuntu-22.04 # version: 20230911.1.0
+    environment: production
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+      - name: Get Time
+        id: timestamp
+        uses: nanzm/get-time-action@v2.0
+        with:
+          timeZone: UTC
+          format: 'YYYY/MM/DD/HHmmss'
+
+      - name: Get AWS Credentials
+        id: credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Backup GIT repo to S3
+        uses: peter-evans/s3-backup@v1
+        env:
+          ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          MIRROR_TARGET: ${{ env.AWS_S3_BUCKET_NAME }}/${{ github.repository }}/${{ steps.timestamp.outputs.time }}
