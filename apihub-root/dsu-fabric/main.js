@@ -54,4 +54,111 @@ const callMockClient = async () => {
     console.log(result);
 }
 
-callMockClient()
+import WebSkel from "./WebSkel/webSkel.js";
+
+window.webSkel = new WebSkel();
+window.mainContent = document.querySelector("#app-wrapper");
+
+
+async function loadPage() {
+    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" ></left-sidebar>`);
+    await webSkel.changeToDynamicPage("landing-page", `/landing-page`);
+}
+
+export function changeSelectedPageFromSidebar(url) {
+    let element = document.getElementById('selected-page');
+    if (element) {
+        element.removeAttribute('id');
+        let paths = element.querySelectorAll("path");
+        paths.forEach((path) => {
+            path.setAttribute("fill", "white");
+        });
+    }
+    let divs = document.querySelectorAll('.feature');
+    divs.forEach(div => {
+        let dataAction = div.getAttribute('data-local-action');
+        let page = dataAction.split(" ")[1];
+        if (url.includes(page)) {
+            div.setAttribute('id', 'selected-page');
+            let paths = div.querySelectorAll("path");
+            paths.forEach((path) => {
+                path.setAttribute("fill", "var(--left-sidebar)");
+            });
+        }
+    });
+}
+
+function defineActions() {
+    webSkel.registerAction("closeErrorModal", async (_target) => {
+        closeModal(_target);
+    });
+}
+
+async function loadConfigs(jsonPath) {
+    try {
+        const response = await fetch(jsonPath);
+        const config = await response.json();
+
+        for (const service of config.services) {
+            const ServiceModule = await import(service.path);
+            webSkel.initialiseService(service.name, ServiceModule[service.name]);
+        }
+
+        for (const presenter of config.presenters) {
+            const PresenterModule = await import(presenter.path);
+            webSkel.registerPresenter(presenter.name, PresenterModule[presenter.className]);
+        }
+        for (const component of config.components) {
+            await webSkel.defineComponent(component.name, component.path, component.cssPaths);
+        }
+    } catch (error) {
+        console.error(error);
+        await showApplicationError("Error loading configs", "Error loading configs", `Encountered ${error} while trying loading webSkel configs`);
+    }
+}
+
+async function handleHistory(event) {
+    const result = webSkel.getService("AuthenticationService").getCachedCurrentUser();
+    if (!result) {
+        if (window.location.hash !== "#authentication-page") {
+            webSkel.setDomElementForPages(mainContent);
+            window.location.hash = "#authentication-page";
+            await webSkel.changeToDynamicPage("authentication-page", "authentication-page", "", true);
+        }
+    } else {
+        if (history.state) {
+            if (history.state.pageHtmlTagName === "authentication-page") {
+                const path = ["#", webSkel.currentState.pageHtmlTagName].join("");
+                history.replaceState(webSkel.currentState, path, path);
+            }
+        }
+    }
+    let modal = document.querySelector("dialog");
+    if (modal) {
+        closeModal(modal);
+    }
+}
+
+function saveCurrentState() {
+    webSkel.currentState = Object.assign({}, history.state);
+}
+
+function closeDefaultLoader() {
+    let UILoader = {
+        "modal": document.querySelector('#default-loader-markup'),
+        "style": document.querySelector('#default-loader-style'),
+        "script": document.querySelector('#default-loader-script')
+    }
+    UILoader.modal.close();
+    UILoader.modal.remove();
+    UILoader.script.remove();
+    UILoader.style.remove();
+}
+
+(async () => {
+    await webSkel.UtilsService.initialize();
+    webSkel.setDomElementForPages(document.querySelector("#page-content"));
+    await loadConfigs("./webskel-configs.json");
+    await loadPage();
+    window.addEventListener('beforeunload', saveCurrentState);
+})();

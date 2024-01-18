@@ -1,0 +1,30 @@
+{
+  "presenters": [
+    {
+      "name": "landing-page",
+      "path": "./web-components/pages/landing-page/landing-page.js",
+      "className": "LandingPage"
+    },
+    {
+      "name": "show-error-modal",
+      "path": "./web-components/modals/show-error-modal/show-error-modal.js",
+      "className": "showErrorModal"
+    },
+    {
+      "name": "left-sidebar",
+      "path": "./web-components/components/left-sidebar/left-sidebar.js",
+      "className": "Menu"
+    }
+  ],
+  "services": [],
+  "components": [
+    {
+      "name": "left-sidebar",
+      "path": "./web-components/components/left-sidebar/left-sidebar.html",
+      "cssPaths": [
+        "./web-components/components/left-sidebar/left-sidebar.css"
+      ]
+    }
+  ],
+  "storageServices": []
+}
