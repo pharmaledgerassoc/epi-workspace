@@ -1,14 +1,64 @@
 {
   "presenters": [
     {
-      "name": "landing-page",
-      "path": "./web-components/pages/landing-page/landing-page.js",
+      "name": "Landing Page",
+      "path": "./web-components/pages/landing-page.js",
       "className": "LandingPage"
     },
     {
-      "name": "show-error-modal",
-      "path": "./web-components/modals/show-error-modal/show-error-modal.js",
-      "className": "showErrorModal"
+      "name": "Generate DID",
+      "path": "./web-components/pages/generate-did.js",
+      "className": "GenerateDID"
+    },
+    {
+      "name": "My Account",
+      "path": "./web-components/pages/my-account.js",
+      "className": "MyAccount"
+    },
+    {
+      "name": "Products",
+      "path": "./web-components/pages/products.js",
+      "className": "Products"
+    },
+    {
+      "name": "Manage Product",
+      "path": "./web-components/pages/manage-product.js",
+      "className": "ManageProduct"
+    },
+    {
+      "name": "Batches",
+      "path": "./web-components/pages/batches.js",
+      "className": "Batches"
+    },
+    {
+      "name": "Manage Batch",
+      "path": "./web-components/pages/manage-batch.js",
+      "className": "ManageBatch"
+    },
+    {
+      "name": "Audit",
+      "path": "./web-components/pages/audit.js",
+      "className": "Audit"
+    },
+    {
+      "name": "Blockchain Status",
+      "path": "./web-components/pages/blockchain-status.js",
+      "className": "BlockchainStatus"
+    },
+    {
+      "name": "Logout",
+      "path": "./web-components/pages/logout.js",
+      "className": "Logout"
+    },
+    {
+      "name": "Scan details",
+      "path": "./web-components/pages/scan-details.js",
+      "className": "ScanDetails"
+    },
+    {
+      "name": "Deleted Account",
+      "path": "./web-components/pages/deleted-account.js",
+      "className": "DeletedAccount"
     },
     {
       "name": "left-sidebar",
@@ -23,13 +73,6 @@
       "path": "./web-components/components/left-sidebar/left-sidebar.html",
       "cssPaths": [
         "./web-components/components/left-sidebar/left-sidebar.css"
-      ]
-    },
-    {
-      "name": "show-error-modal",
-      "path": "./web-components/modals/show-error-modal/show-error-modal.html",
-      "cssPaths": [
-        "./web-components/modals/show-error-modal/show-error-modal.css"
       ]
     }
   ],
