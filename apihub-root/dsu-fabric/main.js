@@ -27,6 +27,31 @@ const init = async () => {
         console.log("Initialised");
     });
 }
-console.log("Init");
 
-init();
+const callMockClient = async () => {
+    const gtinResolver = require("gtin-resolver");
+    const client = gtinResolver.getMockEPISORClient();
+    const domain = "default";
+    const gtin = "00000000000000";
+    const productDetails = {
+        "messageType": "Product",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2023-01-11T09:10:01CET",
+        "product": {
+            "productCode": "00000000000000",
+            "internalMaterialCode": "",
+            "inventedName": "BOUNTY",
+            "nameMedicinalProduct": "BOUNTY® 250 mg / 0.68 mL pre-filled syringe",
+            "strength": ""
+        }
+    };
+
+    await $$.promisify(client.addProduct)(domain, gtin, productDetails);
+    const result = await $$.promisify(client.readProductMetadata)(domain, gtin);
+    console.log(result);
+}
+
+callMockClient()
