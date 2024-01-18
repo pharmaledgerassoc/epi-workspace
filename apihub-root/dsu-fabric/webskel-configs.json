@@ -2,62 +2,62 @@
   "presenters": [
     {
       "name": "Landing Page",
-      "path": "./web-components/pages/landing-page.js",
+      "path": "./web-components/pages/landing-page/landing-page.js",
       "className": "LandingPage"
     },
     {
       "name": "Generate DID",
-      "path": "./web-components/pages/generate-did.js",
+      "path": "./web-components/pages/generate-did/generate-did.js",
       "className": "GenerateDID"
     },
     {
       "name": "My Account",
-      "path": "./web-components/pages/my-account.js",
+      "path": "./web-components/pages/my-account/my-account.js",
       "className": "MyAccount"
     },
     {
       "name": "Products",
-      "path": "./web-components/pages/products.js",
+      "path": "./web-components/pages/products/products.js",
       "className": "Products"
     },
     {
       "name": "Manage Product",
-      "path": "./web-components/pages/manage-product.js",
+      "path": "./web-components/pages/manage-product/manage-product.js",
       "className": "ManageProduct"
     },
     {
       "name": "Batches",
-      "path": "./web-components/pages/batches.js",
+      "path": "./web-components/pages/batches/batches.js",
       "className": "Batches"
     },
     {
       "name": "Manage Batch",
-      "path": "./web-components/pages/manage-batch.js",
+      "path": "./web-components/pages/manage-batch/manage-batch.js",
       "className": "ManageBatch"
     },
     {
       "name": "Audit",
-      "path": "./web-components/pages/audit.js",
+      "path": "./web-components/pages/audit/audit.js",
       "className": "Audit"
     },
     {
       "name": "Blockchain Status",
-      "path": "./web-components/pages/blockchain-status.js",
+      "path": "./web-components/pages/blockchain-status/blockchain-status.js",
       "className": "BlockchainStatus"
     },
     {
       "name": "Logout",
-      "path": "./web-components/pages/logout.js",
+      "path": "./web-components/pages/logout/logout.js",
       "className": "Logout"
     },
     {
       "name": "Scan details",
-      "path": "./web-components/pages/scan-details.js",
+      "path": "./web-components/pages/scan-details/scan-details.js",
       "className": "ScanDetails"
     },
     {
       "name": "Deleted Account",
-      "path": "./web-components/pages/deleted-account.js",
+      "path": "./web-components/pages/deleted-account/deleted-account.js",
       "className": "DeletedAccount"
     },
     {
