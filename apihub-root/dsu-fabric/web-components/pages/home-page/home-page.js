@@ -1,4 +1,4 @@
-export class HomePage {
+export class Home {
     constructor(element,invalidate) {
         this.invalidate = invalidate;
         this.invalidate();

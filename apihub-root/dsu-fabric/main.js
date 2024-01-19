@@ -61,8 +61,12 @@ window.mainContent = document.querySelector("#app-wrapper");
 
 
 async function loadPage() {
-    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" ></left-sidebar>`);
-    await webSkel.changeToDynamicPage("home-page", `home`);
+    const handleURL = (URL = window.location.hash) => {
+        return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/').pop();
+    };
+    let currentPage=handleURL();
+    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="${currentPage}"></left-sidebar>`);
+    await webSkel.changeToDynamicPage(`${currentPage}`, `${currentPage}`);
 }
 
 export function changeSelectedPageFromSidebar(url) {
@@ -98,7 +102,7 @@ async function loadConfigs(jsonPath) {
     try {
         const response = await fetch(jsonPath);
         const config = await response.json();
-
+        webSkel.defaultPage=config.defaultPage;
         for (const service of config.services) {
             const ServiceModule = await import(service.path);
             webSkel.initialiseService(service.name, ServiceModule[service.name]);

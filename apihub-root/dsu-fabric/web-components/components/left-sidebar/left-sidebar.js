@@ -1,46 +1,60 @@
 export class Menu {
-    constructor(element,invalidate) {
-        this.element=element;
+    constructor(element, invalidate) {
+        this.element = element;
         this.invalidate = invalidate;
+        this.selectedSidebarItem = this.element.getAttribute('data-sidebar-selection');
         this.invalidate();
+
     }
+
     beforeRender() {
-
     }
-    activateSidebarSelection(_target){
-        const oldLink = this.element.querySelector('#active-menu-item');
-        if (oldLink) {
-            oldLink.removeAttribute('id');
+
+    afterRender() {
+        const desiredSidebarSelection = this.element.querySelector(`[data-id="${this.selectedSidebarItem}"]`);
+        if (desiredSidebarSelection) {
+            this.activateSidebarSelection(desiredSidebarSelection);
         }
-        const link= _target.querySelector('a');
-        link.id="active-menu-item";
-    }
-    async navigateToMyAccount(_target) {
-        this.activateSidebarSelection(_target);
     }
 
-    async navigateToProducts(_target) {
-        this.activateSidebarSelection(_target);
+    activateSidebarSelection(clickTargetElement) {
+        const oldSidebarSelection = this.element.querySelector('#active-menu-item');
+        if (oldSidebarSelection) {
+            oldSidebarSelection.removeAttribute('id');
+        }
+        const newSidebarSelection = clickTargetElement;
+        newSidebarSelection.id = "active-menu-item";
+        return newSidebarSelection.getAttribute('data-id');
+    }
+
+    async navigateToMyAccount(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
+    }
+
+    async navigateToProducts(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
+    }
+
+    async navigateToBatches(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
 
     }
 
-    async navigateToBatches(_target) {
-        this.activateSidebarSelection(_target);
-
+    async navigateToAudit(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
     }
 
-    async navigateToAudit(_target) {
-        this.activateSidebarSelection(_target);
-
+    async navigateToBlockchainStatus(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
     }
 
-    async navigateToBlockchainStatus(_target) {
-        this.activateSidebarSelection(_target);
-
-    }
-
-    async navigateToLogout(_target) {
-        this.activateSidebarSelection(_target);
-
+    async navigateToLogout(clickTargetElement) {
+        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
     }
 }
