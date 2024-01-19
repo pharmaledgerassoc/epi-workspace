@@ -6,4 +6,15 @@ left-sidebar {
     height: 100%;
     width: 240px;
     min-width: 240px;
+    padding: 1.8rem 1.5rem;
+}
+#left-sidebar-menu:last-child{
+    border-bottom: 1px solid var(--primary-border-color);
+}
+.left-sidebar-menu-item{
+    border-top: 1px solid var(--primary-border-color);
+    padding: 0.55rem 0;
+}
+#active-menu-item{
+    font-weight:700;
 }
