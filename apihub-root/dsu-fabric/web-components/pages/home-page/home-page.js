@@ -14,6 +14,6 @@ export class HomePage {
 
     }
     async navigateToMyAccountPage(){
-        await webSkel.changeToDynamicPage("my-account", "my-account");
+        await webSkel.changeToDynamicPage("my-account-page", "my-account-page");
     }
 }

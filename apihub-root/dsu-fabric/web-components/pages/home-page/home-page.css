@@ -5,11 +5,11 @@ home-page{
     position: relative;
 }
 .home-background{
-    height: 100%;
+    height: 130%;
     z-index: -1;
     position: absolute;
     top: 0;
-    left: 0;
+    left: -35px;
 }
 .shortcuts-container{
     gap: 2em;

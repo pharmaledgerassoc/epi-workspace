@@ -10,6 +10,8 @@ body{
     --primary-text-color: #FAFAFA;
     --primary-border-color: #ffffff4d;
     --medium-green: #097C55;
+    --transparent-green: #2BA64912;
+    --medium-grey: #565656;
 }
 * {
     box-sizing: border-box;

@@ -11,9 +11,9 @@
       "className": "Menu"
     },
     {
-      "name": "my-account",
-      "path": "./web-components/pages/my-account/my-account.js",
-      "className": "MyAccount"
+      "name": "my-account-page",
+      "path": "./web-components/pages/my-account-page/my-account-page.js",
+      "className": "MyAccountPage"
     }
   ],
   "services": [],
@@ -33,10 +33,10 @@
       ]
     },
     {
-      "name": "my-account",
-      "path": "./web-components/pages/my-account/my-account.html",
+      "name": "my-account-page",
+      "path": "./web-components/pages/my-account-page/my-account-page.html",
       "cssPaths": [
-        "./web-components/pages/my-account/my-account.css"
+        "./web-components/pages/my-account-page/my-account-page.css"
       ]
     }
   ],
