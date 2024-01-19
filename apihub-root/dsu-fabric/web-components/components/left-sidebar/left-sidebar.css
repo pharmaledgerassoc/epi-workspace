@@ -1,16 +1,9 @@
-left-sidebar{
-    width: 270px;
-}
-
-.left-sidebar{
-    padding: 20px;
-    background: white;
-}
-.left-sidebar-item{
-    padding: 10px;
-}
-.left-sidebar-item-title{
-    margin-left: 10px;
-    color: var(--left-sidebar);
-    font-weight: 600;
+left-sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #328569;
+    color: #FAFAFA;
+    height: 100%;
+    width: 240px;
+    min-width: 240px;
 }
