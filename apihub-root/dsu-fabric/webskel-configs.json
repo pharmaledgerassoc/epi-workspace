@@ -9,6 +9,11 @@
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.js",
       "className": "Menu"
+    },
+    {
+      "name": "my-account",
+      "path": "./web-components/pages/my-account/my-account.js",
+      "className": "MyAccount"
     }
   ],
   "services": [],
@@ -25,6 +30,13 @@
       "path": "./web-components/pages/home-page/home-page.html",
       "cssPaths": [
         "./web-components/pages/home-page/home-page.css"
+      ]
+    },
+    {
+      "name": "my-account",
+      "path": "./web-components/pages/my-account/my-account.html",
+      "cssPaths": [
+        "./web-components/pages/my-account/my-account.css"
       ]
     }
   ],

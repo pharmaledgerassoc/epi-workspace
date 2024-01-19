@@ -1,4 +1,4 @@
-export class HomePage {
+export class MyAccount {
     constructor(element,invalidate) {
         this.invalidate = invalidate;
         this.invalidate();
@@ -9,11 +9,5 @@ export class HomePage {
 
     async navigateToProductsPage(){
 
-    }
-    async navigateToBatchesPage(){
-
-    }
-    async navigateToMyAccountPage(){
-        await webSkel.changeToDynamicPage("my-account", "my-account");
     }
 }
