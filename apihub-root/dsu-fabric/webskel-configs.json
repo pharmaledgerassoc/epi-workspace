@@ -3,12 +3,36 @@
     {
       "name": "home-page",
       "path": "./web-components/pages/home-page/home-page.js",
-      "className": "HomePage"
+      "className": "Home"
     },
     {
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.js",
       "className": "Menu"
+    },
+    {
+      "name": "blockchain-status-page",
+      "path": "./web-components/pages/blockchain-status-page/blockchain-status-page.js",
+      "className": "BlockchainStatus"
+    },
+    {
+      "name": "batches-page",
+      "path": "./web-components/pages/batches-page/batches-page.js",
+      "className": "Batches"
+    },
+    {
+      "name": "audit-page",
+      "path": "./web-components/pages/audit-page/audit-page.js",
+      "className": "Audit"
+    },{
+      "name": "products-page",
+      "path": "./web-components/pages/products-page/products-page.js",
+      "className": "Products"
+    },
+    {
+      "name": "logout-page",
+      "path": "./web-components/pages/logout-page/logout-page.js",
+      "className": "Logout"
     },
     {
       "name": "my-account",
@@ -33,6 +57,38 @@
       ]
     },
     {
+      "name": "blockchain-status-page",
+      "path": "./web-components/pages/blockchain-status-page/blockchain-status-page.html",
+      "cssPaths": [
+        "./web-components/pages/blockchain-status-page/blockchain-status-page.css"
+      ]
+    },
+    {
+      "name": "batches-page",
+      "path": "./web-components/pages/batches-page/batches-page.html",
+      "cssPaths": [
+        "./web-components/pages/batches-page/batches-page.css"
+      ]
+    },{
+      "name": "audit-page",
+      "path": "./web-components/pages/audit-page/audit-page.html",
+      "cssPaths": [
+        "./web-components/pages/audit-page/audit-page.css"
+      ]
+    },{
+      "name": "products-page",
+      "path": "./web-components/pages/products-page/products-page.html",
+      "cssPaths": [
+        "./web-components/pages/products-page/products-page.css"
+      ]
+    },{
+      "name": "logout-page",
+      "path": "./web-components/pages/logout-page/logout-page.html",
+      "cssPaths": [
+        "./web-components/pages/logout-page/logout-page.css"
+      ]
+    },
+    {
       "name": "my-account",
       "path": "./web-components/pages/my-account/my-account.html",
       "cssPaths": [
@@ -40,5 +96,6 @@
       ]
     }
   ],
+  "defaultPage": "home-page",
   "storageServices": []
 }
