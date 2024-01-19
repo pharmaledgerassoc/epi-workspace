@@ -62,7 +62,7 @@ window.mainContent = document.querySelector("#app-wrapper");
 
 async function loadPage() {
     document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" ></left-sidebar>`);
-    await webSkel.changeToDynamicPage("home-page", `/home`);
+    await webSkel.changeToDynamicPage("home-page", `home`);
 }
 
 export function changeSelectedPageFromSidebar(url) {
