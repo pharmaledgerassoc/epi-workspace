@@ -1,6 +1,16 @@
 {
   "presenters": [
     {
+      "name": "show-error-modal",
+      "path": "./web-components/modals/show-error-modal/show-error-modal.js",
+      "className": "ErrorModal"
+    },
+    {
+      "name": "manage-product-page",
+      "path": "./web-components/pages/manage-product-page/manage-product-page.js",
+      "className": "ManageProduct"
+    },
+    {
       "name": "table-header",
       "path": "./web-components/components/table-header/table-header.js",
       "className": "TableHeader"
@@ -42,6 +52,20 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "show-error-modal",
+      "path": "./web-components/modals/show-error-modal/show-error-modal.html",
+      "cssPaths": [
+        "./web-components/modals/show-error-modal/show-error-modal.css"
+      ]
+    },
+    {
+      "name": "manage-product-page",
+      "path": "./web-components/pages/manage-product-page/manage-product-page.html",
+      "cssPaths": [
+        "./web-components/pages/manage-product-page/manage-product-page.css"
+      ]
+    },
     {
       "name": "table-header",
       "path": "./web-components/components/table-header/table-header.html",

@@ -29,10 +29,8 @@ const init = async () => {
 }
 
 const callMockClient = async () => {
-    const gtinResolver = require("gtin-resolver");
-    const domain = "default";
-    const client = gtinResolver.getMockEPISORClient(domain);
-    const gtin = "00000000000000";
+    const gtin = '02113111111164';
+    const batchNumber = 'B123';
     const productDetails = {
         "messageType": "Product",
         "messageTypeVersion": 1,
@@ -41,17 +39,74 @@ const callMockClient = async () => {
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
         "product": {
-            "productCode": "00000000000000",
+            "productCode": "02113111111164",
             "internalMaterialCode": "",
             "inventedName": "BOUNTY",
             "nameMedicinalProduct": "BOUNTY® 250 mg / 0.68 mL pre-filled syringe",
             "strength": ""
         }
     };
+    const batchDetails = {
+        "messageType": "Batch",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2023-01-11T09:10:01CET",
+        "batch": {
+            "productCode": "02113111111164",
+            "batch": "B123",
+            "packagingSiteName": "",
+            "expiryDate": "230600"
+        }
+    };
+    const leafletDetails = {
+        "messageType": "leaflet",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2023-01-11T09:10:01CET",
+        "productCode": "02113111111164",
+        "language": "en",
+        "xmlFileContent": "xmlFileContent"
+    }
 
-    await $$.promisify(client.addProduct)(domain, gtin, productDetails);
-    const result = await $$.promisify(client.readProductMetadata)(domain, gtin);
-    console.log(result);
+    const germanLeaflet = {
+        "messageType": "leaflet",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2023-01-11T09:10:01CET",
+        "productCode": "02113111111164",
+        "language": "de",
+        "xmlFileContent": "xmlFileContent"
+    }
+
+    const imageData = {
+        "messageType": "ProductPhoto",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2023-01-11T09:10:01CET",
+        "productCode": "02113111111164",
+        "imageId": "123456789",
+        "imageType": "front",
+        "imageFormat": "png",
+        "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
+    }
+    await $$.promisify(webSkel.client.addProduct)(webSkel.domain, gtin, productDetails);
+    await $$.promisify(webSkel.client.addEPIForProduct)(webSkel.domain, gtin, leafletDetails);
+    await $$.promisify(webSkel.client.addProductImage)(webSkel.domain, gtin, imageData);
+    await $$.promisify(webSkel.client.addBatch)(webSkel.domain, gtin, batchNumber, batchDetails);
+    await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.updateEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, germanLeaflet);
+
+    webSkel.products = await $$.promisify(webSkel.client.listProducts)(webSkel.domain);
+
 }
 
 import WebSkel from "./WebSkel/webSkel.js";
@@ -160,7 +215,11 @@ function closeDefaultLoader() {
 }
 
 (async () => {
+    const gtinResolver = require("gtin-resolver");
     await webSkel.UtilsService.initialize();
+    webSkel.client = gtinResolver.getMockEPISORClient();
+    webSkel.domain = "default";
+    await callMockClient();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
     await loadConfigs("./webskel-configs.json");
     await loadPage();

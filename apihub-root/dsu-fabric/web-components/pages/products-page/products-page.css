@@ -62,4 +62,9 @@ products-page{
 .view-details{
     color: var(--primary-background-color);
     font-weight: bold;
+    transition: color 0.3s ease;
+}
+.view-details:hover{
+    text-decoration: underline;
+    color: var(--highlight-green);
 }
