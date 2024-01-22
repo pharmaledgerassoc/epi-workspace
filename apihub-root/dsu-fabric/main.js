@@ -106,6 +106,7 @@ const callMockClient = async () => {
     await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, germanLeaflet);
 
     webSkel.products = await $$.promisify(webSkel.client.listProducts)(webSkel.domain);
+    webSkel.batches = await $$.promisify(webSkel.client.listBatches)(webSkel.domain);
 
 }
 

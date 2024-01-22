@@ -11,11 +11,6 @@
       "className": "ManageProduct"
     },
     {
-      "name": "table-header",
-      "path": "./web-components/components/table-header/table-header.js",
-      "className": "TableHeader"
-    },
-    {
       "name": "home-page",
       "path": "./web-components/pages/home-page/home-page.js",
       "className": "Home"
@@ -64,13 +59,6 @@
       "path": "./web-components/pages/manage-product-page/manage-product-page.html",
       "cssPaths": [
         "./web-components/pages/manage-product-page/manage-product-page.css"
-      ]
-    },
-    {
-      "name": "table-header",
-      "path": "./web-components/components/table-header/table-header.html",
-      "cssPaths": [
-        "./web-components/components/table-header/table-header.css"
       ]
     },
     {
