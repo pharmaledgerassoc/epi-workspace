@@ -7,38 +7,11 @@
 <div class="page-body">
     <div class="user-identity">
         <div class="user-label">User Identity:</div>
-        <div class="user-did">did:ssi:name:vault:DSU_Fabric/devuser</div>
-        $$userDID
+        <div class="user-did">$$userDID</div>
         <div class="copy">copy</div>
     </div>
     <div class="jwt">
-        {
-        "jwtHeader": {
-        "alg": "ES256",
-        "typ": "JWT"
-        },
-        "jwtPayload": {
-        "sub": "did:ssi:group:vault:ePI_Write_Group",
-        "iss": "did:ssi:name:vault:Demiurge/devuser",
-        "nbf": 1705589611713,
-        "exp": 1705621147713,
-        "iat": 1705589611713,
-        "vc": {
-        "@context": [
-        "https://www.w3.org/2018/credentials/v1"
-        ],
-        "type": [
-        "VerifiableCredential"
-        ],
-        "credentialSubject": {
-        "id": "did:ssi:group:vault:ePI_Write_Group"
-        },
-        "issuer": "did:ssi:name:vault:Demiurge/devuser",
-        "issuanceDate": "2024-01-18T14:53:31Z",
-        "expirationDate": "2024-01-18T23:39:07Z"
-        }
-        }
-        }
+        $$jwt
     </div>
     <div class="wallet-settings-header">
         <div class="wallet-settings-label">Wallet settings:</div>
@@ -46,32 +19,6 @@
         <button class="edit-button">Edit</button>
     </div>
     <div class="wallet-settings">
-        {
-        "jwtHeader": {
-        "alg": "ES256",
-        "typ": "JWT"
-        },
-        "jwtPayload": {
-        "sub": "did:ssi:group:vault:ePI_Write_Group",
-        "iss": "did:ssi:name:vault:Demiurge/devuser",
-        "nbf": 1705589611713,
-        "exp": 1705621147713,
-        "iat": 1705589611713,
-        "vc": {
-        "@context": [
-        "https://www.w3.org/2018/credentials/v1"
-        ],
-        "type": [
-        "VerifiableCredential"
-        ],
-        "credentialSubject": {
-        "id": "did:ssi:group:vault:ePI_Write_Group"
-        },
-        "issuer": "did:ssi:name:vault:Demiurge/devuser",
-        "issuanceDate": "2024-01-18T14:53:31Z",
-        "expirationDate": "2024-01-18T23:39:07Z"
-        }
-        }
-        }
+        $$walletSettings
     </div>
 </div>

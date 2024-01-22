@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "table-header",
+      "path": "./web-components/components/table-header/table-header.js",
+      "className": "TableHeader"
+    },
+    {
       "name": "home-page",
       "path": "./web-components/pages/home-page/home-page.js",
       "className": "Home"
@@ -9,11 +14,6 @@
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.js",
       "className": "Menu"
-    },
-    {
-      "name": "blockchain-status-page",
-      "path": "./web-components/pages/blockchain-status-page/blockchain-status-page.js",
-      "className": "BlockchainStatus"
     },
     {
       "name": "batches-page",
@@ -43,6 +43,13 @@
   "services": [],
   "components": [
     {
+      "name": "table-header",
+      "path": "./web-components/components/table-header/table-header.html",
+      "cssPaths": [
+        "./web-components/components/table-header/table-header.css"
+      ]
+    },
+    {
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.html",
       "cssPaths": [
@@ -54,13 +61,6 @@
       "path": "./web-components/pages/home-page/home-page.html",
       "cssPaths": [
         "./web-components/pages/home-page/home-page.css"
-      ]
-    },
-    {
-      "name": "blockchain-status-page",
-      "path": "./web-components/pages/blockchain-status-page/blockchain-status-page.html",
-      "cssPaths": [
-        "./web-components/pages/blockchain-status-page/blockchain-status-page.css"
       ]
     },
     {

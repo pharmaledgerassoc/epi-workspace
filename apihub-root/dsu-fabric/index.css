@@ -12,6 +12,9 @@ body{
     --medium-green: #097C55;
     --transparent-green: #2BA64912;
     --medium-grey: #565656;
+    --light-grey: #F9F9F9;
+    --very-light-grey: #dee2e6;
+    --light-green: #9ACFBD;
 }
 * {
     box-sizing: border-box;
