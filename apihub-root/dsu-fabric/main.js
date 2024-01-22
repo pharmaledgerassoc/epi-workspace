@@ -30,8 +30,8 @@ const init = async () => {
 
 const callMockClient = async () => {
     const gtinResolver = require("gtin-resolver");
-    const client = gtinResolver.getMockEPISORClient();
     const domain = "default";
+    const client = gtinResolver.getMockEPISORClient(domain);
     const gtin = "00000000000000";
     const productDetails = {
         "messageType": "Product",
