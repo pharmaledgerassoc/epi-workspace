@@ -27,34 +27,8 @@ export class Menu {
         return newSidebarSelection.getAttribute('data-id');
     }
 
-    async navigateToMyAccount(clickTargetElement) {
+    async navigateToPage(clickTargetElement) {
         const webComponentPage = this.activateSidebarSelection(clickTargetElement);
         webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
-    }
-
-    async navigateToProducts(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
-    }
-
-    async navigateToBatches(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
-
-    }
-
-    async navigateToAudit(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
-    }
-
-    async navigateToBlockchainStatus(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
-    }
-
-    async navigateToLogout(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`,`${webComponentPage}`);
     }
 }

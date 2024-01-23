@@ -97,16 +97,16 @@ const callMockClient = async () => {
         "imageFormat": "png",
         "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
     }
-    // await $$.promisify(webSkel.client.addProduct)(webSkel.domain, gtin, productDetails);
-    // await $$.promisify(webSkel.client.addEPIForProduct)(webSkel.domain, gtin, leafletDetails);
-    // await $$.promisify(webSkel.client.addProductImage)(webSkel.domain, gtin, imageData);
-    // await $$.promisify(webSkel.client.addBatch)(webSkel.domain, gtin, batchNumber, batchDetails);
-    // await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
-    // await $$.promisify(webSkel.client.updateEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
-    // await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, germanLeaflet);
+    await $$.promisify(webSkel.client.addProduct)(gtin, productDetails);
+    await $$.promisify(webSkel.client.addEPIForProduct)(gtin, leafletDetails);
+    await $$.promisify(webSkel.client.addProductImage)(gtin, imageData);
+    await $$.promisify(webSkel.client.addBatch)(gtin, batchNumber, batchDetails);
+    await $$.promisify(webSkel.client.addEPIForBatch)(gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.updateEPIForBatch)(gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.addEPIForBatch)(gtin, batchNumber, germanLeaflet);
 
-    webSkel.products = await $$.promisify(webSkel.client.listProducts)(webSkel.domain);
-    webSkel.batches = await $$.promisify(webSkel.client.listBatches)(webSkel.domain);
+    webSkel.products = await $$.promisify(webSkel.client.listProducts)();
+    webSkel.batches = await $$.promisify(webSkel.client.listBatches)();
 
 }
 
@@ -218,8 +218,8 @@ function closeDefaultLoader() {
 (async () => {
     const gtinResolver = require("gtin-resolver");
     await webSkel.UtilsService.initialize();
-    webSkel.client = gtinResolver.getMockEPISORClient();
-    webSkel.domain = "default";
+    let domain = "default";
+    webSkel.client = gtinResolver.getMockEPISORClient(domain);
     await callMockClient();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
     await loadConfigs("./webskel-configs.json");

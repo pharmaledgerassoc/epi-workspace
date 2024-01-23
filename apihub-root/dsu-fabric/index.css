@@ -17,6 +17,7 @@ body{
     --light-green: #9ACFBD;
     --teal: #20c997;
     --highlight-green: #28a745;
+    --tab-green: #51AE8F;
 }
 * {
     box-sizing: border-box;
