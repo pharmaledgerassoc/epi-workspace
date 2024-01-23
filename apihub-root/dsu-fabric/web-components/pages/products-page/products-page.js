@@ -2,13 +2,14 @@ export class Products {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
-        this.invalidate();
-
+        this.invalidate(async ()=>{
+            this.products = await $$.promisify(webSkel.client.listProducts)();
+        });
     }
 
-    beforeRender(){
+     beforeRender(){
         let string = "";
-        for(let item of webSkel.products){
+        for(let item of this.products){
             string += `<div class="table-item" style="grid-template-columns: repeat(4, 1fr)">
                             <div>${item.product.inventedName}</div>
                             <div>${item.product.nameMedicinalProduct}</div>
@@ -21,7 +22,7 @@ export class Products {
     afterRender(){
         let pageBody = this.element.querySelector(".page-body");
         let products = this.element.querySelector(".products-section");
-        if(webSkel.products.length === 0){
+        if(this.products.length === 0){
             products.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
@@ -34,7 +35,7 @@ export class Products {
             pageBody.insertAdjacentHTML("beforeend", noData)
         }else {
             let items = this.element.querySelector(".items");
-            items.style.gridTemplateColumns = `repeat(4,${webSkel.products.length}fr)`;
+            items.style.gridTemplateColumns = `repeat(4,${this.products.length}fr)`;
         }
     }
     async navigateToManageProductPage(){

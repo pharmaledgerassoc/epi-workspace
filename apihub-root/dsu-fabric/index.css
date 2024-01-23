@@ -6,18 +6,20 @@ body{
     display: flex;
 }
 :root{
+    /*colors in design*/
     --primary-background-color: #328569;
+    --light-green: #9ACFBD;
+    --tab-green: #70AA96;
+    --medium-grey: #565656;
+    --very-light-grey: #dee2e6;
     --primary-text-color: #FAFAFA;
+    /*not in design*/
     --primary-border-color: #ffffff4d;
     --medium-green: #097C55;
     --transparent-green: #2BA64912;
-    --medium-grey: #565656;
     --light-grey: #F9F9F9;
-    --very-light-grey: #dee2e6;
-    --light-green: #9ACFBD;
     --teal: #20c997;
     --highlight-green: #28a745;
-    --tab-green: #51AE8F;
 }
 * {
     box-sizing: border-box;

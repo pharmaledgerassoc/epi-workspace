@@ -2,14 +2,17 @@ export class Batches {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
-        this.invalidate();
+        this.invalidate(async ()=>{
+            this.batches = await $$.promisify(webSkel.client.listBatches)();
+            this.products = await $$.promisify(webSkel.client.listProducts)();
+        });
 
     }
 
     beforeRender(){
         let string = "";
-        for(let item of webSkel.batches){
-            let product = webSkel.products.find(prodObj => prodObj.product.productCode === item.batch.productCode)
+        for(let item of this.batches){
+            let product = this.products.find(prodObj => prodObj.product.productCode === item.batch.productCode)
             string += `<div class="table-item" style="grid-template-columns: repeat(8, 1fr)">
                             <div>${product.product.inventedName}</div>
                             <div>${product.product.nameMedicinalProduct}</div>
@@ -26,7 +29,7 @@ export class Batches {
     afterRender(){
         let pageBody = this.element.querySelector(".page-body");
         let products = this.element.querySelector(".products-section");
-        if(webSkel.products.length === 0){
+        if(this.products.length === 0){
             products.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
@@ -39,7 +42,7 @@ export class Batches {
             pageBody.insertAdjacentHTML("beforeend", noData)
         }else {
             let items = this.element.querySelector(".items");
-            items.style.gridTemplateColumns = `repeat(8,${webSkel.products.length}fr)`;
+            items.style.gridTemplateColumns = `repeat(8,${this.products.length}fr)`;
         }
     }
     async navigateToManageProductPage(){
