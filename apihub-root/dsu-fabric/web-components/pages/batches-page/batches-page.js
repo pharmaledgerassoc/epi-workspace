@@ -24,11 +24,23 @@ export class Batches {
         this.items = string;
     }
     afterRender(){
-        let table = this.element.querySelector("table-header");
-        let header = ["Brand / invented name", "Name of Medicinal Product", "Product Code", "Batch", "Expiry date(yy/mm/dd)", "2D Data Matrix", "Batch version", "Edit Batch"]
-        table.setAttribute("data-columns",JSON.stringify(header));
-        let items = this.element.querySelector(".items");
-        items.style.gridTemplateColumns = `repeat(8,${webSkel.batches.length}fr)`;
+        let pageBody = this.element.querySelector(".page-body");
+        let products = this.element.querySelector(".products-section");
+        if(webSkel.products.length === 0){
+            products.style.display = "none";
+            let noData = `<div>
+                                    <div class="no-data-label">
+                                        There are no data on any previous batch
+                                    </div>
+                                    <div class="no-data-instructions">
+                                        Start by using one of the right side actions (import or add).
+                                    </div>
+                                </div>`;
+            pageBody.insertAdjacentHTML("beforeend", noData)
+        }else {
+            let items = this.element.querySelector(".items");
+            items.style.gridTemplateColumns = `repeat(8,${webSkel.products.length}fr)`;
+        }
     }
     async navigateToManageProductPage(){
         await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page");

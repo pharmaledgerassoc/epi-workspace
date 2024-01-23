@@ -87,3 +87,9 @@ batches-page{
     text-decoration: underline;
     color: var(--highlight-green);
 }
+.no-data-label{
+    font-weight: bolder;
+}
+.no-data-instructions{
+    font-style: italic;
+}

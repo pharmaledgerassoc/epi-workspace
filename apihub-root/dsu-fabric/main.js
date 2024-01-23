@@ -97,13 +97,13 @@ const callMockClient = async () => {
         "imageFormat": "png",
         "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
     }
-    await $$.promisify(webSkel.client.addProduct)(webSkel.domain, gtin, productDetails);
-    await $$.promisify(webSkel.client.addEPIForProduct)(webSkel.domain, gtin, leafletDetails);
-    await $$.promisify(webSkel.client.addProductImage)(webSkel.domain, gtin, imageData);
-    await $$.promisify(webSkel.client.addBatch)(webSkel.domain, gtin, batchNumber, batchDetails);
-    await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.updateEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, germanLeaflet);
+    // await $$.promisify(webSkel.client.addProduct)(webSkel.domain, gtin, productDetails);
+    // await $$.promisify(webSkel.client.addEPIForProduct)(webSkel.domain, gtin, leafletDetails);
+    // await $$.promisify(webSkel.client.addProductImage)(webSkel.domain, gtin, imageData);
+    // await $$.promisify(webSkel.client.addBatch)(webSkel.domain, gtin, batchNumber, batchDetails);
+    // await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
+    // await $$.promisify(webSkel.client.updateEPIForBatch)(webSkel.domain, gtin, batchNumber, leafletDetails);
+    // await $$.promisify(webSkel.client.addEPIForBatch)(webSkel.domain, gtin, batchNumber, germanLeaflet);
 
     webSkel.products = await $$.promisify(webSkel.client.listProducts)(webSkel.domain);
     webSkel.batches = await $$.promisify(webSkel.client.listBatches)(webSkel.domain);
