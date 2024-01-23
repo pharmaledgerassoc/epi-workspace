@@ -10,12 +10,12 @@ export class Products {
      beforeRender(){
         let string = "";
         for(let item of this.products){
-            string += `<div class="table-item" style="grid-template-columns: repeat(4, 1fr)">
+            string += `
                             <div>${item.product.inventedName}</div>
                             <div>${item.product.nameMedicinalProduct}</div>
                             <div>${item.product.productCode}</div>
                             <div class="view-details pointer" data-local-action="navigateToManageProductPage">View/Edit</div>
-                       </div>`;
+                       `;
         }
         this.items = string;
     }
@@ -33,9 +33,6 @@ export class Products {
                                     </div>
                                 </div>`;
             pageBody.insertAdjacentHTML("beforeend", noData)
-        }else {
-            let items = this.element.querySelector(".items");
-            items.style.gridTemplateColumns = `repeat(4,${this.products.length}fr)`;
         }
     }
     async navigateToManageProductPage(){

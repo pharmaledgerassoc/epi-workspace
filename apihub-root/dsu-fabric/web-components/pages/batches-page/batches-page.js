@@ -13,16 +13,16 @@ export class Batches {
         let string = "";
         for(let item of this.batches){
             let product = this.products.find(prodObj => prodObj.product.productCode === item.batch.productCode)
-            string += `<div class="table-item" style="grid-template-columns: repeat(8, 1fr)">
-                            <div>${product.product.inventedName}</div>
-                            <div>${product.product.nameMedicinalProduct}</div>
-                            <div>${item.batch.productCode}</div>
-                            <div>${item.batch.batch}</div>
-                            <div>${item.batch.expiryDate}</div>
-                            <div class="view-details pointer" data-local-action="openDataMatrixModal">View</div>
-                            <div>${item.messageTypeVersion}</div>
-                            <div class="view-details pointer" data-local-action="navigateToEditBatch">Edit</div>
-                       </div>`;
+            string += `
+                        <div>${product.product.inventedName}</div>
+                        <div>${product.product.nameMedicinalProduct}</div>
+                        <div>${item.batch.productCode}</div>
+                        <div>${item.batch.batch}</div>
+                        <div>${item.batch.expiryDate}</div>
+                        <div class="view-details pointer" data-local-action="openDataMatrixModal">View</div>
+                        <div>${item.messageTypeVersion}</div>
+                        <div class="view-details pointer" data-local-action="navigateToEditBatch">Edit</div>
+                      `;
         }
         this.items = string;
     }
@@ -40,9 +40,6 @@ export class Batches {
                                     </div>
                                 </div>`;
             pageBody.insertAdjacentHTML("beforeend", noData)
-        }else {
-            let items = this.element.querySelector(".items");
-            items.style.gridTemplateColumns = `repeat(8,${this.products.length}fr)`;
         }
     }
     async navigateToManageProductPage(){

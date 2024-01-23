@@ -48,35 +48,27 @@ batches-page{
     width: 16%;
     min-width: 240px;
 }
-.header-section{
+.table{
     border-radius: 7px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
-    font-size: 110%;
-    font-weight: bold;
+    border: 1px solid var(--very-light-grey);
+}
+.table div{
+    padding: 0.75rem;
 }
 .column-header{
     padding: 0.75rem;
     background: var(--light-green);
-    border-top: 1px solid var(--very-light-grey);
+    font-size: 110%;
+    font-weight: bold;
+    border-bottom: 1px solid var(--very-light-grey);
 }
 .first-column{
     border-top-left-radius: 7px;
-    border-left: 1px solid var(--very-light-grey);
 }
 .last-column{
     border-top-right-radius: 7px;
-    border-right: 1px solid var(--very-light-grey);
-}
-.items{
-    border: 1px solid var(--very-light-grey);
-}
-.table-item{
-    display: grid;
-    border-bottom: 1px solid var(--very-light-grey);
-}
-.table-item div{
-    padding: 0.75rem;
 }
 .view-details{
     color: var(--primary-background-color);
