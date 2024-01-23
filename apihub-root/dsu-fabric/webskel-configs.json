@@ -1,6 +1,16 @@
 {
   "presenters": [
     {
+      "name": "access-logs",
+      "path": "./web-components/components/access-logs/access-logs.js",
+      "className": "AccessLogs"
+    },
+    {
+      "name": "action-logs",
+      "path": "./web-components/components/action-logs/action-logs.js",
+      "className": "ActionLogs"
+    },
+    {
       "name": "show-error-modal",
       "path": "./web-components/modals/show-error-modal/show-error-modal.js",
       "className": "ErrorModal"
@@ -47,6 +57,20 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "access-logs",
+      "path": "./web-components/components/access-logs/access-logs.html",
+      "cssPaths": [
+        "./web-components/components/access-logs/access-logs.css"
+      ]
+    },
+    {
+      "name": "action-logs",
+      "path": "./web-components/components/action-logs/action-logs.html",
+      "cssPaths": [
+        "./web-components/components/action-logs/action-logs.css"
+      ]
+    },
     {
       "name": "show-error-modal",
       "path": "./web-components/modals/show-error-modal/show-error-modal.html",
