@@ -18,9 +18,15 @@ action-logs{
     width: 16%;
     min-width: 240px;
 }
-.input-container{
+.input-container-container{
     display: flex;
     align-items: center;
+}
+.input-container{
+    display: inline-block;
+    position: relative;
+    width: 240px;
+    min-width: 240px;
 }
 .search-label{
     margin-right: 5px;
@@ -63,4 +69,18 @@ action-logs{
     padding: 8px 16px;
     border-radius: 5px;
     font-size: 110%;
+}
+.x-mark{
+    font-weight: bold;
+    position: absolute;
+    left: 93%;
+    bottom: 1.5px;
+    display: none;
+}
+.result-icon{
+    height: 10px;
+    margin-left: 5px;
+}
+.rotate{
+    transform: rotate(90deg);
 }

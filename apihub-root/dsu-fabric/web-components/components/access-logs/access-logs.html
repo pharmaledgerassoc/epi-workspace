@@ -1,8 +1,12 @@
 <div class="logs-section">
     <form class="search-section">
-        <div class="input-container">
+        <div class="input-container-container">
             <label class="search-label" for="userId">Search by user ID</label>
-            <input type="text" id="userId" name="userId" placeholder="Search by user ID">
+            <div class="input-container">
+                <input type="text" id="userId" name="userId" placeholder="Search by user ID">
+                <div class="x-mark pointer" data-local-action="deleteInput">&times;</div>
+            </div>
+            $$searchResultIcon
         </div>
         <button class="export-csv pointer">Export as CSV</button>
     </form>
