@@ -3,8 +3,8 @@ export class Batches {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate(async ()=>{
-            this.batches = await $$.promisify(webSkel.client.listBatches)();
-            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
+            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
         });
 
     }
@@ -12,15 +12,15 @@ export class Batches {
     beforeRender(){
         let string = "";
         for(let item of this.batches){
-            let product = this.products.find(prodObj => prodObj.product.productCode === item.batch.productCode)
+            let product = this.products.find(prodObj => prodObj.productCode === item.productCode)
             string += `
-                        <div>${product.product.inventedName}</div>
-                        <div>${product.product.nameMedicinalProduct}</div>
-                        <div>${item.batch.productCode}</div>
-                        <div>${item.batch.batch}</div>
-                        <div>${item.batch.expiryDate}</div>
+                        <div>${product.inventedName}</div>
+                        <div>${product.nameMedicinalProduct}</div>
+                        <div>${item.productCode}</div>
+                        <div>${item.batch}</div>
+                        <div>${item.expiryDate}</div>
                         <div class="view-details pointer" data-local-action="openDataMatrixModal">View</div>
-                        <div>${item.messageTypeVersion}</div>
+                        <div>-</div>
                         <div class="view-details pointer" data-local-action="navigateToEditBatch">Edit</div>
                       `;
         }

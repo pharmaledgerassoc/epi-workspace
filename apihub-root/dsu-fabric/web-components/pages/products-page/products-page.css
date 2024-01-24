@@ -48,6 +48,21 @@ products-page{
     width: 16%;
     min-width: 240px;
 }
+.input-container{
+    display: inline-block;
+    position: relative;
+    width: 240px;
+    min-width: 240px;
+}
+.x-mark{
+    position: absolute;
+    left: 93%;
+    bottom: 1px;
+    display: none;
+}
+#productCode:focus{
+    outline: none;
+}
 
 .table{
     border-radius: 7px;
@@ -81,7 +96,12 @@ products-page{
     text-decoration: underline;
     color: var(--highlight-green);
 }
-
+.result-icon{
+    height: 10px;
+}
+.rotate{
+    transform: rotate(90deg);
+}
 .no-data-label{
     font-weight: bolder;
 }

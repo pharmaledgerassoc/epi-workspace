@@ -30,6 +30,7 @@ const init = async () => {
 
 const callMockClient = async () => {
     const gtin = '02113111111164';
+    const gtin2 = '00000000000000';
     const batchNumber = 'B123';
     const productDetails = {
         "messageType": "Product",
@@ -38,11 +39,26 @@ const callMockClient = async () => {
         "receiverId": "QPNVS",
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
-        "product": {
+        "payload": {
             "productCode": "02113111111164",
             "internalMaterialCode": "",
             "inventedName": "BOUNTY",
             "nameMedicinalProduct": "BOUNTY® 250 mg / 0.68 mL pre-filled syringe",
+            "strength": ""
+        }
+    };
+    const productDetails2 = {
+        "messageType": "Product2",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000002",
+        "messageDateTime": "2024-01-11T09:10:01CET",
+        "payload": {
+            "productCode": "00000000000000",
+            "internalMaterialCode": "",
+            "inventedName": "PRODUCT2",
+            "nameMedicinalProduct": "PRODUCT2® 1000 mg / 1.04 mL pre-filled syringe",
             "strength": ""
         }
     };
@@ -53,7 +69,7 @@ const callMockClient = async () => {
         "receiverId": "QPNVS",
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
-        "batch": {
+        "payload": {
             "productCode": "02113111111164",
             "batch": "B123",
             "packagingSiteName": "",
@@ -67,9 +83,11 @@ const callMockClient = async () => {
         "receiverId": "QPNVS",
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
-        "productCode": "02113111111164",
-        "language": "en",
-        "xmlFileContent": "xmlFileContent"
+        payload:{
+            "productCode": "02113111111164",
+            "language": "en",
+            "xmlFileContent": "xmlFileContent"
+        }
     }
 
     const germanLeaflet = {
@@ -79,9 +97,11 @@ const callMockClient = async () => {
         "receiverId": "QPNVS",
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
-        "productCode": "02113111111164",
-        "language": "de",
-        "xmlFileContent": "xmlFileContent"
+        payload:{
+            "productCode": "02113111111164",
+            "language": "de",
+            "xmlFileContent": "xmlFileContent"
+        }
     }
 
     const imageData = {
@@ -91,22 +111,23 @@ const callMockClient = async () => {
         "receiverId": "QPNVS",
         "messageId": "S000001",
         "messageDateTime": "2023-01-11T09:10:01CET",
-        "productCode": "02113111111164",
-        "imageId": "123456789",
-        "imageType": "front",
-        "imageFormat": "png",
-        "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
+        payload:{
+            "productCode": "02113111111164",
+            "imageId": "123456789",
+            "imageType": "front",
+            "imageFormat": "png",
+            "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
+        }
     }
     await $$.promisify(webSkel.client.addProduct)(gtin, productDetails);
-    await $$.promisify(webSkel.client.addEPIForProduct)(gtin, leafletDetails);
+    await $$.promisify(webSkel.client.addProduct)(gtin2, productDetails2);
+    await $$.promisify(webSkel.client.addEPI)(gtin, leafletDetails);
     await $$.promisify(webSkel.client.addProductImage)(gtin, imageData);
     await $$.promisify(webSkel.client.addBatch)(gtin, batchNumber, batchDetails);
-    await $$.promisify(webSkel.client.addEPIForBatch)(gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.updateEPIForBatch)(gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.addEPIForBatch)(gtin, batchNumber, germanLeaflet);
+    await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.updateEPI)(gtin, batchNumber, leafletDetails);
+    await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, germanLeaflet);
 
-    webSkel.products = await $$.promisify(webSkel.client.listProducts)();
-    webSkel.batches = await $$.promisify(webSkel.client.listBatches)();
 
 }
 
