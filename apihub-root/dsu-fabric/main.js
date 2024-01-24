@@ -32,6 +32,7 @@ const callMockClient = async () => {
     const gtin = '02113111111164';
     const gtin2 = '00000000000000';
     const batchNumber = 'B123';
+    const batchNumber2 = 'A456';
     const productDetails = {
         "messageType": "Product",
         "messageTypeVersion": 1,
@@ -74,6 +75,20 @@ const callMockClient = async () => {
             "batch": "B123",
             "packagingSiteName": "",
             "expiryDate": "230600"
+        }
+    };
+    const batchDetails2 = {
+        "messageType": "Batch",
+        "messageTypeVersion": 1,
+        "senderId": "ManualUpload",
+        "receiverId": "QPNVS",
+        "messageId": "S000001",
+        "messageDateTime": "2024-01-11T09:10:01CET",
+        "payload": {
+            "productCode": "00000000000000",
+            "batch": "A456",
+            "packagingSiteName": "",
+            "expiryDate": "240600"
         }
     };
     const leafletDetails = {
@@ -124,6 +139,7 @@ const callMockClient = async () => {
     await $$.promisify(webSkel.client.addEPI)(gtin, leafletDetails);
     await $$.promisify(webSkel.client.addProductImage)(gtin, imageData);
     await $$.promisify(webSkel.client.addBatch)(gtin, batchNumber, batchDetails);
+    await $$.promisify(webSkel.client.addBatch)(gtin2, batchNumber2, batchDetails2);
     await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, leafletDetails);
     await $$.promisify(webSkel.client.updateEPI)(gtin, batchNumber, leafletDetails);
     await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, germanLeaflet);
