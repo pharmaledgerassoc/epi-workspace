@@ -2,6 +2,9 @@ access-logs{
     display: grid;
 }
 .search-section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: var(--light-grey);
     padding: 10px;
     border-radius: 7px;
@@ -9,12 +12,18 @@ access-logs{
 }
 .search-section input{
     border-radius: 4px;
-    margin-top: 5px;
-    padding: 3px;
+    padding: 4px;
     border: 1px solid var(--primary-background-color);
     font-size: 0.8rem;
     width: 16%;
     min-width: 240px;
+}
+.input-container{
+    display: flex;
+    align-items: center;
+}
+.search-label{
+    margin-right: 5px;
 }
 .table{
     border-radius: 7px;
@@ -38,4 +47,11 @@ access-logs{
 .last-column{
     border-top-right-radius: 7px;
 }
-
+.export-csv{
+    background-color: var(--primary-background-color);
+    border: 1px solid var(--primary-background-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 110%;
+}

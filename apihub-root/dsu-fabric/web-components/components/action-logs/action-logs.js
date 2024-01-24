@@ -2,24 +2,24 @@ export class ActionLogs {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
-        this.invalidate();
+        this.invalidate(async ()=>{
+            this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
+        });
     }
     beforeRender(){
-        this.logs = [{
-            gtin: "00000000000000",
-            batch: "-",
-            reason: "Created Product",
-            user: "devuser",
-            creationTime: "2024-01-23T13:34:37.587Z"
-        }];
         let string = "";
         for(let item of this.logs){
+            let batch = "-";
+            if(item.logInfo.messageType === "Batch")
+            {
+                batch = item.logInfo.payload.batch;
+            }
             string += `
-                        <div>${item.gtin}</div>
-                        <div>${item.batch}</div>
+                        <div>${item.itemCode}</div>
+                        <div>${batch}</div>
                         <div>${item.reason}</div>
-                        <div>${item.user}</div>
-                        <div>${item.creationTime}</div>
+                        <div>${item.logInfo.senderId}</div>
+                        <div>${item.logInfo.messageDateTime}</div>
                         <div class="view-details pointer" data-local-action="openActionLogModal">View</div>
                       `;
         }

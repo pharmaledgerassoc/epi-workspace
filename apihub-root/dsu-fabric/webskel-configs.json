@@ -58,6 +58,13 @@
   "services": [],
   "components": [
     {
+      "name": "default-spinner",
+      "path": "./web-components/components/default-spinner/default-spinner.html",
+      "cssPaths": [
+        "./web-components/components/default-spinner/default-spinner.css"
+      ]
+    },
+    {
       "name": "access-logs",
       "path": "./web-components/components/access-logs/access-logs.html",
       "cssPaths": [

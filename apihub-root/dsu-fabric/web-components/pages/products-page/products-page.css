@@ -41,8 +41,7 @@ products-page{
 }
 .search-section input{
     border-radius: 4px;
-    margin-top: 5px;
-    padding: 3px;
+    padding: 4px;
     border: 1px solid var(--primary-background-color);
     font-size: 0.8rem;
     width: 16%;
