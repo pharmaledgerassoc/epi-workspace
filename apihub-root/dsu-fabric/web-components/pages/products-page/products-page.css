@@ -55,9 +55,10 @@ products-page{
     min-width: 240px;
 }
 .x-mark{
+    font-weight: bold;
     position: absolute;
     left: 93%;
-    bottom: 1px;
+    bottom: 1.5px;
     display: none;
 }
 #productCode:focus{

@@ -38,25 +38,35 @@ export class Products {
         this.searchInput.value = this.inputValue || "";
         let xMark = this.element.querySelector(".x-mark");
 
-        this.searchInput.removeEventListener("keypress", this.bindedFnKeypress);
-        this.bindedFnKeypress= this.searchProduct.bind(this);
-        this.searchInput.addEventListener("keypress", this.bindedFnKeypress);
+        if(this.boundFnKeypress){
+            this.searchInput.removeEventListener("keypress", this.boundFnKeypress);
+        }
+        this.boundFnKeypress= this.searchProduct.bind(this);
+        this.searchInput.addEventListener("keypress", this.boundFnKeypress);
 
-        this.searchInput.removeEventListener("mouseleave", this.bindedFnMouseLeave);
-        this.bindedFnMouseLeave= this.hideXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseleave", this.bindedFnMouseLeave);
+        if(this.boundFnMouseLeave){
+            this.searchInput.removeEventListener("mouseleave", this.boundFnMouseLeave);
+        }
+        this.boundFnMouseLeave = this.hideXMark.bind(this, xMark);
+        this.searchInput.addEventListener("mouseleave", this.boundFnMouseLeave);
 
-        this.searchInput.removeEventListener("mouseenter", this.bindedFnMouseEnter);
-        this.bindedFnMouseEnter = this.showXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseenter", this.bindedFnMouseEnter);
+        if(this.boundFnMouseEnter){
+            this.searchInput.removeEventListener("mouseenter", this.boundFnMouseEnter);
+        }
+        this.boundFnMouseEnter = this.showXMark.bind(this, xMark);
+        this.searchInput.addEventListener("mouseenter", this.boundFnMouseEnter);
 
-        this.searchInput.removeEventListener("focusout", this.bindedFnFocusout);
-        this.bindedFnFocusout = this.removeFocus.bind(this, xMark);
-        this.searchInput.addEventListener("focusout", this.bindedFnFocusout);
+        if(this.boundFnFocusout){
+            this.searchInput.removeEventListener("focusout", this.boundFnFocusout);
+        }
+        this.boundFnFocusout = this.removeFocus.bind(this, xMark);
+        this.searchInput.addEventListener("focusout", this.boundFnFocusout);
 
-        this.searchInput.removeEventListener("input", this.bindedFnInput);
-        this.bindedFnInput = this.toggleSearchIcons.bind(this, xMark);
-        this.searchInput.addEventListener("input", this.bindedFnInput);
+        if(this.boundFnInput){
+            this.searchInput.removeEventListener("input", this.boundFnInput);
+        }
+        this.boundFnInput = this.toggleSearchIcons.bind(this, xMark);
+        this.searchInput.addEventListener("input", this.boundFnInput);
 
         if(this.focusInput){
             this.searchInput.focus();
@@ -91,7 +101,6 @@ export class Products {
 
     async searchProduct(event){
         if(event.key === "Enter"){
-            let searchContainer = this.element.querySelector(".input-container");
             event.preventDefault();
             let formData = await webSkel.UtilsService.extractFormInformation(this.searchInput);
             if(formData.isValid){

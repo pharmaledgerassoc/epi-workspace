@@ -85,3 +85,22 @@ batches-page{
 .no-data-instructions{
     font-style: italic;
 }
+.input-container{
+    display: inline-block;
+    position: relative;
+    width: 240px;
+    min-width: 240px;
+}
+.x-mark{
+    font-weight: bold;
+    position: absolute;
+    left: 93%;
+    bottom: 1.5px;
+    display: none;
+}
+.result-icon{
+    height: 10px;
+}
+.rotate{
+    transform: rotate(90deg);
+}
