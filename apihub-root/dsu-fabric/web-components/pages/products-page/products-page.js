@@ -37,6 +37,7 @@ export class Products {
         this.searchInput = this.element.querySelector("#productCode");
         this.searchInput.value = this.inputValue || "";
         let xMark = this.element.querySelector(".x-mark");
+
         this.searchInput.removeEventListener("keypress", this.bindedFnKeypress);
         this.bindedFnKeypress= this.searchProduct.bind(this);
         this.searchInput.addEventListener("keypress", this.bindedFnKeypress);
@@ -56,6 +57,12 @@ export class Products {
         this.searchInput.removeEventListener("input", this.bindedFnInput);
         this.bindedFnInput = this.toggleSearchIcons.bind(this, xMark);
         this.searchInput.addEventListener("input", this.bindedFnInput);
+
+        if(this.focusInput){
+            this.searchInput.focus();
+            xMark.style.display = "block";
+            this.focusInput = false;
+        }
     }
 
     toggleSearchIcons(xMark, event){
@@ -96,6 +103,7 @@ export class Products {
                 }else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
                 }
+                this.focusInput = true;
                 this.invalidate();
             }
         }
