@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "audit-entry-modal",
+      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.js",
+      "className": "AuditEntryModal"
+    },
+    {
       "name": "access-logs",
       "path": "./web-components/components/access-logs/access-logs.js",
       "className": "AccessLogs"
@@ -57,6 +62,13 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "audit-entry-modal",
+      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.html",
+      "cssPaths": [
+        "./web-components/modals/audit-entry-modal/audit-entry-modal.css"
+      ]
+    },
     {
       "name": "default-spinner",
       "path": "./web-components/components/default-spinner/default-spinner.html",

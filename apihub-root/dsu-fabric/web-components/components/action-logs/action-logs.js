@@ -20,7 +20,7 @@ export class ActionLogs {
                         <div>${item.reason}</div>
                         <div>${item.logInfo.senderId}</div>
                         <div>${item.logInfo.messageDateTime}</div>
-                        <div class="view-details pointer" data-local-action="openActionLogModal">View</div>
+                        <div class="view-details pointer" data-local-action="openAuditEntryModal" data-pk="${item.pk}">View</div>
                       `;
         }
         this.items = string;
@@ -98,7 +98,7 @@ export class ActionLogs {
             let formData = await webSkel.UtilsService.extractFormInformation(this.searchInput);
             if(formData.isValid){
                 this.inputValue = formData.data.productCode;
-                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`productCode == ${this.inputValue}`]);
+                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`itemCode == ${this.inputValue}`]);
                 if(logs.length > 0){
                     this.logs = logs;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
@@ -117,7 +117,8 @@ export class ActionLogs {
             this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
         });
     }
-    openActionLogModal(){
-        console.log("to be done");
+    async openAuditEntryModal(_target){
+        let pk = _target.getAttribute("data-pk");
+       await webSkel.UtilsService.showModal(document.querySelector("body"), "audit-entry-modal", { presenter: "audit-entry-modal", "pk": pk});
     }
 }
