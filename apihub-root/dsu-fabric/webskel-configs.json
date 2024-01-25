@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "add-epi-modal",
+      "path": "./web-components/modals/add-epi-modal/add-epi-modal.js",
+      "className": "AddEpiModal"
+    },
+    {
       "name": "audit-entry-modal",
       "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.js",
       "className": "AuditEntryModal"
@@ -62,6 +67,13 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "add-epi-modal",
+      "path": "./web-components/modals/add-epi-modal/add-epi-modal.html",
+      "cssPaths": [
+        "./web-components/modals/add-epi-modal/add-epi-modal.css"
+      ]
+    },
     {
       "name": "audit-entry-modal",
       "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.html",

@@ -16,4 +16,8 @@ export class HomePage {
     async navigateToMyAccountPage(){
         await webSkel.changeToDynamicPage("my-account-page", "my-account-page");
     }
+
+    async showEpiModal(){
+        await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
+    }
 }

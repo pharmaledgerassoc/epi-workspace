@@ -1,4 +1,3 @@
-import {closeModal} from "../../../imports.js"
 export class AuditEntryModal{
     constructor(element, invalidate) {
         this.element = element;
@@ -14,7 +13,6 @@ export class AuditEntryModal{
         displayKeys.forEach(key => {
             objToDisplay[key] = obj[key];
         })
-
         return objToDisplay;
     }
     beforeRender(){
@@ -22,7 +20,7 @@ export class AuditEntryModal{
         this.data = JSON.stringify(this.JSONstringifyOrder(this.entry[0]),null, 4);
     }
     closeModal(_target) {
-        closeModal(_target);
+        webSkel.UtilsService.closeModal(_target);
     }
 
     switchModalView(){

@@ -103,7 +103,7 @@ dialog::backdrop{
 }
 .default-button{
     background-color: var(--primary-background-color);
-    border: 1px solid var(--primary-background-color);
+    border: none;
     color: white;
     padding: 8px 16px;
     border-radius: 5px;
