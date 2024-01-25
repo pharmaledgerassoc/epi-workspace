@@ -1,4 +1,4 @@
-export class Products {
+export class ProductsPage {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;

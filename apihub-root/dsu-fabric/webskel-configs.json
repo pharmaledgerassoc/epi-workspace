@@ -13,46 +13,46 @@
     {
       "name": "show-error-modal",
       "path": "./web-components/modals/show-error-modal/show-error-modal.js",
-      "className": "ErrorModal"
+      "className": "ShowErrorModal"
     },
     {
       "name": "manage-product-page",
       "path": "./web-components/pages/manage-product-page/manage-product-page.js",
-      "className": "ManageProduct"
+      "className": "ManageProductPage"
     },
     {
       "name": "home-page",
       "path": "./web-components/pages/home-page/home-page.js",
-      "className": "Home"
+      "className": "HomePage"
     },
     {
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.js",
-      "className": "Menu"
+      "className": "LeftSidebar"
     },
     {
       "name": "batches-page",
       "path": "./web-components/pages/batches-page/batches-page.js",
-      "className": "Batches"
+      "className": "BatchesPage"
     },
     {
       "name": "audit-page",
       "path": "./web-components/pages/audit-page/audit-page.js",
-      "className": "Audit"
+      "className": "AuditPage"
     },{
       "name": "products-page",
       "path": "./web-components/pages/products-page/products-page.js",
-      "className": "Products"
+      "className": "ProductsPage"
     },
     {
       "name": "logout-page",
       "path": "./web-components/pages/logout-page/logout-page.js",
-      "className": "Logout"
+      "className": "LogoutPage"
     },
     {
       "name": "my-account-page",
       "path": "./web-components/pages/my-account-page/my-account-page.js",
-      "className": "MyAccount"
+      "className": "MyAccountPage"
     }
   ],
   "services": [],

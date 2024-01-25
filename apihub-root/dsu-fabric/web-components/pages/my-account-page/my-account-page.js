@@ -1,4 +1,4 @@
-export class MyAccount {
+export class MyAccountPage {
     constructor(element,invalidate) {
         this.invalidate = invalidate;
         this.invalidate();

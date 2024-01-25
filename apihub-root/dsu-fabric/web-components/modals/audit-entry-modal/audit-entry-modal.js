@@ -1,5 +1,5 @@
 import {closeModal} from "../../../imports.js"
-export class ShowErrorModal{
+export class AuditEntryModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
@@ -8,10 +8,5 @@ export class ShowErrorModal{
     beforeRender(){}
     closeModal(_target) {
         closeModal(_target);
-    }
-    async toggleDetails(_target) {
-       let details = this.element.querySelector("#detailed-error-message");
-       details.style.display = "block";
-       _target.style.display = "none";
     }
 }

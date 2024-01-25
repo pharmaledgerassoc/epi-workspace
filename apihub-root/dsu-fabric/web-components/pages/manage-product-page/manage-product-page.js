@@ -1,4 +1,4 @@
-export class ManageProduct{
+export class ManageProductPage{
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;

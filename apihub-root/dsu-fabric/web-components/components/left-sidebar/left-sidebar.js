@@ -1,4 +1,4 @@
-export class Menu {
+export class LeftSidebar {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
@@ -29,6 +29,6 @@ export class Menu {
 
     async navigateToPage(clickTargetElement) {
         const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
+        await webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
     }
 }

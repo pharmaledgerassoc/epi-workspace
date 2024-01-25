@@ -1,4 +1,4 @@
-export class Batches {
+export class BatchesPage {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;

@@ -1,4 +1,4 @@
-export class Audit {
+export class AuditPage {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;

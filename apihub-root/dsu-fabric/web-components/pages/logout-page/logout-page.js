@@ -1,4 +1,4 @@
-export class Logout {
+export class LogoutPage {
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
