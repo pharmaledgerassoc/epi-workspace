@@ -29,10 +29,12 @@ export class AuditEntryModal{
             modal.setAttribute("data-expanded", "true")
             modal.style.width = "95%";
             modal.style.maxWidth = "95vw";
+            this.element.style.marginLeft = "0";
         }else {
             modal.removeAttribute("data-expanded");
             modal.style.width = "70%";
             modal.style.maxWidth = "70vw";
+            this.element.style.marginLeft = "240px";
         }
     }
 

@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "markets-management-modal",
+      "path": "./web-components/modals/markets-management-modal/markets-management-modal.js",
+      "className": "MarketsManagementModal"
+    },
+    {
       "name": "add-epi-modal",
       "path": "./web-components/modals/add-epi-modal/add-epi-modal.js",
       "className": "AddEpiModal"
@@ -67,6 +72,13 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "markets-management-modal",
+      "path": "./web-components/modals/markets-management-modal/markets-management-modal.html",
+      "cssPaths": [
+        "./web-components/modals/markets-management-modal/markets-management-modal.css"
+      ]
+    },
     {
       "name": "add-epi-modal",
       "path": "./web-components/modals/add-epi-modal/add-epi-modal.html",

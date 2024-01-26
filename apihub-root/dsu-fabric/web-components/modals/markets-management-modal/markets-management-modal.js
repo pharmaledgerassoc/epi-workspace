@@ -1,4 +1,4 @@
-export class AddEpiModal{
+export class MarketsManagementModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
