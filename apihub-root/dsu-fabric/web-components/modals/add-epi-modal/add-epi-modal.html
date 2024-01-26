@@ -28,7 +28,8 @@
         <div class="input-file-container">
             <button class="default-button" data-local-action="uploadFiles">Upload Files</button>
             <label class="form-label" for="leaflet" style="display: none"></label>
-            <input class="hidden" type="file" multiple accept="application/zip" id="leaflet" name="leaflet" required>
+            <input class="hidden" type="file" multiple webkitdirectory id="leaflet" name="leaflet" required>
+            <div class="files-table"></div>
         </div>
     </form>
 </div>

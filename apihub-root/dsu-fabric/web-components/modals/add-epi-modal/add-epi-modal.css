@@ -107,3 +107,25 @@ add-epi-modal{
     background: var(--very-light-grey);
     color: grey;
 }
+.files-table{
+    margin: 10px 0;
+    overflow-y: auto;
+    display: flex;
+    flex-flow: wrap;
+    max-height: calc(100% - 37px);
+}
+.files-table::-webkit-scrollbar{
+    display: block;
+}
+.file-item{
+    display: flex;
+    align-items: center;
+    padding-right: 15px;
+    margin-bottom: 1rem;
+}
+.small-padding{
+    padding: 1px 6px;
+}
+.file-name{
+    margin-left: 10px
+}
