@@ -9,12 +9,13 @@ export class ActionLogs {
     beforeRender(){
         let string = "";
         for(let item of this.logs){
-            let batch = "-";
-            if(item.logInfo.messageType === "Batch")
-            {
-                batch = item.logInfo.payload.batch;
-            }
-            string += `
+            if(!item.isAccessLog){
+                let batch = "-";
+                if(item.logInfo.messageType === "Batch")
+                {
+                    batch = item.logInfo.payload.batch;
+                }
+                string += `
                         <div>${item.itemCode}</div>
                         <div>${batch}</div>
                         <div>${item.reason}</div>
@@ -22,6 +23,7 @@ export class ActionLogs {
                         <div>${item.logInfo.messageDateTime}</div>
                         <div class="view-details pointer" data-local-action="openAuditEntryModal" data-pk="${item.pk}">View</div>
                       `;
+            }
         }
         this.items = string;
     }

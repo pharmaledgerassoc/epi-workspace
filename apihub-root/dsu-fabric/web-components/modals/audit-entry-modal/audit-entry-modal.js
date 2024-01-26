@@ -4,7 +4,8 @@ export class AuditEntryModal{
         this.invalidate = invalidate;
         this.pk = this.element.getAttribute("data-pk");
         this.invalidate(async ()=>{
-            this.entry = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`pk == ${this.pk}`]);
+            let entries = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`pk == ${this.pk}`]);
+            this.entry = entries[0];
         });
     }
     JSONstringifyOrder(obj) {
@@ -16,8 +17,7 @@ export class AuditEntryModal{
         return objToDisplay;
     }
     beforeRender(){
-
-        this.data = JSON.stringify(this.JSONstringifyOrder(this.entry[0]),null, 4);
+        this.data = JSON.stringify(this.JSONstringifyOrder(this.entry),null, 4);
     }
     closeModal(_target) {
         webSkel.UtilsService.closeModal(_target);
@@ -32,18 +32,18 @@ export class AuditEntryModal{
             this.element.style.marginLeft = "0";
         }else {
             modal.removeAttribute("data-expanded");
-            modal.style.width = "70%";
-            modal.style.maxWidth = "70vw";
+            modal.style.width = "75%";
+            modal.style.maxWidth = "75vw";
             this.element.style.marginLeft = "240px";
         }
     }
 
     downloadJSON(){
-        let string = JSON.stringify(this.JSONstringifyOrder(this.entry[0]),null, 4);
+        let string = JSON.stringify(this.JSONstringifyOrder(this.entry),null, 4);
         const blob = new Blob([string], { type: 'application/json' });
         const downloadLink = document.createElement('a');
         downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = `${this.entry[0].reason}.json`;
+        downloadLink.download = `${this.entry.reason}.json`;
         document.body.appendChild(downloadLink);
         downloadLink.click();
         downloadLink.remove();

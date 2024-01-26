@@ -134,7 +134,42 @@ const callMockClient = async () => {
             "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
         }
     }
-    const auditLog = {
+    const accessLog = {
+        "username": "user",
+        "reason": "Created Product",
+        "itemCode": "00000000031059",
+        "anchorId": "Z8s5VtVtfCHVyveRKwqUb3hciWfxDDzedykF9oBkj65Mn6DQi7oQFbt4Wjz7grswCvVRX6o3KEKGbefHb5fBxrHpeinvsLT4rrSfnKzuP9dozsYYyuqTbACWUqx2MoiRpaPSzCeRmeibn1vUT71ABjXejRio1",
+        "hashLink": "2HqJt69J687THmZfpfJ9iafoJtB2vUGE7wd8eQdYFW7j7EiUnLLNxGkQdz9J5dMpLZmL56b1mHkZSTmBz63tgJVTD7bQuiBf93wBjdPA4eM7PCrJgnQf4Hh1A6BZk8ssrqdo9jZ4dar7eaiLdWUFXg2DAp5KeHtaT2vikmR26hTCSyU39uQ1hZeR2YPwGLbGTkak7ueHU21gPJNupj1UX7Gpx7VFqN8FsGBxDfRP2Eevb",
+        "metadata": {
+            "gtin": "00000000031059"
+        },
+        "isAccessLog": "true",
+        "userGroup": "ePI_Write_Group",
+        "userDID": "did:ssi:name:vault:DSU_Fabric/user",
+        "logInfo": {
+            "messageType": "Product",
+            "messageTypeVersion": 1,
+            "senderId": "nicoleta@axiologic.net",
+            "receiverId": "",
+            "messageId": "6733277145574",
+            "messageDateTime": "2024-01-23T13:04:50.881Z",
+            "token": "",
+            "payload": {
+                "inventedName": "BN1059",
+                "productCode": "00000000031059",
+                "nameMedicinalProduct": "NN1059",
+                "manufName": "",
+                "flagEnableAdverseEventReporting": false,
+                "flagEnableACFProductCheck": false,
+                "healthcarePractitionerInfo": "SmPC",
+                "patientSpecificLeaflet": "Patient Information",
+                "markets": [],
+                "internalMaterialCode": "",
+                "strength": ""
+            }
+        }
+    }
+    const actionLog = {
         "username": "user",
         "reason": "Created Product",
         "itemCode": "00000000031059",
@@ -175,7 +210,8 @@ const callMockClient = async () => {
     await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, leafletDetails);
     await $$.promisify(webSkel.client.updateEPI)(gtin, batchNumber, leafletDetails);
     await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, germanLeaflet);
-    await $$.promisify(webSkel.client.addAuditLog)(auditLog);
+    await $$.promisify(webSkel.client.addAuditLog)(accessLog);
+    await $$.promisify(webSkel.client.addAuditLog)(actionLog);
 
 }
 
