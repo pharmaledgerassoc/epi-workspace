@@ -1,0 +1,145 @@
+.manage-product-container[userrights="readonly"]:before {
+    content: "Read only mode";
+    color: #328569;
+    font-weight: 700;
+    text-align: left;
+    margin: 0;
+    padding-left: 60px;
+    font-size: 1.802rem;
+    position: absolute;
+    top: 95px;
+    left: 0px;
+    opacity: 0.7;
+}
+
+manage-product-page {
+    height: 100%;
+}
+.page-header {
+    height: 80px;
+    background-color: #fff;
+    box-shadow: 0 0.15rem 1rem 0 rgba(58, 59, 69, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--primary-background-color);
+    font-weight: 700;
+    text-align: left;
+    padding-left: 60px;
+    font-size: 1.802rem;
+}
+
+.product-version {
+    position: absolute;
+    top: 32px;
+    right: 145px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.page-body{
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 60px;
+    color: var(--medium-grey);
+}
+
+.product-data-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.large-field {
+    height: 120px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.name-of-medicinal-product {
+    height: 100%;
+    width: 60%;
+}
+
+.product-description {
+    resize: none;
+}
+
+.product-photo-field {
+    height: 100%;
+    width: 40%;
+}
+
+.product-photo {
+/*    overlaps strength div*/
+}
+
+.split-field {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.half-width {
+    width: 50%;
+}
+
+/*color: #328569;*/
+
+.form-field {
+    min-height: 78px;
+    padding: 4px;
+}
+
+.disabled-form-field {
+    color: #7a8288;
+    border-color: #7a8288;
+    background: #f3f3f3;
+}
+
+
+
+.label {
+    color: #328569;
+}
+.label[disabled] {
+    color: #7a8288;
+}
+
+.text-input {
+    border: 0;
+    background: transparent;
+}
+.text-input::placeholder {
+    font-style: italic;
+}
+
+.default-button {
+    background-color: #328569;
+    box-shadow: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    border: 0;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    font-size: inherit;
+}
+
+.leaflet-market-tabs {
+    display: flex;
+    flex-direction: row;
+}
+
+.leaflet-market-button {
+    color: white;
+    background-color: #51AE8F;
+    border: 0;
+    font-size: inherit;
+}
+
+.leaflet-market-button[selected] {
+    background-color: #328569;
+}
