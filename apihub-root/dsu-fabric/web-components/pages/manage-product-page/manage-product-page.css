@@ -1,6 +1,6 @@
 .manage-product-container[userrights="readonly"]:before {
     content: "Read only mode";
-    color: #328569;
+    color: var(--primary-background-color);
     font-weight: 700;
     text-align: left;
     margin: 0;
@@ -11,7 +11,12 @@
     left: 0px;
     opacity: 0.7;
 }
-
+input[type="text"]:focus{
+    outline: none;
+}
+textarea:focus{
+    outline: none;
+}
 manage-product-page {
     height: 100%;
 }
@@ -48,19 +53,22 @@ manage-product-page {
 .product-data-form {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
 }
-
-.large-field {
-    height: 120px;
+.column-right{
+    width: 50%;
+}
+.column-left{
+    margin-right: 60px;
+    width: 50%;
+}
+.form-field-container{
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
 }
 
 .name-of-medicinal-product {
-    height: 100%;
-    width: 60%;
+   width: 50%;
 }
 
 .product-description {
@@ -75,37 +83,51 @@ manage-product-page {
 .product-photo {
 /*    overlaps strength div*/
 }
-
-.split-field {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.half-width {
+.material-code{
     width: 50%;
+}
+.strength{
+    width: 40%;
 }
 
 /*color: #328569;*/
 
 .form-field {
+    display: flex;
+    flex-direction: column;
     min-height: 78px;
     padding: 4px;
+    border-bottom: 1.5px solid var(--primary-background-color);
+    margin-bottom: 1rem;
 }
 
 .disabled-form-field {
-    color: #7a8288;
-    border-color: #7a8288;
-    background: #f3f3f3;
+    color: var(--disabled);
+    border-color: var(--disabled);
+    background: var(--disabled-background);
+    position: relative;
 }
-
-
+.disabled-form-field::after{
+    content: '';
+    background-image: url("../../../assets/icons/green-ban.svg");
+    height: 14px;
+    width: 14px;
+    position: absolute;
+    right: 8px;
+    top: calc(50% - 10px);
+}
+.checkbox{
+    padding: 10px;
+    border-bottom:none;
+    display: block;
+    min-height: initial;
+}
 
 .label {
-    color: #328569;
+    color: var(--primary-background-color);
 }
 .label[disabled] {
-    color: #7a8288;
+    color: var(--disabled);
 }
 
 .text-input {
@@ -117,7 +139,7 @@ manage-product-page {
 }
 
 .default-button {
-    background-color: #328569;
+    background-color: var(--primary-background-color);
     box-shadow: none;
     color: white;
     padding: 8px 16px;
@@ -135,11 +157,11 @@ manage-product-page {
 
 .leaflet-market-button {
     color: white;
-    background-color: #51AE8F;
+    background-color: var(--tab-green);
     border: 0;
     font-size: inherit;
 }
 
 .leaflet-market-button[selected] {
-    background-color: #328569;
+    background-color: var(--primary-background-color);
 }

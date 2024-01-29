@@ -14,6 +14,8 @@ body{
     --very-light-grey: #dee2e6;
     --primary-text-color: #FAFAFA;
     /*not in design*/
+    --disabled: #7a8288;
+    --disabled-background: #f3f3f3;
     --primary-border-color: #ffffff4d;
     --medium-green: #097C55;
     --transparent-green: #2BA64912;

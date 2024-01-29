@@ -11,54 +11,56 @@
     <div class="product-data-form">
         <div class="column-left">
             <div class="form-field">
-                <p class="label">Product Code</p>
-                <input type="text" class="text-input" placeholder="Add product code">
+                <label class="label" for="productCode">Product Code</label>
+                <input type="text" class="text-input" name="productCode" id="productCode" placeholder="Add product code">
             </div>
             <div class="form-field">
-                <p class="label">Brand/invented name</p>
-                <input type="text" class="text-input" placeholder="Add product name">
+                <label class="label" for="brandName">Brand/invented name</label>
+                <input type="text" class="text-input" name="brandName" id="brandName" placeholder="Add product name">
             </div>
-            <div class="form-field large-field">
-                <div class="name-of-medicinal-product">
-                    <p class="label">Name of Medicinal Product</p>
-                    <textarea class="text-input product-description" placeholder="Add product description"></textarea>
+            <div class="form-field-container">
+                <div class="form-field name-of-medicinal-product">
+                    <label class="label" for="medicinalName">Name of Medicinal Product</label>
+                    <textarea class="text-input product-description" name="medicinalName" id="medicinalName" placeholder="Add product description"></textarea>
                 </div>
-                <div class="product-photo-field">
-                    <p class="label">Product Photo</p>
+                <div class="form-field product-photo-field">
+                    <label class="label" for="photo">Product Photo</label>
+                    <input type="file" accept="image/png" name="photo" id="photo">
                     <img src="./assets/images/no-picture.png" alt="product photo" class="product-photo">
                 </div>
             </div>
-            <div class="form-field split-field">
-                <div class="half-width">
-                    <p class="label">Internal Material Code</p>
-                    <input type="text" class="text-input" placeholder="Add internal material code">
+            <div class="form-field-container">
+                <div class="form-field material-code">
+                    <label class="label" for="materialCode">Internal Material Code</label>
+                    <input type="text" class="text-input" name="materialCode" id="materialCode" placeholder="Add internal material code">
                 </div>
-                <div class="half-width">
-                    <p class="label">Strength</p>
-                    <input type="text" class="text-input" placeholder="Add product strength">
+                <div class="form-field strength">
+                    <label class="label" for="strength">Strength</label>
+                    <input type="text" class="text-input" name="strength" id="strength" placeholder="Add product strength">
                 </div>
             </div>
-            <div class="form-field disabled-form-field">
-                <input type="checkbox">
-                <span class="label" disabled>Enable Adverse Events Reporting</span>
+
+            <div class="form-field disabled-form-field checkbox">
+                <input type="checkbox" name="adverseEventsReporting" id="adverseEventsReporting" disabled>
+                <label class="label" for="adverseEventsReporting" disabled>Enable Adverse Events Reporting</label>
             </div>
-            <div class="form-field disabled-form-field">
-                <input type="checkbox">
-                <span class="label" disabled>Enable Anti-Counterfeiting check for this product</span>
+            <div class="form-field disabled-form-field checkbox">
+                <input type="checkbox" name="antiCounterfeit" id="antiCounterfeit" disabled>
+                <label class="label" for="antiCounterfeit" disabled>Enable Anti-Counterfeiting check for this product</label>
             </div>
         </div>
         <div class="column-right">
             <div class="form-field disabled-form-field">
-                <p class="label">Video source</p>
-                <input type="text" class="text-input" placeholder="Add video source">
+                <label class="label" for="video">Video source</label>
+                <input type="text" class="text-input" name="video" id="video" placeholder="Add video source" disabled>
             </div>
             <div class="form-field">
-                <p class="label">Patient Specific Information Leaflet</p>
-                <input type="text" class="text-input" placeholder="Add Patient Specific Information Leaflet">
+                <label class="label" for="patientInfo">Patient Specific Information Leaflet</label>
+                <input type="text" class="text-input" name="patientInfo" id="patientInfo" placeholder="Add Patient Specific Information Leaflet">
             </div>
             <div class="form-field disabled-form-field">
-                <p class="label">Healthcare practitioner information</p>
-                <input type="text" class="text-input" placeholder="SmPC">
+                <label class="label" for="healthcarePractitioner">Healthcare practitioner information</label>
+                <input type="text" class="text-input" name="healthcarePractitioner" id="healthcarePractitioner" placeholder="SmPC" disabled>
             </div>
             <div class="leaflet-market-management">
                 <div class="leaflet-market-tabs">
