@@ -75,10 +75,6 @@ export class ProductsPage {
         }
     }
 
-    async navigateToAddProductPage(){
-        await webSkel.changeToDynamicPage("manage-product-page", "manage-products-page");
-    }
-
     toggleSearchIcons(xMark, event){
         if(this.searchInput.value === ""){
             xMark.style.display = "none";

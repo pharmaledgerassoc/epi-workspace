@@ -14,6 +14,7 @@ body{
     --very-light-grey: #dee2e6;
     --primary-text-color: #FAFAFA;
     /*not in design*/
+    --input-invalid: #FFCCCC;
     --disabled: #7a8288;
     --disabled-background: #f3f3f3;
     --primary-border-color: #ffffff4d;
@@ -106,4 +107,7 @@ dialog::backdrop{
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
+}
+.hidden{
+    display: none;
 }

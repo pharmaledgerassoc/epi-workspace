@@ -11,4 +11,7 @@ export class ManageProductPage{
     afterRender(){
 
     }
+    uploadPhoto(){
+
+    }
 }

@@ -3,16 +3,17 @@
         Manage Product
     </div>
     <div class="product-version">
-        version: {{@product.version}}
+        version: 0
     </div>
 </div>
 
 <div class="page-body">
-    <div class="product-data-form">
+    <form class="product-data-form">
         <div class="column-left">
-            <div class="form-field">
+            <div class="form-field product-code">
                 <label class="label" for="productCode">Product Code</label>
                 <input type="text" class="text-input" name="productCode" id="productCode" placeholder="Add product code">
+                <div class="gtin-validity invalid">GTIN length should be 14</div>
             </div>
             <div class="form-field">
                 <div class="label-container">
@@ -34,9 +35,11 @@
                         <label class="label" for="photo">Product Photo</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-
-                    <input type="file" accept="image/png" name="photo" id="photo">
-                    <img src="./assets/images/no-picture.png" alt="product photo" class="product-photo">
+                    <input class="hidden" type="file" accept="image/png" name="photo" id="photo">
+                    <div class="product-photo-container pointer" data-local-action="uploadPhoto">
+                        <div class="shadow"><img class="pen-square-white" src="./assets/icons/pen-square-white.svg" alt="pen-square"></div>
+                        <img src="./assets/images/no-picture.png" alt="product photo" class="product-photo">
+                    </div>
                 </div>
             </div>
             <div class="form-field-container">
@@ -65,6 +68,10 @@
                 <input type="checkbox" name="antiCounterfeit" id="antiCounterfeit" disabled>
                 <label class="label" for="antiCounterfeit" disabled>Enable Anti-Counterfeiting check for this product</label>
             </div>
+            <div class="form-buttons">
+                <button class="default-button">Cancel</button>
+                <button class="default-button">Save Product</button>
+            </div>
         </div>
         <div class="column-right">
             <div class="form-field disabled-form-field">
@@ -87,11 +94,13 @@
                     <button class="leaflet-market-button" selected>Leaflet management</button>
                     <button class="leaflet-market-button">Market management</button>
                 </div>
+                <div class="leaflet-tab">
+                    <div class="inner-container">
+                        <div class="no-data">No leaflets added yet</div>
+                        <button class="add-epi-button pointer">+ Add ePI</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-buttons">
-        <button class="default-button">Cancel</button>
-        <button class="default-button">Save Product</button>
-    </div>
+    </form>
 </div>
