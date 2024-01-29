@@ -1,0 +1,39 @@
+<div class="modal-header">
+    <div class="modal-title">Choose language and type of upload</div>
+    <div class="right-section">
+        <div class="expand-icon pointer"  data-local-action="switchModalView">↕</div>
+        <div class="close-icon pointer" data-local-action="closeModal">&times;</div>
+    </div>
+</div>
+<div class="modal-body">
+    <form class="add-epi-form">
+        <div class="form-item">
+            <label class="form-label" for="language" style="display: none"></label>
+            <select class="form-input first" id="language" name="language" required>
+                <option selected value="en">English</option>
+                $$languageOptions
+            </select>
+        </div>
+        <div class="form-item">
+            <label class="form-label" for="type">Type</label>
+            <select class="form-input" id="type" name="type" required>
+                <option selected>Leaflet</option>
+                <option disabled>SMPC</option>
+            </select>
+        </div>
+        <div class="form-item">
+            <label class="form-label" for="video">Video Source</label>
+            <textarea class="form-input" id="video" name="video" required disabled placeholder="Add video source"></textarea>
+        </div>
+        <div class="input-file-container">
+            <button class="default-button" data-local-action="uploadFiles">Upload Files</button>
+            <label class="form-label" for="leaflet" style="display: none"></label>
+            <input class="hidden" type="file" multiple webkitdirectory id="leaflet" name="leaflet" required>
+            <div class="files-table"></div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="default-button margin-right" data-local-action="closeModal">Close</button>
+    <button disabled class="default-button" data-local-action="addEpi">Accept</button>
+</div>

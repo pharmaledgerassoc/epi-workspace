@@ -1,6 +1,21 @@
 {
   "presenters": [
     {
+      "name": "markets-management-modal",
+      "path": "./web-components/modals/markets-management-modal/markets-management-modal.js",
+      "className": "MarketsManagementModal"
+    },
+    {
+      "name": "add-epi-modal",
+      "path": "./web-components/modals/add-epi-modal/add-epi-modal.js",
+      "className": "AddEpiModal"
+    },
+    {
+      "name": "audit-entry-modal",
+      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.js",
+      "className": "AuditEntryModal"
+    },
+    {
       "name": "access-logs",
       "path": "./web-components/components/access-logs/access-logs.js",
       "className": "AccessLogs"
@@ -57,6 +72,27 @@
   ],
   "services": [],
   "components": [
+    {
+      "name": "markets-management-modal",
+      "path": "./web-components/modals/markets-management-modal/markets-management-modal.html",
+      "cssPaths": [
+        "./web-components/modals/markets-management-modal/markets-management-modal.css"
+      ]
+    },
+    {
+      "name": "add-epi-modal",
+      "path": "./web-components/modals/add-epi-modal/add-epi-modal.html",
+      "cssPaths": [
+        "./web-components/modals/add-epi-modal/add-epi-modal.css"
+      ]
+    },
+    {
+      "name": "audit-entry-modal",
+      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.html",
+      "cssPaths": [
+        "./web-components/modals/audit-entry-modal/audit-entry-modal.css"
+      ]
+    },
     {
       "name": "default-spinner",
       "path": "./web-components/components/default-spinner/default-spinner.html",
