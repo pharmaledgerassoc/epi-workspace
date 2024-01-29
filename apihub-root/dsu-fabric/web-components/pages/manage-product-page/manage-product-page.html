@@ -1,0 +1,75 @@
+<div class="page-header">
+    <div class="page-title">
+        Manage Product
+    </div>
+    <div class="product-version">
+        version: {{@product.version}}
+    </div>
+</div>
+
+<div class="page-body">
+    <div class="product-data-form">
+        <div class="column-left">
+            <div class="form-field">
+                <p class="label">Product Code</p>
+                <input type="text" class="text-input" placeholder="Add product code">
+            </div>
+            <div class="form-field">
+                <p class="label">Brand/invented name</p>
+                <input type="text" class="text-input" placeholder="Add product name">
+            </div>
+            <div class="form-field large-field">
+                <div class="name-of-medicinal-product">
+                    <p class="label">Name of Medicinal Product</p>
+                    <textarea class="text-input product-description" placeholder="Add product description"></textarea>
+                </div>
+                <div class="product-photo-field">
+                    <p class="label">Product Photo</p>
+                    <img src="./assets/images/no-picture.png" alt="product photo" class="product-photo">
+                </div>
+            </div>
+            <div class="form-field split-field">
+                <div class="half-width">
+                    <p class="label">Internal Material Code</p>
+                    <input type="text" class="text-input" placeholder="Add internal material code">
+                </div>
+                <div class="half-width">
+                    <p class="label">Strength</p>
+                    <input type="text" class="text-input" placeholder="Add product strength">
+                </div>
+            </div>
+            <div class="form-field disabled-form-field">
+                <input type="checkbox">
+                <span class="label" disabled>Enable Adverse Events Reporting</span>
+            </div>
+            <div class="form-field disabled-form-field">
+                <input type="checkbox">
+                <span class="label" disabled>Enable Anti-Counterfeiting check for this product</span>
+            </div>
+        </div>
+        <div class="column-right">
+            <div class="form-field disabled-form-field">
+                <p class="label">Video source</p>
+                <input type="text" class="text-input" placeholder="Add video source">
+            </div>
+            <div class="form-field">
+                <p class="label">Patient Specific Information Leaflet</p>
+                <input type="text" class="text-input" placeholder="Add Patient Specific Information Leaflet">
+            </div>
+            <div class="form-field disabled-form-field">
+                <p class="label">Healthcare practitioner information</p>
+                <input type="text" class="text-input" placeholder="SmPC">
+            </div>
+            <div class="leaflet-market-management">
+                <div class="leaflet-market-tabs">
+                    <button class="leaflet-market-button" selected>Leaflet management</button>
+                    <button class="leaflet-market-button">Market management</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-buttons">
+        <button class="default-button">Cancel</button>
+        <button class="default-button">Save Product</button>
+    </div>
+</div>
