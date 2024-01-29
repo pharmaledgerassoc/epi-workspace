@@ -3,13 +3,13 @@ export class ActionLogs {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate(async ()=>{
-            this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
+            this.logs = logs.filter(log => !log.isAccessLog);
         });
     }
     beforeRender(){
         let string = "";
         for(let item of this.logs){
-            if(!item.isAccessLog){
                 let batch = "-";
                 if(item.logInfo.messageType === "Batch")
                 {
@@ -23,7 +23,6 @@ export class ActionLogs {
                         <div>${item.logInfo.messageDateTime}</div>
                         <div class="view-details pointer" data-local-action="openAuditEntryModal" data-pk="${item.pk}">View</div>
                       `;
-            }
         }
         this.items = string;
     }
@@ -122,5 +121,15 @@ export class ActionLogs {
     async openAuditEntryModal(_target){
         let pk = _target.getAttribute("data-pk");
        await webSkel.UtilsService.showModal(document.querySelector("body"), "audit-entry-modal", { presenter: "audit-entry-modal", "pk": pk});
+    }
+    async downloadCSV(){
+        let csvData = webSkel.servicesRegistry.AuditService.convertToCSV(this.logs);
+        let csvBlob = new Blob(csvData, {type: "text/csv"});
+        let csvUrl = URL.createObjectURL(csvBlob);
+        let link = document.createElement('a');
+        link.href = csvUrl;
+        link.download = 'ActionLogs.csv';
+        link.click();
+        link.remove();
     }
 }

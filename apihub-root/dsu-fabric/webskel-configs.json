@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "data-matrix-modal",
+      "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.js",
+      "className": "DataMatrixModal"
+    },
+    {
       "name": "markets-management-modal",
       "path": "./web-components/modals/markets-management-modal/markets-management-modal.js",
       "className": "MarketsManagementModal"
@@ -70,8 +75,24 @@
       "className": "MyAccountPage"
     }
   ],
-  "services": [],
+  "services": [
+    {
+      "name": "BatchesService",
+      "path": "./services/BatchesService.js"
+    },
+    {
+      "name": "AuditService",
+      "path": "./services/AuditService.js"
+    }
+  ],
   "components": [
+    {
+      "name": "data-matrix-modal",
+      "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.html",
+      "cssPaths": [
+        "./web-components/modals/data-matrix-modal/data-matrix-modal.css"
+      ]
+    },
     {
       "name": "markets-management-modal",
       "path": "./web-components/modals/markets-management-modal/markets-management-modal.html",

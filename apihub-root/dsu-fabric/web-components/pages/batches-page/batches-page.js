@@ -19,9 +19,9 @@ export class BatchesPage {
                         <div>${item.productCode}</div>
                         <div>${item.batch}</div>
                         <div>${item.expiryDate}</div>
-                        <div class="view-details pointer" data-local-action="openDataMatrixModal">View</div>
+                        <div class="view-details pointer" data-local-action="openDataMatrixModal ${item.productCode}">View</div>
                         <div>-</div>
-                        <div class="view-details pointer" data-local-action="navigateToEditBatch">Edit</div>
+                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.productCode}">Edit</div>
                       `;
         }
         this.items = string;
@@ -130,5 +130,9 @@ export class BatchesPage {
     }
     async navigateToEditBatchPage(){
         await webSkel.changeToDynamicPage("edit-batch-page", "edit-batch-page");
+    }
+
+    async openDataMatrixModal(_target, productCode){
+        await webSkel.UtilsService.showModal(document.querySelector("body"), "data-matrix-modal", { presenter: "data-matrix-modal", ["product-code"]: productCode});
     }
 }

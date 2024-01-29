@@ -3,19 +3,18 @@ export class AccessLogs {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate(async ()=>{
-            this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(0, undefined, undefined, "__timestamp > 0");
+            this.logs = logs.filter(log => log.isAccessLog);
         });
     }
     beforeRender(){
         let string = "";
         for(let item of this.logs){
-            if(item.isAccessLog){
                 string += ` <div>${item.logInfo.senderId}</div>
                         <div>Access Wallet</div>
                         <div>${item.userDID}</div>
                         <div>${item.userGroup}</div>
                         <div>${item.logInfo.messageDateTime}</div>`;
-            }
         }
         this.items = string;
     }
@@ -105,5 +104,15 @@ export class AccessLogs {
             this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
             this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
         });
+    }
+    async downloadCSV(){
+        let csvData = webSkel.servicesRegistry.AuditService.convertToCSV(this.logs);
+        let csvBlob = new Blob(csvData, {type: "text/csv"});
+        let csvUrl = URL.createObjectURL(csvBlob);
+        let link = document.createElement('a');
+        link.href = csvUrl;
+        link.download = 'AccessLogs.csv';
+        link.click();
+        link.remove();
     }
 }
