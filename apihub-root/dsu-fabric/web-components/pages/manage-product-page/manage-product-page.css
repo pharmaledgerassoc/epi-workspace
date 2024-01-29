@@ -165,3 +165,10 @@ manage-product-page {
 .leaflet-market-button[selected] {
     background-color: var(--primary-background-color);
 }
+.label-container{
+    display: flex;
+    justify-content: space-between;
+}
+.pen-square{
+    width: 16px;
+}
