@@ -191,12 +191,14 @@ manage-product-page {
 
 .leaflet-market-button {
     color: white;
-    background-color: var(--tab-green);
     border: 0;
     font-size: inherit;
 }
 
-.leaflet-market-button[selected] {
+.inactive{
+    background-color: var(--tab-green);
+}
+.highlighted{
     background-color: var(--primary-background-color);
 }
 .label-container{

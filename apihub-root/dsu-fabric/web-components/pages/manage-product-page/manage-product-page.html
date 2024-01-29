@@ -91,15 +91,11 @@
             </div>
             <div class="leaflet-market-management">
                 <div class="leaflet-market-tabs">
-                    <button class="leaflet-market-button" selected>Leaflet management</button>
-                    <button class="leaflet-market-button">Market management</button>
+                    <button class="leaflet-market-button pointer inactive" id="leaflet" data-local-action="switchTab">Leaflet management</button>
+                    <button class="leaflet-market-button pointer inactive" id="market" data-local-action="switchTab">Market management</button>
                 </div>
-                <div class="leaflet-tab">
-                    <div class="inner-container">
-                        <div class="no-data">No leaflets added yet</div>
-                        <button class="add-epi-button pointer">+ Add ePI</button>
-                    </div>
-                </div>
+                $$tab
+
             </div>
         </div>
     </form>
