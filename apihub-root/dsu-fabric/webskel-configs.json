@@ -1,6 +1,16 @@
 {
   "presenters": [
     {
+      "name": "markets-tab",
+      "path": "./web-components/components/markets-tab/markets-tab.js",
+      "className": "MarketsTab"
+    },
+    {
+      "name": "leaflets-tab",
+      "path": "./web-components/components/leaflets-tab/leaflets-tab.js",
+      "className": "LeafletsTab"
+    },
+    {
       "name": "data-matrix-modal",
       "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.js",
       "className": "DataMatrixModal"
@@ -86,6 +96,20 @@
     }
   ],
   "components": [
+    {
+      "name": "leaflets-tab",
+      "path": "./web-components/components/leaflets-tab/leaflets-tab.html",
+      "cssPaths": [
+        "./web-components/components/leaflets-tab/leaflets-tab.css"
+      ]
+    },
+    {
+      "name": "markets-tab",
+      "path": "./web-components/components/markets-tab/markets-tab.html",
+      "cssPaths": [
+        "./web-components/components/markets-tab/markets-tab.css"
+      ]
+    },
     {
       "name": "data-matrix-modal",
       "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.html",

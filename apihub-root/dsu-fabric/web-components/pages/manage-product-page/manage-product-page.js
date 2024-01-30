@@ -3,18 +3,10 @@ export class ManageProductPage{
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.leafletTab = `<div class="inner-tab">
-                    <div class="inner-container">
-                        <div class="no-data">No leaflets added yet</div>
-                        <button class="tab-button pointer" data-local-action="showAddEPIModal">+ Add ePI</button>
-                    </div>
-                </div>`;
-        this.marketTab = `<div class="inner-tab">
-                        <div class="no-data">No markets added yet</div>
-                        <button class="tab-button pointer" data-local-action="showAddMarketModal">+ Add Market</button>
-                </div>`;
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab"></leaflets-tab>`;
+        this.marketTab = `<markets-tab data-presenter="markets-tab"></markets-tab>`;
         webSkel.observeChange("manage-product-page", this.invalidate);
-        this.formData = {}
+        this.formData = {};
     }
 
     beforeRender(){
@@ -111,14 +103,18 @@ export class ManageProductPage{
     async showAddEPIModal(){
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         for(const key in formData.data){
-            this.formData[key] = formData.data[key];
+            if(formData.data[key]){
+                this.formData[key] = formData.data[key];
+            }
         }
         await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
     }
    async showAddMarketModal(){
        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
        for(const key in formData.data){
-           this.formData[key] = formData.data[key];
+           if(formData.data[key]){
+               this.formData[key] = formData.data[key];
+           }
        }
         await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
     }

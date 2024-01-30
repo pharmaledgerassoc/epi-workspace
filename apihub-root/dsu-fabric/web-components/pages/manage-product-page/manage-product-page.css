@@ -39,9 +39,6 @@ manage-product-page {
 }
 
 .product-version {
-    position: absolute;
-    top: 32px;
-    right: 145px;
     font-size: 16px;
     font-weight: 400;
 }
@@ -230,27 +227,4 @@ manage-product-page {
 .leaflet-market-button{
     padding: 8px 16px;
 }
-.inner-tab{
-    padding: 12px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 0 12px 0;
-}
-.inner-container{
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    border-radius: 4px;
-    border: 1.5px solid var(--primary-background-color);
-    margin-top: 1em;
-    padding: 0.5em;
-}
-.tab-button{
-    font-size: 16px;
-    margin-top: 1rem;
-    border: 1px solid var(--primary-background-color);
-    border-radius: 3px;
-    padding: 7px;
-    background: none;
-    color: var(--primary-background-color);
-}
-.no-data{
-    margin-bottom: 1rem;
-    font-style: italic;
-}
+
