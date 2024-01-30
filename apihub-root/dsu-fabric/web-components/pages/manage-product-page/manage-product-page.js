@@ -51,6 +51,7 @@ export class ManageProductPage{
         productCode.removeEventListener("focusout", this.boundValidateProductCode);
         this.boundValidateProductCode = this.validateProductCode.bind(this, productCode);
         productCode.addEventListener("focusout", this.boundValidateProductCode);
+        this.validateProductCode(productCode);
     }
     validateProductCode(input, event){
         let gtin = this.element.querySelector(".gtin-validity");
