@@ -34,6 +34,7 @@ manage-product-page {
     font-weight: 700;
     text-align: left;
     padding-left: 60px;
+    padding-right: 60px;
     font-size: 1.802rem;
 }
 
@@ -213,12 +214,17 @@ manage-product-page {
     width: 16px;
     fill: white;
 }
-.invalid{
+.gtin-validity{
     font-size: 14px;
-    color: red;
     font-weight: lighter;
 }
-.product-code{
+.invalid{
+    color: red;
+}
+.valid{
+    color: var(--highlight-green)
+}
+.product-code-invalid{
     background-color: var(--input-invalid);
 }
 .leaflet-market-button{

@@ -14,6 +14,7 @@ export class ManageProductPage{
                         <button class="tab-button pointer" data-local-action="showAddMarketModal">+ Add Market</button>
                 </div>`;
         webSkel.observeChange("manage-product-page", this.invalidate);
+        this.formData = {}
     }
 
     beforeRender(){
@@ -35,18 +36,45 @@ export class ManageProductPage{
             market.classList.add("inactive");
             market.classList.remove("highlighted");
         }
+        for(const key in this.formData){
+            if(key === "photo"){
+                let photo = this.element.querySelector("#photo");
+                photo.files = this.fileListPhoto;
+                let photoContainer = this.element.querySelector(".product-photo");
+                photoContainer.src = this.photo;
+                continue;
+            }
+            let input = this.element.querySelector(`#${key}`)
+            input.value = this.formData[key] || "";
+        }
         let productCode = this.element.querySelector("#productCode");
-        productCode.value = this.productCode || "";
-        let brandName = this.element.querySelector("#brandName");
-        brandName.value = this.brandName || "";
-        let medicinalName = this.element.querySelector("#medicinalName");
-        medicinalName.value = this.medicinalName || "";
-
-        let photo = this.element.querySelector("#photo");
-        if(this.encodedPhoto){
-            photo.files = this.fileListPhoto;
-            let photoContainer = this.element.querySelector(".product-photo");
-            photoContainer.src = this.encodedPhoto;
+        productCode.removeEventListener("focusout", this.boundValidateProductCode);
+        this.boundValidateProductCode = this.validateProductCode.bind(this, productCode);
+        productCode.addEventListener("focusout", this.boundValidateProductCode);
+    }
+    validateProductCode(input, event){
+        let gtin = this.element.querySelector(".gtin-validity");
+        let inputContainer =  this.element.querySelector(".product-code");
+        const GTINErrorMessage = (value) =>{
+            if(/^\d{14}$/.test(value)){
+                if(value !== "00000000000000"){
+                    return "GTIN format invalid";
+                }
+                return;
+            }
+            return "GTIN length should be 14";
+        };
+        let msg = GTINErrorMessage(input.value);
+        if(msg){
+            gtin.classList.add("invalid");
+            gtin.classList.remove("valid");
+            gtin.innerText = msg;
+            inputContainer.classList.add("product-code-invalid");
+        }else {
+            gtin.classList.remove("invalid");
+            gtin.classList.add("valid");
+            gtin.innerText = "GTIN is valid";
+            inputContainer.classList.remove("product-code-invalid");
         }
     }
     switchTab(_target){
@@ -70,7 +98,7 @@ export class ManageProductPage{
         let encodedPhoto = await webSkel.UtilsService.imageUpload(photoInput.files[0]);
         this.fileListPhoto = photoInput.files;
         photoContainer.src = encodedPhoto;
-        this.encodedPhoto = encodedPhoto;
+        this.photo = encodedPhoto;
         controller.abort();
     }
     async uploadPhoto(){
@@ -80,12 +108,35 @@ export class ManageProductPage{
         photoInput.click();
     }
     async showAddEPIModal(){
+        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        for(const key in formData.data){
+            this.formData[key] = formData.data[key];
+        }
         await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
     }
    async showAddMarketModal(){
+       let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+       for(const key in formData.data){
+           this.formData[key] = formData.data[key];
+       }
         await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
     }
     refresh(){
         this.invalidate();
+    }
+    async navigateToProductsPage(){
+        await webSkel.changeToDynamicPage("products-page", "products-page");
+    }
+    productCodeCondition(element, formData) {
+        let inputContainer =  webSkel.UtilsService.getClosestParentElement(element, ".product-code");
+       return !inputContainer.classList.contains("product-code-invalid");
+
+    }
+    async saveProduct(_target){
+        const conditions = {"productCodeCondition": {fn:this.productCodeCondition, errorMessage:"GTIN invalid!"} };
+        let formData = await webSkel.UtilsService.extractFormInformation(_target, conditions);
+        if(formData.isValid){
+            console.log("form is valid");
+        }
     }
 }

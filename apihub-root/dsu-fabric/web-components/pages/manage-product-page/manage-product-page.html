@@ -11,9 +11,9 @@
 <div class="page-body">
     <form class="product-data-form">
         <div class="column-left">
-            <div class="form-field product-code">
+            <div class="form-field product-code product-code-invalid">
                 <label class="label" for="productCode">Product Code</label>
-                <input type="text" class="text-input" name="productCode" id="productCode" placeholder="Add product code">
+                <input type="text" class="text-input" name="productCode" id="productCode" placeholder="Add product code" data-condition="productCodeCondition">
                 <div class="gtin-validity invalid">GTIN length should be 14</div>
             </div>
             <div class="form-field">
@@ -70,8 +70,8 @@
                 <label class="label" for="antiCounterfeit" disabled>Enable Anti-Counterfeiting check for this product</label>
             </div>
             <div class="form-buttons">
-                <button class="default-button">Cancel</button>
-                <button class="default-button">Save Product</button>
+                <button class="default-button" data-local-action="navigateToProductsPage">Cancel</button>
+                <button class="default-button" data-local-action="saveProduct">Save Product</button>
             </div>
         </div>
         <div class="column-right">
