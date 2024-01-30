@@ -1,4 +1,4 @@
-//import bwipjs from "../helpers/bwip.js";
+import bwipjs from "../helpers/bwip.js";
 const TWO_D_BARCODES = ["datamatrix", "gs1datamatrix", "qrcode"];
 export class BatchesService{
     constructor() {

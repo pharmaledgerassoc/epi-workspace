@@ -43,6 +43,8 @@ export class AddEpiModal{
         } else {
             container.textContent = 'This browser does not support selecting directories.';
         }
+        let button = this.element.querySelector("#accept-button");
+        button.disabled = false;
     }
     uploadFiles(){
         let inputFile = this.element.querySelector("#leaflet");
@@ -64,5 +66,10 @@ export class AddEpiModal{
         inputFile.files = dataTransfer.files;
         let item = webSkel.UtilsService.getClosestParentElement(_target, ".file-item");
         item.remove();
+    }
+
+    addEPI(_target){
+        webSkel.notifyObservers("manage-product-page");
+        this.closeModal(_target);
     }
 }

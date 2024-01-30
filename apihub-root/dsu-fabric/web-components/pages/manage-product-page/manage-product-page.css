@@ -190,6 +190,7 @@ manage-product-page {
 }
 
 .leaflet-market-button {
+    width: 50%;
     color: white;
     border: 0;
     font-size: inherit;
@@ -223,7 +224,7 @@ manage-product-page {
 .leaflet-market-button{
     padding: 8px 16px;
 }
-.leaflet-tab{
+.inner-tab{
     padding: 12px;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 12px 0;
 }
@@ -234,7 +235,7 @@ manage-product-page {
     margin-top: 1em;
     padding: 0.5em;
 }
-.add-epi-button{
+.tab-button{
     font-size: 16px;
     margin-top: 1rem;
     border: 1px solid var(--primary-background-color);
