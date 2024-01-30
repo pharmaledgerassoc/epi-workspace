@@ -71,20 +71,22 @@ export class ManageProductPage{
         }
     }
     switchTab(_target){
-        this.selected = _target.getAttribute("id");
-        let tabName = _target.getAttribute("id");
-        let container = this.element.querySelector(".leaflet-market-management");
-        container.querySelector(".inner-tab").remove();
-        if(tabName === "leaflet"){
-            this.tab = this.leafletTab;
-            this.selected = "leaflet";
-            container.insertAdjacentHTML("beforeend", this.tab);
-        }else {
-            this.tab = this.marketTab;
-            this.selected = "market";
-            container.insertAdjacentHTML("beforeend", this.tab);
+        if(this.selected !== _target.getAttribute("id")){
+            this.selected = _target.getAttribute("id");
+            let tabName = _target.getAttribute("id");
+            let container = this.element.querySelector(".leaflet-market-management");
+            container.querySelector(".inner-tab").remove();
+            if(tabName === "leaflet"){
+                this.tab = this.leafletTab;
+                this.selected = "leaflet";
+                container.insertAdjacentHTML("beforeend", this.tab);
+            }else {
+                this.tab = this.marketTab;
+                this.selected = "market";
+                container.insertAdjacentHTML("beforeend", this.tab);
+            }
+            this.afterRender();
         }
-        this.afterRender();
     }
     async showPhoto(controller, photoInput, event){
         let photoContainer = this.element.querySelector(".product-photo");
