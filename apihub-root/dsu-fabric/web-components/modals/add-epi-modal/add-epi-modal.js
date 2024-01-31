@@ -68,8 +68,11 @@ export class AddEpiModal{
         item.remove();
     }
 
-    addEPI(_target){
-        webSkel.notifyObservers("manage-product-page");
-        this.closeModal(_target);
+    async addEPI(_target){
+        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        if(formData.isValid){
+            this.closeModalWithData(formData);
+            webSkel.notifyObservers("manage-product-page");
+        }
     }
 }

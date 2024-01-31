@@ -9,10 +9,12 @@ export class MarketsTab {
         let stringHTML = "";
         if(this.markets){
             for(let market of this.markets){
-                stringHTML+= `<div class="market-unit">
+                stringHTML+= `<div class="market-unit pointer">
                                 <div class="market-details">${market.country} - ${market.mah}</div>
-                                <img class="market-img pointer" src="./assets/icons/thrash.svg" alt="thrash">
-                              </div>`
+                                    <div class="delete-button pointer">
+                                        <img class="market-img" src="./assets/icons/thrash.svg" alt="thrash">
+                                    </div>
+                              </div>`;
             }
         }else {
             stringHTML = `<div class="no-data">No leaflets added yet</div>`;

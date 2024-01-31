@@ -3,16 +3,16 @@ export class LeafletsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
+        this.leaflets = JSON.parse(this.element.getAttribute("data-units"));
     }
     beforeRender(){
-        this.leaflets = [{language: "English", files:[0,1,2,2,3,4]},{language: "German", files:[0,1,2,2,3,4]}];
         let stringHTML = "";
         if(this.leaflets){
             for(let leaflet of this.leaflets){
                 stringHTML+= `<div class="leaflet-unit">
                             <div class="leaflet-details">
                                 <div class="leaflet-language">${leaflet.language} Leaflet</div>
-                                <div class="leaflet-files">${leaflet.files.length} files</div>
+                                <div class="leaflet-files">${leaflet.filesCount} files</div>
                             </div>
                             <div class="leaflet-buttons">
                             <div class="leaflet-button pointer">
