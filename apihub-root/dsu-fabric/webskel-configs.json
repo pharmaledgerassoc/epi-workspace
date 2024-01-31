@@ -93,6 +93,10 @@
   ],
   "services": [
     {
+      "name": "UtilsService",
+      "path": "./services/UtilsService.js"
+    },
+    {
       "name": "BatchesService",
       "path": "./services/BatchesService.js"
     },

@@ -3,22 +3,22 @@ export class LeafletsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.leaflets = JSON.parse(this.element.getAttribute("data-units"));
+        this.leaflets = JSON.parse(this.element.getAttribute("data-units")) || [];
     }
     beforeRender(){
         let stringHTML = "";
-        if(this.leaflets){
+        if(this.leaflets.length > 0){
             for(let leaflet of this.leaflets){
-                stringHTML+= `<div class="leaflet-unit">
+                stringHTML+= `<div class="leaflet-unit" data-id="${leaflet.id}">
                             <div class="leaflet-details">
                                 <div class="leaflet-language">${leaflet.language} Leaflet</div>
                                 <div class="leaflet-files">${leaflet.filesCount} files</div>
                             </div>
                             <div class="leaflet-buttons">
-                            <div class="leaflet-button pointer">
+                            <div class="leaflet-button pointer" data-local-action="deleteLeaflet">
                                 <img class="leaflet-img" src="./assets/icons/thrash.svg" alt="thrash">
                             </div>
-                            <div class="leaflet-button pointer">
+                            <div class="leaflet-button pointer" data-local-action="viewLeaflet">
                                 <img class="leaflet-img" src="./assets/icons/eye.svg" alt="eye">
                             </div>
                             </div>

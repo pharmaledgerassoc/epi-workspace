@@ -354,26 +354,6 @@ function closeDefaultLoader() {
 }
 
 (async () => {
-    webSkel.observers = [];
-    webSkel.observeChange = function(elementId, callback) {
-        let obj = {elementId: elementId, callback: callback};
-        callback.refferenceObject = obj;
-        this.observers.push(new WeakRef(obj));
-    };
-    webSkel.notifyObservers = function(prefix) {
-        this.observers = this.observers.reduce((accumulator, item) => {
-            if (item.deref()) {
-                accumulator.push(item);
-            }
-            return accumulator;
-        }, []);
-        for (const observerRef of this.observers) {
-            const observer = observerRef.deref();
-            if(observer && observer.elementId.startsWith(prefix)) {
-                observer.callback();
-            }
-        }
-    };
     const gtinResolver = require("gtin-resolver");
     await webSkel.UtilsService.initialize();
     let domain = "default";

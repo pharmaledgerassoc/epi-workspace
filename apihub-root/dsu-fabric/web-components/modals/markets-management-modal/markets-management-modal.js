@@ -2,10 +2,16 @@ export class MarketsManagementModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.id = this.element.getAttribute("data-modal-id");
         this.invalidate();
     }
     beforeRender(){
-
+        this.countryNames = ["Romania"];
+        let stringHTML = "";
+        for(let country of this.countryNames){
+            stringHTML += `<option>${country}</option>`;
+        }
+        this.countries = stringHTML;
     }
     afterRender(){
 
@@ -26,6 +32,12 @@ export class MarketsManagementModal{
             modal.style.width = "75%";
             modal.style.maxWidth = "75vw";
             this.element.style.marginLeft = "240px";
+        }
+    }
+    async addMarketplace(_target){
+        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        if(formData.isValid){
+            webSkel.UtilsService.closeModal(_target, this.id, formData);
         }
     }
 }

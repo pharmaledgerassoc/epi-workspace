@@ -2,6 +2,7 @@ export class AddEpiModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.id = this.element.getAttribute("data-modal-id");
         this.invalidate();
     }
     beforeRender(){
@@ -71,8 +72,7 @@ export class AddEpiModal{
     async addEPI(_target){
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         if(formData.isValid){
-            this.closeModalWithData(formData);
-            webSkel.notifyObservers("manage-product-page");
+            webSkel.UtilsService.closeModal(_target, this.id, formData);
         }
     }
 }

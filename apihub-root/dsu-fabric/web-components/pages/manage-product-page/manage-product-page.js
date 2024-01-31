@@ -5,14 +5,15 @@ export class ManageProductPage{
         this.invalidate();
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="null"></leaflets-tab>`;
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
-        webSkel.observeChange("manage-product-page", this.invalidate);
         this.formData = {};
         this.leafletUnits = [];
         this.marketUnits = [];
     }
 
     beforeRender(){
-        if(!this.selected){
+        if(this.selected === "market"){
+            this.tab = this.marketTab;
+        }else {
             this.tab = this.leafletTab;
         }
     }
@@ -112,21 +113,39 @@ export class ManageProductPage{
             }
         }
         let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
-        setTimeout(()=>{
-            modal.firstChild.webSkelPresenter.closeModalWithData =  (modalData)=>{
-                this.leafletUnits.push({language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length});
-                this.leafletModalData = modalData;
 
-                let container = this.element.querySelector(".leaflet-market-management");
-                container.querySelector(".inner-tab").remove();
-                this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(this.leafletUnits)}></leaflets-tab>`;
-                container.insertAdjacentHTML("beforeend", this.leafletTab);
-
-                modal.close();
-                modal.remove();
-            };
-        },100);
+        let modalId = modal.firstChild.getAttribute("data-modal-id");
+        modal.firstChild.removeEventListener(modalId, this.boundEPIModalFn);
+        this.boundEPIModalFn = this.handleEPIModalData.bind(this, modalId);
+        modal.firstChild.addEventListener(modalId, this.boundEPIModalFn);
     }
+    handleEPIModalData(modalId, event){
+        let modalData = event.detail.data;
+        modalData.id = modalId;
+        this.leafletUnits.push(modalData);
+        let tabInfo = this.leafletUnits.map((modalData)=>{
+            return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalId};
+        });
+        let container = this.element.querySelector(".leaflet-market-management");
+        container.querySelector(".inner-tab").remove();
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
+        container.insertAdjacentHTML("beforeend", this.leafletTab);
+        this.invalidate();
+    }
+    handleMarketModalData(modalId, event){
+        let modalData = event.detail.data;
+        modalData.id = modalId;
+        this.marketUnits.push(modalData);
+        let tabInfo = this.marketUnits.map((modalData)=>{
+            return {country:modalData.data.country, mah: modalData.data.mah, id:modalId};
+        });
+        let container = this.element.querySelector(".leaflet-market-management");
+        container.querySelector(".inner-tab").remove();
+        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
+        container.insertAdjacentHTML("beforeend", this.marketTab);
+        this.invalidate();
+    }
+
    async showAddMarketModal(){
        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
        for(const key in formData.data){
@@ -134,7 +153,11 @@ export class ManageProductPage{
                this.formData[key] = formData.data[key];
            }
        }
-        await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
+       let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
+       let modalId = modal.firstChild.getAttribute("data-modal-id");
+       modal.firstChild.removeEventListener(modalId, this.boundMarketModalFn);
+       this.boundMarketModalFn = this.handleMarketModalData.bind(this, modalId);
+       modal.firstChild.addEventListener(modalId, this.boundMarketModalFn);
     }
 
     async navigateToProductsPage(){
@@ -151,5 +174,28 @@ export class ManageProductPage{
         if(formData.isValid){
             console.log("form is valid");
         }
+    }
+    async viewLeaflet(){
+        console.log("to be done");
+    }
+    deleteLeaflet(_target){
+        let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
+        let id = leafletUnit.getAttribute("data-id");
+        this.leafletUnits = this.leafletUnits.filter(unit => unit.id !== id);
+        let tabInfo = this.leafletUnits.map((modalData)=>{
+            return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalId};
+        });
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
+        this.invalidate();
+    }
+    deleteMarket(_target){
+        let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
+        let id = marketUnit.getAttribute("data-id");
+        this.marketUnits = this.marketUnits.filter(unit => unit.id !== id);
+        let tabInfo = this.marketUnits.map((modalData)=>{
+            return {country:modalData.data.country, mah: modalData.data.mah, id:modalId};
+        });
+        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
+        this.invalidate();
     }
 }

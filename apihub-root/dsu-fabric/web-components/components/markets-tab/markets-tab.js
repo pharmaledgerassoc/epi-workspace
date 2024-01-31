@@ -3,21 +3,21 @@ export class MarketsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
+        this.markets = JSON.parse(this.element.getAttribute("data-units")) || [];
     }
     beforeRender(){
-        this.markets = [{country: "AF", mah:"mah name"},{country: "US", mah:"mah name"}];
         let stringHTML = "";
-        if(this.markets){
+        if(this.markets.length > 0){
             for(let market of this.markets){
-                stringHTML+= `<div class="market-unit pointer">
+                stringHTML+= `<div class="market-unit pointer" data-id="${market.id}">
                                 <div class="market-details">${market.country} - ${market.mah}</div>
-                                    <div class="delete-button pointer">
+                                    <div class="delete-button pointer" data-local-action="deleteMarket">
                                         <img class="market-img" src="./assets/icons/thrash.svg" alt="thrash">
                                     </div>
                               </div>`;
             }
         }else {
-            stringHTML = `<div class="no-data">No leaflets added yet</div>`;
+            stringHTML = `<div class="no-data">No markets added yet</div>`;
         }
         this.marketUnits = stringHTML;
     }
