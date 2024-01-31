@@ -66,10 +66,16 @@
       "className": "BatchesPage"
     },
     {
+      "name": "edit-batch-page",
+      "path": "./web-components/pages/edit-batch-page/edit-batch-page.js",
+      "className": "EditBatchPage"
+    },
+    {
       "name": "audit-page",
       "path": "./web-components/pages/audit-page/audit-page.js",
       "className": "AuditPage"
-    },{
+    },
+    {
       "name": "products-page",
       "path": "./web-components/pages/products-page/products-page.js",
       "className": "ProductsPage"
@@ -193,19 +199,29 @@
       "cssPaths": [
         "./web-components/pages/batches-page/batches-page.css"
       ]
-    },{
+    },
+    {
+      "name": "edit-batch-page",
+      "path": "./web-components/pages/edit-batch-page/edit-batch-page.html",
+      "cssPaths": [
+        "./web-components/pages/edit-batch-page/edit-batch-page.css"
+      ]
+    },
+    {
       "name": "audit-page",
       "path": "./web-components/pages/audit-page/audit-page.html",
       "cssPaths": [
         "./web-components/pages/audit-page/audit-page.css"
       ]
-    },{
+    },
+    {
       "name": "products-page",
       "path": "./web-components/pages/products-page/products-page.html",
       "cssPaths": [
         "./web-components/pages/products-page/products-page.css"
       ]
-    },{
+    },
+    {
       "name": "logout-page",
       "path": "./web-components/pages/logout-page/logout-page.html",
       "cssPaths": [

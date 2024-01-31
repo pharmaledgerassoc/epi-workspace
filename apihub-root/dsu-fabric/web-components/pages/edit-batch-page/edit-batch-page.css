@@ -1,0 +1,107 @@
+.page-header {
+    height: 80px;
+    background-color: #fff;
+    box-shadow: 0 0.15rem 1rem 0 rgba(58, 59, 69, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--primary-background-color);
+    font-weight: 700;
+    text-align: left;
+    padding-left: 60px;
+    padding-right:60px;
+    font-size: 1.802rem;
+}
+.page-body{
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 60px;
+    color: var(--medium-grey);
+}
+.product-version {
+    font-size: 16px;
+    font-weight: 400;
+}
+.batch-data-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.column-right{
+    width: 50%;
+}
+.column-left{
+    margin-right: 60px;
+    width: 50%;
+}
+.form-field {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 0.75rem 0px;
+    border-bottom: 1.5px solid var(--primary-background-color);
+}
+
+
+.label {
+    color: var(--primary-background-color);
+}
+.text-input::placeholder {
+    font-size: 14px;
+    font-style: italic;
+}
+.text-input {
+    font-size: 16px;
+    border: 0;
+    outline:none;
+    margin: 10px 0;
+}
+#productCode{
+    color:var(--disabled);
+    outline:none;
+    border:none;
+    background:none;
+    text-align:left;
+    margin: 10px 0 10px -3px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.5;
+}
+.text-input:focus{
+    border:none;
+}
+.form-field-container .form-field {
+    margin-top:1rem;
+}
+.form-field:not(:first-child){
+    margin-top:1rem;
+}
+.label-container{
+    display: flex;
+    justify-content: space-between;
+}
+.pen-square{
+    width: 16px;
+}
+.pen-square-white{
+    width: 16px;
+    fill: white;
+}
+.form-field-container {
+    display: flex;
+    justify-content: space-between;
+}
+#expiry-date, #day-selection{
+    width:50%;
+}
+#day-selection{
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-end;
+    align-items:center;
+    border:none;
+}
+input[type="date"] {
+    outline: none;
+    border:none;
+}
