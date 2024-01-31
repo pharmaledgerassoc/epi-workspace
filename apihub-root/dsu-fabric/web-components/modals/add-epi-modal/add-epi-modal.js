@@ -6,7 +6,12 @@ export class AddEpiModal{
         this.invalidate();
     }
     beforeRender(){
-
+        let languages = gtinResolver.Languages.getListAsVM();
+        let stringHTML = "";
+        for(let language of languages){
+            stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.value}">${language.label}</option>`;
+        }
+        this.languageOptions = stringHTML;
     }
     afterRender(){
 

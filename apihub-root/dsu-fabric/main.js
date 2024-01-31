@@ -354,7 +354,7 @@ function closeDefaultLoader() {
 }
 
 (async () => {
-    const gtinResolver = require("gtin-resolver");
+    window.gtinResolver = require("gtin-resolver");
     await webSkel.UtilsService.initialize();
     let domain = "default";
     webSkel.client = gtinResolver.getMockEPISORClient(domain);

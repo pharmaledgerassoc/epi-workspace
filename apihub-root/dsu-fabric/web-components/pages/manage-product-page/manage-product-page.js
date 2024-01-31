@@ -105,13 +105,16 @@ export class ManageProductPage{
         photoInput.addEventListener("input", this.showPhoto.bind(this,controller, photoInput),{signal:controller.signal});
         photoInput.click();
     }
-    async showAddEPIModal(){
+    async stashFormInMemory(){
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         for(const key in formData.data){
             if(formData.data[key]){
                 this.formData[key] = formData.data[key];
             }
         }
+    }
+    async showAddEPIModal(){
+        await this.stashFormInMemory();
         let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
 
         let modalId = modal.firstChild.getAttribute("data-modal-id");
@@ -119,10 +122,21 @@ export class ManageProductPage{
         this.boundEPIModalFn = this.handleEPIModalData.bind(this, modalId);
         modal.firstChild.addEventListener(modalId, this.boundEPIModalFn);
     }
-    handleEPIModalData(modalId, event){
+    updateLeaflet(modalData){
+        let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
+        if (existingLeafletIndex !== -1) {
+            this.leafletUnits[existingLeafletIndex] = modalData;
+            console.log(`updated leaflet, language: ${modalData.data.language}`);
+            return true;
+        }
+        return false;
+    }
+    async handleEPIModalData(modalId, event){
         let modalData = event.detail.data;
         modalData.id = modalId;
-        this.leafletUnits.push(modalData);
+        if(!this.updateLeaflet(modalData)) {
+            this.leafletUnits.push(modalData);
+        }
         let tabInfo = this.leafletUnits.map((modalData)=>{
             return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalId};
         });
@@ -130,12 +144,14 @@ export class ManageProductPage{
         container.querySelector(".inner-tab").remove();
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
         container.insertAdjacentHTML("beforeend", this.leafletTab);
+        await this.stashFormInMemory();
         this.invalidate();
     }
-    handleMarketModalData(modalId, event){
+    async handleMarketModalData(modalId, event){
         let modalData = event.detail.data;
         modalData.id = modalId;
         this.marketUnits.push(modalData);
+
         let tabInfo = this.marketUnits.map((modalData)=>{
             return {country:modalData.data.country, mah: modalData.data.mah, id:modalId};
         });
@@ -143,16 +159,12 @@ export class ManageProductPage{
         container.querySelector(".inner-tab").remove();
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
         container.insertAdjacentHTML("beforeend", this.marketTab);
+        await this.stashFormInMemory();
         this.invalidate();
     }
 
    async showAddMarketModal(){
-       let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
-       for(const key in formData.data){
-           if(formData.data[key]){
-               this.formData[key] = formData.data[key];
-           }
-       }
+       await this.stashFormInMemory();
        let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
        let modalId = modal.firstChild.getAttribute("data-modal-id");
        modal.firstChild.removeEventListener(modalId, this.boundMarketModalFn);
@@ -197,5 +209,12 @@ export class ManageProductPage{
         });
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
         this.invalidate();
+    }
+    async updateMarket(_target){
+        let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
+        let id = marketUnit.getAttribute("data-id");
+        let selectedUnit = this.marketUnits.find(unit => unit.id === id);
+        const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit.data));
+        let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal", ["updateData"]: encodedJSON});
     }
 }

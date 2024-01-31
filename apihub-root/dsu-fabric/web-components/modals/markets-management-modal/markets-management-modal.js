@@ -3,6 +3,10 @@ export class MarketsManagementModal{
         this.element = element;
         this.invalidate = invalidate;
         this.id = this.element.getAttribute("data-modal-id");
+        let encodedData = this.element.getAttribute("data-updateData");
+        if(encodedData){
+            this.existingData = JSON.parse(decodeURIComponent(encodedData));
+        }
         this.invalidate();
     }
     beforeRender(){
@@ -14,7 +18,13 @@ export class MarketsManagementModal{
         this.countries = stringHTML;
     }
     afterRender(){
-
+        if(this.existingData){
+            let keys = ["country", "nationalCode", "mah", "entityName"];
+            for(let key of keys){
+                let input = this.element.querySelector(`#${key}`);
+                input.value = this.existingData[key];
+            }
+        }
     }
     closeModal(_target) {
         webSkel.UtilsService.closeModal(_target);
