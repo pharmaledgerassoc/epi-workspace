@@ -3,10 +3,12 @@ export class ManageProductPage{
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab"></leaflets-tab>`;
-        this.marketTab = `<markets-tab data-presenter="markets-tab"></markets-tab>`;
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="null"></leaflets-tab>`;
+        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
         webSkel.observeChange("manage-product-page", this.invalidate);
         this.formData = {};
+        this.leafletUnits = [];
+        this.marketUnits = [];
     }
 
     beforeRender(){
@@ -109,7 +111,21 @@ export class ManageProductPage{
                 this.formData[key] = formData.data[key];
             }
         }
-        await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
+        let modal = await webSkel.UtilsService.showModal(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
+        setTimeout(()=>{
+            modal.firstChild.webSkelPresenter.closeModalWithData =  (modalData)=>{
+                this.leafletUnits.push({language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length});
+                this.leafletModalData = modalData;
+
+                let container = this.element.querySelector(".leaflet-market-management");
+                container.querySelector(".inner-tab").remove();
+                this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(this.leafletUnits)}></leaflets-tab>`;
+                container.insertAdjacentHTML("beforeend", this.leafletTab);
+
+                modal.close();
+                modal.remove();
+            };
+        },100);
     }
    async showAddMarketModal(){
        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
@@ -120,9 +136,7 @@ export class ManageProductPage{
        }
         await webSkel.UtilsService.showModal(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
     }
-    refresh(){
-        this.invalidate();
-    }
+
     async navigateToProductsPage(){
         await webSkel.changeToDynamicPage("products-page", "products-page");
     }
