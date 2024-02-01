@@ -2,7 +2,22 @@ export class ManageProductPage{
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
-        this.invalidate();
+        let productCode = this.element.getAttribute("data-product-code");
+        this.buttonName = "Save Product";
+        this.operationFnName = "saveProduct";
+        if(productCode){
+            this.invalidate(async ()=>{
+                let products =await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
+                this.existingProduct = products[0];
+                //let epi = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, language);
+                this.existingProductPhoto = await $$.promisify(webSkel.client.getProductPhoto)(this.existingProduct.productCode);
+                this.buttonName = "Update Product";
+                this.operationFnName = "updateProduct";
+            });
+        }else {
+            this.invalidate();
+        }
+
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="null"></leaflets-tab>`;
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
         this.formData = {};
@@ -31,6 +46,26 @@ export class ManageProductPage{
             market.classList.add("inactive");
             market.classList.remove("highlighted");
         }
+        if(this.existingProduct){
+            let mappedKeys = {
+                "productCode": "productCode",
+                "brandName": "inventedName",
+                "medicinalName": "nameMedicinalProduct",
+                "materialCode": "internalMaterialCode",
+                "strength": "strength",
+                "patientInfo": ""
+            }
+            for(let key in mappedKeys){
+                let input = this.element.querySelector(`#${key}`);
+                input.value = this.existingProduct[mappedKeys[key]];
+            }
+            if(this.existingProductPhoto){
+                let photoContainer = this.element.querySelector(".product-photo");
+                photoContainer.src = this.existingProductPhoto;
+            }
+            //else no photo existed previously
+        }
+
         for(const key in this.formData){
             if(key === "photo"){
                 let photo = this.element.querySelector("#photo");
@@ -200,6 +235,9 @@ export class ManageProductPage{
             await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.photo, this.leafletUnits, this.marketUnits);
             await this.navigateToProductsPage();
         }
+    }
+    updateProduct(){
+        console.log("to be done");
     }
     async viewLeaflet(){
         console.log("to be done");
