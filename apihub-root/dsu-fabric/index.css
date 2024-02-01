@@ -25,7 +25,8 @@ body {
     --light-grey: #F9F9F9;
     --teal: #20c997;
     --highlight-green: #28a745;
-    --highlight-green-hover: #218838
+    --highlight-green-hover: #218838;
+    --select-color: #495057;
 }
 
 * {

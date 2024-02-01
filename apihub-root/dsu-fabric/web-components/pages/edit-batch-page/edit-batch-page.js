@@ -5,8 +5,9 @@ export class EditBatchPage {
         this.invalidate(async () => {
         });
     }
-    beforeRender(){
-        this.productVersion=0; //getProductVersion()
+    beforeRender() {
+        this.productVersion = 0; //getProductVersion()
+        this.batchId = this.element.variables["data-batchid"];
 
     }
 }

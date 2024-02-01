@@ -71,6 +71,11 @@
       "className": "EditBatchPage"
     },
     {
+      "name": "add-batch-page",
+      "path": "./web-components/pages/add-batch-page/add-batch-page.js",
+      "className": "AddBatchPage"
+    },
+    {
       "name": "audit-page",
       "path": "./web-components/pages/audit-page/audit-page.js",
       "className": "AuditPage"
@@ -218,6 +223,20 @@
       "path": "./web-components/pages/edit-batch-page/edit-batch-page.html",
       "cssPaths": [
         "./web-components/pages/edit-batch-page/edit-batch-page.css"
+      ]
+    },
+    {
+      "name": "edit-batch-page",
+      "path": "./web-components/pages/edit-batch-page/edit-batch-page.html",
+      "cssPaths": [
+        "./web-components/pages/edit-batch-page/edit-batch-page.css"
+      ]
+    },
+    {
+      "name": "add-batch-page",
+      "path": "./web-components/pages/add-batch-page/add-batch-page.html",
+      "cssPaths": [
+        "./web-components/pages/add-batch-page/add-batch-page.css"
       ]
     },
     {

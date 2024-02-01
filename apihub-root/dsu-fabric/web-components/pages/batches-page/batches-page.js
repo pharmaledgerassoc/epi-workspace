@@ -128,10 +128,13 @@ export class BatchesPage {
             this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
         });
     }
-    async navigateToEditBatchPage(){
-        await webSkel.changeToDynamicPage("edit-batch-page", "edit-batch-page");
+    async navigateToAddBatchPage(){
+        await webSkel.changeToDynamicPage("add-batch-page", "add-batch-page");
     }
+    async navigateToEditBatch(_target,batchId){
+        await webSkel.changeToDynamicPage("edit-batch-page", "edit-batch-page",{"batchId":batchId});
 
+    }
     async openDataMatrixModal(_target, productCode){
         await webSkel.UtilsService.showModal(document.querySelector("body"), "data-matrix-modal", { presenter: "data-matrix-modal", ["product-code"]: productCode});
     }
