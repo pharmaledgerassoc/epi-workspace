@@ -86,6 +86,11 @@
       "className": "LogoutPage"
     },
     {
+      "name": "generate-did-page",
+      "path": "./web-components/pages/generate-did-page/generate-did-page.js",
+      "className": "GenerateDidPage"
+    },
+    {
       "name": "my-account-page",
       "path": "./web-components/pages/my-account-page/my-account-page.js",
       "className": "MyAccountPage"
@@ -233,6 +238,13 @@
       ]
     },
     {
+      "name": "generate-did-page",
+      "path": "./web-components/pages/generate-did-page/generate-did-page.html",
+      "cssPaths": [
+        "./web-components/pages/generate-did-page/generate-did-page.css"
+      ]
+    },
+    {
       "name": "my-account-page",
       "path": "./web-components/pages/my-account-page/my-account-page.html",
       "cssPaths": [
@@ -243,3 +255,4 @@
   "defaultPage": "home-page",
   "storageServices": []
 }
+
