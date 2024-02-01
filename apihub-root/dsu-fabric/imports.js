@@ -2,7 +2,7 @@
 
 
 import WebSkel from "./WebSkel/webSkel.js";
-import { changeSelectedPageFromSidebar } from "./main.js";
+import {changeSelectedPageFromSidebar} from "./utils/utils.js"
 
 export {
     WebSkel

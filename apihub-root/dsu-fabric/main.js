@@ -1,250 +1,70 @@
+import {getUserDetails, loadPage, navigateToPage, setupGlobalErrorHandlers, showError} from "./utils/utils.js";
+import {getPermissionsWatcher} from "./services/PermissionsWatcher.js";
+import env from "./environment.js";
+import {
+  gtin,
+  gtin2,
+  batchNumber,
+  batchNumber2,
+  productDetails,
+  productDetails2,
+  batchDetails,
+  batchDetails2,
+  leafletDetails,
+  germanLeaflet,
+  imageData,
+  accessLog,
+  actionLog,
+  actionLog2
+} from "./mockData.js";
+
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 const resolver = openDSU.loadAPI("resolver");
 const crypto = openDSU.loadAPI("crypto");
+const scAPI = openDSU.loadAPI("sc");
+const w3cDID = openDSU.loadAPI("w3cdid");
+
+
 const getSSODetectedId = () => {
-    return crypto.sha256JOSE(crypto.generateRandom(10), "hex");
+  return crypto.sha256JOSE(crypto.generateRandom(10), "hex");
 }
 
 const init = async () => {
-    const scAPI = require("opendsu").loadAPI("sc");
-    let wallet;
-    const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`)
+  let wallet;
+  const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`)
+  try {
+    wallet = await $$.promisify(resolver.loadDSU)(versionlessSSI);
+  } catch (error) {
     try {
-        wallet = await $$.promisify(resolver.loadDSU)(versionlessSSI);
-    } catch (error) {
-        try {
-            wallet = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
-        } catch (e) {
-            console.log(e);
-        }
+      wallet = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
+    } catch (e) {
+      console.log(e);
     }
+  }
 
-    scAPI.setMainDSU(wallet);
-    debugger
-    const sc = scAPI.getSecurityContext();
-    sc.on("initialised", () => {
-        console.log("Initialised");
-    });
+  scAPI.setMainDSU(wallet);
+  debugger
+  const sc = scAPI.getSecurityContext();
+  sc.on("initialised", () => {
+    console.log("Initialised");
+  });
 }
 
 const callMockClient = async () => {
-    const gtin = '02113111111164';
-    const gtin2 = '00000000000000';
-    const batchNumber = 'B123';
-    const batchNumber2 = 'A456';
-    const productDetails = {
-        "messageType": "Product",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2023-01-11T09:10:01CET",
-        "payload": {
-            "productCode": "02113111111164",
-            "internalMaterialCode": "",
-            "inventedName": "BOUNTY",
-            "nameMedicinalProduct": "BOUNTY® 250 mg / 0.68 mL pre-filled syringe",
-            "strength": ""
-        }
-    };
-    const productDetails2 = {
-        "messageType": "Product2",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000002",
-        "messageDateTime": "2024-01-11T09:10:01CET",
-        "payload": {
-            "productCode": "00000000000000",
-            "internalMaterialCode": "",
-            "inventedName": "PRODUCT2",
-            "nameMedicinalProduct": "PRODUCT2® 1000 mg / 1.04 mL pre-filled syringe",
-            "strength": ""
-        }
-    };
-    const batchDetails = {
-        "messageType": "Batch",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2023-01-11T09:10:01CET",
-        "payload": {
-            "productCode": "02113111111164",
-            "batch": "B123",
-            "packagingSiteName": "",
-            "expiryDate": "230600"
-        }
-    };
-    const batchDetails2 = {
-        "messageType": "Batch",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2024-01-11T09:10:01CET",
-        "payload": {
-            "productCode": "00000000000000",
-            "batch": "A456",
-            "packagingSiteName": "",
-            "expiryDate": "240600"
-        }
-    };
-    const leafletDetails = {
-        "messageType": "leaflet",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2023-01-11T09:10:01CET",
-        payload:{
-            "productCode": "02113111111164",
-            "language": "en",
-            "xmlFileContent": "xmlFileContent"
-        }
-    }
 
-    const germanLeaflet = {
-        "messageType": "leaflet",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2023-01-11T09:10:01CET",
-        payload:{
-            "productCode": "02113111111164",
-            "language": "de",
-            "xmlFileContent": "xmlFileContent"
-        }
-    }
-
-    const imageData = {
-        "messageType": "ProductPhoto",
-        "messageTypeVersion": 1,
-        "senderId": "ManualUpload",
-        "receiverId": "QPNVS",
-        "messageId": "S000001",
-        "messageDateTime": "2023-01-11T09:10:01CET",
-        payload:{
-            "productCode": "02113111111164",
-            "imageId": "123456789",
-            "imageType": "front",
-            "imageFormat": "png",
-            "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
-        }
-    }
-    const accessLog = {
-        "username": "user",
-        "reason": "Created Product",
-        "itemCode": "00000000031059",
-        "anchorId": "Z8s5VtVtfCHVyveRKwqUb3hciWfxDDzedykF9oBkj65Mn6DQi7oQFbt4Wjz7grswCvVRX6o3KEKGbefHb5fBxrHpeinvsLT4rrSfnKzuP9dozsYYyuqTbACWUqx2MoiRpaPSzCeRmeibn1vUT71ABjXejRio1",
-        "hashLink": "2HqJt69J687THmZfpfJ9iafoJtB2vUGE7wd8eQdYFW7j7EiUnLLNxGkQdz9J5dMpLZmL56b1mHkZSTmBz63tgJVTD7bQuiBf93wBjdPA4eM7PCrJgnQf4Hh1A6BZk8ssrqdo9jZ4dar7eaiLdWUFXg2DAp5KeHtaT2vikmR26hTCSyU39uQ1hZeR2YPwGLbGTkak7ueHU21gPJNupj1UX7Gpx7VFqN8FsGBxDfRP2Eevb",
-        "metadata": {
-            "gtin": "00000000031059"
-        },
-        "isAccessLog": "true",
-        "userGroup": "ePI_Write_Group",
-        "userDID": "did:ssi:name:vault:DSU_Fabric/user",
-        "logInfo": {
-            "messageType": "Product",
-            "messageTypeVersion": 1,
-            "senderId": "nicoleta@axiologic.net",
-            "receiverId": "",
-            "messageId": "6733277145574",
-            "messageDateTime": "2024-01-23T13:04:50.881Z",
-            "token": "",
-            "payload": {
-                "inventedName": "BN1059",
-                "productCode": "00000000031059",
-                "nameMedicinalProduct": "NN1059",
-                "manufName": "",
-                "flagEnableAdverseEventReporting": false,
-                "flagEnableACFProductCheck": false,
-                "healthcarePractitionerInfo": "SmPC",
-                "patientSpecificLeaflet": "Patient Information",
-                "markets": [],
-                "internalMaterialCode": "",
-                "strength": ""
-            }
-        }
-    }
-    const actionLog = {
-        "username": "user",
-        "reason": "Created Product",
-        "itemCode": "00000000031059",
-        "anchorId": "Z8s5VtVtfCHVyveRKwqUb3hciWfxDDzedykF9oBkj65Mn6DQi7oQFbt4Wjz7grswCvVRX6o3KEKGbefHb5fBxrHpeinvsLT4rrSfnKzuP9dozsYYyuqTbACWUqx2MoiRpaPSzCeRmeibn1vUT71ABjXejRio1",
-        "hashLink": "2HqJt69J687THmZfpfJ9iafoJtB2vUGE7wd8eQdYFW7j7EiUnLLNxGkQdz9J5dMpLZmL56b1mHkZSTmBz63tgJVTD7bQuiBf93wBjdPA4eM7PCrJgnQf4Hh1A6BZk8ssrqdo9jZ4dar7eaiLdWUFXg2DAp5KeHtaT2vikmR26hTCSyU39uQ1hZeR2YPwGLbGTkak7ueHU21gPJNupj1UX7Gpx7VFqN8FsGBxDfRP2Eevb",
-        "metadata": {
-            "gtin": "00000000031059"
-        },
-        "logInfo": {
-            "messageType": "Product",
-            "messageTypeVersion": 1,
-            "senderId": "nicoleta@axiologic.net",
-            "receiverId": "",
-            "messageId": "6733277145574",
-            "messageDateTime": "2024-01-23T13:04:50.881Z",
-            "token": "",
-            "payload": {
-                "inventedName": "BN1059",
-                "productCode": "00000000031059",
-                "nameMedicinalProduct": "NN1059",
-                "manufName": "",
-                "flagEnableAdverseEventReporting": false,
-                "flagEnableACFProductCheck": false,
-                "healthcarePractitionerInfo": "SmPC",
-                "patientSpecificLeaflet": "Patient Information",
-                "markets": [],
-                "internalMaterialCode": "",
-                "strength": ""
-            }
-        }
-    }
-    const actionLog2 = {
-        "username": "user",
-        "reason": "Created Product",
-        "itemCode": "00000000031059",
-        "anchorId": "Z8s5VtVtfCHVyveRKwqUb3hciWfxDDzedykF9oBkj65Mn6DQi7oQFbt4Wjz7grswCvVRX6o3KEKGbefHb5fBxrHpeinvsLT4rrSfnKzuP9dozsYYyuqTbACWUqx2MoiRpaPSzCeRmeibn1vUT71ABjXejRio1",
-        "hashLink": "2HqJt69J687THmZfpfJ9iafoJtB2vUGE7wd8eQdYFW7j7EiUnLLNxGkQdz9J5dMpLZmL56b1mHkZSTmBz63tgJVTD7bQuiBf93wBjdPA4eM7PCrJgnQf4Hh1A6BZk8ssrqdo9jZ4dar7eaiLdWUFXg2DAp5KeHtaT2vikmR26hTCSyU39uQ1hZeR2YPwGLbGTkak7ueHU21gPJNupj1UX7Gpx7VFqN8FsGBxDfRP2Eevb",
-        "metadata": {
-            "gtin": "00000000031059"
-        },
-        "logInfo": {
-            "messageType": "Product",
-            "messageTypeVersion": 1,
-            "senderId": "nicoleta@axiologic.net",
-            "receiverId": "",
-            "messageId": "6733277145574",
-            "messageDateTime": "2024-01-23T13:04:50.881Z",
-            "token": "",
-            "payload": {
-                "inventedName": "BN1059",
-                "productCode": "00000000031059",
-                "nameMedicinalProduct": "NN1059",
-                "manufName": "",
-                "flagEnableAdverseEventReporting": false,
-                "flagEnableACFProductCheck": false,
-                "healthcarePractitionerInfo": "SmPC",
-                "patientSpecificLeaflet": "Patient Information",
-                "markets": [],
-                "internalMaterialCode": "",
-                "strength": ""
-            }
-        }
-    }
-    await $$.promisify(webSkel.client.addProduct)(gtin, productDetails);
-    await $$.promisify(webSkel.client.addProduct)(gtin2, productDetails2);
-    await $$.promisify(webSkel.client.addEPI)(gtin, leafletDetails);
-    await $$.promisify(webSkel.client.addProductImage)(gtin, imageData);
-    await $$.promisify(webSkel.client.addBatch)(gtin, batchNumber, batchDetails);
-    await $$.promisify(webSkel.client.addBatch)(gtin2, batchNumber2, batchDetails2);
-    await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.updateEPI)(gtin, batchNumber, leafletDetails);
-    await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, germanLeaflet);
-    await $$.promisify(webSkel.client.addAuditLog)(accessLog);
-    await $$.promisify(webSkel.client.addAuditLog)(actionLog);
-    await $$.promisify(webSkel.client.addAuditLog)(actionLog2);
+  await $$.promisify(webSkel.client.addProduct)(gtin, productDetails);
+  await $$.promisify(webSkel.client.addProduct)(gtin2, productDetails2);
+  await $$.promisify(webSkel.client.addEPI)(gtin, leafletDetails);
+  await $$.promisify(webSkel.client.addProductImage)(gtin, imageData);
+  await $$.promisify(webSkel.client.addBatch)(gtin, batchNumber, batchDetails);
+  await $$.promisify(webSkel.client.addBatch)(gtin2, batchNumber2, batchDetails2);
+  await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, leafletDetails);
+  await $$.promisify(webSkel.client.updateEPI)(gtin, batchNumber, leafletDetails);
+  await $$.promisify(webSkel.client.addEPI)(gtin, batchNumber, germanLeaflet);
+  await $$.promisify(webSkel.client.addAuditLog)(accessLog);
+  await $$.promisify(webSkel.client.addAuditLog)(actionLog);
+  await $$.promisify(webSkel.client.addAuditLog)(actionLog2);
 
 }
 
@@ -252,115 +72,207 @@ import WebSkel from "./WebSkel/webSkel.js";
 
 window.webSkel = new WebSkel();
 window.mainContent = document.querySelector("#app-wrapper");
+webSkel.notificationHandler = openDSU.loadAPI("error");
 
+let createDID = async () => {
+  const userDetails = getUserDetails();
+  const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
+  const openDSU = require("opendsu");
+  const config = openDSU.loadAPI("config");
+  let appName = await $$.promisify(config.getEnv)("appName");
+  let userId = `${appName}/${userDetails}`;
+  let did;
+  let i = 1;
+  do {
+    try {
+      did = await $$.promisify(w3cDID.resolveDID)(`did:ssi:name:${vaultDomain}:${userId}`);
+    } catch (e) {
+      did = null;
+    }
+    if (did) {
+      userId = userId + i++;
+    }
+  } while (did)
 
-async function loadPage() {
-    const handleURL = (URL = window.location.hash) => {
-        return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/').pop();
-    };
-    let currentPage=handleURL();
-    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="${currentPage}"></left-sidebar>`);
-    await webSkel.changeToDynamicPage(`${currentPage}`, `${currentPage}`);
+  did = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
+  return did.getIdentifier();
 }
 
-export function changeSelectedPageFromSidebar(url) {
-    let element = document.getElementById('selected-page');
-    if (element) {
-        element.removeAttribute('id');
-        let paths = element.querySelectorAll("path");
-        paths.forEach((path) => {
-            path.setAttribute("fill", "white");
-        });
+let getWalletAccess = async () => {
+  await webSkel.showLoading();
+  try {
+    let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
+    let mainDSU = await $$.promisify(scAPI.getMainDSU)();
+    let did;
+    try {
+      did = await scAPI.getMainDIDAsync();
+    } catch (e) {
+      // TODO check error type to differentiate between business and technical error
+      // this.notificationHandler.reportDevRelevantInfo("DID not yet created", e);
     }
-    let divs = document.querySelectorAll('.feature');
-    divs.forEach(div => {
-        let dataAction = div.getAttribute('data-local-action');
-        let page = dataAction.split(" ")[1];
-        if (url.includes(page)) {
-            div.setAttribute('id', 'selected-page');
-            let paths = div.querySelectorAll("path");
-            paths.forEach((path) => {
-                path.setAttribute("fill", "var(--left-sidebar)");
-            });
-        }
+    let shouldPersist = false;
+    if (!did) {
+      did = await createDID();
+      shouldPersist = true;
+    }
+
+    getPermissionsWatcher(did, async () => {
+      webSkel.hideLoading();
+      await navigateToPage("home-page");
     });
+
+    if (!shouldPersist) {
+      return;
+    }
+
+    let batchId;
+    try {
+      batchId = await mainEnclave.startOrAttachBatchAsync();
+      await scAPI.setMainDIDAsync(did);
+      await mainEnclave.commitBatchAsync(batchId);
+    } catch (e) {
+      const writeKeyError = createOpenDSUErrorWrapper(`Failed to write key`, e);
+      try {
+        await mainEnclave.cancelBatchAsync(batchId);
+      } catch (error) {
+        throw createOpenDSUErrorWrapper(`Failed to cancel batch`, error, writeKeyError);
+      }
+      throw writeKeyError;
+    }
+  } catch (err) {
+    webSkel.notificationHandler.reportUserRelevantError("Failed to initialize wallet", err);
+    setTimeout(() => {
+      window.disableRefreshSafetyAlert = true;
+      window.location.reload()
+    }, 2000)
+  }
+}
+
+let initialize = async () => {
+
+  let batchId;
+  const mainDSU = await $$.promisify(scAPI.getMainDSUForNode, scAPI)();
+  try {
+    batchId = await mainDSU.startOrAttachBatchAsync();
+    await $$.promisify(mainDSU.writeFile)('environment.json', JSON.stringify(env));
+    await $$.promisify(mainDSU.commitBatch)(batchId);
+    await getWalletAccess();
+  } catch (e) {
+    try {
+      await mainDSU.cancelBatchAsync(batchId);
+    } catch (err) {
+      showError("Initialization error!!!", `Failed to cancel batch`, err.message)
+      return;
+    }
+    showError("Initialization error!!!", "Could not initialize wallet", e.message)
+  }
 }
 
 function defineActions() {
-    webSkel.registerAction("closeErrorModal", async (_target) => {
-        closeModal(_target);
-    });
+  webSkel.registerAction("closeErrorModal", async (_target) => {
+    closeModal(_target);
+  });
 }
 
 async function loadConfigs(jsonPath) {
-    try {
-        const response = await fetch(jsonPath);
-        const config = await response.json();
-        webSkel.defaultPage=config.defaultPage;
-        for (const service of config.services) {
-            const ServiceModule = await import(service.path);
-            webSkel.initialiseService(service.name, ServiceModule[service.name]);
-        }
-
-        for (const presenter of config.presenters) {
-            const PresenterModule = await import(presenter.path);
-            webSkel.registerPresenter(presenter.name, PresenterModule[presenter.className]);
-        }
-        for (const component of config.components) {
-            await webSkel.defineComponent(component.name, component.path, {urls:component.cssPaths});
-        }
-    } catch (error) {
-        console.error(error);
-        await showApplicationError("Error loading configs", "Error loading configs", `Encountered ${error} while trying loading webSkel configs`);
+  try {
+    const response = await fetch(jsonPath);
+    const config = await response.json();
+    webSkel.defaultPage = config.defaultPage;
+    for (const service of config.services) {
+      const ServiceModule = await import(service.path);
+      webSkel.initialiseService(service.name, ServiceModule[service.name]);
     }
+
+    for (const presenter of config.presenters) {
+      const PresenterModule = await import(presenter.path);
+      webSkel.registerPresenter(presenter.name, PresenterModule[presenter.className]);
+    }
+    for (const component of config.components) {
+      await webSkel.defineComponent(component.name, component.path, {urls: component.cssPaths});
+    }
+  } catch (error) {
+    console.error(error);
+    await showApplicationError("Error loading configs", "Error loading configs", `Encountered ${error} while trying loading webSkel configs`);
+  }
 }
 
 async function handleHistory(event) {
-    const result = webSkel.getService("AuthenticationService").getCachedCurrentUser();
-    if (!result) {
-        if (window.location.hash !== "#authentication-page") {
-            webSkel.setDomElementForPages(mainContent);
-            window.location.hash = "#authentication-page";
-            await webSkel.changeToDynamicPage("authentication-page", "authentication-page", "", true);
-        }
-    } else {
-        if (history.state) {
-            if (history.state.pageHtmlTagName === "authentication-page") {
-                const path = ["#", webSkel.currentState.pageHtmlTagName].join("");
-                history.replaceState(webSkel.currentState, path, path);
-            }
-        }
+  const result = webSkel.getService("AuthenticationService").getCachedCurrentUser();
+  if (!result) {
+    if (window.location.hash !== "#authentication-page") {
+      webSkel.setDomElementForPages(mainContent);
+      window.location.hash = "#authentication-page";
+      await webSkel.changeToDynamicPage("authentication-page", "authentication-page", "", true);
     }
-    let modal = document.querySelector("dialog");
-    if (modal) {
-        closeModal(modal);
+  } else {
+    if (history.state) {
+      if (history.state.pageHtmlTagName === "authentication-page") {
+        const path = ["#", webSkel.currentState.pageHtmlTagName].join("");
+        history.replaceState(webSkel.currentState, path, path);
+      }
     }
+  }
+  let modal = document.querySelector("dialog");
+  if (modal) {
+    closeModal(modal);
+  }
 }
 
 function saveCurrentState() {
-    webSkel.currentState = Object.assign({}, history.state);
+  webSkel.currentState = Object.assign({}, history.state);
 }
 
 function closeDefaultLoader() {
-    let UILoader = {
-        "modal": document.querySelector('#default-loader-markup'),
-        "style": document.querySelector('#default-loader-style'),
-        "script": document.querySelector('#default-loader-script')
-    }
-    UILoader.modal.close();
-    UILoader.modal.remove();
-    UILoader.script.remove();
-    UILoader.style.remove();
+  let UILoader = {
+    "modal": document.querySelector('#default-loader-markup'),
+    "style": document.querySelector('#default-loader-style'),
+    "script": document.querySelector('#default-loader-script')
+  }
+  UILoader.modal.close();
+  UILoader.modal.remove();
+  UILoader.script.remove();
+  UILoader.style.remove();
 }
 
 (async () => {
-    window.gtinResolver = require("gtin-resolver");
-    await webSkel.UtilsService.initialize();
-    let domain = "default";
-    webSkel.client = gtinResolver.getMockEPISORClient(domain);
-    await callMockClient();
-    webSkel.setDomElementForPages(document.querySelector("#page-content"));
-    await loadConfigs("./webskel-configs.json");
-    await loadPage();
-    window.addEventListener('beforeunload', saveCurrentState);
+  await setupGlobalErrorHandlers();
+  webSkel.observers = [];
+  webSkel.observeChange = function (elementId, callback) {
+    let obj = {elementId: elementId, callback: callback};
+    callback.refferenceObject = obj;
+    this.observers.push(new WeakRef(obj));
+  };
+  webSkel.notifyObservers = function (prefix) {
+    this.observers = this.observers.reduce((accumulator, item) => {
+      if (item.deref()) {
+        accumulator.push(item);
+      }
+      return accumulator;
+    }, []);
+    for (const observerRef of this.observers) {
+      const observer = observerRef.deref();
+      if (observer && observer.elementId.startsWith(prefix)) {
+        observer.callback();
+      }
+    }
+  };
+  window.gtinResolver = require("gtin-resolver");
+  await webSkel.UtilsService.initialize();
+  // await initialize();
+  let domain = "default";
+  webSkel.client = gtinResolver.getMockEPISORClient(domain);
+  await callMockClient();
+  webSkel.setDomElementForPages(document.querySelector("#page-content"));
+  await loadConfigs("./webskel-configs.json");
+  try {
+    await initialize();
+  } catch (e) {
+    //
+    webSkel.notificationHandler.reportUserRelevantError("Initialization failed!!!", e);
+    return;
+  }
+
+  document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="home-page"}"></left-sidebar>`);
+  window.addEventListener('beforeunload', saveCurrentState);
 })();
