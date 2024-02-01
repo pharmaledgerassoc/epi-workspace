@@ -9,7 +9,7 @@ export class MarketsTab {
         let stringHTML = "";
         if(this.markets.length > 0){
             for(let market of this.markets){
-                stringHTML+= `<div class="market-unit pointer" data-id="${market.id}" data-local-action="updateMarket">
+                stringHTML+= `<div class="market-unit pointer" data-id="${market.id}" data-local-action="viewMarket">
                                 <div class="market-details">${market.country} - ${market.mah}</div>
                                     <div class="delete-button pointer" data-local-action="deleteMarket">
                                         <img class="market-img" src="./assets/icons/thrash.svg" alt="thrash">

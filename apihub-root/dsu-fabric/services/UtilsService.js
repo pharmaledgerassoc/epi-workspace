@@ -21,7 +21,7 @@ export class UtilsService{
     }
 
     generateSerialNumber(length){
-        let char = generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 2);
+        let char = this.generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 2);
         let number = this.generateNumericID(length-char.length);
         return char+number;
 

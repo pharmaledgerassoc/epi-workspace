@@ -9,7 +9,7 @@ export class AddEpiModal{
         let languages = gtinResolver.Languages.getListAsVM();
         let stringHTML = "";
         for(let language of languages){
-            stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.value}">${language.label}</option>`;
+            stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.label}">${language.label}</option>`;
         }
         this.languageOptions = stringHTML;
     }
@@ -77,7 +77,7 @@ export class AddEpiModal{
     async addEPI(_target){
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         if(formData.isValid){
-            webSkel.UtilsService.closeModal(_target, this.id, formData);
+            webSkel.UtilsService.closeModal(_target, formData);
         }
     }
 }
