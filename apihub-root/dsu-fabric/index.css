@@ -92,6 +92,19 @@ dialog::backdrop {
     border-radius: 100%;
 }
 
+pre {
+    overflow: hidden;
+    padding: 10px;
+    background: #FFFFFF;
+    white-space: pre-wrap;
+    color: #565656;
+}
+
+pre code {
+    font-size: 16px;
+    line-height: 2rem;
+}
+
 @-webkit-keyframes rotation {
     from {
         -webkit-transform: rotate(0deg);
@@ -139,4 +152,28 @@ dialog::backdrop {
 
 .hidden {
     display: none;
+}
+
+.copy-button {
+    background-color: var(--primary-background-color);
+    border: 1px solid var(--primary-background-color);
+    padding: 0.35rem 0.75rem;
+    border: transparent;
+    border-radius: 0.25rem;
+}
+
+.copy-button:hover {
+    background-color: var(--highlight-green-hover);
+}
+
+.copy-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(72, 180, 97, .5);
+}
+
+.copy-button .button-icon {
+    height: 20px;
+    width: 20px;
+    mask-image: url(./assets/icons/copy.svg);
+    background-color: white;
+    mask-repeat: no-repeat;
 }
