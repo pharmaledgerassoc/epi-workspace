@@ -114,9 +114,11 @@ export class ManageProductPage{
         }
     }
     async showAddEPIModal(){
-        await this.saveInputs();
         let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
-        await this.handleEPIModalData(modalData);
+        if(modalData){
+            await this.handleEPIModalData(modalData);
+        }
+        //else closed without submitting
     }
     updateLeaflet(modalData){
         let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
@@ -139,8 +141,7 @@ export class ManageProductPage{
         container.querySelector(".inner-tab").remove();
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
         container.insertAdjacentHTML("beforeend", this.leafletTab);
-        await this.saveInputs();
-        this.invalidate();
+        this.invalidate(this.saveInputs.bind(this));
     }
     updateMarket(modalData){
         if(!modalData.id){
@@ -166,14 +167,22 @@ export class ManageProductPage{
         container.querySelector(".inner-tab").remove();
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
         container.insertAdjacentHTML("beforeend", this.marketTab);
-        await this.saveInputs();
-        this.invalidate();
+        this.invalidate(this.saveInputs.bind(this));
     }
 
    async showAddMarketModal(){
-       await this.saveInputs();
-       let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal"});
-       await this.handleMarketModalData(modalData);
+        let excludedOptions = this.marketUnits.map(modalData => modalData.data.country);
+       let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+       let modalData = await webSkel.UtilsService.showModalForm(
+           document.querySelector("body"),
+           "markets-management-modal",
+           { presenter: "markets-management-modal",
+               excluded: encodedExcludedOptions
+           });
+       if(modalData){
+           await this.handleMarketModalData(modalData);
+       }
+       //else closed without submitting
     }
 
     async navigateToProductsPage(){
@@ -219,7 +228,21 @@ export class ManageProductPage{
         let id = marketUnit.getAttribute("data-id");
         let selectedUnit = this.marketUnits.find(unit => unit.id === id);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit.data));
-        let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "markets-management-modal", { presenter: "markets-management-modal", ["updateData"]: encodedJSON, id: selectedUnit.id});
-        await this.handleMarketModalData(modalData);
+        let excludedOptions = this.marketUnits
+            .filter(modalData => modalData.data.country !== selectedUnit.data.country)
+            .map(modalData => modalData.data.country);
+        let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+        let modalData = await webSkel.UtilsService.showModalForm(
+            document.querySelector("body"),
+            "markets-management-modal",
+            { presenter: "markets-management-modal",
+                ["updateData"]: encodedJSON,
+                id: selectedUnit.id,
+                excluded: encodedExcludedOptions
+            });
+        if(modalData){
+            await this.handleMarketModalData(modalData);
+        }
+        //else closed without submitting
     }
 }

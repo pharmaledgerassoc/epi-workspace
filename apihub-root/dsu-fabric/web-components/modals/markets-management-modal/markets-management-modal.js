@@ -10,12 +10,16 @@ export class MarketsManagementModal{
             this.buttonName = "Update Marketplace";
         }
         this.invalidate();
+        this.excludedOptions = JSON.parse(decodeURIComponent(this.element.getAttribute("data-excluded")));
     }
     beforeRender(){
-        this.countryNames = ["Romania", "UK", "US"];
+        let countryNames = gtinResolver.Countries.getListAsVM();
+        if(this.excludedOptions){
+            countryNames = countryNames.filter((country) => !this.excludedOptions.includes(country.value));
+        }
         let stringHTML = "";
-        for(let country of this.countryNames){
-            stringHTML += `<option value="${country}">${country}</option>`;
+        for(let country of countryNames){
+            stringHTML += `<option value="${country.value}">${country.label}</option>`;
         }
         this.countries = stringHTML;
     }
