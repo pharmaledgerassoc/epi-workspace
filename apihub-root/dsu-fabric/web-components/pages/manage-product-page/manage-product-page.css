@@ -137,29 +137,6 @@ manage-product-page {
     border-bottom: 1.5px solid var(--primary-background-color);
     margin-bottom: 1rem;
 }
-
-.disabled-form-field {
-    color: var(--disabled);
-    border-color: var(--disabled);
-    background: var(--disabled-background);
-    position: relative;
-}
-.disabled-form-field::after{
-    content: '';
-    background-image: url("../../../assets/icons/green-ban.svg");
-    height: 14px;
-    width: 14px;
-    position: absolute;
-    right: 8px;
-    top: calc(50% - 10px);
-}
-.checkbox{
-    padding: 10px;
-    border-bottom:none;
-    display: block;
-    min-height: initial;
-}
-
 .label {
     color: var(--primary-background-color);
 }

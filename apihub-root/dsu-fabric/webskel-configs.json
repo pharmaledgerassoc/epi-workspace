@@ -108,6 +108,10 @@
     {
       "name": "AuditService",
       "path": "./services/AuditService.js"
+    },
+    {
+      "name": "ProductsService",
+      "path": "./services/ProductsService.js"
     }
   ],
   "components": [

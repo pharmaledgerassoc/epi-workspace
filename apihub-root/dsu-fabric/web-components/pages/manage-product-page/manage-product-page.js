@@ -53,9 +53,9 @@ export class ManageProductPage{
         let inputContainer =  this.element.querySelector(".product-code");
         const GTINErrorMessage = (value) =>{
             if(/^\d{14}$/.test(value)){
-                if(value !== "00000000000000"){
-                    return "GTIN format invalid";
-                }
+                // if(value !== "00000000000000"){
+                //     return "GTIN format invalid";
+                // }
                 return;
             }
             return "GTIN length should be 14";
@@ -197,7 +197,8 @@ export class ManageProductPage{
         const conditions = {"productCodeCondition": {fn:this.productCodeCondition, errorMessage:"GTIN invalid!"} };
         let formData = await webSkel.UtilsService.extractFormInformation(_target, conditions);
         if(formData.isValid){
-            console.log("form is valid");
+            await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.photo, this.leafletUnits, this.marketUnits);
+            await this.navigateToProductsPage();
         }
     }
     async viewLeaflet(){

@@ -14,7 +14,7 @@ export class ProductsPage {
                         <div>${item.inventedName}</div>
                         <div>${item.nameMedicinalProduct}</div>
                         <div>${item.productCode}</div>
-                        <div class="view-details pointer" data-local-action="navigateToManageProductPage">View/Edit</div>
+                        <div class="view-details pointer" data-local-action="viewProductDetails ${item.productCode}">View/Edit</div>
                        `;
         }
         this.items = string;
@@ -97,6 +97,9 @@ export class ProductsPage {
     }
     async navigateToManageProductPage(){
        await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page");
+    }
+    async viewProductDetails(){
+        await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page", );
     }
 
     async searchProduct(event){
