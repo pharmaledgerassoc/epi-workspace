@@ -79,10 +79,6 @@ add-epi-modal{
     justify-content: end;
 }
 
-.default-button{
-    font-size: 110%;
-    margin: 0;
-}
 .margin-right{
     margin-right: 16px;
 }
@@ -125,4 +121,7 @@ add-epi-modal{
 }
 .file-name{
     margin-left: 10px
+}
+.default-button .no-margin{
+    margin:0;
 }
