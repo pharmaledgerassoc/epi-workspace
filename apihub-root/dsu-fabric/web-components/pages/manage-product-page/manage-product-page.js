@@ -9,11 +9,11 @@ export class ManageProductPage{
         if (productCode) {
             this.invalidate(async () => {
                 let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
-                this.existingProduct = products[0];
-                let languages = await $$.promisify(webSkel.client.listProductsLangs)(this.existingProduct.productCode);
+                let product = products[0];
+                let languages = await $$.promisify(webSkel.client.listProductsLangs)(product.productCode);
                 if (languages && languages.length > 0) {
                     for (let i = 0; i < languages.length; i++) {
-                        let leafletPayload = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, languages[i]);
+                        let leafletPayload = await $$.promisify(webSkel.client.getEPI)(product.productCode, languages[i]);
                         let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
                         let leafletObj = {
                             id: webSkel.servicesRegistry.UtilsService.generateID(16),
@@ -24,22 +24,24 @@ export class ManageProductPage{
                         this.leafletUnits.push(leafletObj)
                     }
                 }
-                //let epi = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, language);
-                let result = await $$.promisify(webSkel.client.getProductPhoto)(this.existingProduct.productCode);
+                let result = await $$.promisify(webSkel.client.getProductPhoto)(product.productCode);
 
-                this.existingProductPhoto = result.imageData;
+                this.saveInitialState(product, result.imageData);
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
         } else {
             this.invalidate();
         }
-
             this.formData = {};
-
             this.marketUnits = [];
     }
 
+    saveInitialState(product, image){
+        this.existingProduct = product;
+        this.initialLeafletUnits = this.leafletUnits;
+        this.existingProductPhoto = image;
+    }
     beforeRender(){
         let leafletUnits = encodeURIComponent(JSON.stringify(this.leafletUnits));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${leafletUnits}"></leaflets-tab>`;
@@ -51,13 +53,13 @@ export class ManageProductPage{
             this.tab = this.leafletTab;
         }
     }
-    mappedKeys = {
-        "productCode": "productCode",
-        "brandName": "inventedName",
-        "medicinalName": "nameMedicinalProduct",
-        "materialCode": "internalMaterialCode",
-        "strength": "strength"
-    }
+    keys = [
+        "productCode",
+        "inventedName",
+        "nameMedicinalProduct",
+        "internalMaterialCode",
+        "strength"
+    ]
     highlightTabs(){
         let leaflet = this.element.querySelector("#leaflet");
         let market = this.element.querySelector("#market");
@@ -83,9 +85,9 @@ export class ManageProductPage{
 
         let productCode = this.element.querySelector("#productCode");
         if(this.existingProduct){
-            for(let key in this.mappedKeys){
+            for(let key of this.keys){
                 let input = this.element.querySelector(`#${key}`);
-                input.value = this.existingProduct[this.mappedKeys[key]];
+                input.value = this.existingProduct[key];
             }
             if(this.existingProductPhoto){
                 let imgElement = this.element.querySelector(".product-photo");
@@ -123,7 +125,7 @@ export class ManageProductPage{
     }
     detectInputChange(button, event){
         let inputName = event.target.name;
-        button.disabled = !(event.target.value !== this.existingProduct[this.mappedKeys[inputName]] && inputName !== "photo");
+        button.disabled = !(event.target.value !== this.existingProduct[inputName] && inputName !== "photo");
 
         if(this.photo){
             button.disabled = this.photo === this.existingProductPhoto;
