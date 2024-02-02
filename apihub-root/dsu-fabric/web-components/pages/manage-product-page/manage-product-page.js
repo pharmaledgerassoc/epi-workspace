@@ -5,10 +5,25 @@ export class ManageProductPage{
         let productCode = this.element.getAttribute("data-product-code");
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
-        if(productCode){
-            this.invalidate(async ()=>{
-                let products =await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
+        this.leafletUnits = [];
+        if (productCode) {
+            this.invalidate(async () => {
+                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
                 this.existingProduct = products[0];
+                let languages = await $$.promisify(webSkel.client.listProductsLangs)(this.existingProduct.productCode);
+                if (languages && languages.length > 0) {
+                    for (let i = 0; i < languages.length; i++) {
+                        let leafletPayload = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, languages[i]);
+                        let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
+                        let leafletObj = {
+                            id: webSkel.servicesRegistry.UtilsService.generateID(16),
+                            language: leafletPayload.language,
+                            leafletFiles: leafletFiles,
+                            filesCount: leafletFiles.length
+                        };
+                        this.leafletUnits.push(leafletObj)
+                    }
+                }
                 //let epi = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, language);
                 let result = await $$.promisify(webSkel.client.getProductPhoto)(this.existingProduct.productCode);
 
@@ -16,20 +31,22 @@ export class ManageProductPage{
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
-        }else {
+        } else {
             this.invalidate();
         }
 
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="null"></leaflets-tab>`;
-        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
-        this.formData = {};
-        this.leafletUnits = [];
-        this.marketUnits = [];
+            this.formData = {};
+
+            this.marketUnits = [];
     }
 
     beforeRender(){
-        if(this.selected === "market"){
-            this.tab = this.marketTab;
+        let leafletUnits = encodeURIComponent(JSON.stringify(this.leafletUnits));
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${leafletUnits}"></leaflets-tab>`;
+        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
+
+        if (this.selected === "market") {
+          this.tab = this.marketTab;
         }else {
             this.tab = this.leafletTab;
         }
@@ -185,10 +202,10 @@ export class ManageProductPage{
         //else closed without submitting
     }
     updateLeaflet(modalData){
-        let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
+        let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.language === modalData.language);
         if (existingLeafletIndex !== -1) {
             this.leafletUnits[existingLeafletIndex] = modalData;
-            console.log(`updated leaflet, language: ${modalData.data.language}`);
+            console.log(`updated leaflet, language: ${modalData.language}`);
             return true;
         }
         return false;
@@ -199,7 +216,7 @@ export class ManageProductPage{
             this.leafletUnits.push(data);
         }
         let tabInfo = this.leafletUnits.map((modalData)=>{
-            return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalData.id};
+            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
         });
         let container = this.element.querySelector(".leaflet-market-management");
         container.querySelector(".inner-tab").remove();
@@ -271,9 +288,18 @@ export class ManageProductPage{
             "data-diffs-modal",
             { presenter: "data-diffs-modal"});
     }
-    async viewLeaflet(){
-        console.log("to be done");
+
+    getLeafletUnit(actionElement) {
+      let leafletUnit = webSkel.UtilsService.getClosestParentElement(actionElement, ".leaflet-unit");
+      let id = leafletUnit.getAttribute("data-id");
+      let l_unit = this.leafletUnits.find(unit => unit.id === id);
+      return l_unit;
     }
+
+    async viewLeaflet(_target){
+       let leafletDataObj = this.getLeafletUnit(_target);
+    }
+
     deleteLeaflet(_target){
         let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");

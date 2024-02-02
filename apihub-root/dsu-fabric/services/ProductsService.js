@@ -2,6 +2,7 @@ export class ProductsService{
     constructor() {
     }
 
+
     async addProduct(productData, photo, leafletsData, marketsData){
         const details = {
             messageType: "",
@@ -32,10 +33,12 @@ export class ProductsService{
             await $$.promisify(webSkel.client.addProductImage)(productData.data.productCode, details);
         }
         for(let leaflet of leafletsData){
+
             details.payload = {
                 productCode: productData.data.productCode,
-                language: gtinResolver.Languages.getLanguageCode(leaflet.data.language),
-                xmlFileContent: leaflet.data.leaflet.files
+                language: leaflet.language,
+                xmlFileContent: leaflet.xmlFileContent,
+                otherFilesContent: leaflet.otherFilesContent
             };
             details.messageType = "leaflet";
             await $$.promisify(webSkel.client.addEPI)(productData.data.productCode, details);

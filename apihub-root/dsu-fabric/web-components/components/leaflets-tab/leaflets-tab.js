@@ -3,7 +3,7 @@ export class LeafletsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.leaflets = JSON.parse(this.element.getAttribute("data-units")) || [];
+        this.leaflets = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
     }
     beforeRender(){
         let stringHTML = "";
@@ -11,7 +11,7 @@ export class LeafletsTab {
             for(let leaflet of this.leaflets){
                 stringHTML+= `<div class="leaflet-unit" data-id="${leaflet.id}">
                             <div class="leaflet-details">
-                                <div class="leaflet-language">${leaflet.language} Leaflet</div>
+                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(leaflet.language)} Leaflet</div>
                                 <div class="leaflet-files">${leaflet.filesCount} files</div>
                             </div>
                             <div class="leaflet-buttons">

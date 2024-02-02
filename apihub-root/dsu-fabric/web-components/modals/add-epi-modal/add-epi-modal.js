@@ -76,8 +76,12 @@ export class AddEpiModal{
 
     async addEPI(_target){
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        let resultObject = {};
+        Object.keys(formData.data).forEach(key=>{
+          resultObject[key]= formData.data[key];
+        })
         if(formData.isValid){
-            webSkel.UtilsService.closeModal(_target, formData);
+            webSkel.UtilsService.closeModal(_target, resultObject);
         }
     }
 }
