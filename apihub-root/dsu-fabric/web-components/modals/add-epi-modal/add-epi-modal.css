@@ -103,11 +103,7 @@ add-epi-modal{
 .hidden{
     display: none;
 }
-.default-button:disabled{
-    cursor: unset;
-    background: var(--very-light-grey);
-    color: grey;
-}
+
 .files-table{
     margin: 10px 0;
     overflow-y: auto;

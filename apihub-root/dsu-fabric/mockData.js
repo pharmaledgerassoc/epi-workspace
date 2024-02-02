@@ -100,7 +100,7 @@ const imageData = {
     "imageId": "123456789",
     "imageType": "front",
     "imageFormat": "png",
-    "imageData": "https://www.bayer.com/en/bayer-products/product-details/bounty-250-mg-0-68-ml-pre-filled-syringe"
+    "imageData": "https://m.media-amazon.com/images/I/71SFqvKxeIL._AC_SY879_.jpg"
   }
 }
 const accessLog = {
