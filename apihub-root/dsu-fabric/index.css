@@ -150,7 +150,11 @@ pre code {
     border-radius: 5px;
     cursor: pointer;
 }
-
+.default-button:disabled{
+    cursor: unset;
+    background: var(--very-light-grey);
+    color: grey;
+}
 .hidden {
     display: none;
 }

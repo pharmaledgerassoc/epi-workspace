@@ -88,6 +88,8 @@ manage-product-page {
     width: 40%;
 }
 .product-photo-container{
+    display: flex;
+    justify-content: center;
     margin-top: 6px;
     width: 116px;
     max-height: 175px;
@@ -100,6 +102,8 @@ manage-product-page {
 .product-photo {
 /*    overlaps strength div*/
     height: 100%;
+}
+.no-image{
     width: 100%;
 }
 .product-photo-container:hover .shadow{
@@ -206,3 +210,6 @@ manage-product-page {
     padding: 8px 16px;
 }
 
+.disabled-form-field{
+    background-color: #f3f3f3;
+}

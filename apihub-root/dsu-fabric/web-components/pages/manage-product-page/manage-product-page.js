@@ -10,7 +10,9 @@ export class ManageProductPage{
                 let products =await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
                 this.existingProduct = products[0];
                 //let epi = await $$.promisify(webSkel.client.getEPI)(this.existingProduct.productCode, language);
-                this.existingProductPhoto = await $$.promisify(webSkel.client.getProductPhoto)(this.existingProduct.productCode);
+                let result = await $$.promisify(webSkel.client.getProductPhoto)(this.existingProduct.productCode);
+
+                this.existingProductPhoto = result.imageData;
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
@@ -32,7 +34,14 @@ export class ManageProductPage{
             this.tab = this.leafletTab;
         }
     }
-    afterRender(){
+    mappedKeys = {
+        "productCode": "productCode",
+        "brandName": "inventedName",
+        "medicinalName": "nameMedicinalProduct",
+        "materialCode": "internalMaterialCode",
+        "strength": "strength"
+    }
+    highlightTabs(){
         let leaflet = this.element.querySelector("#leaflet");
         let market = this.element.querySelector("#market");
         if(this.selected === "market"){
@@ -46,42 +55,62 @@ export class ManageProductPage{
             market.classList.add("inactive");
             market.classList.remove("highlighted");
         }
+    }
+    disableProductCode(productCode){
+        let productCodeContainer = this.element.querySelector(".product-code");
+        productCodeContainer.classList.add("disabled-form-field")
+        productCode.disabled = true;
+    }
+    afterRender(){
+        this.highlightTabs();
+
+        let productCode = this.element.querySelector("#productCode");
         if(this.existingProduct){
-            let mappedKeys = {
-                "productCode": "productCode",
-                "brandName": "inventedName",
-                "medicinalName": "nameMedicinalProduct",
-                "materialCode": "internalMaterialCode",
-                "strength": "strength",
-                "patientInfo": ""
-            }
-            for(let key in mappedKeys){
+            for(let key in this.mappedKeys){
                 let input = this.element.querySelector(`#${key}`);
-                input.value = this.existingProduct[mappedKeys[key]];
+                input.value = this.existingProduct[this.mappedKeys[key]];
             }
             if(this.existingProductPhoto){
-                let photoContainer = this.element.querySelector(".product-photo");
-                photoContainer.src = this.existingProductPhoto;
+                let imgElement = this.element.querySelector(".product-photo");
+                imgElement.src = this.existingProductPhoto;
+                imgElement.classList.remove("no-image");
             }
             //else no photo existed previously
+            this.disableProductCode(productCode);
+
+            let button = this.element.querySelector("#accept-button");
+            button.disabled = true;
+            this.element.removeEventListener("input", this.boundDetectInputChange);
+            this.boundDetectInputChange = this.detectInputChange.bind(this, button);
+            this.element.addEventListener("input", this.boundDetectInputChange);
+        }
+        else {
+            productCode.removeEventListener("focusout", this.boundValidateProductCode);
+            this.boundValidateProductCode = this.validateProductCode.bind(this, productCode);
+            productCode.addEventListener("focusout", this.boundValidateProductCode);
+            this.validateProductCode(productCode);
         }
 
         for(const key in this.formData){
             if(key === "photo"){
                 let photo = this.element.querySelector("#photo");
                 photo.files = this.fileListPhoto;
-                let photoContainer = this.element.querySelector(".product-photo");
-                photoContainer.src = this.photo;
+                let imgElement = this.element.querySelector(".product-photo");
+                imgElement.src = this.photo;
+                imgElement.classList.remove("no-image");
                 continue;
             }
             let input = this.element.querySelector(`#${key}`)
             input.value = this.formData[key] || "";
         }
-        let productCode = this.element.querySelector("#productCode");
-        productCode.removeEventListener("focusout", this.boundValidateProductCode);
-        this.boundValidateProductCode = this.validateProductCode.bind(this, productCode);
-        productCode.addEventListener("focusout", this.boundValidateProductCode);
-        this.validateProductCode(productCode);
+    }
+    detectInputChange(button, event){
+        let inputName = event.target.name;
+        button.disabled = !(event.target.value !== this.existingProduct[this.mappedKeys[inputName]] && inputName !== "photo");
+
+        if(this.photo){
+            button.disabled = this.photo === this.existingProductPhoto;
+        }
     }
     validateProductCode(input, event){
         let gtin = this.element.querySelector(".gtin-validity");
@@ -236,8 +265,11 @@ export class ManageProductPage{
             await this.navigateToProductsPage();
         }
     }
-    updateProduct(){
-        console.log("to be done");
+    async updateProduct(){
+       let confirmation = await webSkel.UtilsService.showModalForm(
+            document.querySelector("body"),
+            "data-diffs-modal",
+            { presenter: "data-diffs-modal"});
     }
     async viewLeaflet(){
         console.log("to be done");
