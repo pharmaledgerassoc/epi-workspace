@@ -149,9 +149,15 @@ input[type="date"] {
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: calc(60px - 1rem);
     font-size: inherit;
+}
+.form-buttons{
+    margin-top: calc(60px - 1rem);
 }
 #invented-name, #name-of-medicinal-product{
     color:var(--select-color);
+}
+.checkbox-container{
+    display:flex;
+    align-items:center;
 }

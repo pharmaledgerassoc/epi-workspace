@@ -155,10 +155,11 @@ manage-product-page {
 
 
 .default-button {
-    margin-top: calc(60px - 1rem);
     font-size: inherit;
 }
-
+.form-buttons{
+    margin-top: calc(60px - 1rem);
+}
 .leaflet-market-tabs {
     display: flex;
     flex-direction: row;
