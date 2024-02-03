@@ -9,32 +9,38 @@
     font-weight: 700;
     text-align: left;
     padding-left: 60px;
-    padding-right:60px;
+    padding-right: 60px;
     font-size: 1.802rem;
 }
-.page-body{
+
+.page-body {
     font-size: 1rem;
     display: flex;
     flex-direction: column;
     padding: 20px 60px;
     color: var(--medium-grey);
 }
+
 .product-version {
     font-size: 16px;
     font-weight: 400;
 }
+
 .batch-data-form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
-.column-right{
+
+.column-right {
     width: 50%;
 }
-.column-left{
+
+.column-left {
     margin-right: 60px;
     width: 50%;
 }
+
 .form-field {
     display: flex;
     flex-direction: column;
@@ -45,87 +51,112 @@
 .label {
     color: var(--primary-background-color);
 }
+
 .text-input::placeholder {
     font-size: 14px;
     font-style: italic;
 }
+
 .text-input {
     font-size: 16px;
     border: 0;
-    outline:none;
+    outline: none;
     margin: 10px 0;
 }
-.text-input-disabled{
+
+.text-input-disabled {
     background: var(--disabled-background);
     font-size: 16px;
     border: 0;
-    outline:none;
+    outline: none;
     margin: 10px 0;
 }
-#productCode{
-    color:var(--select-color);
-    outline:none;
-    border:none;
-    background:none;
-    text-align:left;
+
+#productCode {
+    color: var(--select-color);
+    outline: none;
+    border: none;
+    background: none;
+    text-align: left;
     margin: 10px 0 10px -3px;
     font-weight: 400;
     font-size: 16px;
     line-height: 1.5;
 }
-.text-input:focus{
-    border:none;
+
+.text-input:focus {
+    border: none;
 }
+
 .form-field-container .form-field {
-    margin-top:1rem;
+    margin-top: 1rem;
 }
-.form-field:not(:first-child){
-    margin-top:1rem;
+
+.form-field:not(:first-child) {
+    margin-top: 1rem;
 }
-.label-container{
+
+.label-container {
     display: flex;
     justify-content: space-between;
 }
-.pen-square{
+
+.pen-square {
     width: 16px;
 }
-.pen-square-white{
+
+.pen-square-white {
     width: 16px;
     fill: white;
 }
+
 .form-field-container {
     display: flex;
     justify-content: space-between;
 }
-#expiry-date, #day-selection{
-    width:50%;
+
+#expiry-date, #day-selection {
+    width: 50%;
 }
-#day-selection{
-    display:flex;
-    flex-direction:row;
-    justify-content:flex-end;
-    align-items:center;
-    border:none;
+
+#day-selection {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    border: none;
 }
-#dateWithDay{
-    margin:10px 0;
+
+#date {
+    /* Firefox overlapping of default calendar Icon */
+    margin: 10px 0px 10px 4.34px;
+    width: 100%;
 }
+
 input[type="date"] {
     outline: none;
-    border:none;
+    border: none;
 }
+
+input[type="month"] {
+    outline: none;
+    border: none;
+}
+
 .disabled-form-field {
-    display:flex;
+    display: flex;
     color: var(--disabled);
     border-color: var(--disabled);
     background: var(--disabled-background);
 }
-.checkbox{
+
+.checkbox {
     padding: 10px;
-    border-bottom:none;
+    border-bottom: none;
     display: block;
     min-height: initial;
 }
+
 .leaflet-container {
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
     border-radius: 4px;
@@ -133,7 +164,8 @@ input[type="date"] {
     margin-top: 1em;
     padding: 0.5em;
 }
-.tab-button{
+
+.tab-button {
     font-size: 16px;
     margin-top: 2.2rem;
     border: 1px solid var(--primary-background-color);
@@ -142,6 +174,7 @@ input[type="date"] {
     background: none;
     color: var(--primary-background-color);
 }
+
 .default-button {
     background-color: var(--primary-background-color);
     border: none;
@@ -151,13 +184,53 @@ input[type="date"] {
     cursor: pointer;
     font-size: inherit;
 }
-.form-buttons{
+
+.form-buttons {
     margin-top: calc(60px - 1rem);
 }
-#invented-name, #name-of-medicinal-product{
-    color:var(--select-color);
+
+#invented-name, #name-of-medicinal-product {
+    color: var(--select-color);
 }
-.checkbox-container{
-    display:flex;
-    align-items:center;
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
 }
+
+#custom-date-icon {
+    position: relative;
+    display: inline-block;
+}
+
+#custom-date-icon {
+    position: relative;
+}
+
+#custom-date-icon svg {
+    /* Firefox Default Calendar Icon overriding */
+    position: absolute;
+    right: -1.24px;
+    top: 11.4px;
+    width: 19px;
+    height: 13px;
+    cursor: pointer;
+}
+
+/* Chrome,Safari,Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+input[type="month"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+#displayDate {
+    width: 100%;
+}
+
+#svg2{
+    display:none;
+}
+

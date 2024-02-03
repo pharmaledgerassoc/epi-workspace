@@ -11,6 +11,11 @@
       "className": "LeafletsTab"
     },
     {
+      "name": "leaflet-unit",
+      "path": "./web-components/components/leaflet-unit/leaflet-unit.js",
+      "className": "LeafletUnit"
+    },
+    {
       "name": "data-matrix-modal",
       "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.js",
       "className": "DataMatrixModal"
@@ -125,6 +130,13 @@
       "path": "./web-components/components/leaflets-tab/leaflets-tab.html",
       "cssPaths": [
         "./web-components/components/leaflets-tab/leaflets-tab.css"
+      ]
+    },
+    {
+      "name": "leaflet-unit",
+      "path": "./web-components/components/leaflet-unit/leaflet-unit.html",
+      "cssPaths": [
+        "./web-components/components/leaflet-unit/leaflet-unit.css"
       ]
     },
     {
