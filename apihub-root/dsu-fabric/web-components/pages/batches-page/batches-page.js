@@ -21,7 +21,7 @@ export class BatchesPage {
                         <div>${item.expiryDate}</div>
                         <div class="view-details pointer" data-local-action="openDataMatrixModal ${item.productCode}">View</div>
                         <div>-</div>
-                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.productCode}">Edit</div>
+                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.pk}">Edit</div>
                       `;
         }
         this.items = string;
