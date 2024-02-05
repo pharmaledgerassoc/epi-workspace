@@ -25,22 +25,23 @@ export class ManageProductPage{
                             id: webSkel.servicesRegistry.UtilsService.generateID(16),
                             language: leafletPayload.language,
                             leafletFiles: leafletFiles,
-                            filesCount: leafletFiles.length
+                            filesCount: leafletFiles.length,
+                            type: leafletPayload.type
                         };
                         leafletUnits.push(leafletObj);
                     }
                 }
                 let result = await $$.promisify(webSkel.client.getProductPhoto)(product.productCode);
-
                 this.saveInitialState(product, result.imageData, leafletUnits);
                 this.createNewState(product, result.imageData, leafletUnits);
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
-        } else {
-            this.invalidate();
+        }else {
+            this.createNewState({}, "", []);
         }
-            this.marketUnits = [];
+        this.invalidate();
+        this.marketUnits = [];
     }
 
     saveInitialState(product, image, leafletUnits){
@@ -59,8 +60,11 @@ export class ManageProductPage{
         button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData);
     }
     beforeRender(){
-        let leafletUnits = encodeURIComponent(JSON.stringify(this.productData.leafletUnits));
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${leafletUnits}"></leaflets-tab>`;
+        let tabInfo = this.productData.leafletUnits.map((modalData)=>{
+            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
+        });
+        tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
+        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
 
         if (this.selected === "market") {
@@ -98,7 +102,6 @@ export class ManageProductPage{
     }
     afterRender(){
         this.highlightTabs();
-
         let productCode = this.element.querySelector("#productCode");
         if(this.existingProduct){
             for(let key of this.keys){
@@ -118,6 +121,7 @@ export class ManageProductPage{
             this.element.removeEventListener("input", this.boundDetectInputChange);
             this.boundDetectInputChange = this.detectInputChange.bind(this);
             this.element.addEventListener("input", this.boundDetectInputChange);
+            this.onChange();
         }
         else {
             productCode.removeEventListener("focusout", this.boundValidateProductCode);
@@ -125,13 +129,12 @@ export class ManageProductPage{
             productCode.addEventListener("focusout", this.boundValidateProductCode);
             this.validateProductCode(productCode);
         }
-
         for(const key of this.keys){
             if(key === "photo"){
                 let photo = this.element.querySelector("#photo");
                 photo.files = this.fileListPhoto;
                 let imgElement = this.element.querySelector(".product-photo");
-                imgElement.src = this.photo;
+                imgElement.src = this.productData.photo;
                 imgElement.classList.remove("no-image");
                 continue;
             }
@@ -191,7 +194,7 @@ export class ManageProductPage{
         let encodedPhoto = await webSkel.UtilsService.imageUpload(photoInput.files[0]);
         this.fileListPhoto = photoInput.files;
         photoContainer.src = encodedPhoto;
-        this.photo = encodedPhoto;
+        this.productData.photo = encodedPhoto;
         controller.abort();
     }
     async uploadPhoto(){
@@ -292,17 +295,21 @@ export class ManageProductPage{
         const conditions = {"productCodeCondition": {fn:this.productCodeCondition, errorMessage:"GTIN invalid!"} };
         let formData = await webSkel.UtilsService.extractFormInformation(_target, conditions);
         if(formData.isValid){
-            await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.photo, this.productData.leafletUnits, this.marketUnits);
+            await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.productData.photo, this.productData.leafletUnits, this.marketUnits);
             await this.navigateToProductsPage();
         }
     }
     async updateProduct(){
         let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-       let confirmation = await webSkel.UtilsService.showModalForm(
+        let confirmation = await webSkel.UtilsService.showModalForm(
             document.querySelector("body"),
             "data-diffs-modal",
             { presenter: "data-diffs-modal", diffs: encodeDiffs});
+        if(confirmation){
+
+        }
+        //else cancel button pressed
     }
 
     getLeafletUnit(actionElement) {
@@ -321,7 +328,7 @@ export class ManageProductPage{
         let id = leafletUnit.getAttribute("data-id");
         this.productData.leafletUnits = this.productData.leafletUnits.filter(unit => unit.id !== id);
         let tabInfo = this.productData.leafletUnits.map((modalData)=>{
-            return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalData.id};
+            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
         });
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
         this.invalidate();

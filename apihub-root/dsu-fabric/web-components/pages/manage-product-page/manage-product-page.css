@@ -102,6 +102,8 @@ manage-product-page {
 .product-photo {
 /*    overlaps strength div*/
     height: 100%;
+    width: 100%;
+    object-fit: contain;
 }
 .no-image{
     width: 100%;
@@ -212,4 +214,8 @@ manage-product-page {
 
 .disabled-form-field{
     background-color: #f3f3f3;
+}
+.photo{
+    max-height: 175px;
+    max-width: 100%;
 }

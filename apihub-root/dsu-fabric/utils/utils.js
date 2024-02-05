@@ -4,10 +4,8 @@ import constants from "../constants.js";
 function createObservableObject(obj, onChange) {
   return new Proxy(obj, {
     set(target, property, value) {
-      if (target[property] !== value) {
-        onChange(property, value);
-      }
       target[property] = value;
+      onChange();
       return true;
     },
   });

@@ -37,7 +37,7 @@ export class UtilsService{
         })
         return cleanMessage;
     }
-    getDiffsForAudit(newData, prevData){
+    getDiffsForAudit(prevData, newData){
         if (prevData && (Array.isArray(prevData) || Object.keys(prevData).length > 0)) {
             prevData = this.cleanMessage(prevData);
             newData = this.cleanMessage(newData);
@@ -45,7 +45,7 @@ export class UtilsService{
             let diffs = Object.keys(newData).reduce((diffs, key) => {
                 if (JSON.stringify(prevData[key]) === JSON.stringify(newData[key])) return diffs
                 return {
-                    ...diffs, [key]: {oldValue: prevData[key], newValue: newData[key]}
+                    ...diffs, [key]: {oldValue: prevData[key] || "", newValue: newData[key]}
                 }
             }, {})
             return diffs;
@@ -67,7 +67,7 @@ export class UtilsService{
         }
     }
     getPhotoDiffViewObj(diff, property, modelLabelsMap) {
-        const gtinResolverUtils = require("gtin-resolver").getMappingsUtils();
+        const gtinResolverUtils = gtinResolver.getMappingsUtils();
         return {
             "changedProperty": modelLabelsMap[property],
             "oldValue": {
@@ -82,7 +82,9 @@ export class UtilsService{
         }
     }
     getEpiDiffViewObj(epiDiffObj) {
-        let changedProperty = epiDiffObj.newValue ? `${epiDiffObj.newValue.language.label}  ${epiDiffObj.newValue.type.label}` : `${epiDiffObj.oldValue.language.label}  ${epiDiffObj.oldValue.type.label}`
+        let newValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
+        let oldValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
+        let changedProperty = epiDiffObj.newValue ? `${newValueLanguage}  ${epiDiffObj.newValue.type}` : `${oldValueLanguage}  ${epiDiffObj.oldValue.type}`
         return {
             "changedProperty": changedProperty,
             "oldValue": {"value": epiDiffObj.oldValue || "-", "directDisplay": !!!epiDiffObj.oldValue},
@@ -96,7 +98,9 @@ export class UtilsService{
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
-            let diffs = this.getDiffsForAudit(initialProduct, updatedProduct);
+            let { leafletUnits, ...initialProductData } = initialProduct;
+            let { leafletUnits: updatedLeafletUnits, ...updatedProductData } = updatedProduct;
+            let diffs = this.getDiffsForAudit(initialProductData, updatedProductData);
             let epiDiffs = this.getDiffsForAudit(initialProduct.leafletUnits, updatedProduct.leafletUnits);
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {

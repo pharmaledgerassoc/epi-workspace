@@ -9,7 +9,7 @@ export class AddEpiModal{
         let languages = gtinResolver.Languages.getListAsVM();
         let stringHTML = "";
         for(let language of languages){
-            stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.label}">${language.label}</option>`;
+            stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.value}">${language.label}</option>`;
         }
         this.languageOptions = stringHTML;
     }
@@ -79,7 +79,8 @@ export class AddEpiModal{
         let resultObject = {};
         Object.keys(formData.data).forEach(key=>{
           resultObject[key]= formData.data[key];
-        })
+        });
+        resultObject.filesCount = resultObject.leafletFiles.length;
         if(formData.isValid){
             webSkel.UtilsService.closeModal(_target, resultObject);
         }
