@@ -6,6 +6,11 @@ export class AddBatchPage {
             this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
         });
         this.leafletUnits = [];
+        this.date={
+            "year":undefined,
+            "month":undefined,
+            "day":undefined
+        }
     }
 
     beforeRender() {
@@ -18,7 +23,11 @@ export class AddBatchPage {
     }
 
     afterRender() {
-        this.element.querySelector('#date').setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
+        const dateInput= this.element.querySelector('#date');
+        dateInput.addEventListener('change',(e)=>{
+            this.updateDate(e.target.value,this.date,this.isDateFormatDDMMYYYY);
+        })
+        dateInput.setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
         this.element.querySelector('#productCode').addEventListener('change', async (event) => {
             let productCode = event.target.value;
             let selectedProduct = (await $$.promisify(webSkel.client.listProducts)(undefined)).find(product => {
@@ -58,21 +67,48 @@ export class AddBatchPage {
                     this.showPicker();
                 }
             });
+            newInput.addEventListener('change',(e)=>{
+                this.updateDate(e.target.value,this.date,this.isDateFormatDDMMYYYY);
+            })
             newInput.classList.add('pointer');
 
             if (checkbox.checked) {
                 this.isDateFormatDDMMYYYY = true;
                 newInput.setAttribute('type', 'date');
                 newInput.min = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+                this.date.day=undefined;
             } else {
                 this.isDateFormatDDMMYYYY = false;
                 newInput.setAttribute('type', 'month');
                 newInput.setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
             }
+            newInput.value=this.getFormattedDate(this.date,this.isDateFormatDDMMYYYY);
             container.replaceChild(newInput, oldInput);
         });
     }
-
+    getFormattedDate(dateObj,isDateFormatYYMMDD){
+        if(isDateFormatYYMMDD){
+            if(dateObj.day===undefined){
+                dateObj.day="01";
+            }
+            return `20${dateObj.year}-${dateObj.month}-${dateObj.day}`
+        }else{
+            return `20${dateObj.year}-${dateObj.month}`
+        }
+    }
+    updateDate(value,dateRef,isDateFormatYYMMDD){
+        debugger;
+        const parseData=(dateString)=> {
+            const parsedData = dateString.split('-');
+            parsedData[0]=parsedData[0].slice(2);
+            return parsedData;
+        }
+        if(isDateFormatYYMMDD){
+            [dateRef.year,dateRef.month,dateRef.day]=parseData(value);
+        }else{
+            [dateRef.year,dateRef.month]=parseData(value);
+        }
+    }
     updateLeaflet(modalData) {
         let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
         if (existingLeafletIndex !== -1) {

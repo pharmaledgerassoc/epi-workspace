@@ -12,6 +12,9 @@ export class EditBatchPage {
 
     getFormattedDate(dateObj,isDateFormatYYMMDD){
         if(isDateFormatYYMMDD){
+            if(dateObj.day===undefined){
+                dateObj.day="01";
+            }
             return `20${dateObj.year}-${dateObj.month}-${dateObj.day}`
         }else{
             return `20${dateObj.year}-${dateObj.month}`
@@ -22,7 +25,6 @@ export class EditBatchPage {
         this.batchName = this.batch.batch;
         this.packagingSiteName = this.batch.packagingSiteName;
         this.experyDate = this.batch.expiryDate;
-        debugger;
         /* yymmdd || yymm */
         let year
         let month
@@ -74,6 +76,9 @@ export class EditBatchPage {
                 this.showPicker();
             }
         });
+        newInput.addEventListener('change',(e)=>{
+            this.updateDate(e.target.value,this.date,this.isDateFormatYYMMDD);
+        })
         container.prepend(newInput)
         this.element.querySelector('#enable-day-checkbox').addEventListener('change', () => {
             let container = this.element.querySelector('#custom-date-icon');
@@ -95,7 +100,7 @@ export class EditBatchPage {
             newInput.setAttribute('name', 'date');
             newInput.id = 'date';
             newInput.addEventListener('click', function () {
-                this.blur();
+                //this.blur();
                 if ('showPicker' in this) {
                     this.showPicker();
                 }
@@ -106,16 +111,31 @@ export class EditBatchPage {
                 this.isDateFormatYYMMDD = true;
                 newInput.setAttribute('type', 'date');
                 newInput.min = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+                this.date.day=undefined;
             } else {
                 this.isDateFormatYYMMDD= false;
                 newInput.setAttribute('type', 'month');
                 newInput.setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
             }
+            newInput.addEventListener('change',(e)=>{
+                this.updateDate(e.target.value,this.date,this.isDateFormatYYMMDD);
+            })
             newInput.value=this.getFormattedDate(this.date,this.isDateFormatYYMMDD);
             container.replaceChild(newInput, oldInput);
         });
     }
-
+    updateDate(value,dateRef,isDateFormatYYMMDD){
+        const parseData=(dateString)=> {
+            const parsedData = dateString.split('-');
+            parsedData[0]=parsedData[0].slice(2);
+            return parsedData;
+        }
+        if(isDateFormatYYMMDD){
+            [dateRef.year,dateRef.month,dateRef.day]=parseData(value);
+        }else{
+            [dateRef.year,dateRef.month]=parseData(value);
+        }
+    }
     async navigateToBatchesPage() {
         await webSkel.changeToDynamicPage("batches-page", "batches-page");
     }
