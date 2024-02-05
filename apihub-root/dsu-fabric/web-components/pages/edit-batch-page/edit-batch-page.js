@@ -10,6 +10,13 @@ export class EditBatchPage {
         });
     }
 
+    getFormattedDate(dateObj,isDateFormatYYMMDD){
+        if(isDateFormatYYMMDD){
+            return `20${dateObj.year}-${dateObj.month}-${dateObj.day}`
+        }else{
+            return `20${dateObj.year}-${dateObj.month}`
+        }
+    }
     beforeRender() {
         this.batchVersion = this.batch.version || 0;
         this.batchName = this.batch.batch;
@@ -24,13 +31,16 @@ export class EditBatchPage {
             this.isDateFormatYYMMDD = false;
             year = this.batch.expiryDate.substring(0, 2);
             month= this.batch.expiryDate.substring(2, 4);
-            this.date=`20${year}-${month}`
         } else {
             this.isDateFormatYYMMDD = true;
             year = this.batch.expiryDate.substring(0, 2);
             month= this.batch.expiryDate.substring(2, 4);
             day= this.batch.expiryDate.substring(4, 6);
-            this.date=`20${year}-${month}-${day}`
+        }
+        this.date={
+            year:year,
+            month:month,
+            day:day
         }
         this.productCode = this.product.productCode;
         this.inventedProductName = this.product.inventedName;
@@ -50,15 +60,14 @@ export class EditBatchPage {
             svg2.style.display = 'block';
             newInput.setAttribute('type', 'date');
             newInput.min = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
-            newInput.value=this.date;
         }else{
             checkbox.checked=false;
             svg1.style.display = 'block';
             svg2.style.display = 'none';
             newInput.setAttribute('type', 'month');
             newInput.setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
-            newInput.value=this.date;
         }
+        newInput.value=this.getFormattedDate(this.date,this.isDateFormatYYMMDD);
         newInput.addEventListener('click', function () {
             this.blur();
             if ('showPicker' in this) {
@@ -66,12 +75,53 @@ export class EditBatchPage {
             }
         });
         container.prepend(newInput)
+        this.element.querySelector('#enable-day-checkbox').addEventListener('change', () => {
+            let container = this.element.querySelector('#custom-date-icon');
+
+            let svg1 = container.querySelector('#svg1');
+            let svg2 = container.querySelector('#svg2');
+
+            let checkbox = this.element.querySelector('#enable-day-checkbox');
+            if (checkbox.checked) {
+                svg1.style.display = 'none';
+                svg2.style.display = 'block';
+            } else {
+                svg1.style.display = 'block';
+                svg2.style.display = 'none';
+            }
+            let oldInput = container.querySelector('#date');
+
+            let newInput = document.createElement('input');
+            newInput.setAttribute('name', 'date');
+            newInput.id = 'date';
+            newInput.addEventListener('click', function () {
+                this.blur();
+                if ('showPicker' in this) {
+                    this.showPicker();
+                }
+            });
+            newInput.classList.add('pointer');
+
+            if (checkbox.checked) {
+                this.isDateFormatYYMMDD = true;
+                newInput.setAttribute('type', 'date');
+                newInput.min = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+            } else {
+                this.isDateFormatYYMMDD= false;
+                newInput.setAttribute('type', 'month');
+                newInput.setAttribute('min', new Date().toISOString().split('T')[0].slice(0, 7));
+            }
+            newInput.value=this.getFormattedDate(this.date,this.isDateFormatYYMMDD);
+            container.replaceChild(newInput, oldInput);
+        });
     }
 
     async navigateToBatchesPage() {
         await webSkel.changeToDynamicPage("batches-page", "batches-page");
     }
+    async updateBatch(){
 
+    }
     async showAddEPIModal() {
         let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", {presenter: "add-epi-modal"});
         /* if (modalData) {

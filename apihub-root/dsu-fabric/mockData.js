@@ -43,7 +43,7 @@ const batchDetails = {
     "productCode": "02113111111164",
     "batch": "B123",
     "packagingSiteName": "",
-    "expiryDate": "230600"
+    "expiryDate": "230602"
   }
 };
 const batchDetails2 = {
@@ -57,7 +57,7 @@ const batchDetails2 = {
     "productCode": "00000000000000",
     "batch": "A456",
     "packagingSiteName": "",
-    "expiryDate": "240600"
+    "expiryDate": "240601"
   }
 };
 const leafletDetails = {

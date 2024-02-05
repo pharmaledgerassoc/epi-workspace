@@ -53,7 +53,7 @@ export class AddEpiModal{
         button.disabled = false;
     }
     uploadFiles(){
-        let inputFile = this.element.querySelector("#leaflet");
+        let inputFile = this.element.querySelector("#leafletFiles");
         inputFile.removeEventListener("input", this.boundFn);
         this.boundFn = this.displaySelectedFiles.bind(this, inputFile);
         inputFile.addEventListener("input", this.boundFn);
