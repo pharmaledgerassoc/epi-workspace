@@ -38,7 +38,7 @@ class PermissionsWatcher {
   async checkAccessAndAct() {
     this.checkAccess().then(async (hasAccess) => {
       //  utils.hideTextLoader();
-      let unAuthorizedPages = ["generate-did-page"];
+      let unAuthorizedPages = ["generate-did-page", "home-page"];
       if (hasAccess) {
         if (unAuthorizedPages.indexOf(getCurrentPageTag()) !== -1) {
           //if we are on a booting page then we need to redirect...

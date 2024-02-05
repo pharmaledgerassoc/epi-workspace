@@ -27,27 +27,31 @@ const w3cDID = openDSU.loadAPI("w3cdid");
 
 
 const getSSODetectedId = () => {
-  return crypto.sha256JOSE(crypto.generateRandom(10), "hex");
+  return getUserDetails();
 }
 
 const init = async () => {
-  let wallet;
+  let mainDSU;
   const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`)
   try {
-    wallet = await $$.promisify(resolver.loadDSU)(versionlessSSI);
+    mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
   } catch (error) {
     try {
-      wallet = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
+      mainDSU = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
+      await $$.promisify(mainDSU.writeFile)('environment.json', JSON.stringify(env));
     } catch (e) {
       console.log(e);
     }
   }
 
-  scAPI.setMainDSU(wallet);
-  debugger
+  scAPI.setMainDSU(mainDSU);
   const sc = scAPI.getSecurityContext();
-  sc.on("initialised", () => {
+  if(sc.isInitialised()){
+    return await getWalletAccess();
+  }
+  sc.on("initialised", async () => {
     console.log("Initialised");
+    await getWalletAccess();
   });
 }
 
@@ -106,7 +110,6 @@ let getWalletAccess = async () => {
       return await navigateToPage("home-page");
     }
     let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
-    let mainDSU = await $$.promisify(scAPI.getMainDSU)();
     let did;
     try {
       did = await scAPI.getMainDIDAsync();
@@ -242,20 +245,12 @@ function closeDefaultLoader() {
 (async () => {
   await setupGlobalErrorHandlers();
   window.gtinResolver = require("gtin-resolver");
-  await webSkel.UtilsService.initialize();
-  // await initialize();
+  await init();
   let domain = "default";
   webSkel.client = gtinResolver.getMockEPISORClient(domain);
   await callMockClient();
   webSkel.setDomElementForPages(document.querySelector("#page-content"));
   await loadConfigs("./webskel-configs.json");
-  try {
-    await initialize();
-  } catch (e) {
-    //
-    webSkel.notificationHandler.reportUserRelevantError("Initialization failed!!!", e);
-    return;
-  }
 
   document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="home-page"}"></left-sidebar>`);
   window.addEventListener('beforeunload', saveCurrentState);
