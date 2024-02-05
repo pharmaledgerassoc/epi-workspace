@@ -1,3 +1,5 @@
+import {createObservableObject} from "../../../utils/utils.js";
+
 export class ManageProductPage{
     constructor(element,invalidate){
         this.element=element;
@@ -5,11 +7,15 @@ export class ManageProductPage{
         let productCode = this.element.getAttribute("data-product-code");
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
-        this.leafletUnits = [];
+        this.productData = {};
         if (productCode) {
             this.invalidate(async () => {
                 let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
                 let product = products[0];
+                delete product.pk;
+                delete product.__version;
+                delete product.__timestamp;
+                let leafletUnits = [];
                 let languages = await $$.promisify(webSkel.client.listProductsLangs)(product.productCode);
                 if (languages && languages.length > 0) {
                     for (let i = 0; i < languages.length; i++) {
@@ -21,29 +27,39 @@ export class ManageProductPage{
                             leafletFiles: leafletFiles,
                             filesCount: leafletFiles.length
                         };
-                        this.leafletUnits.push(leafletObj)
+                        leafletUnits.push(leafletObj);
                     }
                 }
                 let result = await $$.promisify(webSkel.client.getProductPhoto)(product.productCode);
 
-                this.saveInitialState(product, result.imageData);
+                this.saveInitialState(product, result.imageData, leafletUnits);
+                this.createNewState(product, result.imageData, leafletUnits);
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
         } else {
             this.invalidate();
         }
-            this.formData = {};
             this.marketUnits = [];
     }
 
-    saveInitialState(product, image){
-        this.existingProduct = product;
-        this.initialLeafletUnits = this.leafletUnits;
-        this.existingProductPhoto = image;
+    saveInitialState(product, image, leafletUnits){
+        this.existingProduct =  Object.assign({}, product);
+        this.existingProduct.photo = image;
+        this.existingProduct.leafletUnits = JSON.parse(JSON.stringify(leafletUnits));
+    }
+    createNewState(product, image, leafletUnits){
+        let productObj = Object.assign({}, product);
+        productObj.photo = image;
+        productObj.leafletUnits = JSON.parse(JSON.stringify(leafletUnits));
+        this.productData = createObservableObject(productObj,this.onChange.bind(this));
+    }
+    onChange(){
+        let button = this.element.querySelector("#accept-button");
+        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData);
     }
     beforeRender(){
-        let leafletUnits = encodeURIComponent(JSON.stringify(this.leafletUnits));
+        let leafletUnits = encodeURIComponent(JSON.stringify(this.productData.leafletUnits));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${leafletUnits}"></leaflets-tab>`;
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
 
@@ -89,9 +105,9 @@ export class ManageProductPage{
                 let input = this.element.querySelector(`#${key}`);
                 input.value = this.existingProduct[key];
             }
-            if(this.existingProductPhoto){
+            if(this.existingProduct.photo){
                 let imgElement = this.element.querySelector(".product-photo");
-                imgElement.src = this.existingProductPhoto;
+                imgElement.src = this.existingProduct.photo;
                 imgElement.classList.remove("no-image");
             }
             //else no photo existed previously
@@ -100,7 +116,7 @@ export class ManageProductPage{
             let button = this.element.querySelector("#accept-button");
             button.disabled = true;
             this.element.removeEventListener("input", this.boundDetectInputChange);
-            this.boundDetectInputChange = this.detectInputChange.bind(this, button);
+            this.boundDetectInputChange = this.detectInputChange.bind(this);
             this.element.addEventListener("input", this.boundDetectInputChange);
         }
         else {
@@ -110,7 +126,7 @@ export class ManageProductPage{
             this.validateProductCode(productCode);
         }
 
-        for(const key in this.formData){
+        for(const key of this.keys){
             if(key === "photo"){
                 let photo = this.element.querySelector("#photo");
                 photo.files = this.fileListPhoto;
@@ -120,16 +136,12 @@ export class ManageProductPage{
                 continue;
             }
             let input = this.element.querySelector(`#${key}`)
-            input.value = this.formData[key] || "";
+            input.value = this.productData[key] || "";
         }
     }
-    detectInputChange(button, event){
+    detectInputChange(event){
         let inputName = event.target.name;
-        button.disabled = !(event.target.value !== this.existingProduct[inputName] && inputName !== "photo");
-
-        if(this.photo){
-            button.disabled = this.photo === this.existingProductPhoto;
-        }
+        this.productData[inputName] = event.target.value;
     }
     validateProductCode(input, event){
         let gtin = this.element.querySelector(".gtin-validity");
@@ -192,7 +204,7 @@ export class ManageProductPage{
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         for(const key in formData.data){
             if(formData.data[key]){
-                this.formData[key] = formData.data[key];
+                this.productData[key] = formData.data[key];
             }
         }
     }
@@ -204,9 +216,9 @@ export class ManageProductPage{
         //else closed without submitting
     }
     updateLeaflet(modalData){
-        let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.language === modalData.language);
+        let existingLeafletIndex = this.productData.leafletUnits.findIndex(leaflet => leaflet.language === modalData.language);
         if (existingLeafletIndex !== -1) {
-            this.leafletUnits[existingLeafletIndex] = modalData;
+            this.productData.leafletUnits[existingLeafletIndex] = modalData;
             console.log(`updated leaflet, language: ${modalData.language}`);
             return true;
         }
@@ -215,9 +227,9 @@ export class ManageProductPage{
     async handleEPIModalData(data){
         data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
         if(!this.updateLeaflet(data)) {
-            this.leafletUnits.push(data);
+            this.productData.leafletUnits.push(data);
         }
-        let tabInfo = this.leafletUnits.map((modalData)=>{
+        let tabInfo = this.productData.leafletUnits.map((modalData)=>{
             return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
         });
         let container = this.element.querySelector(".leaflet-market-management");
@@ -280,7 +292,7 @@ export class ManageProductPage{
         const conditions = {"productCodeCondition": {fn:this.productCodeCondition, errorMessage:"GTIN invalid!"} };
         let formData = await webSkel.UtilsService.extractFormInformation(_target, conditions);
         if(formData.isValid){
-            await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.photo, this.leafletUnits, this.marketUnits);
+            await webSkel.servicesRegistry.ProductsService.addProduct(formData, this.photo, this.productData.leafletUnits, this.marketUnits);
             await this.navigateToProductsPage();
         }
     }
@@ -294,7 +306,7 @@ export class ManageProductPage{
     getLeafletUnit(actionElement) {
       let leafletUnit = webSkel.UtilsService.getClosestParentElement(actionElement, ".leaflet-unit");
       let id = leafletUnit.getAttribute("data-id");
-      let l_unit = this.leafletUnits.find(unit => unit.id === id);
+      let l_unit = this.productData.leafletUnits.find(unit => unit.id === id);
       return l_unit;
     }
 
@@ -305,8 +317,8 @@ export class ManageProductPage{
     deleteLeaflet(_target){
         let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");
-        this.leafletUnits = this.leafletUnits.filter(unit => unit.id !== id);
-        let tabInfo = this.leafletUnits.map((modalData)=>{
+        this.productData.leafletUnits = this.productData.leafletUnits.filter(unit => unit.id !== id);
+        let tabInfo = this.productData.leafletUnits.map((modalData)=>{
             return {language:modalData.data.language, filesCount: modalData.elements.leaflet.element.files.length, id:modalData.id};
         });
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;

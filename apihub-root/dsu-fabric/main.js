@@ -101,6 +101,10 @@ let createDID = async () => {
 let getWalletAccess = async () => {
   await webSkel.showLoading();
   try {
+    if (getUserDetails() === "usr1@example.com") {
+      webSkel.hideLoading();
+      return await navigateToPage("home-page");
+    }
     let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
     let mainDSU = await $$.promisify(scAPI.getMainDSU)();
     let did;

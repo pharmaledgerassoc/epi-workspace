@@ -1,6 +1,17 @@
 import {showModal} from "../WebSkel/utils/modal-utils.js";
 import constants from "../constants.js";
 
+function createObservableObject(obj, onChange) {
+  return new Proxy(obj, {
+    set(target, property, value) {
+      if (target[property] !== value) {
+        onChange(property, value);
+      }
+      target[property] = value;
+      return true;
+    },
+  });
+}
 async function loadPage() {
   const handleURL = (URL = window.location.hash) => {
     return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/').pop();
@@ -109,6 +120,7 @@ function copyToClipboard(text) {
   }
 }
 export {
+  createObservableObject,
   loadPage,
   showNotification,
   getCurrentPageTag,

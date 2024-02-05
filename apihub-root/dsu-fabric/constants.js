@@ -67,17 +67,13 @@ export default {
   },
   MODEL_LABELS_MAP: {
     PRODUCT: {
-      gtin: "Product Code",
-      name: "Brand/Invented name",
-      description: "Name of Medicinal Product",
+      productCode: "Product Code",
+      inventedName: "Brand/Invented name",
+      nameMedicinalProduct: "Name of Medicinal Product",
       internalMaterialCode: "Internal material code",
       strength: "Strength",
       photo: "Product Photo",
       patientLeafletInfo: "Patient Specific Information Leaflet",
-      practitionerInfo: "Healthcare practitioner information",
-      videoSource: "Video Source",
-      adverseEventsReportingEnabled: "Enable Adverse Events Reporting",
-      antiCounterfeitingEnabled: "Enable Anti-Counterfeiting check for this product",
       markets: "Markets management"
     },
     BATCH: {
