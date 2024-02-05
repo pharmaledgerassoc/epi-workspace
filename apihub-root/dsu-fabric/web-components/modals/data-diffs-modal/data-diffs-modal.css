@@ -3,24 +3,17 @@ dialog{
     max-height: 95vh;
     height: 95%;
     border-radius: 3px;
-
-    max-width: 75vw;
-    width: 75%;
 }
-data-matrix-modal{
-    margin-left: 240px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
+data-diffs-modal{
+    background-color: var(--diffs-background);
 }
 .modal-header{
-    background-color: var(--primary-text-color);
+    background-color: var(--primary-background-color);
+    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border-bottom: 1px solid var(--very-light-grey);
 }
 .modal-title{
     font-size: 1.25rem;
@@ -30,9 +23,6 @@ data-matrix-modal{
     display: flex;
     align-items: center;
 }
-.close-icon{
-    font-size: 24px;
-}
 .expand-icon{
     margin-right: 20px;
     transform: rotateZ(45deg);
@@ -41,17 +31,44 @@ data-matrix-modal{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--primary-text-color);
     padding: 16px;
     color: var(--medium-grey);
-    height: calc(100% - 131px);
+    background-color: var(--diffs-background);
 }
 
 .modal-footer{
     padding: 16px;
     display: flex;
     justify-content: end;
+    background-color: var(--diffs-background);
 }
-.default-button{
+.column-header{
+    padding: 16px 24px;
+    background: var(--light-green);
     font-size: 110%;
+    border-bottom: 1px solid var(--very-light-grey);
+    max-width: 33%;
+    text-align: left;
+}
+.first-column{
+    border-top-left-radius: 7px;
+}
+.last-column{
+    border-top-right-radius: 7px;
+}
+.table{
+    border-radius: 7px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--very-light-grey);
+}
+.right-margin{
+    margin-right: 16px;
+}
+.cell{
+    background-color: white;
+    padding: 16px 24px;
+}
+.border{
+    border-right: 1px solid var(--very-light-grey);
 }

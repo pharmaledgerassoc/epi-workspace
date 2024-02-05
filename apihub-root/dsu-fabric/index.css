@@ -18,6 +18,7 @@ body {
     /*not in design*/
     --input-invalid: #FFCCCC;
     --disabled: #7a8288;
+    --diffs-background: #DEDEDE;
     --disabled-background: #f3f3f3;
     --primary-border-color: #ffffff4d;
     --medium-green: #097C55;

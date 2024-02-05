@@ -1,6 +1,11 @@
 {
   "presenters": [
     {
+      "name": "data-diffs-modal",
+      "path": "./web-components/modals/data-diffs-modal/data-diffs-modal.js",
+      "className": "DataDiffsModal"
+    },
+    {
       "name": "markets-tab",
       "path": "./web-components/components/markets-tab/markets-tab.js",
       "className": "MarketsTab"
@@ -125,6 +130,13 @@
     }
   ],
   "components": [
+    {
+      "name": "data-diffs-modal",
+      "path": "./web-components/modals/data-diffs-modal/data-diffs-modal.html",
+      "cssPaths": [
+        "./web-components/modals/data-diffs-modal/data-diffs-modal.css"
+      ]
+    },
     {
       "name": "leaflets-tab",
       "path": "./web-components/components/leaflets-tab/leaflets-tab.html",

@@ -11,7 +11,7 @@ export class UtilsService{
         }
         return result;
     }
-
+    dbMessageFields = ["pk", "meta", "did", "__timestamp", "$loki", "context", "keySSI", "epiProtocol", "version"];
     generateID(length) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         return this.generate(characters, length);
@@ -28,10 +28,19 @@ export class UtilsService{
         return char+number;
 
     }
+    cleanMessage (message)  {
+        let cleanMessage = JSON.parse(JSON.stringify(message));
+        this.dbMessageFields.forEach(field => {
+            if (field in cleanMessage) {
+                delete cleanMessage[field]
+            }
+        })
+        return cleanMessage;
+    }
     getDiffsForAudit(newData, prevData){
         if (prevData && (Array.isArray(prevData) || Object.keys(prevData).length > 0)) {
-            prevData = cleanMessage(prevData);
-            newData = cleanMessage(newData);
+            prevData = this.cleanMessage(prevData);
+            newData = this.cleanMessage(newData);
 
             let diffs = Object.keys(newData).reduce((diffs, key) => {
                 if (JSON.stringify(prevData[key]) === JSON.stringify(newData[key])) return diffs

@@ -297,10 +297,12 @@ export class ManageProductPage{
         }
     }
     async updateProduct(){
+        let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
+        let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
        let confirmation = await webSkel.UtilsService.showModalForm(
             document.querySelector("body"),
             "data-diffs-modal",
-            { presenter: "data-diffs-modal"});
+            { presenter: "data-diffs-modal", diffs: encodeDiffs});
     }
 
     getLeafletUnit(actionElement) {
