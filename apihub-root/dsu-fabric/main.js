@@ -30,6 +30,7 @@ const getSSODetectedId = () => {
     return getUserDetails();
 }
 
+//todo: CODE-REVIEW - this function needs a more explicit name
 const init = async () => {
     let mainDSU;
     const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`)
@@ -55,6 +56,7 @@ const init = async () => {
     });
 }
 
+//TODO: CODE-REVIEW - why this function is called callMockClient if the purpose of it is to setup test data during development ?
 const callMockClient = async () => {
 
     await $$.promisify(webSkel.client.addProduct)(gtin, productDetails);
@@ -71,7 +73,7 @@ const callMockClient = async () => {
     await $$.promisify(webSkel.client.addAuditLog)(actionLog2);
 
 }
-
+//todo: CODE-REVIEW - all the dynamic imports should be at the top of the script file
 import WebSkel from "./WebSkel/webSkel.js";
 
 window.webSkel = new WebSkel();
@@ -155,9 +157,11 @@ let getWalletAccess = async () => {
     }
 }
 
+//todo: CODE-REVIEW - does this function needed ? it seems to don't be used at this point in time
 let initialize = async () => {
 
     let batchId;
+    //todo: CODE-REVIEW - why to we call an API for NODEJS in web/browser environment?
     const mainDSU = await $$.promisify(scAPI.getMainDSUForNode, scAPI)();
     try {
         batchId = await mainDSU.startOrAttachBatchAsync();
@@ -175,6 +179,7 @@ let initialize = async () => {
     }
 }
 
+//todo: CODE-REVIEW - unused function
 function defineActions() {
     webSkel.registerAction("closeErrorModal", async (_target) => {
         closeModal(_target);
@@ -188,6 +193,7 @@ async function loadConfigs(jsonPath) {
         webSkel.defaultPage = config.defaultPage;
         for (const service of config.services) {
             const ServiceModule = await import(service.path);
+            //todo: CODE-REVIEW - why do we need to initialize services?! maybe they are not need them
             webSkel.initialiseService(service.name, ServiceModule[service.name]);
         }
 
@@ -204,6 +210,7 @@ async function loadConfigs(jsonPath) {
     }
 }
 
+//todo: CODE-REVIEW - unused function
 async function handleHistory(event) {
     const result = webSkel.getService("AuthenticationService").getCachedCurrentUser();
     if (!result) {
@@ -244,10 +251,12 @@ function closeDefaultLoader() {
 
 (async () => {
     await setupGlobalErrorHandlers();
+    //todo: CODE-REVIEW - why the initialization of UtilsService is exposed and not called during webSkel constructor?!
     await webSkel.UtilsService.initialize();
     window.gtinResolver = require("gtin-resolver");
     let domain = "default";
     webSkel.client = gtinResolver.getMockEPISORClient(domain);
+
     await callMockClient();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
     await loadConfigs("./webskel-configs.json");

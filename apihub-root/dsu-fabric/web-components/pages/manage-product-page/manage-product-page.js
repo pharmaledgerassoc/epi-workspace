@@ -5,6 +5,7 @@ export class ManageProductPage{
         this.element=element;
         this.invalidate=invalidate;
         let productCode = this.element.getAttribute("data-product-code");
+        //todo: CODE-REVIEW - why do need to manage already existing dom elements name from controller and why don't use camelcase or other convention that doesn't use space character?!
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
         this.productData = {};
@@ -71,6 +72,7 @@ export class ManageProductPage{
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
+        //todo: CODE-REVIEW - why do we create UI parts that are disabled? it has a topic/decision on this?
         let marketsInfo = this.productData.marketUnits.map((modalData)=>{
             return {country:modalData.country, mah: modalData.mah, id:modalData.id, action:modalData.action};
         });

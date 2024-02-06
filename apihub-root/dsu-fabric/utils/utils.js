@@ -10,6 +10,8 @@ function createObservableObject(obj, onChange) {
     },
   });
 }
+
+//TODO: CODE-REVIEW - why functions like loadPage are not part of WebSkel ??
 async function loadPage() {
   const handleURL = (URL = window.location.hash) => {
     return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/').pop();
