@@ -66,7 +66,7 @@ export class ManageProductPage{
     }
     beforeRender(){
         let tabInfo = this.productData.epiUnits.map((modalData)=>{
-            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id, action:modalData.action};
+            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id, action:modalData.action, type:modalData.type};
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
@@ -142,26 +142,17 @@ export class ManageProductPage{
     validateProductCode(input, event){
         let gtin = this.element.querySelector(".gtin-validity");
         let inputContainer =  this.element.querySelector(".product-code");
-        const GTINErrorMessage = (value) =>{
-            if(/^\d{14}$/.test(value)){
-                // if(value !== "00000000000000"){
-                //     return "GTIN format invalid";
-                // }
-                return;
-            }
-            return "GTIN length should be 14";
-        };
-        let msg = GTINErrorMessage(input.value);
-        if(msg){
-            gtin.classList.add("invalid");
-            gtin.classList.remove("valid");
-            gtin.innerText = msg;
-            inputContainer.classList.add("product-code-invalid");
-        }else {
+        let gtinValidationResult = gtinResolver.validationUtils.validateGTIN(input.value);
+        if(gtinValidationResult.isValid){
             gtin.classList.remove("invalid");
             gtin.classList.add("valid");
             gtin.innerText = "GTIN is valid";
             inputContainer.classList.remove("product-code-invalid");
+        }else {
+            gtin.classList.add("invalid");
+            gtin.classList.remove("valid");
+            gtin.innerText = gtinValidationResult.message;
+            inputContainer.classList.add("product-code-invalid");
         }
     }
     switchTab(_target){

@@ -14,7 +14,7 @@ export class LeafletsTab {
                 }
                 stringHTML+= `<div class="leaflet-unit" data-id="${epi.id}">
                             <div class="leaflet-details">
-                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(epi.language)} Leaflet</div>
+                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(epi.language)} ${epi.type}</div>
                                 <div class="leaflet-files">${epi.filesCount} files</div>
                             </div>
                             <div class="leaflet-buttons">
