@@ -32,27 +32,28 @@ export class ManageProductPage{
                     }
                 }
                 let result = await $$.promisify(webSkel.client.getProductPhoto)(product.productCode);
-                this.saveInitialState(product, result.imageData, epiUnits);
-                this.createNewState(product, result.imageData, epiUnits, true);
+                this.saveInitialState(product, result.imageData, epiUnits, []);
+                this.createNewState(product, result.imageData, epiUnits, true, []);
                 this.buttonName = "Update Product";
                 this.operationFnName = "updateProduct";
             });
         }else {
-            this.createNewState({}, "", []);
+            this.createNewState({}, "", [], false, []);
         }
         this.invalidate();
-        this.marketUnits = [];
     }
 
-    saveInitialState(product, image, epiUnits){
+    saveInitialState(product, image, epiUnits, marketUnits){
         this.existingProduct =  Object.assign({}, product);
         this.existingProduct.photo = image;
         this.existingProduct.epiUnits = JSON.parse(JSON.stringify(epiUnits));
+        this.existingProduct.marketUnits = JSON.parse(JSON.stringify(marketUnits));
     }
-    createNewState(product, image, epiUnits, isObservable){
+    createNewState(product, image, epiUnits, isObservable, marketUnits){
         let productObj = Object.assign({}, product);
         productObj.photo = image;
         productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
+        productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));
         if(isObservable){
             this.productData = createObservableObject(productObj,this.onChange.bind(this));
         }else {
@@ -70,7 +71,11 @@ export class ManageProductPage{
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
-        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="null"></markets-tab>`;
+        let marketsInfo = this.productData.marketUnits.map((modalData)=>{
+            return {country:modalData.country, mah: modalData.mah, id:modalData.id, action:modalData.action};
+        });
+        marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
+        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
 
         if (this.selected === "market") {
           this.tab = this.marketTab;
@@ -223,9 +228,9 @@ export class ManageProductPage{
         if(!modalData.id){
             return false;
         }
-        let existingMarketIndex = this.marketUnits.findIndex(market => market.id === modalData.id);
+        let existingMarketIndex = this.productData.marketUnits.findIndex(market => market.id === modalData.id);
         if (existingMarketIndex !== -1) {
-            this.marketUnits[existingMarketIndex] = modalData;
+            this.productData.marketUnits[existingMarketIndex] = modalData;
             console.log(`updated market, country: ${modalData.data.country}`);
             return true;
         }
@@ -234,20 +239,13 @@ export class ManageProductPage{
     async handleMarketModalData(data){
         if(!this.updateMarket(data)) {
             data.id =  webSkel.servicesRegistry.UtilsService.generateID(16);
-            this.marketUnits.push(data);
+            this.productData.marketUnits.push(data);
         }
-        let tabInfo = this.marketUnits.map((modalData)=>{
-            return {country:modalData.data.country, mah: modalData.data.mah, id:modalData.id};
-        });
-        let container = this.element.querySelector(".leaflet-market-management");
-        container.querySelector(".inner-tab").remove();
-        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
-        container.insertAdjacentHTML("beforeend", this.marketTab);
         this.invalidate(this.saveInputs.bind(this));
     }
 
    async showAddMarketModal(){
-        let excludedOptions = this.marketUnits.map(modalData => modalData.data.country);
+        let excludedOptions = this.productData.marketUnits.map(modalData => modalData.data.country);
        let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
        let modalData = await webSkel.UtilsService.showModalForm(
            document.querySelector("body"),
@@ -292,6 +290,7 @@ export class ManageProductPage{
         if(confirmation){
             await webSkel.servicesRegistry.ProductsService.updateProduct(this.productData, this.existingProduct.epiUnits);
             this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
+            this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.action !== "delete");
             await this.navigateToProductsPage();
         }
         //else cancel button pressed
@@ -319,19 +318,17 @@ export class ManageProductPage{
     deleteMarket(_target){
         let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
-        this.marketUnits = this.marketUnits.filter(unit => unit.id !== id);
-        let tabInfo = this.marketUnits.map((modalData)=>{
-            return {country:modalData.data.country, mah: modalData.data.mah, id:modalData.id};
-        });
-        this.marketTab = `<markets-tab data-presenter="markets-tab" data-units=${JSON.stringify(tabInfo)}></markets-tab>`;
+        let selectedMarketUnit = this.productData.epiUnits.find(unit => unit.id === id);
+        selectedMarketUnit.action = "delete";
+        //this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.id !== id);
         this.invalidate();
     }
     async viewMarket(_target){
         let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
-        let selectedUnit = this.marketUnits.find(unit => unit.id === id);
+        let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit.data));
-        let excludedOptions = this.marketUnits
+        let excludedOptions = this.productData.marketUnits
             .filter(modalData => modalData.data.country !== selectedUnit.data.country)
             .map(modalData => modalData.data.country);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));

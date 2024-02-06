@@ -58,7 +58,11 @@ export class MarketsManagementModal{
             if(this.id){
                 formData.id = this.id;
             }
-            webSkel.UtilsService.closeModal(_target, formData);
+            let resultObject = {};
+            Object.keys(formData.data).forEach(key=>{
+                resultObject[key]= formData.data[key];
+            });
+            webSkel.UtilsService.closeModal(_target, resultObject);
         }
     }
 }

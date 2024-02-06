@@ -1,11 +1,9 @@
 dialog{
     background: none;
     max-height: 95vh;
-    height: 95%;
     border-radius: 3px;
     width: 75%;
     max-width: 75vw;
-    margin-top: 200px;
 }
 data-diffs-modal{
     background-color: var(--diffs-background);
@@ -61,6 +59,7 @@ data-diffs-modal{
     border-top-right-radius: 7px;
 }
 .table{
+    overflow: scroll;
     width: 100%;
     border-radius: 7px;
     display: grid;
@@ -71,6 +70,7 @@ data-diffs-modal{
     margin-right: 16px;
 }
 .cell{
+    overflow-wrap: anywhere;
     background-color: white;
     padding: 16px 24px;
     border-bottom: 1px solid var(--very-light-grey);

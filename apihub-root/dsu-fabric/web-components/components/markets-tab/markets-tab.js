@@ -3,12 +3,15 @@ export class MarketsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.markets = JSON.parse(this.element.getAttribute("data-units")) || [];
+        this.markets = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
     }
     beforeRender(){
         let stringHTML = "";
         if(this.markets.length > 0){
             for(let market of this.markets){
+                if(market.action === "delete"){
+                    continue;
+                }
                 stringHTML+= `<div class="market-unit pointer" data-id="${market.id}" data-local-action="viewMarket">
                                 <div class="market-details">${market.country} - ${market.mah}</div>
                                     <div class="delete-button pointer" data-local-action="deleteMarket">

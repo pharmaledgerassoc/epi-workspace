@@ -75,13 +75,13 @@ export class AddEpiModal{
     }
 
     filesValidation(element, formData){
-        let acceptedFormats = ["text/xml", "image/jpg", "image/png", "image/gif", "image/bmp"];
+        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
         let filesArray = Array.from(element.files);
         if(!filesArray.some(file => file.type === "text/xml")){
             return false;
         }
         for(let file of filesArray){
-            if(acceptedFormats.includes(file.type)){
+            if(!acceptedFormats.includes(file.type)){
                 return false;
             }
         }
