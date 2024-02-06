@@ -1,4 +1,6 @@
 import bwipjs from "../helpers/bwip.js";
+//TODO: CODE-REVIEW - bwipjs is a helper or an external library/dependency??
+
 const TWO_D_BARCODES = ["datamatrix", "gs1datamatrix", "qrcode"];
 export class BatchesService{
     constructor() {
@@ -56,6 +58,7 @@ export class BatchesService{
             canvas.innerHTML = "";
 
             let tryToGenerateBarcode = () => {
+                //TODO: CODE-REVIEW - do we use typescript ??! in order to use @ts-ignore
                 // @ts-ignore
                 if (bwipjs) {
                     try {
