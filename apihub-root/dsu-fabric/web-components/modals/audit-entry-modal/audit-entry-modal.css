@@ -35,7 +35,6 @@ audit-entry-modal{
 }
 .expand-icon{
     margin-right: 20px;
-    transform: rotateZ(45deg);
 }
 .modal-body{
     background-color: var(--primary-text-color);

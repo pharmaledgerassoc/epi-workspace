@@ -29,7 +29,6 @@ data-diffs-modal{
 }
 .expand-icon{
     margin-right: 20px;
-    transform: rotateZ(45deg);
 }
 .modal-body{
     display: flex;
