@@ -28,7 +28,7 @@ export class LeafletsTab {
             stringHTML = `<div class="no-data">No leaflets added yet</div>`;
         }
 
-        this.leafletUnits = stringHTML;
+        this.epiUnits = stringHTML;
     }
     afterRender(){
 

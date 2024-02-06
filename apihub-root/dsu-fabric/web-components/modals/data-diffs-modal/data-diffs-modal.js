@@ -57,7 +57,7 @@ export class DataDiffsModal{
             this.element.style.marginLeft = "240px";
         }
     }
-    acceptChanges(){
+    acceptChanges(_target){
         webSkel.UtilsService.closeModal(_target, true);
     }
     viewEPI(id){

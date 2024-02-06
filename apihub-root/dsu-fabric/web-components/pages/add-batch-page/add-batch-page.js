@@ -5,7 +5,7 @@ export class AddBatchPage {
         this.invalidate(async () => {
             this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
         });
-        this.leafletUnits = [];
+        this.epiUnits = [];
         this.date={
             "year":undefined,
             "month":undefined,
@@ -110,9 +110,9 @@ export class AddBatchPage {
         }
     }
     updateLeaflet(modalData) {
-        let existingLeafletIndex = this.leafletUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
+        let existingLeafletIndex = this.epiUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
         if (existingLeafletIndex !== -1) {
-            this.leafletUnits[existingLeafletIndex] = modalData;
+            this.epiUnits[existingLeafletIndex] = modalData;
             console.log(`updated leaflet, language: ${modalData.data.language}`);
             return true;
         }
@@ -130,8 +130,8 @@ export class AddBatchPage {
     deleteLeaflet(_target) {
         let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");
-        this.leafletUnits = this.leafletUnits.filter(unit => unit.id !== id);
-        let tabInfo = this.leafletUnits.map((modalData) => {
+        this.epiUnits = this.epiUnits.filter(unit => unit.id !== id);
+        let tabInfo = this.epiUnits.map((modalData) => {
             return {
                 language: modalData.data.language,
                 filesCount: modalData.elements.leaflet.element.files.length,
@@ -145,9 +145,9 @@ export class AddBatchPage {
     async handleEPIModalData(data) {
         data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
         if (!this.updateLeaflet(data)) {
-            this.leafletUnits.push(data);
+            this.epiUnits.push(data);
         }
-        let tabInfo = this.leafletUnits.map((modalData) => {
+        let tabInfo = this.epiUnits.map((modalData) => {
             return {
                 language: modalData.data.language,
                 filesCount: modalData.elements.leaflet.element.files.length,

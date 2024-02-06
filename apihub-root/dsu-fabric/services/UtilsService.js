@@ -98,10 +98,10 @@ export class UtilsService{
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
-            let { leafletUnits, ...initialProductData } = initialProduct;
-            let { leafletUnits: updatedLeafletUnits, ...updatedProductData } = updatedProduct;
+            let { epiUnits, ...initialProductData } = initialProduct;
+            let { epiUnits: updatedLeafletUnits, ...updatedProductData } = updatedProduct;
             let diffs = this.getDiffsForAudit(initialProductData, updatedProductData);
-            let epiDiffs = this.getDiffsForAudit(initialProduct.leafletUnits, updatedProduct.leafletUnits);
+            let epiDiffs = this.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {
                     result.push(this.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
