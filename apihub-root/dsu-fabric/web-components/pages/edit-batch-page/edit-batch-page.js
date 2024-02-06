@@ -6,10 +6,26 @@ export class EditBatchPage {
         this.invalidate(async () => {
             this.batch = (await $$.promisify(webSkel.client.listBatches)(undefined)).find(batch => batch.pk === this.batchId);
             this.product = (await $$.promisify(webSkel.client.listProducts)(undefined)).find(product => product.productCode === this.batch.productCode);
-
         });
+        this.leafletUnits = [];
+        this.buttonStateMapping=Object.freeze({
+            DISABLED:"disabled",
+            ENABLED:""
+        })
+        this.updateButtonState=this.buttonStateMapping.DISABLED;
     }
 
+    changeUpdateButtonState(mode) {
+        if (mode in this.buttonStateMapping) {
+            this.updateButtonState = this.buttonStateMapping[mode];
+            const button=this.element.querySelector('#updateBatchButton');
+            if (this.updateButtonState === "disabled") {
+                button.setAttribute('disabled', true);
+            } else {
+                button.removeAttribute('disabled');
+            }
+        }
+    }
     getFormattedDate(dateObj,isDateFormatYYMMDD){
         if(isDateFormatYYMMDD){
             if(dateObj.day===undefined){
@@ -139,13 +155,27 @@ export class EditBatchPage {
     async navigateToBatchesPage() {
         await webSkel.changeToDynamicPage("batches-page", "batches-page");
     }
-    async updateBatch(){
 
-    }
     async showAddEPIModal() {
         let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", {presenter: "add-epi-modal"});
         /* if (modalData) {
              await this.handleEPIModalData(modalData);
          }*/
+    }
+    async updateBatch(){
+        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
+        let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
+        let confirmation = await webSkel.UtilsService.showModalForm(
+            document.querySelector("body"),
+            "data-diffs-modal",
+            { presenter: "data-diffs-modal", diffs: encodeDiffs});
+
+        this.batch.packagingSiteName=formData.data.packagingSite;
+        let gtin=this.batch.productCode;
+        let batchNumber=this.batch.batch;
+        let batchDetails={}
+        await $$.promisify(webSkel.client.updateBatch)(gtin, batchNumber, batchDetails);
+        await webSkel.changeToDynamicPage("batches-page", "batches-page");
     }
 }

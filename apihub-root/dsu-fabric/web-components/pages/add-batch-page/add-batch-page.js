@@ -42,7 +42,9 @@ export class AddBatchPage {
             inventedNameField.value = productName;
             placeholderOption.disabled = true;
         });
+
         this.element.querySelector('#enable-day-checkbox').addEventListener('change', () => {
+            debugger;
             let container = this.element.querySelector('#custom-date-icon');
 
             let svg1 = container.querySelector('#svg1');
@@ -71,7 +73,8 @@ export class AddBatchPage {
                 this.updateDate(e.target.value,this.date,this.isDateFormatDDMMYYYY);
             })
             newInput.classList.add('pointer');
-
+            newInput.classList.add('date-format-remover');
+            newInput.classList.add('form-control');
             if (checkbox.checked) {
                 this.isDateFormatDDMMYYYY = true;
                 newInput.setAttribute('type', 'date');
@@ -84,30 +87,37 @@ export class AddBatchPage {
             }
             newInput.value=this.getFormattedDate(this.date,this.isDateFormatDDMMYYYY);
             container.replaceChild(newInput, oldInput);
+            this.updateDate(newInput.value,this.date,this.isDateFormatDDMMYYYY)
         });
+    }
+    getLastDayOfMonth(year,month){
+        return new Date(year, month + 1, 0).getDate();
     }
     getFormattedDate(dateObj,isDateFormatYYMMDD){
         if(isDateFormatYYMMDD){
             if(dateObj.day===undefined){
-                dateObj.day="01";
+                dateObj.day=this.getLastDayOfMonth(dateObj.year,dateObj.month);
             }
-            return `20${dateObj.year}-${dateObj.month}-${dateObj.day}`
+            return `${dateObj.year}-${dateObj.month}-${dateObj.day}`
         }else{
-            return `20${dateObj.year}-${dateObj.month}`
+            return `${dateObj.year}-${dateObj.month}`
         }
     }
     updateDate(value,dateRef,isDateFormatYYMMDD){
-        debugger;
         const parseData=(dateString)=> {
             const parsedData = dateString.split('-');
-            parsedData[0]=parsedData[0].slice(2);
             return parsedData;
         }
+        let dateString="";
         if(isDateFormatYYMMDD){
             [dateRef.year,dateRef.month,dateRef.day]=parseData(value);
+           dateString=[dateRef.day,dateRef.month,dateRef.year].join('-')
         }else{
             [dateRef.year,dateRef.month]=parseData(value);
+            dateString=[dateRef.month,dateRef.year].join('-')
         }
+        const dateInput= this.element.querySelector('#date');
+        dateInput.setAttribute('data-date',dateString);
     }
     updateLeaflet(modalData) {
         let existingLeafletIndex = this.epiUnits.findIndex(leaflet => leaflet.data.language === modalData.data.language);
@@ -162,6 +172,20 @@ export class AddBatchPage {
     }
 
     async saveBatch() {
+        const validateBatch= (batchObj)=>{
+            if (!batchObj.batchNumber) {
+                return 'Batch number is mandatory field';
+            }
+
+            if (!/^[A-Za-z0-9]{1,20}$/.test(batchObj.batchNumber)) {
+                return 'Batch number can contain only alphanumeric characters and a maximum length of 20';
+            }
+
+            if (!batchObj.expiryForDisplay) {
+                return 'Expiration date is a mandatory field.';
+            }
+            return undefined;
+        }
         let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
         const gtin = formData.data.batch;
         const batchNumber = "B116"
@@ -173,6 +197,7 @@ export class AddBatchPage {
         } else {
             formattedDate = parts[0].slice(2) + parts[1];
         }
+        /* TODO remove hardcoded values */
         const batchDetails = {
             "messageType": "Batch",
             "messageTypeVersion": this.batchVersion || 1,
