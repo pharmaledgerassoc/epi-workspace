@@ -95,27 +95,5 @@ export class UtilsService{
             "dataType": "epi"
         }
     }
-    getProductDiffs(initialProduct, updatedProduct) {
-        let result = [];
-        try {
-            let { epiUnits, ...initialProductData } = initialProduct;
-            let { epiUnits: updatedLeafletUnits, ...updatedProductData } = updatedProduct;
-            let diffs = this.getDiffsForAudit(initialProductData, updatedProductData);
-            let epiDiffs = this.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
-            Object.keys(diffs).forEach(key => {
-                if (key === "photo") {
-                    result.push(this.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
-                    return;
-                }
-                result.push(this.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
-            });
-            Object.keys(epiDiffs).forEach(key => {
-                result.push(this.getEpiDiffViewObj(epiDiffs[key]));
-            });
 
-        } catch (e) {
-            console.log(e);
-        }
-        return result;
-    }
 }

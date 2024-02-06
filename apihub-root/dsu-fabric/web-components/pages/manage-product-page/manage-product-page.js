@@ -66,7 +66,7 @@ export class ManageProductPage{
     }
     beforeRender(){
         let tabInfo = this.productData.epiUnits.map((modalData)=>{
-            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
+            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id, action:modalData.action};
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
@@ -225,13 +225,7 @@ export class ManageProductPage{
         if(!this.updateLeaflet(data)) {
             this.productData.epiUnits.push(data);
         }
-        let tabInfo = this.productData.epiUnits.map((modalData)=>{
-            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
-        });
-        let container = this.element.querySelector(".leaflet-market-management");
-        container.querySelector(".inner-tab").remove();
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
-        container.insertAdjacentHTML("beforeend", this.leafletTab);
+        this.selected = "leaflet";
         this.invalidate(this.saveInputs.bind(this));
     }
     updateMarket(modalData){
@@ -298,7 +292,7 @@ export class ManageProductPage{
         }
     }
     async updateProduct(){
-        let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
+        let diffs = webSkel.servicesRegistry.ProductsService.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
         let confirmation = await webSkel.UtilsService.showModalForm(
             document.querySelector("body"),
@@ -306,6 +300,8 @@ export class ManageProductPage{
             { presenter: "data-diffs-modal", diffs: encodeDiffs});
         if(confirmation){
             await webSkel.servicesRegistry.ProductsService.updateProduct(this.productData, this.existingProduct.epiUnits);
+            this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
+            await this.navigateToProductsPage();
         }
         //else cancel button pressed
     }
@@ -324,11 +320,9 @@ export class ManageProductPage{
     deleteLeaflet(_target){
         let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");
-        this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);
-        let tabInfo = this.productData.epiUnits.map((modalData)=>{
-            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id};
-        });
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units=${JSON.stringify(tabInfo)}></leaflets-tab>`;
+        let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
+        epiUnit.action = "delete";
+        //this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);
         this.invalidate();
     }
     deleteMarket(_target){

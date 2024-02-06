@@ -3,16 +3,19 @@ export class LeafletsTab {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate();
-        this.leaflets = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
+        this.epis = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
     }
     beforeRender(){
         let stringHTML = "";
-        if(this.leaflets.length > 0){
-            for(let leaflet of this.leaflets){
-                stringHTML+= `<div class="leaflet-unit" data-id="${leaflet.id}">
+        if(this.epis.length > 0){
+            for(let epi of this.epis){
+                if(epi.action === "delete"){
+                    continue;
+                }
+                stringHTML+= `<div class="leaflet-unit" data-id="${epi.id}">
                             <div class="leaflet-details">
-                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(leaflet.language)} Leaflet</div>
-                                <div class="leaflet-files">${leaflet.filesCount} files</div>
+                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(epi.language)} Leaflet</div>
+                                <div class="leaflet-files">${epi.filesCount} files</div>
                             </div>
                             <div class="leaflet-buttons">
                             <div class="leaflet-button pointer" data-local-action="deleteLeaflet">
