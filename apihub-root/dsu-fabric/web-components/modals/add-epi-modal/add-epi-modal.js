@@ -60,7 +60,7 @@ export class AddEpiModal{
         inputFile.click();
     }
     removeFile(_target){
-        let inputFile = this.element.querySelector("#leaflet");
+        let inputFile = this.element.querySelector("#leafletFiles");
         let fileName = _target.getAttribute("data-name");
         let filteredFiles= Array.from(inputFile.files).filter(file => file.name !== fileName);
         let dataTransfer = new DataTransfer();
@@ -74,8 +74,23 @@ export class AddEpiModal{
         item.remove();
     }
 
+    filesValidation(element, formData){
+        let acceptedFormats = ["text/xml", "image/jpg", "image/png", "image/gif", "image/bmp"];
+        let filesArray = Array.from(element.files);
+        if(!filesArray.some(file => file.type === "text/xml")){
+            return false;
+        }
+        for(let file of filesArray){
+            if(acceptedFormats.includes(file.type)){
+                return false;
+            }
+        }
+        return true;
+    }
     async addEPI(_target){
-        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        const filesErrorMessage = "Attention: uploaded files format is not supported. To proceed successfully verify that you have an XML file and your XML file adheres to the prescribed format and structure. To obtain the correct XML specifications we recommend consulting our documentation. Thank you!  "
+        const conditions = {"filesValidation": {fn:this.filesValidation, errorMessage:filesErrorMessage} };
+        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"), conditions);
         let resultObject = {};
         Object.keys(formData.data).forEach(key=>{
           resultObject[key]= formData.data[key];

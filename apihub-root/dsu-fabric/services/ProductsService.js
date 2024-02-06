@@ -48,7 +48,7 @@ export class ProductsService{
     async uploadLeafletFiles(epi){
         epi.otherFilesContent = [];
         for(let file of epi.leafletFiles){
-            if(file.webkitRelativePath.endsWith(".xml")){
+            if(file.type === "text/xml"){
                 epi.xmlFileContent = await webSkel.UtilsService.uploadFileAsText(file);
             }else {
                 epi.otherFilesContent.push(await webSkel.UtilsService.imageUpload(file));
@@ -66,6 +66,7 @@ export class ProductsService{
             await $$.promisify(webSkel.client.addProductImage)(productData.productCode, this.details);
         }
         for(let epi of productData.epiUnits){
+            await this.uploadLeafletFiles(epi);
             this.createLeafletPayload(epi, productData);
             this.details.messageType = epi.type;
             await $$.promisify(webSkel.client.addEPI)(productData.productCode, this.details);

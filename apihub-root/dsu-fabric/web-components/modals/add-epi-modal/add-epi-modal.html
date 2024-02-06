@@ -8,7 +8,7 @@
 <div class="modal-body">
     <form class="add-epi-form">
         <div class="form-item">
-            <label class="form-label" for="language" style="display: none"></label>
+            <label class="form-label hidden" for="language"></label>
             <select class="form-input first" id="language" name="language" required>
                 $$languageOptions
             </select>
@@ -20,10 +20,10 @@
                 <option id="smpc" value="SMPC" disabled>SMPC</option>
             </select>
         </div>
-        <div class="input-file-container">
+        <div class="input-file-container" data-id="leafletFiles">
             <button class="default-button" data-local-action="uploadFiles">Upload Files</button>
-            <label class="form-label" for="leafletFiles" style="display: none"></label>
-            <input class="hidden" type="file" multiple webkitdirectory id="leafletFiles" name="leafletFiles" required>
+            <label class="form-label hidden" for="leafletFiles"></label>
+            <input class="transparent" type="file" multiple webkitdirectory id="leafletFiles" name="leafletFiles" required data-condition="filesValidation">
             <div class="files-table"></div>
         </div>
     </form>

@@ -183,3 +183,10 @@ pre code {
     background-color: white;
     mask-repeat: no-repeat;
 }
+.input-invalid {
+    border: 1px solid red !important;
+    border-radius: 8px !important;
+}
+.transparent{
+    opacity: 0;
+}
