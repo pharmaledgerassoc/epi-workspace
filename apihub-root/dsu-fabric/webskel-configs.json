@@ -61,6 +61,11 @@
       "className": "HomePage"
     },
     {
+      "name": "manage-batch-page",
+      "path": "./web-components/pages/manage-batch-page/manage-batch-page.js",
+      "className": "ManageBatchPage"
+    },
+    {
       "name": "left-sidebar",
       "path": "./web-components/components/left-sidebar/left-sidebar.js",
       "className": "LeftSidebar"
@@ -207,6 +212,13 @@
       "path": "./web-components/pages/manage-product-page/manage-product-page.html",
       "cssPaths": [
         "./web-components/pages/manage-product-page/manage-product-page.css"
+      ]
+    },
+    {
+      "name": "manage-batch-page",
+      "path": "./web-components/pages/manage-batch-page/manage-batch-page.html",
+      "cssPaths": [
+        "./web-components/pages/manage-batch-page/manage-batch-page.css"
       ]
     },
     {
