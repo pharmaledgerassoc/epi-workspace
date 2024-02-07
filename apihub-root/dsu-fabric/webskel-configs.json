@@ -62,7 +62,7 @@
     },
     {
       "name": "manage-batch-page",
-      "path": "pages",
+      "type": "pages",
       "presenterClassName": "ManageBatchPage"
     },
     {
