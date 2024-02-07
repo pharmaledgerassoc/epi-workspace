@@ -17,11 +17,11 @@ export class AddEpiModal{
 
     }
     closeModal(_target) {
-        webSkel.UtilsService.closeModal(_target);
+        webSkel.closeModal(_target);
     }
 
     switchModalView(){
-        let modal = webSkel.UtilsService.getClosestParentElement(this.element,"dialog");
+        let modal = webSkel.getClosestParentElement(this.element,"dialog");
         if(!modal.getAttribute("data-expanded")){
             modal.setAttribute("data-expanded", "true")
             modal.style.width = "95%";
@@ -70,7 +70,7 @@ export class AddEpiModal{
         });
 
         inputFile.files = dataTransfer.files;
-        let item = webSkel.UtilsService.getClosestParentElement(_target, ".file-item");
+        let item = webSkel.getClosestParentElement(_target, ".file-item");
         item.remove();
     }
 
@@ -90,14 +90,20 @@ export class AddEpiModal{
     async addEPI(_target){
         const filesErrorMessage = "Attention: uploaded files format is not supported. To proceed successfully verify that you have an XML file and your XML file adheres to the prescribed format and structure. To obtain the correct XML specifications we recommend consulting our documentation. Thank you!  "
         const conditions = {"filesValidation": {fn:this.filesValidation, errorMessage:filesErrorMessage} };
-        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"), conditions);
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
         let resultObject = {};
         Object.keys(formData.data).forEach(key=>{
           resultObject[key]= formData.data[key];
         });
         resultObject.filesCount = resultObject.leafletFiles.length;
+        // resultObject.otherFilesContent =
+        // for(let file of resultObject.leafletFiles){
+        //     if(file.type === "text/xml"){
+        //         resultObject.xmlFileContent = file;
+        //     }
+        // }
         if(formData.isValid){
-            webSkel.UtilsService.closeModal(_target, resultObject);
+            webSkel.closeModal(_target, resultObject);
         }
     }
 }

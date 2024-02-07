@@ -75,7 +75,7 @@ dialog::backdrop {
     cursor: pointer;
 }
 
-.spinner {
+.spinner-default-style {
     outline: none;
     background: none;
     position: absolute;

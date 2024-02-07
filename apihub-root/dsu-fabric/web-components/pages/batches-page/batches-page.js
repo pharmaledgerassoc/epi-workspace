@@ -116,7 +116,7 @@ export class BatchesPage {
     async searchBatch(event) {
         if (event.key === "Enter") {
             event.preventDefault();
-            let formData = await webSkel.UtilsService.extractFormInformation(this.searchInput);
+            let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
                 let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${this.inputValue}`]);
@@ -152,9 +152,6 @@ export class BatchesPage {
     }
 
     async openDataMatrixModal(_target, productCode) {
-        await webSkel.UtilsService.showModal(document.querySelector("body"), "data-matrix-modal", {
-            presenter: "data-matrix-modal",
-            ["product-code"]: productCode
-        });
+        await webSkel.showModal("data-matrix-modal", {presenter: "data-matrix-modal", ["product-code"]: productCode});
     }
 }

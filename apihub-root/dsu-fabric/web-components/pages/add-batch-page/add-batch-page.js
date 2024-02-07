@@ -131,7 +131,7 @@ export class AddBatchPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", {presenter: "add-epi-modal"});
+        let modalData = await webSkel.showModal("add-epi-modal", {presenter: "add-epi-modal"});
         debugger
         if (modalData) {
             await this.handleEPIModalData(modalData);
@@ -139,7 +139,7 @@ export class AddBatchPage {
     }
 
     deleteLeaflet(_target) {
-        let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
+        let leafletUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");
         this.epiUnits = this.epiUnits.filter(unit => unit.id !== id);
         let tabInfo = this.epiUnits.map((modalData) => {
@@ -187,7 +187,7 @@ export class AddBatchPage {
             }
             return undefined;
         }
-        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         const gtin = formData.data.batch;
         const batchNumber = "B116"
         const parts = formData.data.date.split('-');

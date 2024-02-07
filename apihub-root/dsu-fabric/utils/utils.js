@@ -51,7 +51,7 @@ function changeSelectedPageFromSidebar(url) {
 
 function showError(title, message, technical) {
   window.showApplicationError = async () => {
-    await showModal(webSkel._appContent, "show-error-modal", {
+    await showModal("show-error-modal", {
       presenter: "show-error-modal",
       title: title,
       message: message,
@@ -62,7 +62,7 @@ function showError(title, message, technical) {
 
 function showNotification(type, message) {
   window.showApplicationError = async () => {
-    await showModal(webSkel._appContent, "show-error-modal", {
+    await showModal("show-error-modal", {
       presenter: "show-error-modal",
       title: type,
       message: message,

@@ -157,19 +157,16 @@ export class EditBatchPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", {presenter: "add-epi-modal"});
+        let modalData = await webSkel.showModal("add-epi-modal", {presenter: "add-epi-modal"});
         /* if (modalData) {
              await this.handleEPIModalData(modalData);
          }*/
     }
     async updateBatch(){
-        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-        let confirmation = await webSkel.UtilsService.showModalForm(
-            document.querySelector("body"),
-            "data-diffs-modal",
-            { presenter: "data-diffs-modal", diffs: encodeDiffs});
+        let confirmation = await webSkel.showModal("data-diffs-modal", { presenter: "data-diffs-modal", diffs: encodeDiffs});
 
         this.batch.packagingSiteName=formData.data.packagingSite;
         let gtin=this.batch.productCode;

@@ -41,10 +41,10 @@ export class DataDiffsModal{
     afterRender(){
     }
     closeModal(_target) {
-        webSkel.UtilsService.closeModal(_target);
+        webSkel.closeModal(_target);
     }
     switchModalView(){
-        let modal = webSkel.UtilsService.getClosestParentElement(this.element,"dialog");
+        let modal = webSkel.getClosestParentElement(this.element,"dialog");
         if(!modal.getAttribute("data-expanded")){
             modal.setAttribute("data-expanded", "true")
             modal.style.width = "95%";
@@ -58,7 +58,7 @@ export class DataDiffsModal{
         }
     }
     acceptChanges(_target){
-        webSkel.UtilsService.closeModal(_target, true);
+        webSkel.closeModal(_target, true);
     }
     viewEPI(id){
         console.log("to be done");
