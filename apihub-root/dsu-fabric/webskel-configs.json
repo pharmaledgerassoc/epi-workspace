@@ -61,6 +61,11 @@
       "presenterClassName": "HomePage"
     },
     {
+      "name": "manage-batch-page",
+      "path": "pages",
+      "presenterClassName": "ManageBatchPage"
+    },
+    {
       "name": "left-sidebar",
       "type": "components",
       "presenterClassName": "LeftSidebar"
