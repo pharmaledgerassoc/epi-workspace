@@ -72,7 +72,6 @@ export class ManageProductPage{
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
-        //todo: CODE-REVIEW - why do we create UI parts that are disabled? it has a topic/decision on this?
         let marketsInfo = this.productData.marketUnits.map((modalData)=>{
             return {country:modalData.country, mah: modalData.mah, id:modalData.id, action:modalData.action};
         });

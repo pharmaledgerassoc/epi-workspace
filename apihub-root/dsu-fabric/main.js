@@ -1,6 +1,7 @@
 import {getUserDetails, loadPage, navigateToPage, setupGlobalErrorHandlers, showError} from "./utils/utils.js";
 import {getPermissionsWatcher} from "./services/PermissionsWatcher.js";
 import env from "./environment.js";
+import WebSkel from "./WebSkel/webSkel.js";
 import {
     gtin,
     gtin2,
@@ -73,8 +74,7 @@ const callMockClient = async () => {
     await $$.promisify(webSkel.client.addAuditLog)(actionLog2);
 
 }
-//todo: CODE-REVIEW - all the dynamic imports should be at the top of the script file
-import WebSkel from "./WebSkel/webSkel.js";
+
 
 window.webSkel = new WebSkel();
 window.mainContent = document.querySelector("#app-wrapper");
@@ -186,6 +186,7 @@ function defineActions() {
     });
 }
 
+//TODO: move loadConfig function to webSkel
 async function loadConfigs(jsonPath) {
     try {
         const response = await fetch(jsonPath);
