@@ -1,3 +1,4 @@
+//TODO: CODE-REVIEW - extract to a separate component the date input/picker
 export class AddBatchPage {
     constructor(element, invalidate) {
         this.element = element;
