@@ -74,7 +74,7 @@ manage-product-page {
 #productCode{
     margin: 10px 0;
 }
-.product-description {
+.medicinal-product-name-input {
     height: 170px;
     resize: none;
     margin-top: 6px;

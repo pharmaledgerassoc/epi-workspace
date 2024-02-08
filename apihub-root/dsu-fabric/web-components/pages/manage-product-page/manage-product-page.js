@@ -1,4 +1,4 @@
-import {createObservableObject} from "../../../utils/utils.js";
+import {createObservableObject, getTextDirection} from "../../../utils/utils.js";
 
 export class ManageProductPage{
     constructor(element,invalidate){
@@ -25,7 +25,8 @@ export class ManageProductPage{
                         let leafletObj = {
                             id: webSkel.servicesRegistry.UtilsService.generateID(16),
                             language: leafletPayload.language,
-                            leafletFiles: leafletFiles,
+                            xmlFileContent: leafletPayload.xmlFileContent,
+                            otherFilesContent: leafletPayload.otherFilesContent,
                             filesCount: leafletFiles.length,
                             type: leafletPayload.type
                         };
@@ -296,9 +297,25 @@ export class ManageProductPage{
       return l_unit;
     }
 
-    async viewLeaflet(_target){
-       let leafletDataObj = this.getLeafletUnit(_target);
+    async viewLeaflet(_target) {
+      let leafletDataObj = this.getPreviewModel(this.getLeafletUnit(_target));
+
+      await webSkel.showModal("preview-epi-modal",
+        {presenter: "preview-epi-modal", epidata: encodeURIComponent(JSON.stringify(leafletDataObj))});
     }
+
+    getPreviewModel(epiObject) {
+        let previewModalTitle = `Preview ${gtinResolver.Languages.getLanguageName(epiObject.language)} ${epiObject.type}`;
+        let textDirection = getTextDirection(epiObject.language)
+        return {
+            previewModalTitle,
+            "xmlFileContent": epiObject.xmlFileContent,
+            "otherFilesContent": epiObject.otherFilesContent,
+            "productName": this.productData.inventedName,
+            "productDescription": this.productData.nameMedicinalProduct,
+            textDirection
+        };
+      }
 
     deleteLeaflet(_target){
         let leafletUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");

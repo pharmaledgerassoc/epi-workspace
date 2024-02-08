@@ -1,0 +1,148 @@
+@import "prerequisites.css";
+
+.product-name {
+    font-size: var(--font-size--XL);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+/*.product-description {
+    font-size: var(--font-size--L);
+}*/
+
+#leaflet-content {
+    text-align: start;
+}
+
+#leaflet-content,
+#leaflet-content p,
+#leaflet-content h4 {
+    font-size: var(--font-size--basic);
+}
+
+#leaflet-content .select-lang-text {
+    padding: 35px;
+}
+
+#leaflet-content .languages-list li {
+    text-underline-position: under;
+    text-decoration: underline;
+    padding: 0px 0px 55px 0px;
+    color: blue;
+}
+
+#leaflet-content h2 {
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.leaflet-content-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#leaflet-content table {
+    display: block;
+    overflow-x: auto;
+}
+
+/* Force hidden content for images because xslt rule not working for safari < 16. */
+#leaflet-content figure *:not(img) {
+    display: none;
+}
+
+#leaflet-content img {
+    min-width: 100%;
+    min-width: -moz-available; /* WebKit-based browsers will ignore this. */
+    min-width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    min-width: fill-available;
+}
+
+.leaflet-link {
+    color: #4f4edf;;
+    text-decoration: underline;
+}
+
+
+.leaflet-accordion-item {
+    padding: 0px 3%;
+    border-bottom: 0.5px solid #E5EAEB;
+    line-height: 1.2;
+}
+
+.leaflet-accordion-item h2 {
+    margin-block-end: 0;
+    margin-block-start: 0;
+    padding: 0.7em 0 0.9em;
+}
+
+.leaflet-accordion-item-content {
+    display: none;
+    margin-right: 5px;
+    height: fit-content;
+}
+
+.leaflet-accordion-item.active .leaflet-accordion-item-content {
+    height: fit-content;
+    display: block;
+    position: relative;
+    font-style: normal;
+    font-weight: 400;
+    overflow-x: auto;
+}
+
+.leaflet-accordion-item:before {
+    content: "";
+    visibility: visible;
+    position: relative;
+    float: right;
+    background-image: url(./assets/images/accordion-open.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 24px;
+    height: 24px;
+    margin-left: 5px;
+    margin-block-end: 0;
+    margin-block-start: 0;
+}
+
+.leaflet-accordion-item.active:before {
+    background-image: url("./assets/images/accordion-close.svg");
+}
+
+.leaflet-accordion-item table,
+.leaflet-accordion-item table td,
+.leaflet-accordion-item table th {
+    border: 1px solid;
+    border-collapse: collapse;
+    font-size: inherit;
+
+}
+
+.leaflet-accordion-item td, th {
+    padding: 5px;
+    width: auto;
+    height: 100%;
+}
+
+*[dir="RTL"] .leaflet-page .page-content {
+    text-align: right;
+}
+
+#leaflet-content[dir="RTL"] .leaflet-accordion-item:before {
+    float: left;
+    background-position: bottom;
+    top: 2px;
+    display: block;
+}
+
+#leaflet-content[dir="RTL"] #leaflet-content h2 {
+    margin-right: unset;
+    margin-block-start: unset;
+    padding-left: 10%;
+}
+

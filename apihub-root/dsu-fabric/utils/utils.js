@@ -119,6 +119,19 @@ function copyToClipboard(text) {
     });
   }
 }
+
+
+//other rtl language codes to be used for later:  "arc", "arz", "ckb", "dv", "fa", "ha", "he", "khw", "ks", "ps", "sd", "ur", "uz_AF", "yi"
+let rtlLangCodes = ["ar", "he"];
+
+function getTextDirection(lang) {
+  let textDirection = "LTR";
+  if (rtlLangCodes.find((rtlLAng) => rtlLAng === lang)) {
+    textDirection = "RTL"
+  }
+  return textDirection;
+}
+
 export {
   createObservableObject,
   loadPage,
@@ -130,5 +143,6 @@ export {
   setupGlobalErrorHandlers,
   navigateToPage,
   copyToClipboard,
-  isCopyToClipboardSupported
+  isCopyToClipboardSupported,
+  getTextDirection
 }
