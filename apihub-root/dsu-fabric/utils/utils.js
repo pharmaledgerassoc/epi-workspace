@@ -52,7 +52,6 @@ function changeSelectedPageFromSidebar(url) {
 function showError(title, message, technical) {
   window.showApplicationError = async () => {
     await showModal("show-error-modal", {
-      presenter: "show-error-modal",
       title: title,
       message: message,
       technical: technical
@@ -63,7 +62,6 @@ function showError(title, message, technical) {
 function showNotification(type, message) {
   window.showApplicationError = async () => {
     await showModal("show-error-modal", {
-      presenter: "show-error-modal",
       title: type,
       message: message,
       technical: ""

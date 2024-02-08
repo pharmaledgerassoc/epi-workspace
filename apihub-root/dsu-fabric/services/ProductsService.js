@@ -102,24 +102,37 @@ export class ProductsService{
                 }
             }
         }
-        // for(let epi of existingEpiUnits){
-        //     let language;
-        //     if(!productData.epiUnits.some(obj => {
-        //         language = obj.language;
-        //         return obj.language === epi.language
-        //     })){
-        //         await $$.promisify(webSkel.client.deleteEPI)(productData.productCode, language);
-        //     }
-        // }
+    }
+    getMarketDiffViewObj(marketDiffObj) {
+        let newValueCountry = "";
+        if(marketDiffObj.newValue){
+            newValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.newValue.country);
+        }
+        let oldValueCountry = "";
+        if(marketDiffObj.oldValue){
+            oldValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.oldValue.country);
+        }
+
+        let changedProperty = marketDiffObj.newValue ? `${newValueCountry}  Market` : `${oldValueCountry}  Market`
+        return {
+            "changedProperty": changedProperty,
+            "oldValue": {"value": marketDiffObj.oldValue || "-", "directDisplay": !!!marketDiffObj.oldValue},
+            "newValue": {
+                "value": marketDiffObj.newValue && marketDiffObj.newValue.action !== "delete" ? marketDiffObj.newValue : "-",
+                "directDisplay": !!!marketDiffObj.newValue || marketDiffObj.newValue.action === "delete"
+            },
+            "dataType": "market"
+        }
     }
 
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
-            let { epiUnits, ...initialProductData } = initialProduct;
-            let { epiUnits: updatedLeafletUnits, ...updatedProductData } = updatedProduct;
+            let { epiUnits, marketUnits, ...initialProductData } = initialProduct;
+            let { epiUnits: updatedLeafletUnits, marketUnits: updatedMarketUnits, ...updatedProductData } = updatedProduct;
             let diffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProductData, updatedProductData);
             let epiDiffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
+            let marketDiffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {
                     result.push(webSkel.servicesRegistry.UtilsService.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
@@ -129,6 +142,9 @@ export class ProductsService{
             });
             Object.keys(epiDiffs).forEach(key => {
                 result.push(webSkel.servicesRegistry.UtilsService.getEpiDiffViewObj(epiDiffs[key]));
+            });
+            Object.keys(marketDiffs).forEach(key => {
+                result.push(this.getMarketDiffViewObj(marketDiffs[key]));
             });
 
         } catch (e) {

@@ -120,7 +120,7 @@ export class ActionLogs {
     }
     async openAuditEntryModal(_target){
         let pk = _target.getAttribute("data-pk");
-       await webSkel.showModal("audit-entry-modal", { presenter: "audit-entry-modal", "pk": pk});
+       await webSkel.showModal("audit-entry-modal", {"pk": pk});
     }
     async downloadCSV(){
         let csvData = webSkel.servicesRegistry.AuditService.convertToCSV(this.logs);

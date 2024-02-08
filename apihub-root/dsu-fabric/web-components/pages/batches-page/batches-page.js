@@ -152,6 +152,6 @@ export class BatchesPage {
     }
 
     async openDataMatrixModal(_target, productCode) {
-        await webSkel.showModal("data-matrix-modal", {presenter: "data-matrix-modal", ["product-code"]: productCode});
+        await webSkel.showModal("data-matrix-modal", {["product-code"]: productCode});
     }
 }

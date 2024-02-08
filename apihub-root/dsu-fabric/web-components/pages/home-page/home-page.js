@@ -21,11 +21,11 @@ export class HomePage {
   }
 
   async showEpiModal() {
-    await webSkel.showModal("add-epi-modal", {presenter: "add-epi-modal"});
+    await webSkel.showModal("add-epi-modal");
   }
 
   async showMarketplaceModal() {
-    await webSkel.showModal("markets-management-modal", {presenter: "markets-management-modal"});
+    await webSkel.showModal("markets-management-modal");
   }
 
 }

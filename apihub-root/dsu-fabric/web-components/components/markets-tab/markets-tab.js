@@ -7,7 +7,7 @@ export class MarketsTab {
     }
     beforeRender(){
         let stringHTML = "";
-        if(this.markets.length > 0){
+        if(this.markets.length > 0 && !this.markets.every(market => market.action === "delete")){
             for(let market of this.markets){
                 if(market.action === "delete"){
                     continue;

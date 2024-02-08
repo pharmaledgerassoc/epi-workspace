@@ -7,7 +7,7 @@ export class LeafletsTab {
     }
     beforeRender(){
         let stringHTML = "";
-        if(this.epis.length > 0){
+        if(this.epis.length > 0 && !this.epis.every(epi => epi.action === "delete")){
             for(let epi of this.epis){
                 if(epi.action === "delete"){
                     continue;

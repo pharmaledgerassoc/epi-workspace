@@ -55,13 +55,13 @@ export class MarketsManagementModal{
     async addMarketplace(_target){
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         if(formData.isValid){
-            if(this.id){
-                formData.id = this.id;
-            }
             let resultObject = {};
             Object.keys(formData.data).forEach(key=>{
                 resultObject[key]= formData.data[key];
             });
+            if(this.id){
+                resultObject.id = this.id;
+            }
             webSkel.closeModal(_target, resultObject);
         }
     }

@@ -82,8 +82,14 @@ export class UtilsService{
         }
     }
     getEpiDiffViewObj(epiDiffObj) {
-        let newValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
-        let oldValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
+        let newValueLanguage = "";
+        if(epiDiffObj.newValue){
+            newValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
+        }
+        let oldValueLanguage = "";
+        if(epiDiffObj.oldValue){
+            oldValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.oldValue.language);
+        }
         let changedProperty = epiDiffObj.newValue ? `${newValueLanguage}  ${epiDiffObj.newValue.type}` : `${oldValueLanguage}  ${epiDiffObj.oldValue.type}`
         return {
             "changedProperty": changedProperty,

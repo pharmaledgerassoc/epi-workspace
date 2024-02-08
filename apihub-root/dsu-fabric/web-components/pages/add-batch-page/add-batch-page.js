@@ -131,7 +131,7 @@ export class AddBatchPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.showModal("add-epi-modal", {presenter: "add-epi-modal"});
+        let modalData = await webSkel.showModal("add-epi-modal");
         debugger
         if (modalData) {
             await this.handleEPIModalData(modalData);
