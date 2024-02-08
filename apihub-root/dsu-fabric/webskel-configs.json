@@ -3,7 +3,7 @@
     {
       "name": "preview-epi-modal",
       "type": "modals",
-      "className": "PreviewEpiController"
+      "presenterClassName": "PreviewEpiModal"
     },
     {
       "name": "data-diffs-modal",
