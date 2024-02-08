@@ -65,6 +65,6 @@ webSkel.notificationHandler = openDSU.loadAPI("error");
     await initMockData();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
 
-    await navigateToPage("landing-page", {["source-page"]: window.location.hash});
+    await navigateToPage("landing-page", {["source-page"]: window.location.hash || "#home-page"});
     window.addEventListener('beforeunload', saveCurrentState);
 })();

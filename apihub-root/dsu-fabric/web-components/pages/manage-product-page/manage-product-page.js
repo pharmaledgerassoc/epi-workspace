@@ -1,81 +1,43 @@
 import {createObservableObject, getTextDirection} from "../../../utils/utils.js";
+import {
+    getProductData,
+    createNewState,
+    removeMarkedForDeletion,
+    productInputFieldNames
+} from "./manage-product-utils.js";
 
 export class ManageProductPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        let productCode = window.location.hash.split("/")[1];
-        //todo: CODE-REVIEW - why do need to manage already existing dom elements name from controller and why don't use camelcase or other convention that doesn't use space character?!
+        this.invalidate(async () => {
+            this.initModel()
+        });
+    }
+
+    async initModel() {
+        let params = webSkel.getHashParams();
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
-        this.productData = {};
-        if (productCode) {
-            this.invalidate(async () => {
-                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${productCode}`]);
-                let product = products[0];
-                delete product.pk;
-                delete product.__version;
-                delete product.__timestamp;
-                let epiUnits = [];
-                let languages = await $$.promisify(webSkel.client.listProductsLangs)(product.productCode);
-                if (languages && languages.length > 0) {
-                    for (let i = 0; i < languages.length; i++) {
-                        let leafletPayload = await $$.promisify(webSkel.client.getEPI)(product.productCode, languages[i]);
-                        let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
-                        let leafletObj = {
-                            id: webSkel.appServices.generateID(16),
-                            language: leafletPayload.language,
-                            xmlFileContent: leafletPayload.xmlFileContent,
-                            otherFilesContent: leafletPayload.otherFilesContent,
-                            filesCount: leafletFiles.length,
-                            type: leafletPayload.type
-                        };
-                        epiUnits.push(leafletObj);
-                    }
-                }
-                let result = await $$.promisify(webSkel.client.getProductPhoto)(product.productCode);
-                this.saveInitialState(product, result.imageData, epiUnits, []);
-                this.createNewState(product, result.imageData, epiUnits, true, []);
-                this.buttonName = "Update Product";
-                this.operationFnName = "updateProduct";
-            });
-        } else {
-            this.createNewState({}, "", [], false, []);
+        let productModel = createNewState();
+        this.productData = productModel;
+
+        if (params["product-code"]) {
+            this.buttonName = "Update Product";
+            this.operationFnName = "updateProduct";
+            let {productPayload, productPhotoPayload, epiUnits} = await getProductData(params["product-code"]);
+            productModel = createNewState(productPayload, productPhotoPayload, epiUnits, []);
+            //observe changes for diffs
+            this.productData = createObservableObject(productModel, this.onChange.bind(this));
         }
-        this.invalidate();
-    }
+        //save initial state
+        this.existingProduct = productModel;
 
-    saveInitialState(product, image, epiUnits, marketUnits) {
-        this.existingProduct = Object.assign({}, product);
-        this.existingProduct.photo = image;
-        this.existingProduct.epiUnits = JSON.parse(JSON.stringify(epiUnits));
-        this.existingProduct.marketUnits = JSON.parse(JSON.stringify(marketUnits));
-    }
-
-    createNewState(product, image, epiUnits, isObservable, marketUnits) {
-        let productObj = Object.assign({}, product);
-        productObj.photo = image;
-        productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
-        productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));
-        if (isObservable) {
-            this.productData = createObservableObject(productObj, this.onChange.bind(this));
-        } else {
-            this.productData = productObj;
-        }
-
-    }
-
-    removeMarkedForDeletion(key, value) {
-        if (key === "epiUnits" || key === "marketUnits") {
-            return value.filter(unit => unit.action !== "delete");
-        } else {
-            return value;
-        }
     }
 
     onChange() {
         let button = this.element.querySelector("#accept-button");
-        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, this.removeMarkedForDeletion);
+        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, removeMarkedForDeletion);
     }
 
     beforeRender() {
@@ -103,14 +65,6 @@ export class ManageProductPage {
         }
     }
 
-    keys = [
-        "productCode",
-        "inventedName",
-        "nameMedicinalProduct",
-        "internalMaterialCode",
-        "strength"
-    ]
-
     highlightTabs() {
         let leaflet = this.element.querySelector("#leaflet");
         let market = this.element.querySelector("#market");
@@ -136,7 +90,7 @@ export class ManageProductPage {
     afterRender() {
         this.highlightTabs();
         let productCode = this.element.querySelector("#productCode");
-        for (const key of this.keys) {
+        for (const key of productInputFieldNames) {
             let input = this.element.querySelector(`#${key}`)
             input.value = this.productData[key] || "";
         }

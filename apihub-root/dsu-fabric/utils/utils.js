@@ -14,7 +14,7 @@ function createObservableObject(obj, onChange) {
 //TODO: CODE-REVIEW - migrate the URL logic to webskel
 async function loadPage(pageToLoad) {
   const handleURL = (URL = window.location.hash) => {
-    return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/')[0];
+    return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('?')[0];
   };
   let currentPage = handleURL(pageToLoad);
   pageToLoad = pageToLoad.substring(1);
