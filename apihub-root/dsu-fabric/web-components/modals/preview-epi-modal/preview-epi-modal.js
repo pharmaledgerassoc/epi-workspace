@@ -29,7 +29,7 @@ export class PreviewEpiModal {
 
   showXML(epiData) {
     let xmlService = new gtinResolver.XMLDisplayService(document.querySelector(".modal-body"));
-    xmlService.displayXmlContent("", webSkel.UtilsService.decodeBase64(epiData.xmlFileContent), epiData.otherFilesContent);
+    xmlService.displayXmlContent("", webSkel.decodeBase64(epiData.xmlFileContent), epiData.otherFilesContent);
     xmlService.activateLeafletAccordion();
   }
 }
