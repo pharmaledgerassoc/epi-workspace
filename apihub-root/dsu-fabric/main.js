@@ -56,6 +56,7 @@ window.webSkel = await WebSkel.initialise("./webskel-configs.json");
 
 webSkel.notificationHandler = openDSU.loadAPI("error");
 (async () => {
+    webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
     await setupGlobalErrorHandlers();
     window.gtinResolver = require("gtin-resolver");
     let domain = "default";

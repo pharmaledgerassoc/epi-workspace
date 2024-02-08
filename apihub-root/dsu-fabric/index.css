@@ -190,3 +190,44 @@ pre code {
 .transparent{
     opacity: 0;
 }
+
+dialog[class="spinner"]{
+    border: none;
+    background: none;
+}
+    /*spinner*/
+.spinner-container{
+    border-radius: 50%;
+    border: none;
+    padding: 5px;
+    background-color: white;
+}
+.spin {
+    width: 30px;
+    aspect-ratio: 1;
+    display:grid;
+    -webkit-mask-image: conic-gradient(from 15deg,#0000,#000);
+    animation: l26 1s infinite steps(12);
+}
+.spin,
+.spin:before,
+.spin:after{
+    background:
+            radial-gradient(closest-side at 50% 12.5%,
+            #488ffe 96%,#0000) 50% 0/20% 80% repeat-y,
+            radial-gradient(closest-side at 12.5% 50%,
+            #488FFEFF 96%,#0000) 0 50%/80% 20% repeat-x;
+}
+.spin:before,
+.spin:after {
+    content: "";
+    grid-area: 1/1;
+    transform: rotate(30deg);
+}
+.spin:after {
+    transform: rotate(60deg);
+}
+
+@keyframes l26 {
+    100% {transform:rotate(1turn)}
+}
