@@ -164,7 +164,7 @@ export class EditBatchPage {
     }
     async updateBatch(){
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        let diffs = webSkel.servicesRegistry.UtilsService.getProductDiffs(this.existingProduct, this.productData);
+        let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
         let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs});
 

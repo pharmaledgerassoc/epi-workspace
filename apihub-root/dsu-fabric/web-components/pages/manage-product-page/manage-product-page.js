@@ -23,7 +23,7 @@ export class ManageProductPage {
                         let leafletPayload = await $$.promisify(webSkel.client.getEPI)(product.productCode, languages[i]);
                         let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
                         let leafletObj = {
-                            id: webSkel.servicesRegistry.UtilsService.generateID(16),
+                            id: webSkel.appServices.generateID(16),
                             language: leafletPayload.language,
                             xmlFileContent: leafletPayload.xmlFileContent,
                             otherFilesContent: leafletPayload.otherFilesContent,
@@ -248,7 +248,7 @@ export class ManageProductPage {
     }
 
     async handleEPIModalData(data) {
-        data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
+        data.id = webSkel.appServices.generateID(16);
         if (!this.updateLeaflet(data)) {
             this.productData.epiUnits.push(data);
         }
@@ -271,7 +271,7 @@ export class ManageProductPage {
 
     async handleMarketModalData(data) {
         if (!this.updateMarket(data)) {
-            data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
+            data.id = webSkel.appServices.generateID(16);
             this.productData.marketUnits.push(data);
         }
         this.invalidate(this.saveInputs.bind(this));
@@ -307,17 +307,17 @@ export class ManageProductPage {
                     this.productData[key] = formData.data[key];
                 }
             }
-            await webSkel.servicesRegistry.ProductsService.addProduct(this.productData);
+            await webSkel.appServices.addProduct(this.productData);
             await this.navigateToProductsPage();
         }
     }
 
     async updateProduct() {
-        let diffs = webSkel.servicesRegistry.ProductsService.getProductDiffs(this.existingProduct, this.productData);
+        let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
         let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs});
         if (confirmation) {
-            await webSkel.servicesRegistry.ProductsService.updateProduct(this.productData, this.existingProduct.epiUnits);
+            await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
             this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
             this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.action !== "delete");
             await this.navigateToProductsPage();

@@ -12,7 +12,7 @@ export class DataMatrixModal{
     beforeRender(){
     }
     afterRender(){
-        webSkel.servicesRegistry.BatchesService.generateSerializationForBatch(this.batch, this.batch.serialNumber, this.element);
+        webSkel.appServices.generateSerializationForBatch(this.batch, this.batch.serialNumber, this.element);
     }
     closeModal(_target) {
         webSkel.closeModal(_target);
