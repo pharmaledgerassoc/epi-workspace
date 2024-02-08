@@ -20,7 +20,7 @@ export class DataDiffsModal{
                 newValue = `<div class="view-details pointer" data-local-action="viewEPI ${newValue.id}">view</div>`;
             }
             if(oldValue.filesCount){
-                oldValue = `<div class="view-details pointer" data-local-action="viewEPI ${newValue.id}">view</div>`;
+                oldValue = `<div class="view-details pointer" data-local-action="viewEPI ${oldValue.id}">view</div>`;
             }
             if(i === this.diffs.length - 1){
                 stringHTML += `

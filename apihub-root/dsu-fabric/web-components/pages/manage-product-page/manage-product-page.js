@@ -278,7 +278,8 @@ export class ManageProductPage {
     }
 
     async showAddMarketModal() {
-        let excludedOptions = this.productData.marketUnits.map(modalData => modalData.country);
+        let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete")
+            .map(data => data.country);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
         let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions});
         if (modalData) {
