@@ -31,7 +31,7 @@ export class ProductsService{
         }
         this.details.payload = {
             productCode: productData.productCode,
-            imageId: webSkel.servicesRegistry.UtilsService.generateNumericID(12),
+            imageId: webSkel.appServices.generateNumericID(12),
             imageType: "front",
             imageFormat: imageType,
             imageData: productData.photo
@@ -130,18 +130,18 @@ export class ProductsService{
         try {
             let { epiUnits, marketUnits, ...initialProductData } = initialProduct;
             let { epiUnits: updatedLeafletUnits, marketUnits: updatedMarketUnits, ...updatedProductData } = updatedProduct;
-            let diffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProductData, updatedProductData);
-            let epiDiffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
-            let marketDiffs = webSkel.servicesRegistry.UtilsService.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
+            let diffs = webSkel.appServices.getDiffsForAudit(initialProductData, updatedProductData);
+            let epiDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
+            let marketDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {
-                    result.push(webSkel.servicesRegistry.UtilsService.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
+                    result.push(webSkel.appServices.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
                     return;
                 }
-                result.push(webSkel.servicesRegistry.UtilsService.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
+                result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
             });
             Object.keys(epiDiffs).forEach(key => {
-                result.push(webSkel.servicesRegistry.UtilsService.getEpiDiffViewObj(epiDiffs[key]));
+                result.push(webSkel.appServices.getEpiDiffViewObj(epiDiffs[key]));
             });
             Object.keys(marketDiffs).forEach(key => {
                 result.push(this.getMarketDiffViewObj(marketDiffs[key]));

@@ -154,7 +154,7 @@ export class AddBatchPage {
     }
 
     async handleEPIModalData(data) {
-        data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
+        data.id = webSkel.appServices.generateID(16);
         if (!this.updateLeaflet(data)) {
             this.epiUnits.push(data);
         }

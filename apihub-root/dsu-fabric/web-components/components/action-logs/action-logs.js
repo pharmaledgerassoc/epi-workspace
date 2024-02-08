@@ -123,7 +123,7 @@ export class ActionLogs {
        await webSkel.showModal("audit-entry-modal", {"pk": pk});
     }
     async downloadCSV(){
-        let csvData = webSkel.servicesRegistry.AuditService.convertToCSV(this.logs);
+        let csvData = webSkel.appServices.convertToCSV(this.logs);
         let csvBlob = new Blob(csvData, {type: "text/csv"});
         let csvUrl = URL.createObjectURL(csvBlob);
         let link = document.createElement('a');
