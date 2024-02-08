@@ -12,11 +12,11 @@
         <div class="column-left">
             <div class="form-field $$formFieldStateClass">
                 <div class="label-container">
-                    <label class="label" for="batch">Batch</label>
-                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                    <label class="label" for="batchId">Batch</label>
+                    $$penImage
                 </div>
-                <input type="text" class="text-input" name="batch" id="batch" placeholder="Add batch id"
-                       autocomplete="off" $$inputState>
+                <input type="text" class="text-input" name="batchId" id="batchId" placeholder="Add batch id"
+                       autocomplete="off" $$inputState value="$$batchName">
             </div>
             <div class="form-field">
                 <div class="label-container">
@@ -27,9 +27,9 @@
                        placeholder="Add site name">
             </div>
             <div class="form-field-container">
-                <div class="form-field" id="expiry-date">
+                <div class="form-field" id="date">
                     <div class="label-container">
-                        <label class="label" for="date">Expiry date</label>
+                        <label class="label" for="expiryDate">Expiry date</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
                     <div id="custom-date-icon">
@@ -52,22 +52,18 @@
             </div>
             <div class="form-buttons">
                 <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
-                <button class="default-button" data-local-action="$$formActionButtonFunction">$$formActionButtonText
+                <button class="default-button" data-local-action="$$formActionButtonFunction" $$formActionButtonState>$$formActionButtonText
                 </button>
             </div>
         </div>
-
 
         <div class="column-right">
             <div class="form-field $$formFieldStateClass">
                 <div class="label-container">
                     <label class="label" for="productCode">Product Code</label>
-                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                    $$penImage
                 </div>
-                <select name="productCode" id="productCode" $$inputState value="12">
-                    <option selected value id="placeholder-option">Select a product</option>
-                    $$productOptions
-                </select>
+                $$productCodeInput
             </div>
 
             <div class="form-field disabled-form-field">
@@ -75,19 +71,19 @@
                     <label class="label" for="invented-name"> Brand / Invented name</label>
                 </div>
                 <input type="text" class="text-input-disabled" name="invented-name" id="invented-name" placeholder="-"
-                       readonly required>
+                       readonly required value="$$productName">
             </div>
             <div class="form-field disabled-form-field">
                 <div class="label-container">
                     <label class="label" for="name-of-medicinal-product"> Name of Medicinal Product</label>
                 </div>
                 <textarea type="text" class="text-input-disabled" name="name-of-medicinal-product"
-                          id="name-of-medicinal-product" placeholder="-" readonly required rows="3"></textarea>
+                          id="name-of-medicinal-product" placeholder="-" readonly required rows="3">$$productMedicinalName
+                </textarea>
             </div>
             <div class="leaflet-container">
                 <button class="tab-button pointer" data-local-action="showAddEPIModal">+ Add ePI</button>
             </div>
         </div>
     </form>
-
 </div>

@@ -190,6 +190,7 @@ input[type="month"] {
 
 #invented-name, #name-of-medicinal-product {
     color: var(--select-color);
+    resize:none;
 }
 
 .checkbox-container {
