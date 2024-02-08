@@ -10,7 +10,6 @@ export class GenerateDidPage {
   beforeRender() {
     if (this.element.variables["data-did"]) {
       this.did = this.element.variables["data-did"];
-      webSkel.hideLoading();
     }
   }
 

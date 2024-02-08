@@ -114,6 +114,11 @@
       "name": "my-account-page",
       "type": "pages",
       "presenterClassName": "MyAccountPage"
+    },
+    {
+      "name": "landing-page",
+      "type": "pages",
+      "presenterClassName": "LandingPage"
     }
   ],
   "services": [
@@ -135,7 +140,7 @@
     }
   ],
   "webComponentsRootDir" : "web-components",
-  "defaultPage": "home-page",
+  "defaultPage": "landing-page",
   "storageServices": []
 }
 
