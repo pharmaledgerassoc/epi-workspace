@@ -49,9 +49,9 @@ export class ProductsService{
         epi.otherFilesContent = [];
         for(let file of epi.leafletFiles){
             if(file.type === "text/xml"){
-                epi.xmlFileContent = await webSkel.UtilsService.uploadFileAsText(file);
+                epi.xmlFileContent = await webSkel.uploadFileAsText(file);
             }else {
-                epi.otherFilesContent.push(await webSkel.UtilsService.imageUpload(file));
+                epi.otherFilesContent.push(await webSkel.imageUpload(file));
             }
         }
 

@@ -20,11 +20,11 @@ export class AuditEntryModal{
         this.data = JSON.stringify(this.JSONstringifyOrder(this.entry),null, 4);
     }
     closeModal(_target) {
-        webSkel.UtilsService.closeModal(_target);
+        webSkel.closeModal(_target);
     }
 
     switchModalView(){
-        let modal = webSkel.UtilsService.getClosestParentElement(this.element,"dialog");
+        let modal = webSkel.getClosestParentElement(this.element,"dialog");
         if(!modal.getAttribute("data-expanded")){
             modal.setAttribute("data-expanded", "true")
             modal.style.width = "95%";

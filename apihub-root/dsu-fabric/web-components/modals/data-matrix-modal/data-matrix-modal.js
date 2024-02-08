@@ -15,12 +15,12 @@ export class DataMatrixModal{
         webSkel.servicesRegistry.BatchesService.generateSerializationForBatch(this.batch, this.batch.serialNumber, this.element);
     }
     closeModal(_target) {
-        webSkel.UtilsService.closeModal(_target);
+        webSkel.closeModal(_target);
     }
 
 
     switchModalView(){
-        let modal = webSkel.UtilsService.getClosestParentElement(this.element,"dialog");
+        let modal = webSkel.getClosestParentElement(this.element,"dialog");
         if(!modal.getAttribute("data-expanded")){
             modal.setAttribute("data-expanded", "true")
             modal.style.width = "95%";

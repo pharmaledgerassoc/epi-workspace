@@ -1,4 +1,4 @@
-import {createObservableObject} from "../../../utils/utils.js";
+import {createObservableObject, getTextDirection} from "../../../utils/utils.js";
 
 export class ManageProductPage{
     constructor(element,invalidate){
@@ -25,7 +25,8 @@ export class ManageProductPage{
                         let leafletObj = {
                             id: webSkel.servicesRegistry.UtilsService.generateID(16),
                             language: leafletPayload.language,
-                            leafletFiles: leafletFiles,
+                            xmlFileContent: leafletPayload.xmlFileContent,
+                            otherFilesContent: leafletPayload.otherFilesContent,
                             filesCount: leafletFiles.length,
                             type: leafletPayload.type
                         };
@@ -67,13 +68,13 @@ export class ManageProductPage{
         button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData);
     }
     beforeRender(){
-        let tabInfo = this.productData.epiUnits.map((modalData)=>{
-            return {language:modalData.language, filesCount: modalData.leafletFiles.length, id:modalData.id, action:modalData.action, type:modalData.type};
+        let tabInfo = this.productData.epiUnits.map((data)=>{
+            return {language:data.language, filesCount: data.filesCount, id:data.id, action:data.action, type:data.type};
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
-        let marketsInfo = this.productData.marketUnits.map((modalData)=>{
-            return {country:modalData.country, mah: modalData.mah, id:modalData.id, action:modalData.action};
+        let marketsInfo = this.productData.marketUnits.map((data)=>{
+            return {country:data.country, mah: data.mah, id:data.id, action:data.action};
         });
         marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
@@ -181,7 +182,7 @@ export class ManageProductPage{
     }
     async showPhoto(controller, photoInput, event){
         let photoContainer = this.element.querySelector(".product-photo");
-        let encodedPhoto = await webSkel.UtilsService.imageUpload(photoInput.files[0]);
+        let encodedPhoto = await webSkel.imageUpload(photoInput.files[0]);
         this.fileListPhoto = photoInput.files;
         photoContainer.src = encodedPhoto;
         this.productData.photo = encodedPhoto;
@@ -194,7 +195,7 @@ export class ManageProductPage{
         photoInput.click();
     }
     async saveInputs(){
-        let formData = await webSkel.UtilsService.extractFormInformation(this.element.querySelector("form"));
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         for(const key in formData.data){
             if(formData.data[key]){
                 this.productData[key] = formData.data[key];
@@ -202,7 +203,7 @@ export class ManageProductPage{
         }
     }
     async showAddEPIModal(){
-        let modalData = await webSkel.UtilsService.showModalForm(document.querySelector("body"), "add-epi-modal", { presenter: "add-epi-modal"});
+        let modalData = await webSkel.showModal("add-epi-modal", { presenter: "add-epi-modal"});
         if(modalData){
             await this.handleEPIModalData(modalData);
         }
@@ -232,7 +233,7 @@ export class ManageProductPage{
         let existingMarketIndex = this.productData.marketUnits.findIndex(market => market.id === modalData.id);
         if (existingMarketIndex !== -1) {
             this.productData.marketUnits[existingMarketIndex] = modalData;
-            console.log(`updated market, country: ${modalData.data.country}`);
+            console.log(`updated market, country: ${modalData.country}`);
             return true;
         }
         return false;
@@ -248,12 +249,7 @@ export class ManageProductPage{
    async showAddMarketModal(){
         let excludedOptions = this.productData.marketUnits.map(modalData => modalData.data.country);
        let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
-       let modalData = await webSkel.UtilsService.showModalForm(
-           document.querySelector("body"),
-           "markets-management-modal",
-           { presenter: "markets-management-modal",
-               excluded: encodedExcludedOptions
-           });
+       let modalData = await webSkel.showModal("markets-management-modal", { presenter: "markets-management-modal", excluded: encodedExcludedOptions});
        if(modalData){
            await this.handleMarketModalData(modalData);
        }
@@ -264,13 +260,13 @@ export class ManageProductPage{
         await webSkel.changeToDynamicPage("products-page", "products-page");
     }
     productCodeCondition(element, formData) {
-        let inputContainer =  webSkel.UtilsService.getClosestParentElement(element, ".product-code");
+        let inputContainer =  webSkel.getClosestParentElement(element, ".product-code");
        return !inputContainer.classList.contains("product-code-invalid");
 
     }
     async saveProduct(_target){
         const conditions = {"productCodeCondition": {fn:this.productCodeCondition, errorMessage:"GTIN invalid!"} };
-        let formData = await webSkel.UtilsService.extractFormInformation(_target, conditions);
+        let formData = await webSkel.extractFormInformation(_target, conditions);
         if(formData.isValid){
             for(const key in formData.data){
                 if(formData.data[key]){
@@ -284,10 +280,7 @@ export class ManageProductPage{
     async updateProduct(){
         let diffs = webSkel.servicesRegistry.ProductsService.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-        let confirmation = await webSkel.UtilsService.showModalForm(
-            document.querySelector("body"),
-            "data-diffs-modal",
-            { presenter: "data-diffs-modal", diffs: encodeDiffs});
+        let confirmation = await webSkel.showModal("data-diffs-modal", { presenter: "data-diffs-modal", diffs: encodeDiffs});
         if(confirmation){
             await webSkel.servicesRegistry.ProductsService.updateProduct(this.productData, this.existingProduct.epiUnits);
             this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
@@ -298,18 +291,34 @@ export class ManageProductPage{
     }
 
     getLeafletUnit(actionElement) {
-      let leafletUnit = webSkel.UtilsService.getClosestParentElement(actionElement, ".leaflet-unit");
+      let leafletUnit = webSkel.getClosestParentElement(actionElement, ".leaflet-unit");
       let id = leafletUnit.getAttribute("data-id");
       let l_unit = this.productData.epiUnits.find(unit => unit.id === id);
       return l_unit;
     }
 
-    async viewLeaflet(_target){
-       let leafletDataObj = this.getLeafletUnit(_target);
+    async viewLeaflet(_target) {
+      let leafletDataObj = this.getPreviewModel(this.getLeafletUnit(_target));
+
+      await webSkel.showModal("preview-epi-modal",
+        {presenter: "preview-epi-modal", epidata: encodeURIComponent(JSON.stringify(leafletDataObj))});
     }
 
+    getPreviewModel(epiObject) {
+        let previewModalTitle = `Preview ${gtinResolver.Languages.getLanguageName(epiObject.language)} ${epiObject.type}`;
+        let textDirection = getTextDirection(epiObject.language)
+        return {
+            previewModalTitle,
+            "xmlFileContent": epiObject.xmlFileContent,
+            "otherFilesContent": epiObject.otherFilesContent,
+            "productName": this.productData.inventedName,
+            "productDescription": this.productData.nameMedicinalProduct,
+            textDirection
+        };
+      }
+
     deleteLeaflet(_target){
-        let leafletUnit = webSkel.UtilsService.getClosestParentElement(_target, ".leaflet-unit");
+        let leafletUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");
         let id = leafletUnit.getAttribute("data-id");
         let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
         epiUnit.action = "delete";
@@ -317,7 +326,7 @@ export class ManageProductPage{
         this.invalidate();
     }
     deleteMarket(_target){
-        let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
+        let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedMarketUnit = this.productData.epiUnits.find(unit => unit.id === id);
         selectedMarketUnit.action = "delete";
@@ -325,16 +334,15 @@ export class ManageProductPage{
         this.invalidate();
     }
     async viewMarket(_target){
-        let marketUnit = webSkel.UtilsService.getClosestParentElement(_target, ".market-unit");
+        let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit.data));
         let excludedOptions = this.productData.marketUnits
-            .filter(modalData => modalData.data.country !== selectedUnit.data.country)
-            .map(modalData => modalData.data.country);
+            .filter(data => data.country !== selectedUnit.country)
+            .map(data => data.country);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
-        let modalData = await webSkel.UtilsService.showModalForm(
-            document.querySelector("body"),
+        let modalData = await webSkel.showModal(
             "markets-management-modal",
             { presenter: "markets-management-modal",
                 ["updateData"]: encodedJSON,

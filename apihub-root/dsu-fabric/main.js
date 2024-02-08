@@ -76,9 +76,7 @@ const callMockClient = async () => {
 }
 
 
-window.webSkel = new WebSkel();
-window.mainContent = document.querySelector("#app-wrapper");
-webSkel.notificationHandler = openDSU.loadAPI("error");
+
 
 let createDID = async () => {
     const userDetails = getUserDetails();
@@ -179,61 +177,6 @@ let initialize = async () => {
     }
 }
 
-//todo: CODE-REVIEW - unused function
-function defineActions() {
-    webSkel.registerAction("closeErrorModal", async (_target) => {
-        closeModal(_target);
-    });
-}
-
-//TODO: move loadConfig function to webSkel
-async function loadConfigs(jsonPath) {
-    try {
-        const response = await fetch(jsonPath);
-        const config = await response.json();
-        webSkel.defaultPage = config.defaultPage;
-        for (const service of config.services) {
-            const ServiceModule = await import(service.path);
-            //todo: CODE-REVIEW - why do we need to initialize services?! maybe they are not need them
-            webSkel.initialiseService(service.name, ServiceModule[service.name]);
-        }
-
-        for (const presenter of config.presenters) {
-            const PresenterModule = await import(presenter.path);
-            webSkel.registerPresenter(presenter.name, PresenterModule[presenter.className]);
-        }
-        for (const component of config.components) {
-            await webSkel.defineComponent(component.name, component.path, {urls: component.cssPaths});
-        }
-    } catch (error) {
-        console.error(error);
-        await showApplicationError("Error loading configs", "Error loading configs", `Encountered ${error} while trying loading webSkel configs`);
-    }
-}
-
-//todo: CODE-REVIEW - unused function
-async function handleHistory(event) {
-    const result = webSkel.getService("AuthenticationService").getCachedCurrentUser();
-    if (!result) {
-        if (window.location.hash !== "#authentication-page") {
-            webSkel.setDomElementForPages(mainContent);
-            window.location.hash = "#authentication-page";
-            await webSkel.changeToDynamicPage("authentication-page", "authentication-page", "", true);
-        }
-    } else {
-        if (history.state) {
-            if (history.state.pageHtmlTagName === "authentication-page") {
-                const path = ["#", webSkel.currentState.pageHtmlTagName].join("");
-                history.replaceState(webSkel.currentState, path, path);
-            }
-        }
-    }
-    let modal = document.querySelector("dialog");
-    if (modal) {
-        closeModal(modal);
-    }
-}
-
 function saveCurrentState() {
     webSkel.currentState = Object.assign({}, history.state);
 }
@@ -249,18 +192,17 @@ function closeDefaultLoader() {
     UILoader.script.remove();
     UILoader.style.remove();
 }
-
+window.webSkel = await WebSkel.initialise("./webskel-configs.json");
+webSkel.notificationHandler = openDSU.loadAPI("error");
 (async () => {
     await setupGlobalErrorHandlers();
     //todo: CODE-REVIEW - why the initialization of UtilsService is exposed and not called during webSkel constructor?!
-    await webSkel.UtilsService.initialize();
     window.gtinResolver = require("gtin-resolver");
     let domain = "default";
     webSkel.client = gtinResolver.getMockEPISORClient(domain);
 
     await callMockClient();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
-    await loadConfigs("./webskel-configs.json");
     await init();
     //await loadPage();
     document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="${webSkel.defaultPage}"></left-sidebar>`);

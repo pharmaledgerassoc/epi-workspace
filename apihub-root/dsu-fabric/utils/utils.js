@@ -51,7 +51,7 @@ function changeSelectedPageFromSidebar(url) {
 
 function showError(title, message, technical) {
   window.showApplicationError = async () => {
-    await showModal(webSkel._appContent, "show-error-modal", {
+    await showModal("show-error-modal", {
       presenter: "show-error-modal",
       title: title,
       message: message,
@@ -62,7 +62,7 @@ function showError(title, message, technical) {
 
 function showNotification(type, message) {
   window.showApplicationError = async () => {
-    await showModal(webSkel._appContent, "show-error-modal", {
+    await showModal("show-error-modal", {
       presenter: "show-error-modal",
       title: type,
       message: message,
@@ -119,6 +119,19 @@ function copyToClipboard(text) {
     });
   }
 }
+
+
+//other rtl language codes to be used for later:  "arc", "arz", "ckb", "dv", "fa", "ha", "he", "khw", "ks", "ps", "sd", "ur", "uz_AF", "yi"
+let rtlLangCodes = ["ar", "he"];
+
+function getTextDirection(lang) {
+  let textDirection = "LTR";
+  if (rtlLangCodes.find((rtlLAng) => rtlLAng === lang)) {
+    textDirection = "RTL"
+  }
+  return textDirection;
+}
+
 export {
   createObservableObject,
   loadPage,
@@ -130,5 +143,6 @@ export {
   setupGlobalErrorHandlers,
   navigateToPage,
   copyToClipboard,
-  isCopyToClipboardSupported
+  isCopyToClipboardSupported,
+  getTextDirection
 }

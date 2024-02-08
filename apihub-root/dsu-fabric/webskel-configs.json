@@ -1,304 +1,140 @@
 {
-  "presenters": [
+  "components": [
+    {
+      "name": "preview-epi-modal",
+      "type": "modals",
+      "presenterClassName": "PreviewEpiModal"
+    },
     {
       "name": "data-diffs-modal",
-      "path": "./web-components/modals/data-diffs-modal/data-diffs-modal.js",
-      "className": "DataDiffsModal"
+      "type": "modals",
+      "presenterClassName": "DataDiffsModal"
     },
     {
       "name": "markets-tab",
-      "path": "./web-components/components/markets-tab/markets-tab.js",
-      "className": "MarketsTab"
+      "type": "components",
+      "presenterClassName": "MarketsTab"
     },
     {
       "name": "leaflets-tab",
-      "path": "./web-components/components/leaflets-tab/leaflets-tab.js",
-      "className": "LeafletsTab"
+      "type": "components",
+      "presenterClassName": "LeafletsTab"
     },
     {
       "name": "data-matrix-modal",
-      "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.js",
-      "className": "DataMatrixModal"
+      "type": "modals",
+      "presenterClassName": "DataMatrixModal"
     },
     {
       "name": "markets-management-modal",
-      "path": "./web-components/modals/markets-management-modal/markets-management-modal.js",
-      "className": "MarketsManagementModal"
+      "type": "modals",
+      "presenterClassName": "MarketsManagementModal"
     },
     {
       "name": "add-epi-modal",
-      "path": "./web-components/modals/add-epi-modal/add-epi-modal.js",
-      "className": "AddEpiModal"
+      "type": "modals",
+      "presenterClassName": "AddEpiModal"
     },
     {
       "name": "audit-entry-modal",
-      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.js",
-      "className": "AuditEntryModal"
+      "type": "modals",
+      "presenterClassName": "AuditEntryModal"
     },
     {
       "name": "access-logs",
-      "path": "./web-components/components/access-logs/access-logs.js",
-      "className": "AccessLogs"
+      "type": "components",
+      "presenterClassName": "AccessLogs"
     },
     {
       "name": "action-logs",
-      "path": "./web-components/components/action-logs/action-logs.js",
-      "className": "ActionLogs"
+      "type": "components",
+      "presenterClassName": "ActionLogs"
     },
     {
       "name": "show-error-modal",
-      "path": "./web-components/modals/show-error-modal/show-error-modal.js",
-      "className": "ShowErrorModal"
+      "type": "modals",
+      "presenterClassName": "ShowErrorModal"
     },
     {
       "name": "manage-product-page",
-      "path": "./web-components/pages/manage-product-page/manage-product-page.js",
-      "className": "ManageProductPage"
+      "type": "pages",
+      "presenterClassName": "ManageProductPage"
     },
     {
       "name": "home-page",
-      "path": "./web-components/pages/home-page/home-page.js",
-      "className": "HomePage"
+      "type": "pages",
+      "presenterClassName": "HomePage"
     },
     {
       "name": "manage-batch-page",
-      "path": "./web-components/pages/manage-batch-page/manage-batch-page.js",
-      "className": "ManageBatchPage"
+      "type": "pages",
+      "presenterClassName": "ManageBatchPage"
     },
     {
       "name": "left-sidebar",
-      "path": "./web-components/components/left-sidebar/left-sidebar.js",
-      "className": "LeftSidebar"
+      "type": "components",
+      "presenterClassName": "LeftSidebar"
     },
     {
       "name": "batches-page",
-      "path": "./web-components/pages/batches-page/batches-page.js",
-      "className": "BatchesPage"
+      "type": "pages",
+      "presenterClassName": "BatchesPage"
     },
     {
       "name": "edit-batch-page",
-      "path": "./web-components/pages/edit-batch-page/edit-batch-page.js",
-      "className": "EditBatchPage"
+      "type": "pages",
+      "presenterClassName": "EditBatchPage"
     },
     {
       "name": "add-batch-page",
-      "path": "./web-components/pages/add-batch-page/add-batch-page.js",
-      "className": "AddBatchPage"
+      "type": "pages",
+      "presenterClassName": "AddBatchPage"
     },
     {
       "name": "audit-page",
-      "path": "./web-components/pages/audit-page/audit-page.js",
-      "className": "AuditPage"
+      "type": "pages",
+      "presenterClassName": "AuditPage"
     },
     {
       "name": "products-page",
-      "path": "./web-components/pages/products-page/products-page.js",
-      "className": "ProductsPage"
+      "type": "pages",
+      "presenterClassName": "ProductsPage"
     },
     {
       "name": "logout-page",
-      "path": "./web-components/pages/logout-page/logout-page.js",
-      "className": "LogoutPage"
+      "type": "pages",
+      "presenterClassName": "LogoutPage"
     },
     {
       "name": "generate-did-page",
-      "path": "./web-components/pages/generate-did-page/generate-did-page.js",
-      "className": "GenerateDidPage"
+      "type": "pages",
+      "presenterClassName": "GenerateDidPage"
     },
     {
       "name": "my-account-page",
-      "path": "./web-components/pages/my-account-page/my-account-page.js",
-      "className": "MyAccountPage"
+      "type": "pages",
+      "presenterClassName": "MyAccountPage"
     }
   ],
   "services": [
     {
       "name": "UtilsService",
-      "path": "./services/UtilsService.js"
+      "path": "../services/UtilsService.js"
     },
     {
       "name": "BatchesService",
-      "path": "./services/BatchesService.js"
+      "path": "../services/BatchesService.js"
     },
     {
       "name": "AuditService",
-      "path": "./services/AuditService.js"
+      "path": "../services/AuditService.js"
     },
     {
       "name": "ProductsService",
-      "path": "./services/ProductsService.js"
+      "path": "../services/ProductsService.js"
     }
   ],
-  "components": [
-    {
-      "name": "data-diffs-modal",
-      "path": "./web-components/modals/data-diffs-modal/data-diffs-modal.html",
-      "cssPaths": [
-        "./web-components/modals/data-diffs-modal/data-diffs-modal.css"
-      ]
-    },
-    {
-      "name": "leaflets-tab",
-      "path": "./web-components/components/leaflets-tab/leaflets-tab.html",
-      "cssPaths": [
-        "./web-components/components/leaflets-tab/leaflets-tab.css"
-      ]
-    },
-    {
-      "name": "markets-tab",
-      "path": "./web-components/components/markets-tab/markets-tab.html",
-      "cssPaths": [
-        "./web-components/components/markets-tab/markets-tab.css"
-      ]
-    },
-    {
-      "name": "data-matrix-modal",
-      "path": "./web-components/modals/data-matrix-modal/data-matrix-modal.html",
-      "cssPaths": [
-        "./web-components/modals/data-matrix-modal/data-matrix-modal.css"
-      ]
-    },
-    {
-      "name": "markets-management-modal",
-      "path": "./web-components/modals/markets-management-modal/markets-management-modal.html",
-      "cssPaths": [
-        "./web-components/modals/markets-management-modal/markets-management-modal.css"
-      ]
-    },
-    {
-      "name": "add-epi-modal",
-      "path": "./web-components/modals/add-epi-modal/add-epi-modal.html",
-      "cssPaths": [
-        "./web-components/modals/add-epi-modal/add-epi-modal.css"
-      ]
-    },
-    {
-      "name": "audit-entry-modal",
-      "path": "./web-components/modals/audit-entry-modal/audit-entry-modal.html",
-      "cssPaths": [
-        "./web-components/modals/audit-entry-modal/audit-entry-modal.css"
-      ]
-    },
-    {
-      "name": "default-spinner",
-      "path": "./web-components/components/default-spinner/default-spinner.html",
-      "cssPaths": [
-        "./web-components/components/default-spinner/default-spinner.css"
-      ]
-    },
-    {
-      "name": "access-logs",
-      "path": "./web-components/components/access-logs/access-logs.html",
-      "cssPaths": [
-        "./web-components/components/access-logs/access-logs.css"
-      ]
-    },
-    {
-      "name": "action-logs",
-      "path": "./web-components/components/action-logs/action-logs.html",
-      "cssPaths": [
-        "./web-components/components/action-logs/action-logs.css"
-      ]
-    },
-    {
-      "name": "show-error-modal",
-      "path": "./web-components/modals/show-error-modal/show-error-modal.html",
-      "cssPaths": [
-        "./web-components/modals/show-error-modal/show-error-modal.css"
-      ]
-    },
-    {
-      "name": "manage-product-page",
-      "path": "./web-components/pages/manage-product-page/manage-product-page.html",
-      "cssPaths": [
-        "./web-components/pages/manage-product-page/manage-product-page.css"
-      ]
-    },
-    {
-      "name": "manage-batch-page",
-      "path": "./web-components/pages/manage-batch-page/manage-batch-page.html",
-      "cssPaths": [
-        "./web-components/pages/manage-batch-page/manage-batch-page.css"
-      ]
-    },
-    {
-      "name": "left-sidebar",
-      "path": "./web-components/components/left-sidebar/left-sidebar.html",
-      "cssPaths": [
-        "./web-components/components/left-sidebar/left-sidebar.css"
-      ]
-    },
-    {
-      "name": "home-page",
-      "path": "./web-components/pages/home-page/home-page.html",
-      "cssPaths": [
-        "./web-components/pages/home-page/home-page.css"
-      ]
-    },
-    {
-      "name": "batches-page",
-      "path": "./web-components/pages/batches-page/batches-page.html",
-      "cssPaths": [
-        "./web-components/pages/batches-page/batches-page.css"
-      ]
-    },
-    {
-      "name": "edit-batch-page",
-      "path": "./web-components/pages/edit-batch-page/edit-batch-page.html",
-      "cssPaths": [
-        "./web-components/pages/edit-batch-page/edit-batch-page.css"
-      ]
-    },
-    {
-      "name": "edit-batch-page",
-      "path": "./web-components/pages/edit-batch-page/edit-batch-page.html",
-      "cssPaths": [
-        "./web-components/pages/edit-batch-page/edit-batch-page.css"
-      ]
-    },
-    {
-      "name": "add-batch-page",
-      "path": "./web-components/pages/add-batch-page/add-batch-page.html",
-      "cssPaths": [
-        "./web-components/pages/add-batch-page/add-batch-page.css"
-      ]
-    },
-    {
-      "name": "audit-page",
-      "path": "./web-components/pages/audit-page/audit-page.html",
-      "cssPaths": [
-        "./web-components/pages/audit-page/audit-page.css"
-      ]
-    },
-    {
-      "name": "products-page",
-      "path": "./web-components/pages/products-page/products-page.html",
-      "cssPaths": [
-        "./web-components/pages/products-page/products-page.css"
-      ]
-    },
-    {
-      "name": "logout-page",
-      "path": "./web-components/pages/logout-page/logout-page.html",
-      "cssPaths": [
-        "./web-components/pages/logout-page/logout-page.css"
-      ]
-    },
-    {
-      "name": "generate-did-page",
-      "path": "./web-components/pages/generate-did-page/generate-did-page.html",
-      "cssPaths": [
-        "./web-components/pages/generate-did-page/generate-did-page.css"
-      ]
-    },
-    {
-      "name": "my-account-page",
-      "path": "./web-components/pages/my-account-page/my-account-page.html",
-      "cssPaths": [
-        "./web-components/pages/my-account-page/my-account-page.css"
-      ]
-    }
-  ],
+  "webComponentsRootDir" : "web-components",
   "defaultPage": "home-page",
   "storageServices": []
 }

@@ -82,7 +82,7 @@ export class AccessLogs {
     async searchLog(event){
         if(event.key === "Enter"){
             event.preventDefault();
-            let formData = await webSkel.UtilsService.extractFormInformation(this.searchInput);
+            let formData = await webSkel.extractFormInformation(this.searchInput);
             if(formData.isValid){
                 this.inputValue = formData.data.userId;
                 let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`userId == ${this.inputValue}`]);

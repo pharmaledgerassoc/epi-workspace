@@ -96,7 +96,7 @@ export class ActionLogs {
     async searchLog(event){
         if(event.key === "Enter"){
             event.preventDefault();
-            let formData = await webSkel.UtilsService.extractFormInformation(this.searchInput);
+            let formData = await webSkel.extractFormInformation(this.searchInput);
             if(formData.isValid){
                 this.inputValue = formData.data.productCode;
                 let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`itemCode == ${this.inputValue}`]);
@@ -120,7 +120,7 @@ export class ActionLogs {
     }
     async openAuditEntryModal(_target){
         let pk = _target.getAttribute("data-pk");
-       await webSkel.UtilsService.showModal(document.querySelector("body"), "audit-entry-modal", { presenter: "audit-entry-modal", "pk": pk});
+       await webSkel.showModal("audit-entry-modal", { presenter: "audit-entry-modal", "pk": pk});
     }
     async downloadCSV(){
         let csvData = webSkel.servicesRegistry.AuditService.convertToCSV(this.logs);
