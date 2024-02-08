@@ -36,6 +36,7 @@ export class ManageBatchPage {
 
         let pageModes = {
             ADD: async () => {
+                this.epis=[]
                 const products = await loadAddData();
                 const productOptions = products.map(product => {
                     return `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
@@ -55,7 +56,7 @@ export class ManageBatchPage {
                                             <option selected value id="placeholder-option">Select a product</option>
                                             ${productOptions}
                                         </select>`,
-                    penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`
+                    penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`,
                 }
             },
             EDIT: async () => {
@@ -181,7 +182,6 @@ export class ManageBatchPage {
                 this.element.querySelector('#enable-day-checkbox').addEventListener('change', () => {
                     const oldDateInput = dateContainer.querySelector('#date');
                     let newDateInput;
-                    debugger;
                     if (enableDayCheckbox.checked) {
                         /* MM-YYYY -> DD-MM-YYYY */
                         svg1.style.display = 'none';
@@ -233,23 +233,48 @@ export class ManageBatchPage {
     async showAddEPIModal() {
         let modalData = await webSkel.showModal("add-epi-modal");
         if (modalData) {
-            //await this.handleEPIModalData(modalData);
+            await this.handleEPIModalData(modalData);
         }
     }
-    validateBatch (batchObj){
-        if (!batchObj.batchNumber) {
-            return 'Batch number is mandatory field';
+    async handleEPIModalData(data) {
+        data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
+        if (!this.updateLeaflet(data)) {
+            this.productData.epiUnits.push(data);
+        }
+        this.selected = "leaflet";
+        this.invalidate(this.saveInputs.bind(this));
+    }
+    updateLeaflet(modalData) {
+        let existingLeafletIndex = this.productData.epiUnits.findIndex(leaflet => leaflet.language === modalData.language);
+        if (existingLeafletIndex !== -1) {
+            this.productData.epiUnits[existingLeafletIndex] = modalData;
+            console.log(`updated leaflet, language: ${modalData.language}`);
+            return true;
+        }
+        return false;
+    }
+    /* TODO Replace console error logging with toasts */
+    validateBatch(batchObj) {
+        if(!batchObj.productCode){
+            return { valid: false, message: 'Product code is a mandatory field' };
+
+        }
+        if (!batchObj.batch) {
+            return { valid: false, message: 'Batch number is a mandatory field' };
         }
 
         if (!/^[A-Za-z0-9]{1,20}$/.test(batchObj.batchNumber)) {
-            return 'Batch number can contain only alphanumeric characters and a maximum length of 20';
+            return { valid: false, message: 'Batch number can contain only alphanumeric characters and a maximum length of 20' };
         }
 
-        if (!batchObj.expiryForDisplay) {
-            return 'Expiration date is a mandatory field.';
+        if (!batchObj.expiryDate) {
+            return { valid: false, message: 'Expiration date is a mandatory field' };
         }
-        return undefined;
+
+        return { valid: true, message: '' };
     }
+
+    /* does not take DCT into consideration */
     getCurrentDateTimeCET() {
         const date = new Date();
 
@@ -281,13 +306,18 @@ export class ManageBatchPage {
             "messageDateTime":this.getCurrentDateTimeCET(),
             "payload": {
                 "productCode": data.productCode,
-                "batch": data.batchId,
+                "batch": data.batchNumber,
                 "packagingSiteName": data.packagingSite,
                 "expiryDate": formatBatchExpiryDate(data.expiryDate)
             }
         }
-        await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchId, batchObj);
-        await webSkel.changeToDynamicPage("batches-page", "batches-page");
+        const batchValidationResult=this.validateBatch(batchObj.payload)
+        if(batchValidationResult.valid) {
+            await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchId, batchObj);
+            await webSkel.changeToDynamicPage("batches-page", "batches-page");
+        }else{
+            console.error(batchValidationResult.message);
+        }
     }
     async updateBatch(){
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
@@ -295,4 +325,5 @@ export class ManageBatchPage {
 
         await $$.promisify(webSkel.client.updateBatch)(data.productCode, data.batchId, batchObj);
     }
+
 }

@@ -12,10 +12,10 @@
         <div class="column-left">
             <div class="form-field $$formFieldStateClass">
                 <div class="label-container">
-                    <label class="label" for="batchId">Batch</label>
+                    <label class="label" for="batchNumber">Batch</label>
                     $$penImage
                 </div>
-                <input type="text" class="text-input" name="batchId" id="batchId" placeholder="Add batch id"
+                <input type="text" class="text-input" name="batchNumber" id="batchNumber" placeholder="Add batch id"
                        autocomplete="off" $$inputState value="$$batchName">
             </div>
             <div class="form-field">
@@ -65,7 +65,6 @@
                 </div>
                 $$productCodeInput
             </div>
-
             <div class="form-field disabled-form-field">
                 <div class="label-container">
                     <label class="label" for="invented-name"> Brand / Invented name</label>
@@ -81,9 +80,7 @@
                           id="name-of-medicinal-product" placeholder="-" readonly required rows="3">$$productMedicinalName
                 </textarea>
             </div>
-            <div class="leaflet-container">
-                <button class="tab-button pointer" data-local-action="showAddEPIModal">+ Add ePI</button>
-            </div>
+            <leaflets-tab data-presenter="$$leaflets-tab" data-units="$$tabInfo"></leaflets-tab>
         </div>
     </form>
 </div>
