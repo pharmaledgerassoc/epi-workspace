@@ -27,7 +27,7 @@ export class BatchesPage {
                         <div>${this.addSeparatorToDateString(item.expiryDate, '/')}</div>
                         <div class="view-details pointer" data-local-action="openDataMatrixModal ${item.productCode}">View</div>
                         <div>-</div>
-                        <div class="view-details pointer" data-local-action="navigateToManageBatchPage EDIT ${item.pk}">Edit</div>
+                        <div class="view-details pointer" data-local-action="navigateToManageBatchPage EDIT ${item.productCode} ${item.batch}">Edit</div>
                       `;
         }
         this.items = string;
@@ -145,13 +145,8 @@ export class BatchesPage {
     async navigateToAddBatchPage() {
         await webSkel.changeToDynamicPage("add-batch-page", "add-batch-page");
     }
-    async navigateToManageBatchPage(_target,mode,batchId){
-        let presenterParams={};
-        presenterParams.pageMode=mode;
-        if(batchId){
-            presenterParams.batchId=batchId;
-        }
-        await webSkel.changeToDynamicPage("manage-batch-page", "manage-batch-page",presenterParams);
+    async navigateToManageBatchPage(_target, mode, productCode, batchId){
+        await webSkel.changeToDynamicPage("manage-batch-page", `manage-batch-page/${mode}/${productCode}/${batchId}`);
     }
     async navigateToEditBatch(_target, batchId) {
         await webSkel.changeToDynamicPage("edit-batch-page", "edit-batch-page", {"batchId": batchId});

@@ -1,4 +1,4 @@
-import {getUserDetails, navigateToPage} from "../../../utils/utils.js";
+import {getUserDetails, navigateToPage, loadPage} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
 
@@ -13,8 +13,8 @@ export class LandingPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.sourcePage= this.element.getAttribute("data-source-page");
         this.invalidate(async () => {
-            await webSkel.showLoading();
             let mainDSU;
             const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId()}`)
             try {
@@ -89,8 +89,13 @@ export class LandingPage {
                 shouldPersist = true;
             }
 
+
+            if(this.sourcePage === "#landing-page"){
+                this.sourcePage = "#home-page";
+            }
+
             getPermissionsWatcher(did, async () => {
-                await navigateToPage("home-page");
+                await loadPage(this.sourcePage);
             });
 
             if (!shouldPersist) {

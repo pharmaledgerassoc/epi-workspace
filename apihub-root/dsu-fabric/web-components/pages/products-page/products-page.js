@@ -99,7 +99,7 @@ export class ProductsPage {
        await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page");
     }
     async viewProductDetails(_target, productCode){
-        await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page", {["product-code"]: productCode});
+        await webSkel.changeToDynamicPage("manage-product-page", `manage-product-page/${productCode}`);
     }
 
     async searchProduct(event){

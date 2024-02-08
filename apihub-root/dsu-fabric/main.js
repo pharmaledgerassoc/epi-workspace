@@ -1,4 +1,4 @@
-import {navigateToPage, setupGlobalErrorHandlers} from "./utils/utils.js";
+import {loadPage, navigateToPage, setupGlobalErrorHandlers} from "./utils/utils.js";
 
 import WebSkel from "./WebSkel/webSkel.js";
 import {
@@ -57,7 +57,6 @@ window.webSkel = await WebSkel.initialise("./webskel-configs.json");
 webSkel.notificationHandler = openDSU.loadAPI("error");
 (async () => {
     await setupGlobalErrorHandlers();
-    //todo: CODE-REVIEW - why the initialization of UtilsService is exposed and not called during webSkel constructor?!
     window.gtinResolver = require("gtin-resolver");
     let domain = "default";
     webSkel.client = gtinResolver.getMockEPISORClient(domain);
@@ -65,6 +64,6 @@ webSkel.notificationHandler = openDSU.loadAPI("error");
     await initMockData();
     webSkel.setDomElementForPages(document.querySelector("#page-content"));
 
-    await navigateToPage("landing-page");
+    await navigateToPage("landing-page", {["source-page"]: window.location.hash});
     window.addEventListener('beforeunload', saveCurrentState);
 })();

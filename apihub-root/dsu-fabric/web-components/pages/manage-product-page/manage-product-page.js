@@ -4,7 +4,7 @@ export class ManageProductPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        let productCode = this.element.getAttribute("data-product-code");
+        let productCode = window.location.hash.split("/")[1];
         //todo: CODE-REVIEW - why do need to manage already existing dom elements name from controller and why don't use camelcase or other convention that doesn't use space character?!
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";

@@ -3,7 +3,10 @@ export class ManageBatchPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.mode = this.element.getAttribute('data-pageMode');
+        let splitURL = window.location.hash.split("/");
+        this.mode = splitURL[1];
+        this.gtin = splitURL[2];
+        this.batchId = splitURL[3];
         this.invalidate(async () => {
             await this.initializePageMode(this.mode);
         });
@@ -18,14 +21,12 @@ export class ManageBatchPage {
             return products
         }
         const loadEditData = async () => {
-            const gtin=""
-            const batchNumber=""
-            const batch = webSkel.client.readBatchMetadata(gtin,batchNumber);
+            const batch = await $$.promisify(webSkel.client.readBatchMetadata)(this.gtin,this.batchId);
             if (!batch) {
                 console.error(`Unable to find batch with ID: ${this.batchId}.`);
                 return {batch: undefined, product: undefined};
             }
-            const product= webSkel.client.readProductMetadata(gtin);
+            const product = await $$.promisify(webSkel.client.readProductMetadata)(this.gtin);
             if (!product) {
                 console.error(`Unable to find product with product code: ${batch.productCode} for batch ID: ${this.batchId}.`);
                 return {batch, product: undefined};
@@ -58,7 +59,6 @@ export class ManageBatchPage {
                 }
             },
             EDIT: async () => {
-                this.batchId = this.element.getAttribute('data-batchId') || undefined;
                 const {batch, product} = await loadEditData();
                 return {
                     pageTitle: "Edit Batch",

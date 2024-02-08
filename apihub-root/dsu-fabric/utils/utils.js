@@ -12,13 +12,13 @@ function createObservableObject(obj, onChange) {
 }
 
 //TODO: CODE-REVIEW - migrate the URL logic to webskel
-async function loadPage() {
+async function loadPage(pageToLoad) {
   const handleURL = (URL = window.location.hash) => {
-    return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/').pop();
+    return (!URL || URL === '#') ? webSkel.defaultPage : URL.slice(URL.startsWith('#') ? 1 : 0).split('/')[0];
   };
-  let currentPage = handleURL();
-  document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="${currentPage}"></left-sidebar>`);
-  await webSkel.changeToDynamicPage(`${currentPage}`, `${currentPage}`);
+  let currentPage = handleURL(pageToLoad);
+  pageToLoad = pageToLoad.substring(1);
+  await webSkel.changeToDynamicPage(`${currentPage}`, `${pageToLoad}`);
 }
 
 function getCurrentPageTag() {
