@@ -43,7 +43,7 @@ export class UtilsService{
             newData = this.cleanMessage(newData);
 
             let diffs = Object.keys(newData).reduce((diffs, key) => {
-                if(newData[key].action === "delete"){
+                if(newData[key].action === "delete" && !prevData[key]){
                     return diffs;
                 }
                 if (JSON.stringify(prevData[key]) === JSON.stringify(newData[key])) return diffs

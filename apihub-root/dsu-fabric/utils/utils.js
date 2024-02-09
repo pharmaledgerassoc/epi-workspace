@@ -26,28 +26,6 @@ function getCurrentPageTag() {
   return URL.slice(URL.startsWith('#') ? 1 : 0)
 }
 
-function changeSelectedPageFromSidebar(url) {
-  let element = document.getElementById('selected-page');
-  if (element) {
-    element.removeAttribute('id');
-    let paths = element.querySelectorAll("path");
-    paths.forEach((path) => {
-      path.setAttribute("fill", "white");
-    });
-  }
-  let divs = document.querySelectorAll('.feature');
-  divs.forEach(div => {
-    let dataAction = div.getAttribute('data-local-action');
-    let page = dataAction.split(" ")[1];
-    if (url.includes(page)) {
-      div.setAttribute('id', 'selected-page');
-      let paths = div.querySelectorAll("path");
-      paths.forEach((path) => {
-        path.setAttribute("fill", "var(--left-sidebar)");
-      });
-    }
-  });
-}
 
 function showError(title, message, technical) {
   window.showApplicationError = async () => {
@@ -135,7 +113,6 @@ export {
   loadPage,
   showNotification,
   getCurrentPageTag,
-  changeSelectedPageFromSidebar,
   showError,
   getUserDetails,
   setupGlobalErrorHandlers,

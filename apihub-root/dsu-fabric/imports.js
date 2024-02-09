@@ -2,7 +2,6 @@
 
 
 import WebSkel from "./WebSkel/webSkel.js";
-import {changeSelectedPageFromSidebar} from "./utils/utils.js"
 
 export {
     WebSkel
@@ -29,6 +28,5 @@ export {
     moveCursorToEnd,
     getClosestParentWithPresenter,
     refreshElement,
-    changeSelectedPageFromSidebar,
     decodeBase64
 };

@@ -11,7 +11,7 @@ export class ManageProductPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
-            this.initModel()
+           await this.initModel();
         });
     }
 
@@ -31,7 +31,7 @@ export class ManageProductPage {
             this.productData = createObservableObject(productModel, this.onChange.bind(this));
         }
         //save initial state
-        this.existingProduct = productModel;
+        this.existingProduct = JSON.parse(JSON.stringify(productModel));
 
     }
 
