@@ -115,6 +115,7 @@ export class AddEpiModal {
         })
       }
     }
+    delete resultObject.leafletFiles;
 
     if (formData.isValid) {
             webSkel.closeModal(_target, resultObject);
