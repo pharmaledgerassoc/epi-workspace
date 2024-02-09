@@ -261,7 +261,7 @@ export class ManageProductPage {
             }
             let modal = await webSkel.showModal("progress-info-modal", {message:"Saving Product..."}, );
             await webSkel.appServices.addProduct(this.productData);
-            await modal.closeModal();
+            await webSkel.closeModal(modal);
             await navigateToPage("products-page");
         }
     }
