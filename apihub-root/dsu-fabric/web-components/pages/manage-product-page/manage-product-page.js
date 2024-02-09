@@ -1,9 +1,11 @@
-import {createObservableObject, getTextDirection} from "../../../utils/utils.js";
+import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {
     getProductData,
     createNewState,
     removeMarkedForDeletion,
-    productInputFieldNames
+    productInputFieldNames,
+    getEpitUnit,
+    getEpiPreviewModel
 } from "./manage-product-utils.js";
 
 export class ManageProductPage {
@@ -19,25 +21,18 @@ export class ManageProductPage {
         let params = webSkel.getHashParams();
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
-        let productModel = createNewState();
-        this.productData = productModel;
+        this.productData = createNewState();
 
         if (params["product-code"]) {
             this.buttonName = "Update Product";
             this.operationFnName = "updateProduct";
             let {productPayload, productPhotoPayload, epiUnits} = await getProductData(params["product-code"]);
-            productModel = createNewState(productPayload, productPhotoPayload, epiUnits, []);
+            let productModel = createNewState(productPayload, productPhotoPayload, epiUnits, []);
+            //save initial state
+            this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
             this.productData = createObservableObject(productModel, this.onChange.bind(this));
         }
-        //save initial state
-        this.existingProduct = JSON.parse(JSON.stringify(productModel));
-
-    }
-
-    onChange() {
-        let button = this.element.querySelector("#accept-button");
-        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, removeMarkedForDeletion);
     }
 
     beforeRender() {
@@ -51,7 +46,7 @@ export class ManageProductPage {
             };
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
-        this.leafletTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
+        this.epiTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
         let marketsInfo = this.productData.marketUnits.map((data) => {
             return {country: data.country, mah: data.mah, id: data.id, action: data.action};
         });
@@ -61,30 +56,8 @@ export class ManageProductPage {
         if (this.selected === "market") {
             this.tab = this.marketTab;
         } else {
-            this.tab = this.leafletTab;
+            this.tab = this.epiTab;
         }
-    }
-
-    highlightTabs() {
-        let leaflet = this.element.querySelector("#leaflet");
-        let market = this.element.querySelector("#market");
-        if (this.selected === "market") {
-            market.classList.remove("inactive");
-            market.classList.add("highlighted");
-            leaflet.classList.add("inactive");
-            leaflet.classList.remove("highlighted");
-        } else {
-            leaflet.classList.remove("inactive");
-            leaflet.classList.add("highlighted");
-            market.classList.add("inactive");
-            market.classList.remove("highlighted");
-        }
-    }
-
-    disableProductCode(productCode) {
-        let productCodeContainer = this.element.querySelector(".product-code");
-        productCodeContainer.classList.add("disabled-form-field")
-        productCode.disabled = true;
     }
 
     afterRender() {
@@ -117,6 +90,53 @@ export class ManageProductPage {
         }
     }
 
+    onChange() {
+        let button = this.element.querySelector("#accept-button");
+        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, removeMarkedForDeletion);
+    }
+
+    highlightTabs() {
+        let epi = this.element.querySelector("#epi");
+        let market = this.element.querySelector("#market");
+        if (this.selected === "market") {
+            market.classList.remove("inactive");
+            market.classList.add("highlighted");
+            epi.classList.add("inactive");
+            epi.classList.remove("highlighted");
+        } else {
+            epi.classList.remove("inactive");
+            epi.classList.add("highlighted");
+            market.classList.add("inactive");
+            market.classList.remove("highlighted");
+        }
+    }
+
+    switchTab(_target) {
+        if (this.selected !== _target.getAttribute("id")) {
+            this.selected = _target.getAttribute("id");
+            let tabName = _target.getAttribute("id");
+            let container = this.element.querySelector(".epi-market-management");
+            container.querySelector(".inner-tab").remove();
+            if (tabName === "epi") {
+                this.tab = this.epiTab;
+                this.selected = "epi";
+                container.insertAdjacentHTML("beforeend", this.tab);
+            } else {
+                this.tab = this.marketTab;
+                this.selected = "market";
+                container.insertAdjacentHTML("beforeend", this.tab);
+            }
+            this.afterRender();
+        }
+    }
+
+    disableProductCode(productCode) {
+        let productCodeContainer = this.element.querySelector(".product-code");
+        productCodeContainer.classList.add("disabled-form-field")
+        productCode.disabled = true;
+    }
+
+
     detectInputChange(event) {
         let inputName = event.target.name;
         this.productData[inputName] = event.target.value;
@@ -139,24 +159,6 @@ export class ManageProductPage {
         }
     }
 
-    switchTab(_target) {
-        if (this.selected !== _target.getAttribute("id")) {
-            this.selected = _target.getAttribute("id");
-            let tabName = _target.getAttribute("id");
-            let container = this.element.querySelector(".leaflet-market-management");
-            container.querySelector(".inner-tab").remove();
-            if (tabName === "leaflet") {
-                this.tab = this.leafletTab;
-                this.selected = "leaflet";
-                container.insertAdjacentHTML("beforeend", this.tab);
-            } else {
-                this.tab = this.marketTab;
-                this.selected = "market";
-                container.insertAdjacentHTML("beforeend", this.tab);
-            }
-            this.afterRender();
-        }
-    }
 
     async showPhoto(controller, photoInput, event) {
         let photoContainer = this.element.querySelector(".product-photo");
@@ -191,11 +193,11 @@ export class ManageProductPage {
         //else closed without submitting
     }
 
-    updateLeaflet(modalData) {
-        let existingLeafletIndex = this.productData.epiUnits.findIndex(leaflet => leaflet.language === modalData.language);
+    updateEpi(modalData) {
+        let existingLeafletIndex = this.productData.epiUnits.findIndex(epi => epi.language === modalData.language);
         if (existingLeafletIndex !== -1) {
             this.productData.epiUnits[existingLeafletIndex] = modalData;
-            console.log(`updated leaflet, language: ${modalData.language}`);
+            console.log(`updated epi, language: ${modalData.language}`);
             return true;
         }
         return false;
@@ -203,10 +205,10 @@ export class ManageProductPage {
 
     async handleEPIModalData(data) {
         data.id = webSkel.appServices.generateID(16);
-        if (!this.updateLeaflet(data)) {
+        if (!this.updateEpi(data)) {
             this.productData.epiUnits.push(data);
         }
-        this.selected = "leaflet";
+        this.selected = "epi";
         this.invalidate(this.saveInputs.bind(this));
     }
 
@@ -242,10 +244,6 @@ export class ManageProductPage {
         //else closed without submitting
     }
 
-    async navigateToProductsPage() {
-        await webSkel.changeToDynamicPage("products-page", "products-page");
-    }
-
     productCodeCondition(element, formData) {
         let inputContainer = webSkel.getClosestParentElement(element, ".product-code");
         return !inputContainer.classList.contains("product-code-invalid");
@@ -262,7 +260,7 @@ export class ManageProductPage {
                 }
             }
             await webSkel.appServices.addProduct(this.productData);
-            await this.navigateToProductsPage();
+            await navigateToPage("products-page");
         }
     }
 
@@ -274,40 +272,20 @@ export class ManageProductPage {
             await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
             this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
             this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.action !== "delete");
-            await this.navigateToProductsPage();
+            await navigateToPage("products-page");
         }
         //else cancel button pressed
     }
 
-    getLeafletUnit(actionElement) {
-        let leafletUnit = webSkel.getClosestParentElement(actionElement, ".leaflet-unit");
-        let id = leafletUnit.getAttribute("data-id");
-        let l_unit = this.productData.epiUnits.find(unit => unit.id === id);
-        return l_unit;
-    }
-
     async viewLeaflet(_target) {
-        let leafletDataObj = this.getPreviewModel(this.getLeafletUnit(_target));
-
-        await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(leafletDataObj))});
+        let epiObject = getEpitUnit(_target, this.productData.epiUnits);
+        let epiPreviewModel = getEpiPreviewModel(epiObject, this.productData);
+        await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 
-    getPreviewModel(epiObject) {
-        let previewModalTitle = `Preview ${gtinResolver.Languages.getLanguageName(epiObject.language)} ${epiObject.type}`;
-        let textDirection = getTextDirection(epiObject.language)
-        return {
-            previewModalTitle,
-            "xmlFileContent": epiObject.xmlFileContent,
-            "otherFilesContent": epiObject.otherFilesContent,
-            "productName": this.productData.inventedName,
-            "productDescription": this.productData.nameMedicinalProduct,
-            textDirection
-        };
-    }
-
-    deleteLeaflet(_target) {
-        let leafletUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");
-        let id = leafletUnit.getAttribute("data-id");
+    deleteEpi(_target) {
+        let epiUnitElement = webSkel.getClosestParentElement(_target, ".epi-unit");
+        let id = epiUnitElement.getAttribute("data-id");
         let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
         epiUnit.action = "delete";
         //this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);

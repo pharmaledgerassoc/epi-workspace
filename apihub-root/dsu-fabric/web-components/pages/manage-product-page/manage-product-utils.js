@@ -1,3 +1,5 @@
+import {getTextDirection} from "../../../utils/utils.js";
+
 const productInputFieldNames = [
     "productCode",
     "inventedName",
@@ -49,9 +51,30 @@ function removeMarkedForDeletion(key, value) {
     }
 }
 
+function getEpitUnit(actionElement, epiUnits) {
+    let epiUnit = webSkel.getClosestParentElement(actionElement, ".epi-unit");
+    let id = epiUnit.getAttribute("data-id");
+    let l_unit = epiUnits.find(unit => unit.id === id);
+    return l_unit;
+}
+function getEpiPreviewModel(epiObject, productData) {
+    let previewModalTitle = `Preview ${gtinResolver.Languages.getLanguageName(epiObject.language)} ${epiObject.type}`;
+    let textDirection = getTextDirection(epiObject.language)
+    return {
+        previewModalTitle,
+        "xmlFileContent": epiObject.xmlFileContent,
+        "otherFilesContent": epiObject.otherFilesContent,
+        "productName": productData.inventedName,
+        "productDescription": productData.nameMedicinalProduct,
+        textDirection
+    };
+}
+
 export {
     productInputFieldNames,
     getProductData,
     createNewState,
-    removeMarkedForDeletion
+    removeMarkedForDeletion,
+    getEpitUnit,
+    getEpiPreviewModel
 }

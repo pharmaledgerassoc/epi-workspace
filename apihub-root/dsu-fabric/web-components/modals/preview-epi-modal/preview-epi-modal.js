@@ -24,7 +24,7 @@ export class PreviewEpiModal {
   }
 
   closeModal(_target) {
-    webSkel.UtilsService.closeModal(_target);
+    webSkel.closeModal(_target);
   }
 
   showXML(epiData) {

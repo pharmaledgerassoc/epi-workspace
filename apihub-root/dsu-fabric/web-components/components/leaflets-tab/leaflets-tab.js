@@ -12,17 +12,17 @@ export class LeafletsTab {
                 if(epi.action === "delete"){
                     continue;
                 }
-                stringHTML+= `<div class="leaflet-unit" data-id="${epi.id}">
-                            <div class="leaflet-details">
-                                <div class="leaflet-language">${gtinResolver.Languages.getLanguageName(epi.language)} ${epi.type}</div>
-                                <div class="leaflet-files">${epi.filesCount} files</div>
+                stringHTML+= `<div class="epi-unit" data-id="${epi.id}">
+                            <div class="epi-details">
+                                <div class="epi-language">${gtinResolver.Languages.getLanguageName(epi.language)} ${epi.type}</div>
+                                <div class="epi-files">${epi.filesCount} files</div>
                             </div>
-                            <div class="leaflet-buttons">
-                            <div class="leaflet-button pointer" data-local-action="deleteLeaflet">
-                                <img class="leaflet-img" src="./assets/icons/thrash.svg" alt="thrash">
+                            <div class="epi-buttons">
+                            <div class="epi-button pointer" data-local-action="deleteEpi">
+                                <img class="epi-img" src="./assets/icons/thrash.svg" alt="thrash">
                             </div>
-                            <div class="leaflet-button pointer" data-local-action="viewLeaflet">
-                                <img class="leaflet-img" src="./assets/icons/eye.svg" alt="eye">
+                            <div class="epi-button pointer" data-local-action="viewLeaflet">
+                                <img class="epi-img" src="./assets/icons/eye.svg" alt="eye">
                             </div>
                             </div>
                          </div>`
