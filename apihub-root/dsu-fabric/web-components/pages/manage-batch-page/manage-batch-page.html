@@ -20,10 +20,10 @@
             </div>
             <div class="form-field">
                 <div class="label-container">
-                    <label class="label" for="packagingSite">Packaging site name</label>
+                    <label class="label" for="packagingSiteName">Packaging site name</label>
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
-                <input type="text" class="text-input" name="packagingSite" id="packagingSite" autocomplete="off"
+                <input type="text" class="text-input" name="packagingSiteName" id="packagingSiteName" autocomplete="off"
                        placeholder="Add site name">
             </div>
             <div class="form-field-container">
@@ -52,7 +52,7 @@
             </div>
             <div class="form-buttons">
                 <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
-                <button class="default-button" data-local-action="$$formActionButtonFunction" $$formActionButtonState>$$formActionButtonText
+                <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction" $$formActionButtonState>$$formActionButtonText
                 </button>
             </div>
         </div>
@@ -80,7 +80,7 @@
                           id="name-of-medicinal-product" placeholder="-" readonly required rows="3">$$productMedicinalName
                 </textarea>
             </div>
-            <leaflets-tab data-presenter="$$leaflets-tab" data-units="$$tabInfo"></leaflets-tab>
+            <epis-tab data-presenter="epis-tab" data-units="$$leafletsInfo"></epis-tab>
         </div>
     </form>
 </div>

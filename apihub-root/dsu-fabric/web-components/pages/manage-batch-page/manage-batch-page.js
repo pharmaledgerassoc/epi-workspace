@@ -1,18 +1,30 @@
+import {removeMarkedForDeletion} from "../manage-product-page/manage-product-utils.js";
+import {
+    createObservableObject,
+    getTextDirection
+} from "../../../utils/utils.js";
+import {
+    reverseInputFormattedDateString,
+    getLastDayOfMonth,
+    createDateInput,
+    parseDateStringToDateInputValue,
+    getDateInputTypeFromDateString,
+    formatBatchExpiryDate
+} from "./manage-batch-utils.js"
+
 export class ManageBatchPage {
 
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        let splitURL = window.location.hash.split("/");
-        this.mode = splitURL[1];
-        this.gtin = splitURL[2];
-        this.batchId = splitURL[3];
+        ({mode: this.mode, gtin: this.gtin, batchId: this.batchId} = webSkel.getHashParams());
         this.invalidate(async () => {
             await this.initializePageMode(this.mode);
         });
     }
 
     async initializePageMode(mode) {
+        debugger;
         const loadAddData = async () => {
             const products = await $$.promisify(webSkel.client.listProducts)(undefined);
             if (!products) {
@@ -21,7 +33,7 @@ export class ManageBatchPage {
             return products
         }
         const loadEditData = async () => {
-            const batch = await $$.promisify(webSkel.client.readBatchMetadata)(this.gtin,this.batchId);
+            const batch = await $$.promisify(webSkel.client.readBatchMetadata)(this.gtin, this.batchId);
             if (!batch) {
                 console.error(`Unable to find batch with ID: ${this.batchId}.`);
                 return {batch: undefined, product: undefined};
@@ -33,10 +45,28 @@ export class ManageBatchPage {
             }
             return {batch, product};
         };
-
+        const formatBatchForDiffProcess = (batch) => {
+            Object.keys(batch).forEach(batchKey => {
+                if (batchKey.startsWith("__")) {
+                    delete batch[batchKey];
+                }
+            });
+            delete batch["pk"];
+        }
+        const formatEPIsForDiffProcess = (EPIs) => {
+            return EPIs.map(EPI => {
+                Object.keys(EPI).forEach(key => {
+                    if (key.startsWith("__")) {
+                        delete EPI[key];
+                    }
+                });
+                delete EPI["pk"];
+                EPI.id = webSkel.appServices.generateID(16);
+                return EPI;
+            });
+        }
         let pageModes = {
             ADD: async () => {
-                this.epis=[]
                 const products = await loadAddData();
                 const productOptions = products.map(product => {
                     return `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
@@ -57,10 +87,25 @@ export class ManageBatchPage {
                                             ${productOptions}
                                         </select>`,
                     penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`,
+                    leafletsInfo: "[]",
+                    EPIs: []
                 }
             },
             EDIT: async () => {
-                const {batch, product} = await loadEditData();
+                let {batch, product} = await loadEditData();
+                formatBatchForDiffProcess(batch);
+                let EPIs = []
+                const batchLanguages = await $$.promisify(webSkel.client.listBatchLangs)(this.gtin, this.batchId);
+                const leafletPromises = batchLanguages.map(batchLang =>
+                    $$.promisify(webSkel.client.getEPI)(this.gtin, batchLang, this.batchId)
+                );
+                const leaflets = await Promise.all(leafletPromises);
+                EPIs.push(...leaflets);
+                formatEPIsForDiffProcess(EPIs);
+
+                const leafletsInfo = this.getEncodedEPIS(EPIs);
+                let batchModel = this.createNewState(batch, EPIs);
+                let updatedBatch = createObservableObject(this.createNewState(batch, EPIs), this.onChange.bind(this));
                 return {
                     pageTitle: "Edit Batch",
                     formFieldStateClass: "disabled-form-field",
@@ -68,9 +113,9 @@ export class ManageBatchPage {
                     inputStateDisabledClass: "text-input-disabled",
                     formActionButtonText: "Update Batch",
                     formActionButtonFunction: "updateBatch",
-                    batch: batch,
+                    batch: batchModel,
                     batchName: batch.batch,
-                    batchVersion: batch.__version,
+                    batchVersion: batch.__version, //TODO use getBatchVersion API when it becomes available
                     product: product,
                     productCode: product.productCode,
                     productName: product.inventedName,
@@ -78,7 +123,10 @@ export class ManageBatchPage {
                     productCodeInput: `<input type="text" class="text-input" name="packagingSite" id="productCode" autocomplete="off" disabled
                                         value="${product.productCode}">`,
                     penImage: "",
-                    formActionButtonState: "disabled"
+                    formActionButtonState: "disabled",
+                    leafletsInfo: leafletsInfo,
+                    updatedBatch: updatedBatch,
+                    EPIs: updatedBatch.EPIs
                 };
             }
         };
@@ -92,86 +140,46 @@ export class ManageBatchPage {
         }
     }
 
+    getEncodedEPIS(EPIsObj) {
+        let formattedEPIs = EPIsObj.map((data) => {
+            return {
+                language: data.language,
+                filesCount: data.otherFilesContent.length + 1,
+                id: data.id,
+                action: data.action,
+                type: data.type
+            };
+        });
+        return encodeURIComponent(JSON.stringify(formattedEPIs));
+    }
+
+    createNewState(batchRef = {}, EPIs = []) {
+        let batchObj = Object.assign({}, batchRef);
+        batchObj.EPIs = JSON.parse(JSON.stringify(EPIs));
+        return batchObj;
+    }
+
     beforeRender() {
+    }
+
+    onChange() {
+        this.element.querySelector("#formActionButton").disabled =
+            JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, removeMarkedForDeletion);
+    }
+
+    detectInputChange(event) {
+        let inputName = event.target.name;
+        if (inputName === "expiryDate") {
+            this.updatedBatch.expiryDate = formatBatchExpiryDate(event.target.value);
+        } else {
+            this.updatedBatch[inputName] = event.target.value;
+        }
     }
 
     afterRender() {
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
         /*TODO replace createDateInput with date web component if necessary */
-        const getDateInputTypeFromDateString = (dateValueString) => {
-            /* YYYY-MM-DD || YYYYMMDD || YYYY-MM|| YYYYMM */
-            return dateValueString.length === 10 || dateValueString.length === 6 ? "date" : "month";
-        }
-        const getFirstTwoDigitsOfYear = () => {
-            const year = new Date().getFullYear();
-            const yearString = year.toString();
-            return yearString.slice(0, 2);
-        }
-        /* converts the 'YYMMDD'     | 'YYMM' string of batch expiryDate to a value that is assignable to an HTML input date or month field
-                     -> 'YYYY-MM-DD' | 'YYYY-MM'
-        */
-        const parseDateStringToDateInputValue = (dateValueString) => {
-            let inputStringDate = "";
-            const separator = '-'
-            if (getDateInputTypeFromDateString(dateValueString) === "date") {
-                /* returns 'DD-MM-YYYY' */
-                inputStringDate = dateValueString.slice(4, 6) +
-                    separator +
-                    dateValueString.slice(2, 4) +
-                    separator +
-                    getFirstTwoDigitsOfYear() +
-                    dateValueString.slice(0, 2)
-            } else {
-                /* returns 'MM-YYYY' */
-                inputStringDate = dateValueString.slice(2, 4) +
-                    separator +
-                    getFirstTwoDigitsOfYear() +
-                    dateValueString.slice(0, 2)
-            }
-            return inputStringDate;
-        }
-        const createDateInput = (dateInputType, assignDateValue = null) => {
-            let dateInput = document.createElement('input');
-            dateInput.id = 'date';
-            dateInput.classList.add('pointer');
-            dateInput.classList.add('date-format-remover');
-            dateInput.classList.add('form-control');
-            dateInput.setAttribute('name', 'expiryDate');
-            dateInput.setAttribute('type', dateInputType);
-            if (assignDateValue) {
-                dateInput.setAttribute('data-date', reverseInputFormattedDateString(assignDateValue));
-                dateInput.value=assignDateValue;
-                if(!dateInput.value){
-                    console.error(`${assignDateValue} is not a valid date. Input type: ${dateInput}`)
-                }
-            }
-            dateInput.addEventListener('click', function () {
-                this.blur();
-                if ('showPicker' in this) {
-                    this.showPicker();
-                }
-            });
-            dateInput.addEventListener('change', function (event) {
-                updateUIDate(this, event.target.value);
-            })
-            return dateInput
-        }
-        const getLastDayOfMonth = (year, month) => {
-                if(typeof year==="string" && typeof month==="string") {
-                    [year, month] = [parseInt(year), parseInt(month)];
-                }
-                return new Date(year, month, 0).getDate();
-            }
-        /* 'DD-MM-YYYY' -> 'YYYY-MM-DD' || 'MM-YYYY' -> 'YYYY-MM' */
-        const reverseInputFormattedDateString = (dateString) => {
-            const dateParts = dateString.split('-');
-            return getDateInputTypeFromDateString(dateString) === 'date' ? dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0] : dateParts[1] + '-' + dateParts[0];
-        }
 
-        const updateUIDate = (dateInputElementRef, assignDateValue) => {
-            dateInputElementRef.setAttribute('data-date', reverseInputFormattedDateString(assignDateValue));
-            dateInputElementRef.value=assignDateValue;
-        }
         const dateContainer = this.element.querySelector('#custom-date-icon');
         const enableDayCheckbox = this.element.querySelector('#enable-day-checkbox');
         const svg1 = dateContainer.querySelector('#svg1');
@@ -181,20 +189,19 @@ export class ManageBatchPage {
             SHARED: () => {
                 this.element.querySelector('#enable-day-checkbox').addEventListener('change', () => {
                     const oldDateInput = dateContainer.querySelector('#date');
+                    const isChecked = enableDayCheckbox.checked;
+                    svg1.style.display = isChecked ? 'none' : 'block';
+                    svg2.style.display = isChecked ? 'block' : 'none';
                     let newDateInput;
-                    if (enableDayCheckbox.checked) {
+                    if (isChecked) {
                         /* MM-YYYY -> DD-MM-YYYY */
-                        svg1.style.display = 'none';
-                        svg2.style.display = 'block';
-                        const [year,month]=[oldDateInput.value.slice(0,4),oldDateInput.value.slice(6,8)]
-                        const assignValue = oldDateInput.value+'-'+getLastDayOfMonth(year,month)
-                        newDateInput = createDateInput('date',assignValue);
+                        const [year, month] = oldDateInput.value.split('-');
+                        const assignValue = `${year}-${month}-${getLastDayOfMonth(year, month)}`;
+                        newDateInput = createDateInput('date', assignValue);
                     } else {
                         /* DD-MM-YYYY -> MM-YYYY */
-                        svg1.style.display = 'block';
-                        svg2.style.display = 'none';
-                        const assignValue = oldDateInput.value.slice(0,7);
-                        newDateInput = createDateInput('month',assignValue);
+                        const assignValue = oldDateInput.value.slice(0, 7);
+                        newDateInput = createDateInput('month', assignValue);
                     }
                     dateContainer.replaceChild(newDateInput, oldDateInput);
                 });
@@ -202,26 +209,28 @@ export class ManageBatchPage {
             ADD: () => {
                 dateContainer.insertBefore(createDateInput('month'), dateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
-                    let productCode = event.target.value;
-                    let selectedProduct = this.products.find(product => {
-                        return product.productCode === productCode;
-                    });
-                    let [productName, medicinalProductName] = [selectedProduct.inventedName, selectedProduct.nameMedicinalProduct];
-                    let medicinalNameField = this.element.querySelector('#name-of-medicinal-product');
-                    let inventedNameField = this.element.querySelector('#invented-name');
-                    let placeholderOption = this.element.querySelector('#placeholder-option')
-                    medicinalNameField.value = medicinalProductName;
-                    inventedNameField.value = productName;
-                    placeholderOption.disabled = true;
+                    const {value: productCode} = event.target;
+                    const {
+                        inventedName,
+                        nameMedicinalProduct: medicinalProductName
+                    } = this.products.find(product => product.productCode === productCode) || {};
+                    this.element.querySelector('#name-of-medicinal-product').value = medicinalProductName;
+                    this.element.querySelector('#invented-name').value = inventedName;
+                    this.element.querySelector('#placeholder-option').disabled = true;
                 });
-                pageModes.SHARED()
-
+                pageModes.SHARED();
             },
             EDIT: () => {
-                dateContainer.insertBefore(createDateInput(getDateInputTypeFromDateString(this.batch.expiryDate), reverseInputFormattedDateString(parseDateStringToDateInputValue(this.batch.expiryDate))), dateContainer.firstChild);
-                getDateInputTypeFromDateString(this.batch.expiryDate)==='date'?enableDayCheckbox.checked=true:enableDayCheckbox.checked=false;
-                pageModes.SHARED()
+                const dateType = getDateInputTypeFromDateString(this.batch.expiryDate);
+                const expiryDateInput = createDateInput(dateType, reverseInputFormattedDateString(parseDateStringToDateInputValue(this.batch.expiryDate)));
+                dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
+                enableDayCheckbox.checked = dateType === 'date';
+                this.element.removeEventListener("input", this.boundDetectInputChange);
+                this.boundDetectInputChange = this.detectInputChange.bind(this);
+                this.element.addEventListener("input", this.boundDetectInputChange);
+                pageModes.SHARED();
             }
+
         }
         pageModes[this.mode]();
     }
@@ -236,94 +245,126 @@ export class ManageBatchPage {
             await this.handleEPIModalData(modalData);
         }
     }
-    async handleEPIModalData(data) {
-        data.id = webSkel.servicesRegistry.UtilsService.generateID(16);
-        if (!this.updateLeaflet(data)) {
-            this.productData.epiUnits.push(data);
+
+    async saveInputs() {
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        for (const key in formData.data) {
+            if (formData.data[key]) {
+                this.updatedBatch[key] = formData.data[key];
+            }
         }
-        this.selected = "leaflet";
-        this.invalidate(this.saveInputs.bind(this));
     }
-    updateLeaflet(modalData) {
-        let existingLeafletIndex = this.productData.epiUnits.findIndex(leaflet => leaflet.language === modalData.language);
+
+    reloadLeafletTab(encodedEPIsData) {
+        const leafletTab = this.element.querySelector('epis-tab')
+        leafletTab.setAttribute('data-units', encodedEPIsData)
+        leafletTab.webSkelPresenter.invalidate();
+    }
+
+    updateLeaflet(batchEPIs, EPIData) {
+        const existingLeafletIndex = batchEPIs.findIndex(EPI => EPI.language === EPIData.language);
         if (existingLeafletIndex !== -1) {
-            this.productData.epiUnits[existingLeafletIndex] = modalData;
-            console.log(`updated leaflet, language: ${modalData.language}`);
-            return true;
+            batchEPIs[existingLeafletIndex] = EPIData;
+        } else {
+            batchEPIs.push(EPIData);
         }
-        return false;
     }
+
+    deleteLeaflet(_target) {
+        let EPIUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");
+        let EPIId = EPIUnit.getAttribute("data-id");
+        this.EPIs = this.EPIs.filter(EPI => EPI.id !== EPIId);
+        this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
+    }
+
+    async handleEPIModalData(EPIData) {
+        EPIData.id = webSkel.appServices.generateID(16);
+        this.updateLeaflet(this.EPIs, EPIData)
+        this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
+    }
+
     /* TODO Replace console error logging with toasts */
     validateBatch(batchObj) {
-        if(!batchObj.productCode){
-            return { valid: false, message: 'Product code is a mandatory field' };
+        if (!batchObj.productCode) {
+            return {valid: false, message: 'Product code is a mandatory field'};
 
         }
         if (!batchObj.batch) {
-            return { valid: false, message: 'Batch number is a mandatory field' };
+            return {valid: false, message: 'Batch number is a mandatory field'};
         }
 
         if (!/^[A-Za-z0-9]{1,20}$/.test(batchObj.batchNumber)) {
-            return { valid: false, message: 'Batch number can contain only alphanumeric characters and a maximum length of 20' };
+            return {
+                valid: false,
+                message: 'Batch number can contain only alphanumeric characters and a maximum length of 20'
+            };
         }
 
         if (!batchObj.expiryDate) {
-            return { valid: false, message: 'Expiration date is a mandatory field' };
+            return {valid: false, message: 'Expiration date is a mandatory field'};
         }
 
-        return { valid: true, message: '' };
+        return {valid: true, message: ''};
     }
 
-    /* does not take DCT into consideration */
-    getCurrentDateTimeCET() {
-        const date = new Date();
-
-        const offset = -60;
-        const cetDate = new Date(date.getTime() + (offset * 60 * 1000));
-
-        const year = cetDate.getFullYear();
-        const month = (cetDate.getMonth() + 1).toString().padStart(2, '0');
-        const day = cetDate.getDate().toString().padStart(2, '0');
-        const hours = cetDate.getHours().toString().padStart(2, '0');
-        const minutes = cetDate.getMinutes().toString().padStart(2, '0');
-        const seconds = cetDate.getSeconds().toString().padStart(2, '0');
-
-        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}CET`;
-    }
-    async addBatch(){
-        const formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        const data=formData.data;
-        /* YYYY-MM-DD -> YYMMDD */
-        const formatBatchExpiryDate= (dateString)=>{
-            return dateString.split('-').map((part, index) => index === 0 ? part.slice(2) : part).join('');
-        }
-        const batchObj={
-            "messageType": "Batch",
-            "messageTypeVersion": 1,
-            "senderId": "ManualUpload",
-            "receiverId": "QPNVS",
-            "messageId": "S000001",
-            "messageDateTime":this.getCurrentDateTimeCET(),
+    async addBatch() {
+        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
+        data.expiryDate = formatBatchExpiryDate(data.expiryDate);
+        const batchObj = {
             "payload": {
                 "productCode": data.productCode,
                 "batch": data.batchNumber,
-                "packagingSiteName": data.packagingSite,
-                "expiryDate": formatBatchExpiryDate(data.expiryDate)
+                "packagingSiteName": data.packagingSiteName,
+                "expiryDate": data.expiryDate
             }
         }
-        const batchValidationResult=this.validateBatch(batchObj.payload)
-        if(batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchId, batchObj);
+        const batchValidationResult = this.validateBatch(batchObj.payload)
+        if (batchValidationResult.valid) {
+            await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchNumber, batchObj);
+            for(const EPI of this.EPIs){
+                await $$.promisify(webSkel.client.addEPI)(data.productCode,data.batchNumber,EPI)
+            }
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
-        }else{
+        } else {
             console.error(batchValidationResult.message);
         }
     }
-    async updateBatch(){
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        const data=formData.data;
 
-        await $$.promisify(webSkel.client.updateBatch)(data.productCode, data.batchId, batchObj);
+    async updateBatch() {
+        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
+    }
+
+    getDiffs() {
+        let result = [];
+        try {
+            let mappingLogService = mappings.getMappingLogsInstance(this.storageService, new LogService());
+            let diffs = mappingLogService.getDiffsForAudit(this.model.batch, this.initialModel.batch);
+            let epiDiffs = mappingLogService.getDiffsForAudit(this.model.languageTypeCards, this.initialCards);
+            Object.keys(diffs).forEach(key => {
+                if (key === "expiry") {
+                    return;
+                }
+                if (key === "expiryForDisplay") {
+                    let daySelectionObj = {
+                        oldValue: this.initialModel.batch.enableExpiryDay,
+                        newValue: this.model.batch.enableExpiryDay
+                    }
+
+                    result.push(utils.getDateDiffViewObj(diffs[key], key, daySelectionObj, constants.MODEL_LABELS_MAP.BATCH))
+                    return;
+                }
+                result.push(utils.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
+
+            });
+            Object.keys(epiDiffs).forEach(key => {
+                result.push(utils.getEpiDiffViewObj(epiDiffs[key]));
+            });
+
+        } catch (e) {
+            console.log(e);
+        }
+
+        return result
     }
 
 }
