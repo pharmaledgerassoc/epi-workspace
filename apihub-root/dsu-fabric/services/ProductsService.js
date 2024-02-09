@@ -56,7 +56,7 @@ export class ProductsService{
         }
 
     }
-    async addProduct(productData){
+    async addProduct(productData, callback){
         this.createProductPayload(productData);
         this.details.messageType = "Product";
         await $$.promisify(webSkel.client.addProduct)(productData.productCode, this.details);

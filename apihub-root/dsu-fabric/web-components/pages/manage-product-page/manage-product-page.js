@@ -186,7 +186,7 @@ export class ManageProductPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.showModal("add-epi-modal");
+        let modalData = await webSkel.showModal("add-epi-modal", true);
         if (modalData) {
             await this.handleEPIModalData(modalData);
         }
@@ -237,7 +237,7 @@ export class ManageProductPage {
         let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete")
             .map(data => data.country);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
-        let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions});
+        let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions}, true);
         if (modalData) {
             await this.handleMarketModalData(modalData);
         }
@@ -259,7 +259,9 @@ export class ManageProductPage {
                     this.productData[key] = formData.data[key];
                 }
             }
+            let modal = await webSkel.showModal("progress-info-modal", {message:"Saving Product..."}, );
             await webSkel.appServices.addProduct(this.productData);
+            await modal.closeModal();
             await navigateToPage("products-page");
         }
     }
@@ -267,11 +269,13 @@ export class ManageProductPage {
     async updateProduct() {
         let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-        let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs});
+        let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
         if (confirmation) {
+            let modal = await webSkel.showModal("progress-info-modal", {message:"Saving Product..."});
             await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
             this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
             this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.action !== "delete");
+            await webSkel.closeModal(modal);
             await navigateToPage("products-page");
         }
         //else cancel button pressed
@@ -316,7 +320,7 @@ export class ManageProductPage {
                 ["updateData"]: encodedJSON,
                 id: selectedUnit.id,
                 excluded: encodedExcludedOptions
-            });
+            }, true);
         if (modalData) {
             await this.handleMarketModalData(modalData);
         }
