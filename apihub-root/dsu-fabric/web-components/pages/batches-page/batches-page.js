@@ -10,9 +10,9 @@ export class BatchesPage {
     }
 
     addSeparatorToDateString(dateString, separator) {
-        return dateString.length === 6
-            ? [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator)
-            : [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator);
+        return dateString.slice(4,6)==='00'
+            ? [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator)
+            : [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator)
     }
 
     beforeRender() {
