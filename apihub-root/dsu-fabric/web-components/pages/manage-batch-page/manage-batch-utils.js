@@ -1,3 +1,4 @@
+
 const getDateInputTypeFromDateString = (dateValueString) => {
     /* YYYY-MM-DD || YYYYMMDD || YYYY-MM|| YYYYMM */
     return dateValueString.length === 10 || dateValueString.length === 6 ? "date" : "month";
@@ -95,11 +96,43 @@ const getCurrentDateTimeCET=()=> {
 const formatBatchExpiryDate=(dateString) =>{
     return dateString.split('-').map((part, index) => index === 0 ? part.slice(2) : part).join('');
 }
+const uploadLeafletFiles= async (epi)=>{
+    epi.otherFilesContent = [];
+    for(let file of epi.leafletFiles){
+        if(file.type === "text/xml"){
+            epi.xmlFileContent = await webSkel.uploadFileAsText(file);
+        }else {
+            epi.otherFilesContent.push(await webSkel.imageUpload(file));
+        }
+    }
+
+}
+const configureEPIForAddition=(EPI,productCode)=>{
+    debugger;
+    const EPIPayload={
+        "type":"Leaflet",
+        "productCode":productCode,
+        "language":EPI.language,
+        "xmlFileContent":EPI.xmlFileContent,
+        "otherFilesContent":{
+
+        }
+
+
+    }
+}
+const prefixMonthDate=(dateString)=>{
+    const prefix="00";
+    return dateString+prefix;
+}
+
 export{
     reverseInputFormattedDateString,
     getLastDayOfMonth,
     createDateInput,
     parseDateStringToDateInputValue,
     getDateInputTypeFromDateString,
-    formatBatchExpiryDate
+    formatBatchExpiryDate,
+    configureEPIForAddition,
+    prefixMonthDate
 }

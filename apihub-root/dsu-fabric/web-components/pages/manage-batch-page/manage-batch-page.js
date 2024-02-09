@@ -1,4 +1,4 @@
-import {removeMarkedForDeletion} from "../manage-product-page/manage-product-utils.js";
+import {getEpiPreviewModel, getEpitUnit, removeMarkedForDeletion} from "../manage-product-page/manage-product-utils.js";
 import {
     createObservableObject,
     getTextDirection
@@ -9,7 +9,9 @@ import {
     createDateInput,
     parseDateStringToDateInputValue,
     getDateInputTypeFromDateString,
-    formatBatchExpiryDate
+    formatBatchExpiryDate,
+    configureEPIForAddition,
+    prefixMonthDate
 } from "./manage-batch-utils.js"
 
 export class ManageBatchPage {
@@ -240,7 +242,7 @@ export class ManageBatchPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.showModal("add-epi-modal");
+        let modalData = await webSkel.showModal("add-epi-modal",true);
         if (modalData) {
             await this.handleEPIModalData(modalData);
         }
@@ -270,8 +272,8 @@ export class ManageBatchPage {
         }
     }
 
-    deleteLeaflet(_target) {
-        let EPIUnit = webSkel.getClosestParentElement(_target, ".leaflet-unit");
+    deleteEpi(_target) {
+        let EPIUnit = webSkel.getClosestParentElement(_target, ".epi-unit");
         let EPIId = EPIUnit.getAttribute("data-id");
         this.EPIs = this.EPIs.filter(EPI => EPI.id !== EPIId);
         this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
@@ -310,6 +312,9 @@ export class ManageBatchPage {
     async addBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
         data.expiryDate = formatBatchExpiryDate(data.expiryDate);
+        if(getDateInputTypeFromDateString(data.expiryDate)==='month'){
+            data.expiryDate=prefixMonthDate(data.expiryDate);
+        }
         const batchObj = {
             "payload": {
                 "productCode": data.productCode,
@@ -322,6 +327,7 @@ export class ManageBatchPage {
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchNumber, batchObj);
             for(const EPI of this.EPIs){
+                configureEPIForAddition(EPI,data.productCode);
                 await $$.promisify(webSkel.client.addEPI)(data.productCode,data.batchNumber,EPI)
             }
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
