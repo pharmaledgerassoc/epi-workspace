@@ -1,6 +1,11 @@
 {
   "components": [
     {
+      "name": "progress-info-modal",
+      "type": "modals",
+      "presenterClassName": "ProgressInfoModal"
+    },
+    {
       "name": "preview-epi-modal",
       "type": "modals",
       "presenterClassName": "PreviewEpiModal"
