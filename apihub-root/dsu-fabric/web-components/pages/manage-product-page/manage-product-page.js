@@ -46,7 +46,7 @@ export class ManageProductPage {
             };
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
-        this.epiTab = `<leaflets-tab data-presenter="leaflets-tab" data-units="${tabInfo}"></leaflets-tab>`;
+        this.epiTab = `<epis-tab data-presenter="epis-tab" data-units="${tabInfo}"></epis-tab>`;
         let marketsInfo = this.productData.marketUnits.map((data) => {
             return {country: data.country, mah: data.mah, id: data.id, action: data.action};
         });
