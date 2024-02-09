@@ -9,7 +9,7 @@ const productInputFieldNames = [
 ]
 
 async function getProductData(productCode) {
-    let productPayload = await $$.promisify(webSkel.client.readProductMetadata)(productCode);
+    let productPayload = JSON.parse(JSON.stringify(await $$.promisify(webSkel.client.readProductMetadata)(productCode)));
     delete productPayload.pk;
     delete productPayload.__version;
     delete productPayload.__timestamp;
