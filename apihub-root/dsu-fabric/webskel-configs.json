@@ -21,9 +21,9 @@
       "presenterClassName": "MarketsTab"
     },
     {
-      "name": "leaflets-tab",
+      "name": "epis-tab",
       "type": "components",
-      "presenterClassName": "LeafletsTab"
+      "presenterClassName": "EPIsTab"
     },
     {
       "name": "data-matrix-modal",
@@ -84,16 +84,6 @@
       "name": "batches-page",
       "type": "pages",
       "presenterClassName": "BatchesPage"
-    },
-    {
-      "name": "edit-batch-page",
-      "type": "pages",
-      "presenterClassName": "EditBatchPage"
-    },
-    {
-      "name": "add-batch-page",
-      "type": "pages",
-      "presenterClassName": "AddBatchPage"
     },
     {
       "name": "audit-page",

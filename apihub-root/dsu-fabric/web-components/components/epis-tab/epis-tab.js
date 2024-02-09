@@ -1,4 +1,4 @@
-export class LeafletsTab {
+export class EPIsTab{
     constructor(element,invalidate){
         this.element=element;
         this.invalidate=invalidate;
@@ -6,6 +6,7 @@ export class LeafletsTab {
         this.epis = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
     }
     beforeRender(){
+        this.epis = JSON.parse(decodeURIComponent(this.element.getAttribute("data-units"))) || [];
         let stringHTML = "";
         if(this.epis.length > 0 && !this.epis.every(epi => epi.action === "delete")){
             for(let epi of this.epis){
