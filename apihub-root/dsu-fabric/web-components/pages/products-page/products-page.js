@@ -108,7 +108,7 @@ export class ProductsPage {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if(formData.isValid){
                 this.inputValue = formData.data.productCode;
-                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${this.inputValue}`]);
+                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode=${this.inputValue}`]);
                 if(products.length > 0){
                     this.products = products;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";

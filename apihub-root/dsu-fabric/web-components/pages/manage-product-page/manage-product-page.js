@@ -179,7 +179,7 @@ export class ManageProductPage {
     async saveInputs() {
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         for (const key in formData.data) {
-            if (formData.data[key]) {
+            if (this.productData[key] !== undefined) {
                 this.productData[key] = formData.data[key];
             }
         }

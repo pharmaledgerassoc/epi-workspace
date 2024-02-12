@@ -9,11 +9,11 @@ const productInputFieldNames = [
 ]
 
 async function getProductData(productCode) {
-    let productPayload = JSON.parse(JSON.stringify(await $$.promisify(webSkel.client.readProductMetadata)(productCode)));
+    let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
     delete productPayload.pk;
     delete productPayload.__version;
     delete productPayload.__timestamp;
-    let productPhotoPayload = await $$.promisify(webSkel.client.getProductPhoto)(productCode);
+    let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
     let epiUnits = [];
     let languages = await $$.promisify(webSkel.client.listProductsLangs)(productCode);
     if (languages && languages.length > 0) {

@@ -63,7 +63,7 @@ export class ProductsService{
         if(productData.photo){
             this.createPhotoPayload(productData)
             this.details.messageType = "ProductPhoto";
-            await $$.promisify(webSkel.client.addProductImage)(productData.productCode, this.details);
+            await $$.promisify(webSkel.client.addImage)(productData.productCode, this.details);
         }
         for(let epi of productData.epiUnits){
             await this.uploadLeafletFiles(epi);
@@ -79,7 +79,7 @@ export class ProductsService{
         if(productData.photo){
             this.createPhotoPayload(productData)
             this.details.messageType = "ProductPhoto";
-            await $$.promisify(webSkel.client.updateProductImage)(productData.productCode, this.details);
+            await $$.promisify(webSkel.client.updateImage)(productData.productCode, this.details);
         }
         for(let epi of productData.epiUnits){
             if(epi.leafletFiles instanceof FileList && epi.type === "leaflet"){

@@ -19,14 +19,18 @@ export class ManageBatchPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        ({mode: this.mode, gtin: this.gtin, batchId: this.batchId} = webSkel.getHashParams());
+        ({gtin: this.gtin, batchId: this.batchId} = webSkel.getHashParams());
+        if(this.gtin){
+            this.mode = "EDIT";
+        } else {
+            this.mode = "ADD";
+        }
         this.invalidate(async () => {
             await this.initializePageMode(this.mode);
         });
     }
 
     async initializePageMode(mode) {
-        debugger;
         const loadAddData = async () => {
             const products = await $$.promisify(webSkel.client.listProducts)();
             if (!products) {
@@ -35,12 +39,12 @@ export class ManageBatchPage {
             return products
         }
         const loadEditData = async () => {
-            const batch = await $$.promisify(webSkel.client.readBatchMetadata)(this.gtin, this.batchId);
+            const batch = await $$.promisify(webSkel.client.getBatchMetadata)(this.gtin, this.batchId);
             if (!batch) {
                 console.error(`Unable to find batch with ID: ${this.batchId}.`);
                 return {batch: undefined, product: undefined};
             }
-            const product = await $$.promisify(webSkel.client.readProductMetadata)(this.gtin);
+            const product = await $$.promisify(webSkel.client.getProductMetadata)(this.gtin);
             if (!product) {
                 console.error(`Unable to find product with product code: ${batch.productCode} for batch ID: ${this.batchId}.`);
                 return {batch, product: undefined};
