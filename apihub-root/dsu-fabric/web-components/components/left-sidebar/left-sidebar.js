@@ -11,11 +11,33 @@ export class LeftSidebar {
     }
 
     afterRender() {
-        const desiredSidebarSelection = this.element.querySelector(`[data-id="${this.selectedSidebarItem}"]`);
-        if (desiredSidebarSelection) {
-            this.activateSidebarSelection(desiredSidebarSelection);
+        if(this.selectedSidebarItem){
+            const desiredSidebarSelection = this.element.querySelector(`[data-id="${this.selectedSidebarItem}"]`);
+            if (desiredSidebarSelection) {
+                this.activateSidebarSelection(desiredSidebarSelection);
+            }
+        } else {
+            this.changeSidebarFromURL(window.location.hash);
         }
     }
+    changeSidebarFromURL(currentPage) {
+        let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
+        let sidebarItems = document.querySelectorAll(".menu-item");
+        if (!sidebarItems) {
+            return;
+        }
+        let elements = {};
+        for (let category of categories) {
+            elements[category] = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("data-category") === category);
+        }
+        for (let category of categories) {
+            if (currentPage.includes(category)) {
+                elements[category].id = "active-menu-item";
+                return;
+            }
+        }
+    }
+
 
     activateSidebarSelection(clickTargetElement) {
         const oldSidebarSelection = this.element.querySelector('#active-menu-item');

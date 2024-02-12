@@ -41,7 +41,7 @@ class PermissionsWatcher {
             let unAuthorizedPages = ["generate-did-page", "landing-page"];
             if (hasAccess) {
                 if (unAuthorizedPages.indexOf(getCurrentPageTag()) !== -1) {
-                    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar" data-sidebar-selection="home-page"></left-sidebar>`);
+                    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar"></left-sidebar>`);
                     //if we are on a booting page then we need to redirect...
                     return this.isAuthorizedHandler();
                 }

@@ -1,4 +1,4 @@
-import {getUserDetails, navigateToPage, loadPage} from "../../../utils/utils.js";
+import {getUserDetails, loadPage} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
 

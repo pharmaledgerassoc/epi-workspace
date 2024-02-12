@@ -1,4 +1,4 @@
-import {loadPage, navigateToPage, setupGlobalErrorHandlers} from "./utils/utils.js";
+import {navigateToPage, setupGlobalErrorHandlers} from "./utils/utils.js";
 
 import WebSkel from "./WebSkel/webSkel.js";
 import {
