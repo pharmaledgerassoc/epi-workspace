@@ -132,6 +132,10 @@
     {
       "name": "ProductsService",
       "path": "../services/ProductsService.js"
+    },
+    {
+      "name": "EPIsService",
+      "path": "../services/EPIsService.js"
     }
   ],
   "webComponentsRootDir" : "web-components",

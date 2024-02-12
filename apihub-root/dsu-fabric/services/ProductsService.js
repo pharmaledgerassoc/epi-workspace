@@ -1,5 +1,6 @@
 import constants from "../constants.js";
-export class ProductsService{
+
+export class ProductsService {
     constructor() {
     }
 
@@ -11,7 +12,8 @@ export class ProductsService{
         messageId: "S000001",
         messageDateTime: "2023-01-11T09:10:01CET"
     }
-    createProductPayload(productData){
+
+    createProductPayload(productData) {
         this.details.payload = {
             productCode: productData.productCode,
             internalMaterialCode: productData.internalMaterialCode,
@@ -20,13 +22,14 @@ export class ProductsService{
             strength: productData.strength
         };
     }
-    createPhotoPayload(productData){
+
+    createPhotoPayload(productData) {
         const regex = /\/([^\/;]+);/;
         const match = productData.photo.match(regex);
         let imageType;
-        if(match){
+        if (match) {
             imageType = match[1];
-        }else {
+        } else {
             imageType = "unknown";
         }
         this.details.payload = {
@@ -37,79 +40,60 @@ export class ProductsService{
             imageData: productData.photo
         };
     }
-    createLeafletPayload(epi, productData){
-        this.details.payload = {
-            productCode: productData.productCode,
-            language: epi.language,
-            xmlFileContent: epi.xmlFileContent,
-            otherFilesContent: epi.otherFilesContent
-        };
-    }
-    async uploadLeafletFiles(epi){
-        epi.otherFilesContent = [];
-        for(let file of epi.leafletFiles){
-            if(file.type === "text/xml"){
-                epi.xmlFileContent = await webSkel.uploadFileAsText(file);
-            }else {
-                epi.otherFilesContent.push(await webSkel.imageUpload(file));
-            }
-        }
 
-    }
-    async addProduct(productData, callback){
+    async addProduct(productData, callback) {
         this.createProductPayload(productData);
         this.details.messageType = "Product";
         await $$.promisify(webSkel.client.addProduct)(productData.productCode, this.details);
-        if(productData.photo){
+        if (productData.photo) {
             this.createPhotoPayload(productData)
             this.details.messageType = "ProductPhoto";
             await $$.promisify(webSkel.client.addImage)(productData.productCode, this.details);
         }
-        for(let epi of productData.epiUnits){
-            await this.uploadLeafletFiles(epi);
-            this.createLeafletPayload(epi, productData);
-            this.details.messageType = epi.type;
-            await $$.promisify(webSkel.client.addEPI)(productData.productCode, this.details);
+        for (let epi of productData.epiUnits) {
+            webSkel.appServices.addEPI(epi,productData,this.details)
         }
     }
-    async updateProduct(productData, existingEpiUnits){
+
+    /* existing epi units [en,de,fr,ro] */
+
+    /* new epis [en,de,fr] */
+    async updateProduct(productData, existingEpiUnits) {
+        debugger
         this.createProductPayload(productData);
         this.details.messageType = "Product";
         await $$.promisify(webSkel.client.updateProduct)(productData.productCode, this.details);
-        if(productData.photo){
+        if (productData.photo) {
             this.createPhotoPayload(productData)
             this.details.messageType = "ProductPhoto";
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, this.details);
         }
-        for(let epi of productData.epiUnits){
-            if(epi.leafletFiles instanceof FileList && epi.type === "leaflet"){
-                await this.uploadLeafletFiles(epi);
-                this.createLeafletPayload(epi, productData);
-                this.details.messageType = epi.type;
-                if(existingEpiUnits.some(obj => obj.language === epi.language)){
-                    await $$.promisify(webSkel.client.updateEPI)(productData.productCode, this.details);
-                }else {
-                    await $$.promisify(webSkel.client.addEPI)(productData.productCode, this.details);
-                }
-            }
-            else {
+        for (let epi of productData.epiUnits) {
+            this.createLeafletPayload(epi, productData);
+            this.details.messageType = epi.type;
+            if (epi.action === "update" && existingEpiUnits.some(obj => obj.language === epi.language)) {
+                await $$.promisify(webSkel.client.updateEPI)(productData.productCode, this.details);
+            } else if (epi.action === "add") {
+                await $$.promisify(webSkel.client.addEPI)(productData.productCode, this.details);
+            } else if (epi.action === "delete"){
                 let language;
-                if(existingEpiUnits.some(obj => {
+                if (existingEpiUnits.some(obj => {
                     language = obj.language;
-                    return obj.language === epi.language && epi.action === "delete";
-                })){
+                    return obj.language === epi.language;
+                })) {
                     await $$.promisify(webSkel.client.deleteEPI)(productData.productCode, language);
                 }
             }
         }
     }
+
     getMarketDiffViewObj(marketDiffObj) {
         let newValueCountry = "";
-        if(marketDiffObj.newValue){
+        if (marketDiffObj.newValue) {
             newValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.newValue.country);
         }
         let oldValueCountry = "";
-        if(marketDiffObj.oldValue){
+        if (marketDiffObj.oldValue) {
             oldValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.oldValue.country);
         }
 
@@ -128,8 +112,12 @@ export class ProductsService{
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
-            let { epiUnits, marketUnits, ...initialProductData } = initialProduct;
-            let { epiUnits: updatedLeafletUnits, marketUnits: updatedMarketUnits, ...updatedProductData } = updatedProduct;
+            let {epiUnits, marketUnits, ...initialProductData} = initialProduct;
+            let {
+                epiUnits: updatedLeafletUnits,
+                marketUnits: updatedMarketUnits,
+                ...updatedProductData
+            } = updatedProduct;
             let diffs = webSkel.appServices.getDiffsForAudit(initialProductData, updatedProductData);
             let epiDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
             let marketDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
