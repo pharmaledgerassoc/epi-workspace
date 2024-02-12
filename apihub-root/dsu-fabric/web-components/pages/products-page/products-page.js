@@ -3,7 +3,7 @@ export class ProductsPage {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate(async ()=>{
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
+            this.products = await $$.promisify(webSkel.client.listProducts)();
         });
     }
 
@@ -124,7 +124,7 @@ export class ProductsPage {
         this.searchResultIcon = "";
         delete this.inputValue;
         this.invalidate(async ()=>{
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
+            this.products = await $$.promisify(webSkel.client.listProducts)();
         });
     }
 }

@@ -28,7 +28,7 @@ export class ManageBatchPage {
     async initializePageMode(mode) {
         debugger;
         const loadAddData = async () => {
-            const products = await $$.promisify(webSkel.client.listProducts)(undefined);
+            const products = await $$.promisify(webSkel.client.listProducts)();
             if (!products) {
                 console.error("Encountered an error trying to fetch All Products")
             }

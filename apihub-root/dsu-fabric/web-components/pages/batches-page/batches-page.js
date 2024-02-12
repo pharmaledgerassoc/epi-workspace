@@ -3,8 +3,8 @@ export class BatchesPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
-            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
+            this.batches = await $$.promisify(webSkel.client.listBatches)();
+            this.products = await $$.promisify(webSkel.client.listProducts)();
         });
 
     }
@@ -137,8 +137,8 @@ export class BatchesPage {
         this.searchResultIcon = "";
         delete this.inputValue;
         this.invalidate(async () => {
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
-            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
+            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.batches = await $$.promisify(webSkel.client.listBatches)();
         });
     }
     async navigateToManageBatchPage(_target, mode, productCode, batchId){

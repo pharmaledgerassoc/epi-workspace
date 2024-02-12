@@ -101,8 +101,8 @@ export class AccessLogs {
         this.searchResultIcon = "";
         delete this.inputValue;
         this.invalidate(async ()=>{
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined);
-            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined);
+            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.batches = await $$.promisify(webSkel.client.listBatches)();
         });
     }
     async downloadCSV(){
