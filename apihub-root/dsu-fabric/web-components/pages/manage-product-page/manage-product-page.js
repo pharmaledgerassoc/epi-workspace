@@ -13,7 +13,7 @@ export class ManageProductPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
-           await this.initModel();
+            await this.initModel();
         });
     }
 
@@ -193,21 +193,39 @@ export class ManageProductPage {
         //else closed without submitting
     }
 
-    updateEpi(modalData) {
-        let existingLeafletIndex = this.productData.epiUnits.findIndex(epi => epi.language === modalData.language);
+
+    deleteEpi(_target) {
+        let epiUnitElement = webSkel.getClosestParentElement(_target, ".epi-unit");
+        let id = epiUnitElement.getAttribute("data-id");
+        let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
+        epiUnit.action = "delete";
+        //this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);
+        this.invalidate();
+    }
+
+    addOrUpdateEpi(modalData) {
+        const existingLeafletIndex = this.productData.epiUnits.findIndex(epi => epi.language === modalData.language);
         if (existingLeafletIndex !== -1) {
+            /* epi already exists */
+            if (this.productData.epiUnits[existingLeafletIndex].action === "add") {
+                /* previously added epi */
+                modalData.action = "add"
+            } else {
+                /* previously existent epi */
+                modalData.action = "update"
+            }
             this.productData.epiUnits[existingLeafletIndex] = modalData;
-            console.log(`updated epi, language: ${modalData.language}`);
-            return true;
+            console.log(`Updated epi, language: ${modalData.language}`);
+        } else {
+            /* newly added epi */
+            modalData.action = "add";
+            this.productData.epiUnits.push(modalData);
         }
-        return false;
     }
 
     async handleEPIModalData(data) {
         data.id = webSkel.appServices.generateID(16);
-        if (!this.updateEpi(data)) {
-            this.productData.epiUnits.push(data);
-        }
+        this.addOrUpdateEpi(data)
         this.selected = "epi";
         this.invalidate(this.saveInputs.bind(this));
     }
@@ -259,7 +277,7 @@ export class ManageProductPage {
                     this.productData[key] = formData.data[key];
                 }
             }
-            let modal = await webSkel.showModal("progress-info-modal", {message:"Saving Product..."}, );
+            let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."},);
             await webSkel.appServices.addProduct(this.productData);
             await webSkel.closeModal(modal);
             await navigateToPage("products-page");
@@ -271,10 +289,8 @@ export class ManageProductPage {
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
         let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
         if (confirmation) {
-            let modal = await webSkel.showModal("progress-info-modal", {message:"Saving Product..."});
+            let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."});
             await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
-            this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.action !== "delete");
-            this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.action !== "delete");
             await webSkel.closeModal(modal);
             await navigateToPage("products-page");
         }
@@ -287,14 +303,6 @@ export class ManageProductPage {
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 
-    deleteEpi(_target) {
-        let epiUnitElement = webSkel.getClosestParentElement(_target, ".epi-unit");
-        let id = epiUnitElement.getAttribute("data-id");
-        let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
-        epiUnit.action = "delete";
-        //this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);
-        this.invalidate();
-    }
 
     deleteMarket(_target) {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
