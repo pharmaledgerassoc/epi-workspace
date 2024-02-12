@@ -23,11 +23,11 @@ export class BatchesPage {
                         <div>${product.inventedName}</div>
                         <div>${product.nameMedicinalProduct}</div>
                         <div>${item.productCode}</div>
-                        <div>${item.batch}</div>
+                        <div>${item.batchNumber}</div>
                         <div>${this.addSeparatorToDateString(item.expiryDate, '/')}</div>
                         <div class="view-details pointer" data-local-action="openDataMatrixModal ${item.productCode}">View</div>
                         <div>-</div>
-                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.productCode} ${item.batch}">Edit</div>
+                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.productCode} ${item.batchNumber}">Edit</div>
                       `;
         }
         this.items = string;

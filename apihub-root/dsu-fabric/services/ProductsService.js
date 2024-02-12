@@ -6,11 +6,11 @@ export class ProductsService {
 
     details = {
         messageType: "",
-        messageTypeVersion: 1,
+        messageTypeVersion: 2,
         senderId: "ManualUpload",
-        receiverId: "QPNVS",
-        messageId: "S000001",
-        messageDateTime: "2023-01-11T09:10:01CET"
+        receiverId: "QPNVR",
+        messageId: "S000002",
+        messageDateTime: "2023-02-11T09:10:01CET"
     }
 
     createProductPayload(productData) {
@@ -51,7 +51,7 @@ export class ProductsService {
             await $$.promisify(webSkel.client.addImage)(productData.productCode, this.details);
         }
         for (let epi of productData.epiUnits) {
-            webSkel.appServices.addEPI(epi,productData,this.details)
+            webSkel.appServices.addEPI(epi,productData.productCode,this.details)
         }
     }
 
@@ -65,7 +65,7 @@ export class ProductsService {
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, this.details);
         }
         for (let epi of productData.epiUnits) {
-            this.details.payload=webSkel.appServices.createEPIPayload(epi,productData)
+            this.details.payload=webSkel.appServices.createEPIPayload(epi,productData.productCode)
             this.details.messageType = epi.type;
             if (epi.action === "update" && existingEpiUnits.some(obj => obj.language === epi.language)) {
                 await $$.promisify(webSkel.client.updateEPI)(productData.productCode, this.details);

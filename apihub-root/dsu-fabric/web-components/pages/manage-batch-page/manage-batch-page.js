@@ -220,7 +220,7 @@ export class ManageBatchPage {
                 });
             },
             ADD: () => {
-                dateContainer.insertBefore(createDateInput('month'), dateContainer.firstChild);
+                dateContainer.insertBefore(createDateInput('date'), dateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
                     const {
@@ -277,8 +277,9 @@ export class ManageBatchPage {
     deleteEpi(_target) {
         let EPIUnit = webSkel.getClosestParentElement(_target, ".epi-unit");
         let EPIId = EPIUnit.getAttribute("data-id");
-        this.EPIs = this.EPIs.filter(EPI => EPI.id !== EPIId);
-        this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
+        let deletedEPI=this.updatedEPIs.find(epi=>epi.id===EPIId);
+        deletedEPI.action="delete";
+        this.reloadLeafletTab(this.getEncodedEPIS(this.updatedEPIs));
     }
     addOrUpdateEpi(EPIData) {
         const existingLeafletIndex = (this.updatedEPIs||[]).findIndex(epi => epi.language === EPIData.language);
@@ -312,6 +313,7 @@ export class ManageBatchPage {
         if (getDateInputTypeFromDateString(data.expiryDate) === 'month') {
             data.expiryDate = prefixMonthDate(data.expiryDate);
         }
+        webSkel.appServices.getBatchDiffs(this.batch,data,this.EPIs,this.updatedEPIs);
         if (await webSkel.appServices.addBatch(data, this.updatedEPIs) === true) {
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
         }
@@ -319,6 +321,14 @@ export class ManageBatchPage {
 
     async updateBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
+        data.expiryDate = formatBatchExpiryDate(data.expiryDate);
+        if (getDateInputTypeFromDateString(data.expiryDate) === 'month') {
+            data.expiryDate = prefixMonthDate(data.expiryDate);
+        }
+        webSkel.appServices.getBatchDiffs(this.batch,data);
+        if (await webSkel.appServices.updateBatch(data, this.EPIs,this.updatedEPIs) === true) {
+            await webSkel.changeToDynamicPage("batches-page", "batches-page");
+        }
     }
 
     async viewLeaflet(_target) {
@@ -327,37 +337,5 @@ export class ManageBatchPage {
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 
-    getDiffs() {
-        let result = [];
-        try {
-            let mappingLogService = mappings.getMappingLogsInstance(this.storageService, new LogService());
-            let diffs = mappingLogService.getDiffsForAudit(this.model.batch, this.initialModel.batch);
-            let epiDiffs = mappingLogService.getDiffsForAudit(this.model.languageTypeCards, this.initialCards);
-            Object.keys(diffs).forEach(key => {
-                if (key === "expiry") {
-                    return;
-                }
-                if (key === "expiryForDisplay") {
-                    let daySelectionObj = {
-                        oldValue: this.initialModel.batch.enableExpiryDay,
-                        newValue: this.model.batch.enableExpiryDay
-                    }
-
-                    result.push(utils.getDateDiffViewObj(diffs[key], key, daySelectionObj, constants.MODEL_LABELS_MAP.BATCH))
-                    return;
-                }
-                result.push(utils.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
-
-            });
-            Object.keys(epiDiffs).forEach(key => {
-                result.push(utils.getEpiDiffViewObj(epiDiffs[key]));
-            });
-
-        } catch (e) {
-            console.log(e);
-        }
-
-        return result
-    }
 
 }

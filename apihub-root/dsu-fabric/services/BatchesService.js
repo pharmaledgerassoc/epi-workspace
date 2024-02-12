@@ -1,10 +1,13 @@
+import constants from "../constants.js";
 import bwipjs from "../cloned-dependecies/bwip.js";
+
 //TODO: CODE-REVIEW - bwipjs is a helper or an external library/dependency??
 
 const TWO_D_BARCODES = ["datamatrix", "gs1datamatrix", "qrcode"];
 
 export class BatchesService {
-    constructor() {}
+    constructor() {
+    }
 
     charsMap = {
         "33": "!",
@@ -115,13 +118,16 @@ export class BatchesService {
         this.drawQRCodeCanvas(model, element);
     }
 
-    async addBatch(batchData,EPIs){
+    async addBatch(batchData, EPIs) {
         const batchValidationResult = this.validateBatch(batchData)
+        const details = {
+            payload:batchData
+        }
         if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, batchData);
-            for(const EPI of EPIs){
-                 const EPIPayload=webSkel.appServices.createEPIPayload(EPI,batchData);
-                await $$.promisify(webSkel.client.addEPI)(batchData.productCode,batchData.batchNumber,EPIPayload)
+            await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, details);
+            for (const EPI of EPIs) {
+                const EPIPayload = webSkel.appServices.createEPIPayload(EPI, batchData.productCode);
+                await $$.promisify(webSkel.client.addEPI)(batchData.productCode, batchData.batchNumber, EPIPayload)
             }
             return true;
         } else {
@@ -130,12 +136,32 @@ export class BatchesService {
             return false;
         }
     }
-    createBatchPayload(batchData) {
-        return {
-            "productCode": batchData.productCode,
-            "batch": batchData.batchNumber,
-            "packagingSiteName": batchData.packagingSiteName,
-            "expiryDate": batchData.expiryDate
+
+    async updateBatch(batchData, existingEPIs,updatedEPIs) {
+        const batchValidationResult = this.validateBatch(batchData)
+        if (batchValidationResult.valid) {
+            await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, batchData);
+            for (const epi of updatedEPIs) {
+                let epiPayload=webSkel.appServices.createEPIPayload(epi,batchData.productCode);
+                if(epi.action === "update" && existingEPIs.some(obj => obj.language === epi.language)){
+                    await $$.promisify(webSkel.client.updateEPI)(batchData.productCode, batchData.batchNumber,epiPayload);
+                }else if (epi.action === "add") {
+                    await $$.promisify(webSkel.client.addEPI)(batchData.productCode,batchData.batchNumber, this.details);
+                } else if (epi.action === "delete"){
+                    let language;
+                    if (existingEPIs.some(obj => {
+                        language = obj.language;
+                        return obj.language === epi.language;
+                    })) {
+                        await $$.promisify(webSkel.client.deleteEPI)(productData.productCode, language);
+                    }
+                }
+            }
+            return true;
+        } else {
+            /* TODO Replace console error logging with toasts */
+            console.error(batchValidationResult.message);
+            return false;
         }
     }
 
@@ -160,5 +186,38 @@ export class BatchesService {
         }
 
         return {valid: true, message: ''};
+    }
+    getBatchDiffs(initialBatch,updatedBatch,initialEPIs,updatedEPIs) {
+        debugger
+        let result = [];
+        try {
+            let diffs = webSkel.appServices.getDiffsForAudit(initialBatch, updatedBatch);
+            let epiDiffs = webSkel.appServices.getDiffsForAudit(initialEPIs, updatedEPIs);
+
+            Object.keys(diffs).forEach(key => {
+                if (key === "expiry") {
+                    return;
+                }
+                if (key === "expiryForDisplay") {
+                    let daySelectionObj = {
+                        oldValue: initialBatch.enableExpiryDay,
+                        newValue: updatedBatch.enableExpiryDay
+                    }
+
+                    result.push(webSkel.appServices.getDateDiffViewObj(diffs[key], key, daySelectionObj, constants.MODEL_LABELS_MAP.BATCH))
+                    return;
+                }
+                result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
+
+            });
+            Object.keys(epiDiffs).forEach(key => {
+                result.push(webSkel.appServices.getEpiDiffViewObj(epiDiffs[key]));
+            });
+
+        } catch (e) {
+            console.log(e);
+        }
+
+        return result
     }
 }

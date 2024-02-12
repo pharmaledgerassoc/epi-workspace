@@ -1,9 +1,10 @@
 import constants from "../constants.js";
 
-export class UtilsService{
+export class UtilsService {
     constructor() {
     }
-     generate(charactersSet, length){
+
+    generate(charactersSet, length) {
         let result = '';
         const charactersLength = charactersSet.length;
         for (let i = 0; i < length; i++) {
@@ -11,7 +12,9 @@ export class UtilsService{
         }
         return result;
     }
+
     dbMessageFields = ["pk", "meta", "did", "__timestamp", "$loki", "context", "keySSI", "epiProtocol", "version"];
+
     generateID(length) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         return this.generate(characters, length);
@@ -22,13 +25,14 @@ export class UtilsService{
         return this.generate(characters, length);
     }
 
-    generateSerialNumber(length){
+    generateSerialNumber(length) {
         let char = this.generate("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 2);
-        let number = this.generateNumericID(length-char.length);
-        return char+number;
+        let number = this.generateNumericID(length - char.length);
+        return char + number;
 
     }
-    cleanMessage (message)  {
+
+    cleanMessage(message) {
         let cleanMessage = JSON.parse(JSON.stringify(message));
         this.dbMessageFields.forEach(field => {
             if (field in cleanMessage) {
@@ -37,13 +41,14 @@ export class UtilsService{
         })
         return cleanMessage;
     }
-    getDiffsForAudit(prevData, newData){
+
+    getDiffsForAudit(prevData, newData) {
         if (prevData && (Array.isArray(prevData) || Object.keys(prevData).length > 0)) {
             prevData = this.cleanMessage(prevData);
             newData = this.cleanMessage(newData);
 
             let diffs = Object.keys(newData).reduce((diffs, key) => {
-                if(newData[key].action === "delete" && !prevData[key]){
+                if (newData[key].action === "delete" && !prevData[key]) {
                     return diffs;
                 }
                 if (JSON.stringify(prevData[key]) === JSON.stringify(newData[key])) return diffs
@@ -54,6 +59,7 @@ export class UtilsService{
             return diffs;
         }
     }
+
     getPropertyDiffViewObj(diff, property, modelLabelsMap) {
         let oldValue = diff.oldValue;
         let newValue = diff.newValue;
@@ -69,6 +75,7 @@ export class UtilsService{
             "newValue": {"value": newValue || " ", "directDisplay": true}
         }
     }
+
     getPhotoDiffViewObj(diff, property, modelLabelsMap) {
         const gtinResolverUtils = gtinResolver.getMappingsUtils();
         return {
@@ -84,13 +91,14 @@ export class UtilsService{
             "isPhoto": true
         }
     }
+
     getEpiDiffViewObj(epiDiffObj) {
         let newValueLanguage = "";
-        if(epiDiffObj.newValue){
+        if (epiDiffObj.newValue) {
             newValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
         }
         let oldValueLanguage = "";
-        if(epiDiffObj.oldValue){
+        if (epiDiffObj.oldValue) {
             oldValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.oldValue.language);
         }
         let changedProperty = epiDiffObj.newValue ? `${newValueLanguage}  ${epiDiffObj.newValue.type}` : `${oldValueLanguage}  ${epiDiffObj.oldValue.type}`
@@ -102,6 +110,40 @@ export class UtilsService{
                 "directDisplay": !!!epiDiffObj.newValue || epiDiffObj.newValue.action === "delete"
             },
             "dataType": "epi"
+        }
+    }
+
+    getDateDiffViewObj(diff, property, enableDaySelection, modelLabelsMap) {
+        return {
+            "changedProperty": modelLabelsMap[property],
+            "oldValue": {
+                "isDate": !!diff.oldValue,
+                "value": diff.oldValue || false,
+                "directDisplay": true,
+                "enableExpiryDay": enableDaySelection.oldValue
+            },
+            "newValue": {
+                "isDate": !!diff.newValue,
+                "value": diff.newValue || false,
+                "directDisplay": true,
+                "enableExpiryDay": enableDaySelection.newValue
+            }
+        }
+    }
+
+    getPropertyDiffViewObj(diff, property, modelLabelsMap) {
+        let oldValue = diff.oldValue;
+        let newValue = diff.newValue;
+        if (typeof oldValue !== "string") {
+            oldValue = JSON.stringify(oldValue);
+        }
+        if (typeof newValue !== "string") {
+            newValue = JSON.stringify(newValue);
+        }
+        return {
+            "changedProperty": modelLabelsMap[property],
+            "oldValue": {"value": oldValue || " ", "directDisplay": true},
+            "newValue": {"value": newValue || " ", "directDisplay": true}
         }
     }
 
