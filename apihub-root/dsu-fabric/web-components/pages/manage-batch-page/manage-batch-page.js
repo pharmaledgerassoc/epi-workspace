@@ -1,8 +1,14 @@
-import {getEpiPreviewModel, getEpitUnit, removeMarkedForDeletion} from "../manage-product-page/manage-product-utils.js";
+import {
+    getEpiPreviewModel,
+    getEpitUnit,
+    removeMarkedForDeletion
+} from "../manage-product-page/manage-product-utils.js";
+
 import {
     createObservableObject,
     getTextDirection
 } from "../../../utils/utils.js";
+
 import {
     reverseInputFormattedDateString,
     getLastDayOfMonth,
@@ -10,7 +16,6 @@ import {
     parseDateStringToDateInputValue,
     getDateInputTypeFromDateString,
     formatBatchExpiryDate,
-    configureEPIForAddition,
     prefixMonthDate
 } from "./manage-batch-utils.js"
 
@@ -94,7 +99,8 @@ export class ManageBatchPage {
                                         </select>`,
                     penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`,
                     leafletsInfo: "[]",
-                    EPIs: []
+                    EPIs: [],
+                    updatedEPIs:[]
                 }
             },
             EDIT: async () => {
@@ -132,7 +138,8 @@ export class ManageBatchPage {
                     formActionButtonState: "disabled",
                     leafletsInfo: leafletsInfo,
                     updatedBatch: updatedBatch,
-                    EPIs: updatedBatch.EPIs
+                    EPIs: updatedBatch.EPIs,
+                    updatedEPIs:updatedBatch.EPIs
                 };
             }
         };
@@ -246,7 +253,7 @@ export class ManageBatchPage {
     }
 
     async showAddEPIModal() {
-        let modalData = await webSkel.showModal("add-epi-modal",true);
+        let modalData = await webSkel.showModal("add-epi-modal", true);
         if (modalData) {
             await this.handleEPIModalData(modalData);
         }
@@ -267,81 +274,57 @@ export class ManageBatchPage {
         leafletTab.webSkelPresenter.invalidate();
     }
 
-    updateLeaflet(batchEPIs, EPIData) {
-        const existingLeafletIndex = batchEPIs.findIndex(EPI => EPI.language === EPIData.language);
-        if (existingLeafletIndex !== -1) {
-            batchEPIs[existingLeafletIndex] = EPIData;
-        } else {
-            batchEPIs.push(EPIData);
-        }
-    }
-
     deleteEpi(_target) {
         let EPIUnit = webSkel.getClosestParentElement(_target, ".epi-unit");
         let EPIId = EPIUnit.getAttribute("data-id");
         this.EPIs = this.EPIs.filter(EPI => EPI.id !== EPIId);
         this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
     }
-
+    addOrUpdateEpi(EPIData) {
+        const existingLeafletIndex = (this.updatedEPIs||[]).findIndex(epi => epi.language === EPIData.language);
+        if (existingLeafletIndex !== -1) {
+            /* epi already exists */
+            if (this.updatedEPIs[existingLeafletIndex].action === "add") {
+                /* previously added epi */
+                EPIData.action = "add"
+            } else {
+                /* previously existent epi */
+                EPIData.action = "update"
+            }
+            this.updatedEPIs[existingLeafletIndex] = EPIData;
+            console.log(`Updated epi, language: ${EPIData.language}`);
+        } else {
+            /* newly added epi */
+            EPIData.action = "add";
+            this.updatedEPIs.push(EPIData);
+        }
+    }
     async handleEPIModalData(EPIData) {
         EPIData.id = webSkel.appServices.generateID(16);
-        this.updateLeaflet(this.EPIs, EPIData)
-        this.reloadLeafletTab(this.getEncodedEPIS(this.EPIs));
+        this.addOrUpdateEpi(EPIData)
+        this.reloadLeafletTab(this.getEncodedEPIS(this.updatedEPIs));
     }
 
-    /* TODO Replace console error logging with toasts */
-    validateBatch(batchObj) {
-        if (!batchObj.productCode) {
-            return {valid: false, message: 'Product code is a mandatory field'};
-
-        }
-        if (!batchObj.batch) {
-            return {valid: false, message: 'Batch number is a mandatory field'};
-        }
-
-        if (!/^[A-Za-z0-9]{1,20}$/.test(batchObj.batchNumber)) {
-            return {
-                valid: false,
-                message: 'Batch number can contain only alphanumeric characters and a maximum length of 20'
-            };
-        }
-
-        if (!batchObj.expiryDate) {
-            return {valid: false, message: 'Expiration date is a mandatory field'};
-        }
-
-        return {valid: true, message: ''};
-    }
 
     async addBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
         data.expiryDate = formatBatchExpiryDate(data.expiryDate);
-        if(getDateInputTypeFromDateString(data.expiryDate)==='month'){
-            data.expiryDate=prefixMonthDate(data.expiryDate);
+        if (getDateInputTypeFromDateString(data.expiryDate) === 'month') {
+            data.expiryDate = prefixMonthDate(data.expiryDate);
         }
-        const batchObj = {
-            "payload": {
-                "productCode": data.productCode,
-                "batch": data.batchNumber,
-                "packagingSiteName": data.packagingSiteName,
-                "expiryDate": data.expiryDate
-            }
-        }
-        const batchValidationResult = this.validateBatch(batchObj.payload)
-        if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.addBatch)(data.productCode, data.batchNumber, batchObj);
-            for(const EPI of this.EPIs){
-                configureEPIForAddition(EPI,data.productCode);
-                await $$.promisify(webSkel.client.addEPI)(data.productCode,data.batchNumber,EPI)
-            }
+        if (await webSkel.appServices.addBatch(data, this.updatedEPIs) === true) {
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
-        } else {
-            console.error(batchValidationResult.message);
         }
     }
 
     async updateBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
+    }
+
+    async viewLeaflet(_target) {
+        let epiObject = getEpitUnit(_target, this.EPIs);
+        let epiPreviewModel = getEpiPreviewModel(epiObject,);
+        await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 
     getDiffs() {

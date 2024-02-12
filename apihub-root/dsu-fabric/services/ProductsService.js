@@ -55,11 +55,7 @@ export class ProductsService {
         }
     }
 
-    /* existing epi units [en,de,fr,ro] */
-
-    /* new epis [en,de,fr] */
     async updateProduct(productData, existingEpiUnits) {
-        debugger
         this.createProductPayload(productData);
         this.details.messageType = "Product";
         await $$.promisify(webSkel.client.updateProduct)(productData.productCode, this.details);
@@ -69,7 +65,7 @@ export class ProductsService {
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, this.details);
         }
         for (let epi of productData.epiUnits) {
-            this.createLeafletPayload(epi, productData);
+            this.details.payload=webSkel.appServices.createEPIPayload(epi,productData)
             this.details.messageType = epi.type;
             if (epi.action === "update" && existingEpiUnits.some(obj => obj.language === epi.language)) {
                 await $$.promisify(webSkel.client.updateEPI)(productData.productCode, this.details);
