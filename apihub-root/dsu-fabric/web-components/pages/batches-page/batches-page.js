@@ -10,26 +10,37 @@ export class BatchesPage {
     }
 
     addSeparatorToDateString(dateString, separator) {
-        return dateString.slice(4,6)==='00'
+        return dateString.slice(4, 6) === '00'
             ? [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator)
             : [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator)
     }
 
+    createBatchRowHTML(batch, product, lastRowItem = false) {
+        const createClassString = (...classNames) => {
+            return classNames.filter(Boolean).join(' ');
+        }
+        const classCellBorder = "cell-border-bottom";
+        const viewEditClass = "view-details pointer";
+        return `
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.inventedName}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.nameMedicinalProduct}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.productCode}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.batchNumber}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${this.addSeparatorToDateString(batch.expiryDate, '/')}</div>
+        <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="openDataMatrixModal ${batch.productCode}">View</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>-</div>
+        <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}"
+             data-local-action="navigateToEditBatch ${batch.productCode} ${batch.batchNumber}">Edit</div>`
+    }
+
     beforeRender() {
         let string = "";
-        for (let item of this.batches) {
-            let product = this.products.find(prodObj => prodObj.productCode === item.productCode)
-            string += `
-                        <div>${product.inventedName}</div>
-                        <div>${product.nameMedicinalProduct}</div>
-                        <div>${item.productCode}</div>
-                        <div>${item.batchNumber}</div>
-                        <div>${this.addSeparatorToDateString(item.expiryDate, '/')}</div>
-                        <div class="view-details pointer" data-local-action="openDataMatrixModal ${item.productCode}">View</div>
-                        <div>-</div>
-                        <div class="view-details pointer" data-local-action="navigateToEditBatch ${item.productCode} ${item.batchNumber}">Edit</div>
-                      `;
-        }
+        const batchesCount = this.batches.length;
+        this.batches.forEach((batch, index) => {
+            let product = this.products.find(prodObj => prodObj.productCode === batch.productCode)
+            string += this.createBatchRowHTML(batch, product, index === batchesCount - 1);
+        });
+
         this.items = string;
     }
 
@@ -141,12 +152,15 @@ export class BatchesPage {
             this.batches = await $$.promisify(webSkel.client.listBatches)();
         });
     }
-    async navigateToAddBatch(){
+
+    async navigateToAddBatch() {
         await webSkel.changeToDynamicPage("manage-batch-page", `manage-batch-page`);
     }
-    async navigateToEditBatch(_target, productCode, batchId){
+
+    async navigateToEditBatch(_target, productCode, batchId) {
         await webSkel.changeToDynamicPage("manage-batch-page", `manage-batch-page?gtin=${productCode}&&batchId=${batchId}`);
     }
+
     async openDataMatrixModal(_target, productCode) {
         await webSkel.showModal("data-matrix-modal", {["product-code"]: productCode});
     }
