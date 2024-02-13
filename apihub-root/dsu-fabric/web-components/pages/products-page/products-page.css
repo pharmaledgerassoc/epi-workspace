@@ -108,3 +108,6 @@ products-page{
 .no-data-instructions{
     font-style: italic;
 }
+.cell-border-bottom{
+    border-bottom: 1px solid var(--very-light-grey);
+}
