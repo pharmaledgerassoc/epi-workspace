@@ -133,7 +133,7 @@ export class BatchesPage {
                 let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${this.inputValue}`]);
                 if (products.length > 0) {
                     this.products = products;
-                    this.batches = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${this.inputValue}`]);
+                    this.batches = await $$.promisify(webSkel.client.listBatches)(undefined, undefined, [`productCode == ${this.inputValue}`]);
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
                 } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";

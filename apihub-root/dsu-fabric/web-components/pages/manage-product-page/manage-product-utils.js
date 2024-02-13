@@ -37,7 +37,7 @@ async function getProductData(productCode) {
 
 function createNewState(product = {}, image = {}, epiUnits = [], marketUnits = []) {
     let productObj = Object.assign({}, product);
-    productObj.photo = image["imageData"] || "";
+    productObj.photo = image || "";
     productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
     productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));
     return productObj;

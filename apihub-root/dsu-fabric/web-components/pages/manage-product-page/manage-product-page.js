@@ -115,16 +115,16 @@ export class ManageProductPage {
         if (this.selected !== _target.getAttribute("id")) {
             this.selected = _target.getAttribute("id");
             let tabName = _target.getAttribute("id");
-            let container = this.element.querySelector(".epi-market-management");
-            container.querySelector(".inner-tab").remove();
+            let container = this.element.querySelector(".inner-tab");
+            container.innerHTML = "";
             if (tabName === "epi") {
                 this.tab = this.epiTab;
                 this.selected = "epi";
-                container.insertAdjacentHTML("beforeend", this.tab);
+                container.innerHTML = this.tab;
             } else {
                 this.tab = this.marketTab;
                 this.selected = "market";
-                container.insertAdjacentHTML("beforeend", this.tab);
+                container.innerHTML = this.tab;
             }
             this.afterRender();
         }
@@ -285,16 +285,19 @@ export class ManageProductPage {
     }
 
     async updateProduct() {
-        let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
-        let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-        let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
-        if (confirmation) {
-            let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."});
-            await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
-            await webSkel.closeModal(modal);
-            await navigateToPage("products-page");
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        if(formData.isValid){
+            let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
+            let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
+            let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
+            if (confirmation) {
+                let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."});
+                await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
+                await webSkel.closeModal(modal);
+                await navigateToPage("products-page");
+            }
+            //else cancel button pressed
         }
-        //else cancel button pressed
     }
 
     async viewLeaflet(_target) {
