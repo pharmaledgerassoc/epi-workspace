@@ -24,7 +24,7 @@
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
                 <input type="text" class="text-input" name="packagingSiteName" id="packagingSiteName" autocomplete="off"
-                       placeholder="Add site name">
+                       placeholder="Add site name" value="$$packagingSiteName">
             </div>
             <div class="form-field-container">
                 <div class="form-field" id="date">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-field" id="day-selection">
                     <div class="checkbox-container">
-                        <input type="checkbox" id="enable-day-checkbox" checked>
+                        <input type="checkbox" id="enableExpiryDay" name="enableExpiryDay" $$enableExpiryDateCheck value="$$enableExpiryDate">
                         <label class="checkbox-label">Enable day selection</label>
                     </div>
                 </div>
@@ -67,17 +67,17 @@
             </div>
             <div class="form-field disabled-form-field">
                 <div class="label-container">
-                    <label class="label" for="invented-name"> Brand / Invented name</label>
+                    <label class="label" for="inventedName"> Brand / Invented name</label>
                 </div>
-                <input type="text" class="text-input-disabled" name="invented-name" id="invented-name" placeholder="-"
+                <input type="text" class="text-input-disabled" name="inventedName" id="inventedName" placeholder="-"
                        readonly required value="$$productName">
             </div>
             <div class="form-field disabled-form-field">
                 <div class="label-container">
-                    <label class="label" for="name-of-medicinal-product"> Name of Medicinal Product</label>
+                    <label class="label" for="nameMedicinalProduct"> Name of Medicinal Product</label>
                 </div>
                 <textarea type="text" class="text-input-disabled" name="name-of-medicinal-product"
-                          id="name-of-medicinal-product" placeholder="-" readonly required rows="3">$$productMedicinalName
+                          id="nameMedicinalProduct" placeholder="-" readonly required rows="3">$$productMedicinalName
                 </textarea>
             </div>
             <epis-tab data-presenter="epis-tab" data-units="$$leafletsInfo"></epis-tab>

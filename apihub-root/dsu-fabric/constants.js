@@ -79,7 +79,7 @@ export default {
     BATCH: {
       batchNumber: "Batch",
       packagingSiteName: "Packaging site name",
-      expiryForDisplay: "Expiry date",
+      expiryDate: "Expiry date",
       enableExpiryDay: "Enable day selection",
       gtin: "Product Code",
       productName: "Product Brand/Invented name"

@@ -100,7 +100,13 @@ const prefixMonthDate=(dateString)=>{
     const prefix="00";
     return dateString+prefix;
 }
-
+function removeMarkedForDeletion(key, value) {
+    if (key === "EPIs") {
+        return value.filter(unit => unit.action !== "delete");
+    } else {
+        return value;
+    }
+}
 export{
     reverseInputFormattedDateString,
     getLastDayOfMonth,
@@ -108,5 +114,6 @@ export{
     parseDateStringToDateInputValue,
     getDateInputTypeFromDateString,
     formatBatchExpiryDate,
-    prefixMonthDate
+    prefixMonthDate,
+    removeMarkedForDeletion
 }
