@@ -1,16 +1,9 @@
-export class EPIsService{
-    constructor(){}
-    createEPIPayload(epi, gtin){
-        return {
-            productCode: gtin,
-            language: epi.language,
-            xmlFileContent: epi.xmlFileContent,
-            otherFilesContent: epi.otherFilesContent
-        };
+export class EPIsService {
+    constructor() {
     }
-    async addEPI(epi,gtin,details,batchId){
-        details.payload=this.createEPIPayload(epi,gtin);
-        details.messageType = epi.type;
-        await $$.promisify(webSkel.client.addEPI)(gtin,batchId,details);
+
+    async addOrUpdateEPI (epi, gtin, batchId) {
+        let details = webSkel.appServices.getEPIPayload(epi, gtin, batchId);
+        await $$.promisify(webSkel.client.addEPI)(gtin, batchId, details);
     }
 }
