@@ -187,18 +187,16 @@ export class BatchesService {
 
         return {valid: true, message: ''};
     }
-    getBatchDiffs(initialBatch,updatedBatch,initialEPIs,updatedEPIs) {
-        debugger
+    getBatchDiffs(initialBatch, updatedBatch) {
         let result = [];
         try {
-            let diffs = webSkel.appServices.getDiffsForAudit(initialBatch, updatedBatch);
-            let epiDiffs = webSkel.appServices.getDiffsForAudit(initialEPIs, updatedEPIs);
+            let {EPIs, ...initialBatchData} = initialBatch;
+            let {EPIs: updatedEPIs, ...updatedBatchData} = updatedBatch;
+            let diffs = webSkel.appServices.getDiffsForAudit(initialBatchData, updatedBatchData);
+            let epiDiffs = webSkel.appServices.getDiffsForAudit(EPIs, updatedEPIs);
 
             Object.keys(diffs).forEach(key => {
-                if (key === "expiry") {
-                    return;
-                }
-                if (key === "expiryForDisplay") {
+                if (key === "expiryDate") {
                     let daySelectionObj = {
                         oldValue: initialBatch.enableExpiryDay,
                         newValue: updatedBatch.enableExpiryDay
