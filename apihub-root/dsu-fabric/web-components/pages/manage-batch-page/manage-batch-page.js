@@ -16,7 +16,8 @@ import {
     getDateInputTypeFromDateString,
     formatBatchExpiryDate,
     prefixMonthDate,
-    removeMarkedForDeletion
+    removeMarkedForDeletion,
+    createNewState
 } from "./manage-batch-utils.js"
 
 export class ManageBatchPage {
@@ -101,8 +102,7 @@ export class ManageBatchPage {
                                         </select>`,
                     penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`,
                     leafletsInfo: "[]",
-                    EPIs: [],
-                    updatedEPIs: []
+                    updatedBatch: createNewState({}, [])
                 }
             },
             EDIT: async () => {
@@ -118,7 +118,7 @@ export class ManageBatchPage {
                 formatEPIsForDiffProcess(EPIs);
 
                 const leafletsInfo = this.getEncodedEPIS(EPIs);
-                let batchModel = this.createNewState(batch, EPIs);
+                let batchModel = createNewState(batch, EPIs);
                 let enableExpiryDayCheck = "";
                 if (batchModel.enableExpiryDay === "on") {
                     enableExpiryDayCheck = "checked";
@@ -145,7 +145,7 @@ export class ManageBatchPage {
                     penImage: "",
                     formActionButtonState: "disabled",
                     leafletsInfo: leafletsInfo,
-                    updatedBatch: createObservableObject(this.createNewState(batch, EPIs), this.onChange.bind(this)),
+                    updatedBatch: createObservableObject(createNewState(batch, EPIs), this.onChange.bind(this)),
                 };
             }
         };
@@ -172,11 +172,7 @@ export class ManageBatchPage {
         return encodeURIComponent(JSON.stringify(formattedEPIs));
     }
 
-    createNewState(batchRef = {}, EPIs = []) {
-        let batchObj = Object.assign({}, batchRef);
-        batchObj.EPIs = JSON.parse(JSON.stringify(EPIs));
-        return batchObj;
-    }
+
 
     beforeRender() {
     }
@@ -227,6 +223,9 @@ export class ManageBatchPage {
                     }
                     dateContainer.replaceChild(newDateInput, oldDateInput);
                 });
+                this.element.removeEventListener("input", this.boundDetectInputChange);
+                this.boundDetectInputChange = this.detectInputChange.bind(this);
+                this.element.addEventListener("input", this.boundDetectInputChange);
             },
             ADD: () => {
                 dateContainer.insertBefore(createDateInput('date'), dateContainer.firstChild);
@@ -246,9 +245,6 @@ export class ManageBatchPage {
                 const dateType = getDateInputTypeFromDateString(this.batch.expiryDate);
                 const expiryDateInput = createDateInput(dateType, reverseInputFormattedDateString(parseDateStringToDateInputValue(this.batch.expiryDate)));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
-                this.element.removeEventListener("input", this.boundDetectInputChange);
-                this.boundDetectInputChange = this.detectInputChange.bind(this);
-                this.element.addEventListener("input", this.boundDetectInputChange);
                 pageModes.SHARED();
             }
 
@@ -341,7 +337,7 @@ export class ManageBatchPage {
         let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
         let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
         if (confirmation) {
-            if (await webSkel.appServices.updateBatch(this.batch.EPIs, this.updatedBatch) === true) {
+            if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
                 await webSkel.changeToDynamicPage("batches-page", "batches-page");
             }
         }

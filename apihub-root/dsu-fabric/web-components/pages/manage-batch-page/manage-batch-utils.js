@@ -1,4 +1,3 @@
-
 const getDateInputTypeFromDateString = (dateValueString) => {
     /* YYYY-MM-DD || YYYYMMDD || YYYY-MM|| YYYYMM */
     return dateValueString.length === 10 || dateValueString.length === 6 ? "date" : "month";
@@ -107,6 +106,25 @@ function removeMarkedForDeletion(key, value) {
         return value;
     }
 }
+const batchFields = [
+    "batch",
+    "batchNumber",
+    "enableExpiryDay",
+    "epiProtocol",
+    "expiryDate",
+    "inventedName",
+    "nameMedicinalProduct",
+    "packagingSiteName",
+    "productCode"
+]
+function createNewState(batchRef = {}, EPIs = []) {
+    let batchObj = {};
+    for(let key of batchFields){
+        batchObj[key] = batchRef[key] || "";
+    }
+    batchObj.EPIs = JSON.parse(JSON.stringify(EPIs));
+    return batchObj;
+}
 export{
     reverseInputFormattedDateString,
     getLastDayOfMonth,
@@ -115,5 +133,6 @@ export{
     getDateInputTypeFromDateString,
     formatBatchExpiryDate,
     prefixMonthDate,
-    removeMarkedForDeletion
+    removeMarkedForDeletion,
+    createNewState
 }

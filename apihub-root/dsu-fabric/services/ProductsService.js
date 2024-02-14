@@ -4,7 +4,7 @@ export class ProductsService {
     constructor() {
     }
 
-    async addProduct(productData, callback) {
+    async addProduct(productData) {
         let productDetails = webSkel.appServices.getProductPayload(productData);
         await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
         if (productData.photo) {

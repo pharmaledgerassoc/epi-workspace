@@ -5,7 +5,8 @@ const productInputFieldNames = [
     "inventedName",
     "nameMedicinalProduct",
     "internalMaterialCode",
-    "strength"
+    "strength",
+    "patientLeafletInfo"
 ]
 
 async function getProductData(productCode) {
@@ -36,7 +37,10 @@ async function getProductData(productCode) {
 }
 
 function createNewState(product = {}, image = "", epiUnits = [], marketUnits = []) {
-    let productObj = Object.assign({}, product);
+    let productObj = {};
+    for(let key of productInputFieldNames){
+        productObj[key] = product[key] || "";
+    }
     productObj.photo = image;
     productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
     productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));

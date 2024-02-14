@@ -119,12 +119,9 @@ export class BatchesService {
     }
 
     async addBatch(batchData, EPIs) {
-        const batchValidationResult = this.validateBatch(batchData)
-        const details = {
-            payload:batchData
-        }
+        const batchValidationResult = this.validateBatch(batchData);
         if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, details);
+            await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
             for (const EPI of EPIs) {
                 let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);                await $$.promisify(webSkel.client.addEPI)(batchData.productCode, batchData.batchNumber, EPIPayload)
                 await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, epiDetails);
@@ -137,7 +134,10 @@ export class BatchesService {
         }
     }
 
-    async updateBatch(batchData, existingEPIs,updatedEPIs) {
+    createBatchPayload(batchData){
+        return { payload: batchData };
+    }
+    async updateBatch(batchData, existingEPIs) {
         const batchValidationResult = this.validateBatch(batchData)
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, batchData);
@@ -157,16 +157,16 @@ export class BatchesService {
            /* for (const epi of updatedEPIs) {
                 let epiPayload=webSkel.appServices.createEPIPayload(epi,batchData.productCode);
                 if(epi.action === "update" && existingEPIs.some(obj => obj.language === epi.language)){
-                    await $$.promisify(webSkel.client.updateEPI)(batchData.productCode, batchData.batchNumber,epiPayload);
+                    await $$.promisify(webSkel.client.updateBatchEPI)(batchData.productCode, batchData.batchNumber,epiPayload);
                 }else if (epi.action === "add") {
-                    await $$.promisify(webSkel.client.addEPI)(batchData.productCode,batchData.batchNumber, this.details);
+                    await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode,batchData.batchNumber, epiPayload);
                 } else if (epi.action === "delete"){
                     let language;
                     if (existingEPIs.some(obj => {
                         language = obj.language;
                         return obj.language === epi.language;
                     })) {
-                        await $$.promisify(webSkel.client.deleteEPI)(productData.productCode, language);
+                        await $$.promisify(webSkel.client.deleteBatchEPI)(batchData.productCode, language);
                     }
                 }
             }*/
