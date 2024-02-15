@@ -81,7 +81,7 @@ export class ManageProductPage {
             productCode.addEventListener("focusout", this.boundValidateProductCode);
             this.validateProductCode(productCode);
         }
-        if (this.productData.photo) {
+        if (this.productData.photo.startsWith("data:image")) {
             let photo = this.element.querySelector("#photo");
             photo.files = this.fileListPhoto;
             let imgElement = this.element.querySelector(".product-photo");
@@ -176,15 +176,6 @@ export class ManageProductPage {
         photoInput.click();
     }
 
-    async saveInputs() {
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        for (const key in formData.data) {
-            if (this.productData[key] !== undefined) {
-                this.productData[key] = formData.data[key];
-            }
-        }
-    }
-
     async showAddEPIModal() {
         let modalData = await webSkel.showModal("add-epi-modal", true);
         if (modalData) {
@@ -192,7 +183,6 @@ export class ManageProductPage {
         }
         //else closed without submitting
     }
-
 
     deleteEpi(_target) {
         let epiUnitElement = webSkel.getClosestParentElement(_target, ".epi-unit");
@@ -227,7 +217,7 @@ export class ManageProductPage {
         data.id = webSkel.appServices.generateID(16);
         this.addOrUpdateEpi(data)
         this.selected = "epi";
-        this.invalidate(this.saveInputs.bind(this));
+        this.invalidate();
     }
 
     updateMarket(modalData) {
@@ -248,7 +238,7 @@ export class ManageProductPage {
             data.id = webSkel.appServices.generateID(16);
             this.productData.marketUnits.push(data);
         }
-        this.invalidate(this.saveInputs.bind(this));
+        this.invalidate();
     }
 
     async showAddMarketModal() {
@@ -336,5 +326,8 @@ export class ManageProductPage {
             await this.handleMarketModalData(modalData);
         }
         //else closed without submitting
+    }
+    async navigateToProductsPage(){
+        await navigateToPage("products-page");
     }
 }

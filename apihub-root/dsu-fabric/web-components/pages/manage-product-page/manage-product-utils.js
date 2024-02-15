@@ -19,7 +19,7 @@ async function getProductData(productCode) {
     let languages = await $$.promisify(webSkel.client.listProductsLangs)(productCode);
     if (languages && languages.length > 0) {
         for (let i = 0; i < languages.length; i++) {
-            let leafletPayload = await $$.promisify(webSkel.client.getEPI)(productCode, languages[i]);
+            let leafletPayload = await $$.promisify(webSkel.client.getProductEPI)(productCode, languages[i]);
             let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
             let leafletObj = {
                 id: webSkel.appServices.generateID(16),

@@ -151,9 +151,10 @@ export class UtilsService {
             internalMaterialCode: productData.internalMaterialCode,
             inventedName: productData.inventedName,
             nameMedicinalProduct: productData.nameMedicinalProduct,
-            strength: productData.strength
+            strength: productData.strength,
+            patientLeafletInfo: productData.patientLeafletInfo
         };
-        return result
+        return result;
     }
 
     getPhotoPayload(productData) {
@@ -195,7 +196,7 @@ export class UtilsService {
                 language: epi.language
             };
         }
-        return result
+        return result;
     }
 
 

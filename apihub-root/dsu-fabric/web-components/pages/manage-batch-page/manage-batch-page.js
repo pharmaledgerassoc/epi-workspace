@@ -263,15 +263,6 @@ export class ManageBatchPage {
         }
     }
 
-    async saveInputs() {
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        for (const key in formData.data) {
-            if (this.updatedBatch[key]) {
-                this.updatedBatch[key] = formData.data[key];
-            }
-        }
-    }
-
     reloadLeafletTab(encodedEPIsData) {
         const leafletTab = this.element.querySelector('epis-tab')
         leafletTab.setAttribute('data-units', encodedEPIsData)
@@ -312,7 +303,6 @@ export class ManageBatchPage {
         this.onChange();
         this.reloadLeafletTab(this.getEncodedEPIS(this.updatedBatch.EPIs));
     }
-
 
     async addBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
