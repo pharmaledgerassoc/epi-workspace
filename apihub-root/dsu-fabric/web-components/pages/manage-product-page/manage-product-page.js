@@ -25,8 +25,12 @@ export class ManageProductPage {
         if (params["product-code"]) {
             this.buttonName = "Update Product";
             this.operationFnName = "updateProduct";
-            let {productPayload, productPhotoPayload, epiUnits} = await webSkel.appServices.getProductData(params["product-code"]);
-            let productModel = createNewState(productPayload, productPhotoPayload, epiUnits, []);
+            let {
+                productPayload,
+                productPhotoPayload,
+                EPIs
+            } = await webSkel.appServices.getProductData(params["product-code"]);
+            let productModel = createNewState(productPayload, productPhotoPayload, EPIs, []);
             //save initial state
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
@@ -275,12 +279,15 @@ export class ManageProductPage {
 
     async updateProduct() {
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
-        if(formData.isValid){
+        if (formData.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
             let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
             let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
             if (confirmation) {
-                let modal = await webSkel.showModal("progress-info-modal", {header:"Info", message: "Saving Product..."});
+                let modal = await webSkel.showModal("progress-info-modal", {
+                    header: "Info",
+                    message: "Saving Product..."
+                });
                 await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
                 await webSkel.closeModal(modal);
                 await navigateToPage("products-page");
@@ -326,7 +333,8 @@ export class ManageProductPage {
         }
         //else closed without submitting
     }
-    async navigateToProductsPage(){
+
+    async navigateToProductsPage() {
         await navigateToPage("products-page");
     }
 }

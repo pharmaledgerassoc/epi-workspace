@@ -3,30 +3,40 @@ import constants from "../constants.js";
 export class ProductsService {
     constructor() {
     }
+
+    getEpiModelObject(payload, language, epiType) {
+        let epiFiles = [payload.xmlFileContent, ...payload.otherFilesContent];
+        return {
+            id: webSkel.appServices.generateID(16),
+            language: language,
+            xmlFileContent: payload.xmlFileContent,
+            otherFilesContent: payload.otherFilesContent,
+            filesCount: epiFiles.length,
+            type: epiType
+        }
+    }
+
+    async getEPIs(productCode, epiType) {
+        let epiLanguages = await $$.promisify(webSkel.client.listProductLangs)(productCode, epiType)
+        let EPIs = [];
+        if (epiLanguages && epiLanguages.length > 0) {
+            for (let i = 0; i < epiLanguages.length; i++) {
+                let epiPayload = await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguages[i], epiType);
+                EPIs.push(this.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
+            }
+        }
+        return EPIs
+    }
+
     async getProductData(productCode) {
         let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
         delete productPayload.pk;
         delete productPayload.__version;
         delete productPayload.__timestamp;
         let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
-        let EPIs = [];
-        let languages = await $$.promisify(webSkel.client.listProductLangs)(productCode);
-        if (languages && languages.length > 0) {
-            for (let i = 0; i < languages.length; i++) {
-                let EPIPayload = await $$.promisify(webSkel.client.getProductEPI)(productCode, languages[i]);
-                let EPIFiles = [EPIPayload.xmlFileContent, ...EPIPayload.otherFilesContent];
-                let EPIObj = {
-                    id: webSkel.appServices.generateID(16),
-                    language: EPIPayload.language,
-                    xmlFileContent: EPIPayload.xmlFileContent,
-                    otherFilesContent: EPIPayload.otherFilesContent,
-                    filesCount: EPIFiles.length,
-                    type: EPIPayload.type
-                };
-                EPIs.push(EPIObj);
-            }
-        }
-
+        let leafletEPIs = await this.getEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
+        let smpcEPIs = await this.getEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.SMPC);
+        let EPIs = [...leafletEPIs, ...smpcEPIs];
         return {productPayload, productPhotoPayload, EPIs}
     }
 
