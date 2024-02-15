@@ -8,34 +8,6 @@ const productInputFieldNames = [
     "strength",
     "patientLeafletInfo"
 ]
-
-async function getProductData(productCode) {
-    let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
-    delete productPayload.pk;
-    delete productPayload.__version;
-    delete productPayload.__timestamp;
-    let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
-    let epiUnits = [];
-    let languages = await $$.promisify(webSkel.client.listProductsLangs)(productCode);
-    if (languages && languages.length > 0) {
-        for (let i = 0; i < languages.length; i++) {
-            let leafletPayload = await $$.promisify(webSkel.client.getProductEPI)(productCode, languages[i]);
-            let leafletFiles = [leafletPayload.xmlFileContent, ...leafletPayload.otherFilesContent];
-            let leafletObj = {
-                id: webSkel.appServices.generateID(16),
-                language: leafletPayload.language,
-                xmlFileContent: leafletPayload.xmlFileContent,
-                otherFilesContent: leafletPayload.otherFilesContent,
-                filesCount: leafletFiles.length,
-                type: leafletPayload.type
-            };
-            epiUnits.push(leafletObj);
-        }
-    }
-
-    return {productPayload, productPhotoPayload, epiUnits}
-}
-
 function createNewState(product = {}, image = "", epiUnits = [], marketUnits = []) {
     let productObj = {};
     for(let key of productInputFieldNames){
@@ -76,7 +48,6 @@ function getEpiPreviewModel(epiObject, productData) {
 
 export {
     productInputFieldNames,
-    getProductData,
     createNewState,
     removeMarkedForDeletion,
     getEpitUnit,

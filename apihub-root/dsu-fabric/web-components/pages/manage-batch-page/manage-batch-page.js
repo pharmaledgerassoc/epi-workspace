@@ -4,8 +4,9 @@ import {
 } from "../manage-product-page/manage-product-utils.js";
 
 import {
+    changeSidebarFromURL,
     createObservableObject,
-    getTextDirection
+    navigateToPage
 } from "../../../utils/utils.js";
 
 import {
@@ -44,19 +45,7 @@ export class ManageBatchPage {
             }
             return products;
         }
-        const loadEditData = async () => {
-            const batch = await $$.promisify(webSkel.client.getBatchMetadata)(this.gtin, this.batchId);
-            if (!batch) {
-                console.error(`Unable to find batch with ID: ${this.batchId}.`);
-                return {batch: undefined, product: undefined};
-            }
-            const product = await $$.promisify(webSkel.client.getProductMetadata)(this.gtin);
-            if (!product) {
-                console.error(`Unable to find product with product code: ${batch.productCode} for batch ID: ${this.batchId}.`);
-                return {batch, product: undefined};
-            }
-            return {batch, product};
-        };
+
         const formatBatchForDiffProcess = (batch) => {
             Object.keys(batch).forEach(batchKey => {
                 if (batchKey.startsWith("__")) {
@@ -80,6 +69,14 @@ export class ManageBatchPage {
         let pageModes = {
             ADD: async () => {
                 const products = await loadAddData();
+                if(products.length === 0){
+                    let modal = await webSkel.showModal("progress-info-modal",  {header:"Products not found", message: "Failed to retrieve products list! Create a product first!"});
+                    setTimeout(async ()=>{
+                        await webSkel.closeModal(modal);
+                        await navigateToPage("manage-product-page");
+                        changeSidebarFromURL();
+                    },3000);
+                }
                 const productOptions = products.map(product => {
                     return `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
                 }).join("");
@@ -106,7 +103,7 @@ export class ManageBatchPage {
                 }
             },
             EDIT: async () => {
-                let {batch, product} = await loadEditData();
+                let {batch, product} = await webSkel.appServices.loadEditData(this.gtin, this.batchId);
                 formatBatchForDiffProcess(batch);
                 let EPIs = []
                 const batchLanguages = await $$.promisify(webSkel.client.listBatchLangs)(this.gtin, this.batchId);

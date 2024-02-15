@@ -137,12 +137,25 @@ export class BatchesService {
     createBatchPayload(batchData){
         return { payload: batchData };
     }
+     async loadEditData(gtin, batchId){
+        const batch = await $$.promisify(webSkel.client.getBatchMetadata)(gtin, batchId);
+        if (!batch) {
+            console.error(`Unable to find batch with ID: ${batchId}.`);
+            return {batch: undefined, product: undefined};
+        }
+        const product = await $$.promisify(webSkel.client.getProductMetadata)(gtin);
+        if (!product) {
+            console.error(`Unable to find product with product code: ${batch.productCode} for batch ID: ${batchId}.`);
+            return {batch, product: undefined};
+        }
+        return {batch, product};
+    };
     async updateBatch(batchData, existingEPIs) {
         const batchValidationResult = this.validateBatch(batchData)
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, batchData);
 
-            for (let epi of updatedEPIs) {
+            for (let epi of batchData.EPIs) {
                 let epiDetails = webSkel.appServices.getEPIPayload(epi, batchData.productCode);
                 if (epi.action === constants.EPI_ACTIONS.ADD) {
                     await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, epiDetails);
@@ -229,6 +242,6 @@ export class BatchesService {
             console.log(e);
         }
 
-        return result
+        return result;
     }
 }

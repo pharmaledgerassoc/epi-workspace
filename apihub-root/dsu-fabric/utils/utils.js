@@ -107,7 +107,28 @@ function getTextDirection(lang) {
   }
   return textDirection;
 }
-
+function changeSidebarFromURL() {
+  let currentPage = window.location.hash;
+  let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
+  let sidebarItems = document.querySelectorAll(".menu-item");
+  let oldSelection = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("id") === "active-menu-item");
+  if(oldSelection){
+    oldSelection.removeAttribute("id");
+  }
+  if (!sidebarItems) {
+    return;
+  }
+  let elements = {};
+  for (let category of categories) {
+    elements[category] = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("data-category") === category);
+  }
+  for (let category of categories) {
+    if (currentPage.includes(category)) {
+      elements[category].id = "active-menu-item";
+      return;
+    }
+  }
+}
 export {
   createObservableObject,
   loadPage,
@@ -119,5 +140,6 @@ export {
   navigateToPage,
   copyToClipboard,
   isCopyToClipboardSupported,
-  getTextDirection
+  getTextDirection,
+  changeSidebarFromURL
 }

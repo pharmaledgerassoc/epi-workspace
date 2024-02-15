@@ -3,6 +3,32 @@ import constants from "../constants.js";
 export class ProductsService {
     constructor() {
     }
+    async getProductData(productCode) {
+        let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
+        delete productPayload.pk;
+        delete productPayload.__version;
+        delete productPayload.__timestamp;
+        let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
+        let EPIs = [];
+        let languages = await $$.promisify(webSkel.client.listProductsLangs)(productCode);
+        if (languages && languages.length > 0) {
+            for (let i = 0; i < languages.length; i++) {
+                let EPIPayload = await $$.promisify(webSkel.client.getProductEPI)(productCode, languages[i]);
+                let EPIFiles = [EPIPayload.xmlFileContent, ...EPIPayload.otherFilesContent];
+                let EPIObj = {
+                    id: webSkel.appServices.generateID(16),
+                    language: EPIPayload.language,
+                    xmlFileContent: EPIPayload.xmlFileContent,
+                    otherFilesContent: EPIPayload.otherFilesContent,
+                    filesCount: EPIFiles.length,
+                    type: EPIPayload.type
+                };
+                EPIs.push(EPIObj);
+            }
+        }
+
+        return {productPayload, productPhotoPayload, EPIs}
+    }
 
     async addProduct(productData) {
         let productDetails = webSkel.appServices.getProductPayload(productData);

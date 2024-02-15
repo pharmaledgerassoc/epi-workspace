@@ -1,3 +1,5 @@
+import {changeSidebarFromURL} from "../../../utils/utils.js";
+
 export class LeftSidebar {
     constructor(element, invalidate) {
         this.element = element;
@@ -17,26 +19,10 @@ export class LeftSidebar {
                 this.activateSidebarSelection(desiredSidebarSelection);
             }
         } else {
-            this.changeSidebarFromURL(window.location.hash);
+            changeSidebarFromURL();
         }
     }
-    changeSidebarFromURL(currentPage) {
-        let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
-        let sidebarItems = document.querySelectorAll(".menu-item");
-        if (!sidebarItems) {
-            return;
-        }
-        let elements = {};
-        for (let category of categories) {
-            elements[category] = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("data-category") === category);
-        }
-        for (let category of categories) {
-            if (currentPage.includes(category)) {
-                elements[category].id = "active-menu-item";
-                return;
-            }
-        }
-    }
+
 
 
     activateSidebarSelection(clickTargetElement) {

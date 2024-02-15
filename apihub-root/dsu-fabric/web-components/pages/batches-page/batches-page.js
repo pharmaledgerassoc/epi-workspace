@@ -46,9 +46,9 @@ export class BatchesPage {
 
     afterRender() {
         let pageBody = this.element.querySelector(".page-body");
-        let products = this.element.querySelector(".products-section");
-        if (this.products.length === 0) {
-            products.style.display = "none";
+        let batches = this.element.querySelector(".batches-section");
+        if (this.batches.length === 0) {
+            batches.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
                                         There are no data on any previous batch

@@ -1,6 +1,5 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {
-    getProductData,
     createNewState,
     removeMarkedForDeletion,
     productInputFieldNames,
@@ -26,7 +25,7 @@ export class ManageProductPage {
         if (params["product-code"]) {
             this.buttonName = "Update Product";
             this.operationFnName = "updateProduct";
-            let {productPayload, productPhotoPayload, epiUnits} = await getProductData(params["product-code"]);
+            let {productPayload, productPhotoPayload, epiUnits} = await webSkel.appServices.getProductData(params["product-code"]);
             let productModel = createNewState(productPayload, productPhotoPayload, epiUnits, []);
             //save initial state
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
@@ -67,13 +66,13 @@ export class ManageProductPage {
             let input = this.element.querySelector(`#${key}`)
             input.value = this.productData[key] || "";
         }
+        this.element.removeEventListener("input", this.boundDetectInputChange);
+        this.boundDetectInputChange = this.detectInputChange.bind(this);
+        this.element.addEventListener("input", this.boundDetectInputChange);
         if (this.existingProduct) {
             this.disableProductCode(productCode);
             let button = this.element.querySelector("#accept-button");
             button.disabled = true;
-            this.element.removeEventListener("input", this.boundDetectInputChange);
-            this.boundDetectInputChange = this.detectInputChange.bind(this);
-            this.element.addEventListener("input", this.boundDetectInputChange);
             this.onChange();
         } else {
             productCode.removeEventListener("focusout", this.boundValidateProductCode);
@@ -267,7 +266,7 @@ export class ManageProductPage {
                     this.productData[key] = formData.data[key];
                 }
             }
-            let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."},);
+            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Product..."},);
             await webSkel.appServices.addProduct(this.productData);
             await webSkel.closeModal(modal);
             await navigateToPage("products-page");
@@ -281,7 +280,7 @@ export class ManageProductPage {
             let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
             let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
             if (confirmation) {
-                let modal = await webSkel.showModal("progress-info-modal", {message: "Saving Product..."});
+                let modal = await webSkel.showModal("progress-info-modal", {header:"Info", message: "Saving Product..."});
                 await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
                 await webSkel.closeModal(modal);
                 await navigateToPage("products-page");
