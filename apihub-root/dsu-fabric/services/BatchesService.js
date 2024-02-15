@@ -123,7 +123,7 @@ export class BatchesService {
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
             for (const EPI of EPIs) {
-                let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);                await $$.promisify(webSkel.client.addEPI)(batchData.productCode, batchData.batchNumber, EPIPayload)
+                let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);
                 await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, epiDetails);
             }
             return true;
@@ -153,7 +153,7 @@ export class BatchesService {
     async updateBatch(batchData, existingEPIs) {
         const batchValidationResult = this.validateBatch(batchData)
         if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, batchData);
+            await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
 
             for (let epi of batchData.EPIs) {
                 let epiDetails = webSkel.appServices.getEPIPayload(epi, batchData.productCode);

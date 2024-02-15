@@ -3,7 +3,7 @@ export class BatchesPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
-            this.batches = await $$.promisify(webSkel.client.listBatches)();
+            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined, undefined, undefined, "desc");
             this.products = await $$.promisify(webSkel.client.listProducts)();
         });
 

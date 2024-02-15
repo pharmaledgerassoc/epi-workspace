@@ -10,7 +10,7 @@ export class ProductsService {
         delete productPayload.__timestamp;
         let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
         let EPIs = [];
-        let languages = await $$.promisify(webSkel.client.listProductsLangs)(productCode);
+        let languages = await $$.promisify(webSkel.client.listProductLangs)(productCode);
         if (languages && languages.length > 0) {
             for (let i = 0; i < languages.length; i++) {
                 let EPIPayload = await $$.promisify(webSkel.client.getProductEPI)(productCode, languages[i]);

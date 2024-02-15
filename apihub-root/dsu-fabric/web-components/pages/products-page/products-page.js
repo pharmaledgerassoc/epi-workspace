@@ -3,7 +3,7 @@ export class ProductsPage {
         this.element=element;
         this.invalidate=invalidate;
         this.invalidate(async ()=>{
-            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, undefined, "desc");
         });
     }
 

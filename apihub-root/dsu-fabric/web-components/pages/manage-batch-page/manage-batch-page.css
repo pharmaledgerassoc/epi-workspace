@@ -183,7 +183,9 @@ input[type="month"] {
     cursor: pointer;
     font-size: inherit;
 }
-
+#nameMedicinalProduct{
+    resize: none;
+}
 .form-buttons {
     margin-top: calc(60px - 1rem);
 }
