@@ -1,6 +1,5 @@
 require("../../opendsu-sdk/builds/output/pskWebServer");
 const PREFIX = 'DB_';
-process.env.SSO_SECRETS_ENCRYPTION_KEY = "+WG9HhIoXGGSVq6cMlhy2P3vuiqz1O/WAaiF5JhXmnc="
 
 const createSecret = async (domain, subdomain) => {
     const rootFolder = "../"
@@ -15,8 +14,14 @@ const createSecret = async (domain, subdomain) => {
     console.log(`Secret for enclave ${generateEnclaveName(domain, subdomain)} created`);
 }
 
-const domain = "local.epi";
-createSecret(domain, domain).then(() => {
+// Extract domain and subdomain from command line arguments
+const [domain, subdomain] = process.argv.slice(2);
+if (!domain || !subdomain) {
+    console.log("Usage: node script.js <domain> <subdomain>");
+    process.exit(1);
+}
+
+createSecret(domain, subdomain).then(() => {
     console.log("Done");
 }).catch((err) => {
     console.log(err);
