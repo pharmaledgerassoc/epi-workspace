@@ -236,7 +236,7 @@
             "cmd": "cd gtin-resolver && npm run build"
           }
         ]
-      },,
+      },
       {
         "name": "webcardinal-wallet-build",
         "actions": [
