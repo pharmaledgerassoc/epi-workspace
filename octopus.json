@@ -228,6 +228,16 @@
     ],
     "epi-ssapps-and-wallets-build": [
       {
+        "name": "gtin-resolver-build",
+        "src": "",
+        "actions": [
+          {
+            "type": "execute",
+            "cmd": "cd gtin-resolver && npm run build"
+          }
+        ]
+      },,
+      {
         "name": "webcardinal-wallet-build",
         "actions": [
           {
@@ -319,16 +329,6 @@
       }
     ],
     "ssapps-and-wallets-build": [
-      {
-        "name": "gtin-resolver-build",
-        "src": "",
-        "actions": [
-          {
-            "type": "execute",
-            "cmd": "cd gtin-resolver && npm run build"
-          }
-        ]
-      },
       {
         "name": "epi-ssapps-and-wallets-build",
         "actions": [
