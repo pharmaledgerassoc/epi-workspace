@@ -2,27 +2,46 @@ import constants from "../constants.js";
 
 export class ProductsService {
     constructor() {
+
     }
 
-    getEpiModelObject(payload, language, epiType) {
-        let epiFiles = [payload.xmlFileContent, ...payload.otherFilesContent];
-        return {
-            id: webSkel.appServices.generateID(16),
-            language: language,
-            xmlFileContent: payload.xmlFileContent,
-            otherFilesContent: payload.otherFilesContent,
-            filesCount: epiFiles.length,
-            type: epiType
+    productInputFieldNames() {
+        return [
+            "productCode",
+            "inventedName",
+            "nameMedicinalProduct",
+            "internalMaterialCode",
+            "strength",
+            "patientLeafletInfo"
+        ]
+    }
+
+    createNewProduct(product = {}, image = "", epiUnits = [], marketUnits = []) {
+        let productObj = {};
+        for (let key of this.productInputFieldNames()) {
+            productObj[key] = product[key] || "";
+        }
+        productObj.photo = image;
+        productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
+        productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));
+        return productObj;
+    }
+
+    removeMarkedForDeletion(key, value) {
+        if (key === "epiUnits" || key === "marketUnits") {
+            return value.filter(unit => unit.action !== "delete");
+        } else {
+            return value;
         }
     }
 
-    async getEPIs(productCode, epiType) {
+    async getProductEPIs(productCode, epiType) {
         let epiLanguages = await $$.promisify(webSkel.client.listProductLangs)(productCode, epiType)
         let EPIs = [];
         if (epiLanguages && epiLanguages.length > 0) {
             for (let i = 0; i < epiLanguages.length; i++) {
                 let epiPayload = await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguages[i], epiType);
-                EPIs.push(this.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
+                EPIs.push(webSkel.appServices.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
             }
         }
         return EPIs
@@ -34,8 +53,8 @@ export class ProductsService {
         delete productPayload.__version;
         delete productPayload.__timestamp;
         let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
-        let leafletEPIs = await this.getEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
-        let smpcEPIs = await this.getEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.SMPC);
+        let leafletEPIs = await this.getProductEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
+        let smpcEPIs = await this.getProductEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.SMPC);
         let EPIs = [...leafletEPIs, ...smpcEPIs];
         return {productPayload, productPhotoPayload, EPIs}
     }
@@ -49,7 +68,7 @@ export class ProductsService {
         }
         for (let epi of productData.epiUnits) {
             let epiDetails = webSkel.appServices.getEPIPayload(epi, productData.productCode);
-            await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epiDetails);
+            await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
         }
     }
 
@@ -63,13 +82,13 @@ export class ProductsService {
         for (let epi of productData.epiUnits) {
             let epiDetails = webSkel.appServices.getEPIPayload(epi, productData.productCode);
             if (epi.action === constants.EPI_ACTIONS.ADD) {
-                await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epiDetails);
+                await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
             }
             if (epi.action === constants.EPI_ACTIONS.UPDATE) {
-                await $$.promisify(webSkel.client.updateProductEPI)(productData.productCode, epiDetails);
+                await $$.promisify(webSkel.client.updateProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
             }
             if (epi.action === constants.EPI_ACTIONS.DELETE) {
-                await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epiDetails);
+                await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
             }
         }
     }
@@ -126,5 +145,10 @@ export class ProductsService {
             console.log(e);
         }
         return result;
+    }
+
+    async getProducts(sortDirection = "desc") {
+        return await $$.promisify(webSkel.client.listProducts)(undefined, undefined, undefined, sortDirection);
+
     }
 }

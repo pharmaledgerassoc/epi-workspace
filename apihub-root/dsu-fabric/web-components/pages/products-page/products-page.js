@@ -1,14 +1,14 @@
 export class ProductsPage {
-    constructor(element,invalidate){
-        this.element=element;
-        this.invalidate=invalidate;
-        this.invalidate(async ()=>{
-            this.products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, undefined, "desc");
+    constructor(element, invalidate) {
+        this.element = element;
+        this.invalidate = invalidate;
+        this.invalidate(async () => {
+            this.products = await webSkel.appServices.getProducts();
         });
     }
 
     createProductRowHTML(product, lastRowItem = false) {
-        const createClassString=(...classNames)=>{
+        const createClassString = (...classNames) => {
             return classNames.filter(Boolean).join(' ');
         }
         const classCellBorder = "cell-border-bottom";
@@ -20,18 +20,20 @@ export class ProductsPage {
             <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">View/Edit</div>
         `;
     }
+
     beforeRender() {
         let string = "";
         const productsCount = this.products.length;
         this.products.forEach((product, index) => {
-            string += this.createProductRowHTML(product,index===productsCount-1);
+            string += this.createProductRowHTML(product, index === productsCount - 1);
         });
         this.items = string;
     }
-    afterRender(){
+
+    afterRender() {
         let pageBody = this.element.querySelector(".page-body");
         let products = this.element.querySelector(".products-section");
-        if(this.products.length === 0){
+        if (this.products.length === 0) {
             products.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
@@ -47,81 +49,86 @@ export class ProductsPage {
         this.searchInput.value = this.inputValue || "";
         let xMark = this.element.querySelector(".x-mark");
 
-        if(this.boundFnKeypress){
+        if (this.boundFnKeypress) {
             this.searchInput.removeEventListener("keypress", this.boundFnKeypress);
         }
-        this.boundFnKeypress= this.searchProduct.bind(this);
+        this.boundFnKeypress = this.searchProduct.bind(this);
         this.searchInput.addEventListener("keypress", this.boundFnKeypress);
 
-        if(this.boundFnMouseLeave){
+        if (this.boundFnMouseLeave) {
             this.searchInput.removeEventListener("mouseleave", this.boundFnMouseLeave);
         }
         this.boundFnMouseLeave = this.hideXMark.bind(this, xMark);
         this.searchInput.addEventListener("mouseleave", this.boundFnMouseLeave);
 
-        if(this.boundFnMouseEnter){
+        if (this.boundFnMouseEnter) {
             this.searchInput.removeEventListener("mouseenter", this.boundFnMouseEnter);
         }
         this.boundFnMouseEnter = this.showXMark.bind(this, xMark);
         this.searchInput.addEventListener("mouseenter", this.boundFnMouseEnter);
 
-        if(this.boundFnFocusout){
+        if (this.boundFnFocusout) {
             this.searchInput.removeEventListener("focusout", this.boundFnFocusout);
         }
         this.boundFnFocusout = this.removeFocus.bind(this, xMark);
         this.searchInput.addEventListener("focusout", this.boundFnFocusout);
 
-        if(this.boundFnInput){
+        if (this.boundFnInput) {
             this.searchInput.removeEventListener("input", this.boundFnInput);
         }
         this.boundFnInput = this.toggleSearchIcons.bind(this, xMark);
         this.searchInput.addEventListener("input", this.boundFnInput);
 
-        if(this.focusInput){
+        if (this.focusInput) {
             this.searchInput.focus();
             xMark.style.display = "block";
             this.focusInput = false;
         }
     }
 
-    toggleSearchIcons(xMark, event){
-        if(this.searchInput.value === ""){
+    toggleSearchIcons(xMark, event) {
+        if (this.searchInput.value === "") {
             xMark.style.display = "none";
-        }else {
+        } else {
             xMark.style.display = "block";
         }
     }
-    removeFocus(xMark, event){
+
+    removeFocus(xMark, event) {
         xMark.style.display = "none";
     }
-    showXMark(xMark, event){
-        if(this.searchInput.value !== ""){
+
+    showXMark(xMark, event) {
+        if (this.searchInput.value !== "") {
             xMark.style.display = "block";
         }
     }
-    hideXMark(xMark, event){
-        if(document.activeElement !== this.searchInput){
+
+    hideXMark(xMark, event) {
+        if (document.activeElement !== this.searchInput) {
             xMark.style.display = "none";
         }
     }
-    async navigateToManageProductPage(){
-       await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page");
+
+    async navigateToManageProductPage() {
+        await webSkel.changeToDynamicPage("manage-product-page", "manage-product-page");
     }
-    async viewProductDetails(_target, productCode){
+
+    async viewProductDetails(_target, productCode) {
         await webSkel.changeToDynamicPage("manage-product-page", `manage-product-page?product-code=${productCode}`);
     }
 
-    async searchProduct(event){
-        if(event.key === "Enter"){
+    async searchProduct(event) {
+        if (event.key === "Enter") {
             event.preventDefault();
             let formData = await webSkel.extractFormInformation(this.searchInput);
-            if(formData.isValid){
+            if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
                 let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode=${this.inputValue}`]);
-                if(products.length > 0){
+                if (products.length > 0) {
                     this.products = products;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
-                }else {
+                } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
                 }
                 this.focusInput = true;
@@ -129,10 +136,11 @@ export class ProductsPage {
             }
         }
     }
-    async deleteInput(xMark){
+
+    async deleteInput(xMark) {
         this.searchResultIcon = "";
         delete this.inputValue;
-        this.invalidate(async ()=>{
+        this.invalidate(async () => {
             this.products = await $$.promisify(webSkel.client.listProducts)();
         });
     }

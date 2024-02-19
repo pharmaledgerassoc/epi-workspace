@@ -1,174 +1,100 @@
 import {
-    getEpiPreviewModel,
-    getEpitUnit,
-} from "../manage-product-page/manage-product-utils.js";
-
-import {
-    changeSidebarFromURL,
     createObservableObject,
-    navigateToPage
 } from "../../../utils/utils.js";
-
-import {
-    reverseInputFormattedDateString,
-    getLastDayOfMonth,
-    createDateInput,
-    parseDateStringToDateInputValue,
-    getDateInputTypeFromDateString,
-    formatBatchExpiryDate,
-    prefixMonthDate,
-    removeMarkedForDeletion,
-    createNewState
-} from "./manage-batch-utils.js"
 
 export class ManageBatchPage {
 
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        ({gtin: this.gtin, batchId: this.batchId} = webSkel.getHashParams());
-        if (this.gtin) {
-            this.mode = "EDIT";
-        } else {
-            this.mode = "ADD";
-        }
+        let params = webSkel.getHashParams();
+        this.gtin = params.gtin;
+        this.batchId = params.batchId;
+        this.pageTitle = "";
+        this.formFieldStateClass = "";
+        this.inputState = "";
+        this.inputStateDisabledClass = "";
+        this.formActionButtonText = "";
+        this.formActionButtonFunction = "";
+        this.batch = {};
+        this.batchName = "";
+        this.batchVersion = 0;
+        this.product = {};
+        this.productCode = "";
+        this.packagingSiteName = "";
+        this.enableExpiryDate = "";
+        this.enableExpiryDateCheck = true;
+        this.productInventedName = "-";
+        this.productMedicinalName = "-";
+        this.productCodeInput = "";
+        this.penImage = "";
+        this.formActionButtonState = "";
+        this.leafletsInfo = "[]";
+        this.updatedBatch = {}
+        this.pageMode = this.gtin ? "EDIT_BATCH" : "ADD_BATCH";
         this.invalidate(async () => {
-            await this.initializePageMode(this.mode);
+            await this.initializePageMode(this.pageMode);
         });
+
     }
 
-    async initializePageMode(mode) {
-        const loadAddData = async () => {
-            const products = await $$.promisify(webSkel.client.listProducts)();
-            if (!products) {
-                console.error("Encountered an error trying to fetch All Products")
-            }
-            return products;
-        }
-
-        const formatBatchForDiffProcess = (batch) => {
-            Object.keys(batch).forEach(batchKey => {
-                if (batchKey.startsWith("__")) {
-                    delete batch[batchKey];
-                }
-            });
-            delete batch["pk"];
-        }
-        const formatEPIsForDiffProcess = (EPIs) => {
-            return EPIs.map(EPI => {
-                Object.keys(EPI).forEach(key => {
-                    if (key.startsWith("__")) {
-                        delete EPI[key];
-                    }
-                });
-                delete EPI["pk"];
-                EPI.id = webSkel.appServices.generateID(16);
-                return EPI;
-            });
-        }
-        let pageModes = {
-            ADD: async () => {
-                const products = await loadAddData();
-                if(products.length === 0){
-                    let modal = await webSkel.showModal("progress-info-modal",  {header:"Products not found", message: "Failed to retrieve products list! Create a product first!"});
-                    setTimeout(async ()=>{
-                        await webSkel.closeModal(modal);
-                        await navigateToPage("manage-product-page");
-                        changeSidebarFromURL();
-                    },3000);
-                }
-                const productOptions = products.map(product => {
-                    return `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
-                }).join("");
-
-                return {
-                    pageTitle: "Add Batch",
-                    formFieldStateClass: "",
-                    inputState: "",
-                    inputStateDisabledClass: "",
-                    formActionButtonText: "Add Batch",
-                    formActionButtonFunction: "addBatch",
-                    batchVersion: 0,
-                    products: products,
-                    productMedicinalName: "-",
-                    enableExpiryDate: "on",
-                    enableExpiryDateCheck: "checked",
-                    productCodeInput: `<select name="productCode" id="productCode">
-                                            <option selected value id="placeholder-option">Select a product</option>
+    async initializePageMode(pageMode) {
+        const initPage = {
+            ADD_BATCH: async () => {
+                let {productOptions, products} = await webSkel.appServices.getProductsForSelect();
+                this.pageTitle = "Add Batch";
+                this.formActionButtonText = "Add Batch";
+                this.formActionButtonFunction = "addBatch";
+                this.products = products;
+                this.enableExpiryDate = "on";
+                this.enableExpiryDateCheck = "checked";
+                this.productCodeInput = `<select name="productCode" id="productCode" data-condition="productCodeCondition">
+                                            <option selected value="no-selection" id="placeholder-option">Select a product</option>
                                             ${productOptions}
-                                        </select>`,
-                    penImage: `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`,
-                    leafletsInfo: "[]",
-                    updatedBatch: createNewState({}, [])
-                }
+                                        </select>`;
+                this.penImage = `<img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">`;
+                this.updatedBatch = webSkel.appServices.createNewBatch({}, []);
             },
-            EDIT: async () => {
-                let {batch, product} = await webSkel.appServices.loadEditData(this.gtin, this.batchId);
-                formatBatchForDiffProcess(batch);
-                let EPIs = []
-                const batchLanguages = await $$.promisify(webSkel.client.listBatchLangs)(this.gtin, this.batchId);
-                const leafletPromises = batchLanguages.map(batchLang =>
-                    $$.promisify(webSkel.client.getEPI)(this.gtin, batchLang, this.batchId)
-                );
-                const leaflets = await Promise.all(leafletPromises);
-                EPIs.push(...leaflets);
-                formatEPIsForDiffProcess(EPIs);
 
-                const leafletsInfo = this.getEncodedEPIS(EPIs);
-                let batchModel = createNewState(batch, EPIs);
+            EDIT_BATCH: async () => {
+                let {batch, product, EPIs} = await webSkel.appServices.getBatchData(this.gtin, this.batchId)
+                let batchModel = webSkel.appServices.createNewBatch(batch, EPIs);
                 let enableExpiryDayCheck = "";
                 if (batchModel.enableExpiryDay === "on") {
                     enableExpiryDayCheck = "checked";
                 }
-                return {
-                    pageTitle: "Edit Batch",
-                    formFieldStateClass: "disabled-form-field",
-                    inputState: "disabled",
-                    inputStateDisabledClass: "text-input-disabled",
-                    formActionButtonText: "Update Batch",
-                    formActionButtonFunction: "updateBatch",
-                    batch: batchModel,
-                    batchName: batchModel.batch,
-                    batchVersion: batchModel.__version, //TODO use getBatchVersion API when it becomes available
-                    product: product,
-                    productCode: product.productCode,
-                    packagingSiteName: batchModel.packagingSiteName,
-                    enableExpiryDate: batchModel.enableExpiryDay,
-                    enableExpiryDateCheck: enableExpiryDayCheck,
-                    productName: product.inventedName,
-                    productMedicinalName: product.nameMedicinalProduct,
-                    productCodeInput: `<input type="text" class="text-input" name="productCode" id="productCode" autocomplete="off" disabled
-                                        value="${product.productCode}">`,
-                    penImage: "",
-                    formActionButtonState: "disabled",
-                    leafletsInfo: leafletsInfo,
-                    updatedBatch: createObservableObject(createNewState(batch, EPIs), this.onChange.bind(this)),
-                };
+
+                this.pageTitle = "Edit Batch";
+                this.formFieldStateClass = "disabled-form-field";
+                this.inputState = "disabled";
+                this.inputStateDisabledClass = "text-input-disabled";
+                this.formActionButtonText = "Update Batch";
+                this.formActionButtonFunction = "updateBatch";
+                this.batch = batchModel;
+                this.batchName = batchModel.batch;
+                this.batchVersion = batchModel.__version; //TODO use getBatchVersion API when it becomes available
+                this.product = product;
+                this.productCode = product.productCode;
+                this.packagingSiteName = batchModel.packagingSiteName;
+                this.enableExpiryDate = batchModel.enableExpiryDay;
+                this.enableExpiryDateCheck = enableExpiryDayCheck;
+                this.productInventedName = product.inventedName;
+                this.productMedicinalName = product.nameMedicinalProduct;
+                this.productCodeInput = `<input type="text" class="text-input" name="productCode" id="productCode" autocomplete="off" disabled
+                                        value="${product.productCode}">`;
+                this.penImage = "";
+                this.formActionButtonState = "disabled";
+                this.leafletsInfo = this.getEncodedEPIS(EPIs);
+                this.updatedBatch = createObservableObject(webSkel.appServices.createNewBatch(batch, EPIs), this.onChange.bind(this));
+
             }
-        };
-        if (pageModes[mode]) {
-            const modeConfig = await pageModes[mode]();
-            Object.keys(modeConfig).forEach(key => {
-                this[key] = modeConfig[key];
-            });
-        } else {
-            console.error("Invalid Page Mode:", mode);
         }
+        await initPage[pageMode]();
     }
 
-    getEncodedEPIS(EPIsObj) {
-        let formattedEPIs = EPIsObj.map((data) => {
-            return {
-                language: data.language,
-                filesCount: data.otherFilesContent.length + 1,
-                id: data.id,
-                action: data.action,
-                type: data.type
-            };
-        });
-        return encodeURIComponent(JSON.stringify(formattedEPIs));
+    getEncodedEPIS(EPIs) {
+        return encodeURIComponent(JSON.stringify(EPIs));
     }
-
 
 
     beforeRender() {
@@ -176,13 +102,13 @@ export class ManageBatchPage {
 
     onChange() {
         this.element.querySelector("#formActionButton").disabled =
-            JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, removeMarkedForDeletion);
+            JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeMarkedForDeletion);
     }
 
     detectInputChange(event) {
         let inputName = event.target.name;
         if (inputName === "expiryDate") {
-            this.updatedBatch.expiryDate = formatBatchExpiryDate(event.target.value);
+            this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
         } else {
             if (inputName === "enableExpiryDay") {
                 event.target.value = event.target.checked ? "on" : "off";
@@ -191,62 +117,65 @@ export class ManageBatchPage {
         }
     }
 
+    attachEventListeners() {
+        this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
+            const dateContainer = this.element.querySelector('#custom-date-icon');
+            const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
+            const svg1 = dateContainer.querySelector('#svg1');
+            const svg2 = dateContainer.querySelector('#svg2');
+            const oldDateInput = dateContainer.querySelector('#date');
+            const isChecked = enableDayCheckbox.checked;
+            svg1.style.display = isChecked ? 'none' : 'block';
+            svg2.style.display = isChecked ? 'block' : 'none';
+            let newDateInput;
+            if (isChecked) {
+                /* MM-YYYY -> DD-MM-YYYY */
+                const [year, month] = oldDateInput.value.split('-');
+                const assignValue = `${year}-${month}-${webSkel.appServices.getLastDayOfMonth(year, month)}`;
+                newDateInput = webSkel.appServices.createDateInput('date', assignValue);
+            } else {
+                /* DD-MM-YYYY -> MM-YYYY */
+                const assignValue = oldDateInput.value.slice(0, 7);
+                newDateInput = webSkel.appServices.createDateInput('month', assignValue);
+            }
+            dateContainer.replaceChild(newDateInput, oldDateInput);
+        });
+        this.element.removeEventListener("input", this.boundDetectInputChange);
+        this.boundDetectInputChange = this.detectInputChange.bind(this);
+        this.element.addEventListener("input", this.boundDetectInputChange);
+    }
+
     afterRender() {
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
-        /*TODO replace createDateInput with date web component if necessary */
+        /*TODO replace webSkel.appServices.createDateInput with date web component if necessary */
 
         const dateContainer = this.element.querySelector('#custom-date-icon');
-        const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
-        const svg1 = dateContainer.querySelector('#svg1');
-        const svg2 = dateContainer.querySelector('#svg2');
+
 
         const pageModes = {
-            SHARED: () => {
-                this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-                    const oldDateInput = dateContainer.querySelector('#date');
-                    const isChecked = enableDayCheckbox.checked;
-                    svg1.style.display = isChecked ? 'none' : 'block';
-                    svg2.style.display = isChecked ? 'block' : 'none';
-                    let newDateInput;
-                    if (isChecked) {
-                        /* MM-YYYY -> DD-MM-YYYY */
-                        const [year, month] = oldDateInput.value.split('-');
-                        const assignValue = `${year}-${month}-${getLastDayOfMonth(year, month)}`;
-                        newDateInput = createDateInput('date', assignValue);
-                    } else {
-                        /* DD-MM-YYYY -> MM-YYYY */
-                        const assignValue = oldDateInput.value.slice(0, 7);
-                        newDateInput = createDateInput('month', assignValue);
-                    }
-                    dateContainer.replaceChild(newDateInput, oldDateInput);
-                });
-                this.element.removeEventListener("input", this.boundDetectInputChange);
-                this.boundDetectInputChange = this.detectInputChange.bind(this);
-                this.element.addEventListener("input", this.boundDetectInputChange);
-            },
-            ADD: () => {
-                dateContainer.insertBefore(createDateInput('date'), dateContainer.firstChild);
+
+            ADD_BATCH: () => {
+                dateContainer.insertBefore(webSkel.appServices.createDateInput('date'), dateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
                     const {
                         inventedName,
-                        nameMedicinalProduct: medicinalProductName
+                        nameMedicinalProduct: medicinalproductInventedName
                     } = this.products.find(product => product.productCode === productCode) || {};
-                    this.element.querySelector('#nameMedicinalProduct').value = medicinalProductName;
+                    this.element.querySelector('#nameMedicinalProduct').value = medicinalproductInventedName;
                     this.element.querySelector('#inventedName').value = inventedName;
                     this.element.querySelector('#placeholder-option').disabled = true;
                 });
-                pageModes.SHARED();
             },
-            EDIT: () => {
-                const dateType = getDateInputTypeFromDateString(this.batch.expiryDate);
-                const expiryDateInput = createDateInput(dateType, reverseInputFormattedDateString(parseDateStringToDateInputValue(this.batch.expiryDate)));
+            EDIT_BATCH: () => {
+                const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate);
+                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseInputFormattedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate)));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
-                pageModes.SHARED();
             }
 
         }
-        pageModes[this.mode]();
+        pageModes[this.pageMode]();
+        this.attachEventListeners();
     }
 
     async navigateToBatchesPage() {
@@ -267,11 +196,8 @@ export class ManageBatchPage {
     }
 
     deleteEpi(_target) {
-        let EPIUnit = webSkel.getClosestParentElement(_target, ".epi-unit");
-        let EPIId = EPIUnit.getAttribute("data-id");
-        let deletedEPI = this.updatedBatch.EPIs.find(epi => epi.id === EPIId);
-        deletedEPI.action = "delete";
-        this.reloadLeafletTab(this.getEncodedEPIS(this.updatedBatch.EPIs));
+        webSkel.appServices.deleteEPI(_target, this.updatedBatch.EPIs);
+        this.invalidate();
     }
 
     addOrUpdateEpi(EPIData) {
@@ -301,22 +227,38 @@ export class ManageBatchPage {
         this.reloadLeafletTab(this.getEncodedEPIS(this.updatedBatch.EPIs));
     }
 
-    async addBatch() {
-        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
-        data.expiryDate = formatBatchExpiryDate(data.expiryDate);
-        if (getDateInputTypeFromDateString(data.expiryDate) === 'month') {
-            data.expiryDate = prefixMonthDate(data.expiryDate);
-        }
-        if (await webSkel.appServices.addBatch(data, this.updatedBatch.EPIs) === true) {
+    productCodeCondition(element, formData) {
+        let inputContainer = webSkel.getClosestParentElement(element, "#productCode");
+        return inputContainer.value !== "no-selection"
+    }
+
+    async addBatch(_target) {
+        const conditions = {
+            "productCodeCondition": {
+                fn: this.productCodeCondition,
+                errorMessage: "Please select a product code! "
+            }
+        };
+
+        let formData = await webSkel.extractFormInformation(_target, conditions);
+
+        if (formData.isValid) {
+            formData.data.expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);
+            if (webSkel.appServices.getDateInputTypeFromDateString(formData.data.expiryDate) === 'month') {
+                formData.data.expiryDate = webSkel.appServices.prefixMonthDate(formData.data.expiryDate);
+            }
+
+            await webSkel.appServices.addBatch(formData.data, this.updatedBatch.EPIs);
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
         }
+
     }
 
     async updateBatch() {
         const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
-        let expiryDate = formatBatchExpiryDate(data.expiryDate);
-        if (getDateInputTypeFromDateString(expiryDate) === 'month') {
-            expiryDate = prefixMonthDate(expiryDate);
+        let expiryDate = webSkel.appServices.formatBatchExpiryDate(data.expiryDate);
+        if (webSkel.appServices.getDateInputTypeFromDateString(expiryDate) === 'month') {
+            expiryDate = webSkel.appServices.prefixMonthDate(expiryDate);
         }
         this.updatedBatch.expiryDate = expiryDate;
         this.updatedBatch.enableExpiryDay = data.enableExpiryDay;
@@ -331,8 +273,12 @@ export class ManageBatchPage {
     }
 
     async viewLeaflet(_target) {
-        let epiObject = getEpitUnit(_target, this.batch.EPIs);
-        let epiPreviewModel = getEpiPreviewModel(epiObject,);
+        let epiObject = webSkel.appServices.getEpitUnit(_target, this.batch.EPIs);
+        let selectedProduct = {
+            inventedName: this.batch.inventedName,
+            nameMedicinalProduct: this.batch.nameMedicinalProduct
+        }
+        let epiPreviewModel = webSkel.appServices.getEpiPreviewModel(epiObject, selectedProduct);
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 

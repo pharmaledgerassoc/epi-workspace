@@ -1,11 +1,4 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
-import {
-    createNewState,
-    removeMarkedForDeletion,
-    productInputFieldNames,
-    getEpitUnit,
-    getEpiPreviewModel
-} from "./manage-product-utils.js";
 
 export class ManageProductPage {
     constructor(element, invalidate) {
@@ -20,7 +13,7 @@ export class ManageProductPage {
         let params = webSkel.getHashParams();
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
-        this.productData = createNewState();
+        this.productData = webSkel.appServices.createNewProduct();
 
         if (params["product-code"]) {
             this.buttonName = "Update Product";
@@ -30,7 +23,7 @@ export class ManageProductPage {
                 productPhotoPayload,
                 EPIs
             } = await webSkel.appServices.getProductData(params["product-code"]);
-            let productModel = createNewState(productPayload, productPhotoPayload, EPIs, []);
+            let productModel = webSkel.appServices.createNewProduct(productPayload, productPhotoPayload, EPIs, []);
             //save initial state
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
@@ -66,7 +59,7 @@ export class ManageProductPage {
     afterRender() {
         this.highlightTabs();
         let productCode = this.element.querySelector("#productCode");
-        for (const key of productInputFieldNames) {
+        for (const key of webSkel.appServices.productInputFieldNames()) {
             let input = this.element.querySelector(`#${key}`)
             input.value = this.productData[key] || "";
         }
@@ -95,7 +88,7 @@ export class ManageProductPage {
 
     onChange() {
         let button = this.element.querySelector("#accept-button");
-        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, removeMarkedForDeletion);
+        button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, webSkel.appServices.removeMarkedForDeletion);
     }
 
     highlightTabs() {
@@ -188,11 +181,7 @@ export class ManageProductPage {
     }
 
     deleteEpi(_target) {
-        let epiUnitElement = webSkel.getClosestParentElement(_target, ".epi-unit");
-        let id = epiUnitElement.getAttribute("data-id");
-        let epiUnit = this.productData.epiUnits.find(unit => unit.id === id);
-        epiUnit.action = "delete";
-        //this.productData.epiUnits = this.productData.epiUnits.filter(unit => unit.id !== id);
+        webSkel.appServices.deleteEPI(_target, this.productData.epiUnits);
         this.invalidate();
     }
 
@@ -262,7 +251,7 @@ export class ManageProductPage {
     }
 
     async saveProduct(_target) {
-        const conditions = {"productCodeCondition": {fn: this.productCodeCondition, errorMessage: "GTIN invalid!"}};
+        const conditions = {"productCodeCondition": {fn: this.productCodeCondition, errorMessage: "Invalid GTIN!"}};
         let formData = await webSkel.extractFormInformation(_target, conditions);
         if (formData.isValid) {
             for (const key in formData.data) {
@@ -297,8 +286,8 @@ export class ManageProductPage {
     }
 
     async viewLeaflet(_target) {
-        let epiObject = getEpitUnit(_target, this.productData.epiUnits);
-        let epiPreviewModel = getEpiPreviewModel(epiObject, this.productData);
+        let epiObject = webSkel.appServices.getEpitUnit(_target, this.productData.epiUnits);
+        let epiPreviewModel = webSkel.appServices.getEpiPreviewModel(epiObject, this.productData);
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
 

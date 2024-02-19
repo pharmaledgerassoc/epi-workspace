@@ -10,13 +10,13 @@
 <div class="page-body">
     <form class="batch-data-form">
         <div class="column-left">
-            <div class="form-field $$formFieldStateClass">
+            <div class="form-field $$formFieldStateClass" data-id="batchNumber">
                 <div class="label-container">
                     <label class="label" for="batchNumber">Batch</label>
                     $$penImage
                 </div>
                 <input type="text" class="text-input" name="batchNumber" id="batchNumber" placeholder="Add batch id"
-                       autocomplete="off" $$inputState value="$$batchName">
+                       autocomplete="off" $$inputState value="$$batchName" required>
             </div>
             <div class="form-field">
                 <div class="label-container">
@@ -27,7 +27,7 @@
                        placeholder="Add site name" value="$$packagingSiteName">
             </div>
             <div class="form-field-container">
-                <div class="form-field" id="date">
+                <div class="form-field" id="date" data-id="date">
                     <div class="label-container">
                         <label class="label" for="expiryDate">Expiry date</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
@@ -45,20 +45,22 @@
                 </div>
                 <div class="form-field" id="day-selection">
                     <div class="checkbox-container">
-                        <input type="checkbox" id="enableExpiryDay" name="enableExpiryDay" $$enableExpiryDateCheck value="$$enableExpiryDate">
+                        <input type="checkbox" id="enableExpiryDay" name="enableExpiryDay" $$enableExpiryDateCheck
+                               value="$$enableExpiryDate">
                         <label class="checkbox-label">Enable day selection</label>
                     </div>
                 </div>
             </div>
             <div class="form-buttons">
                 <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
-                <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction" $$formActionButtonState>$$formActionButtonText
+                <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction"
+                        $$formActionButtonState>$$formActionButtonText
                 </button>
             </div>
         </div>
 
         <div class="column-right">
-            <div class="form-field $$formFieldStateClass">
+            <div class="form-field $$formFieldStateClass" data-id="productCode">
                 <div class="label-container">
                     <label class="label" for="productCode">Product Code</label>
                     $$penImage
@@ -70,7 +72,7 @@
                     <label class="label" for="inventedName"> Brand / Invented name</label>
                 </div>
                 <input type="text" class="text-input-disabled" name="inventedName" id="inventedName" placeholder="-"
-                       readonly required value="$$productName">
+                       readonly required value="$$productInventedName">
             </div>
             <div class="form-field disabled-form-field">
                 <div class="label-container">

@@ -199,5 +199,16 @@ export class UtilsService {
         return result;
     }
 
+    cleanDBData(dbObject) {
+        if (dbObject) {
+            Object.keys(dbObject).forEach(batchKey => {
+                if (batchKey.startsWith("__")) {
+                    delete dbObject[batchKey];
+                }
+            });
+            delete dbObject["pk"];
+        }
+
+    }
 
 }

@@ -77,6 +77,7 @@ async function setupGlobalErrorHandlers() {
 
 async function navigateToPage(pageTag, data) {
   await webSkel.changeToDynamicPage(pageTag, pageTag, data);
+  changeSidebarFromURL();
 }
 
 function isCopyToClipboardSupported() {
