@@ -88,7 +88,7 @@ export class ProductsService {
                 await $$.promisify(webSkel.client.updateProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
             }
             if (epi.action === constants.EPI_ACTIONS.DELETE) {
-                await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
+                await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epi.language, epi.type);
             }
         }
     }

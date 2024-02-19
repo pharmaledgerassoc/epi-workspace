@@ -307,7 +307,7 @@ export class BatchesService {
                     await $$.promisify(webSkel.client.updateBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
                 }
                 if (epi.action === constants.EPI_ACTIONS.DELETE) {
-                    await $$.promisify(webSkel.client.deleteBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
+                    await $$.promisify(webSkel.client.deleteBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type);
                 }
             }
             /* for (const epi of updatedEPIs) {
