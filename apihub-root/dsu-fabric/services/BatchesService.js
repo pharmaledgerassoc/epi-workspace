@@ -74,11 +74,29 @@ export class BatchesService {
     }
 
     getDateInputTypeFromDateString(dateValueString) {
-        /* YYYY-MM-DD || YYYYMMDD || YYYY-MM|| YYYYMM */
-        if (dateValueString) {
-            return dateValueString.length === 10 || dateValueString.length === 6 ? "date" : "month";
+        if (!dateValueString) {
+            return "empty";
         }
-        return "empty"
+
+        const isDateSeparated = dateValueString.includes('-');
+
+        if (isDateSeparated) {
+            const parts = dateValueString.split('-');
+
+            if (parts.length === 3) {
+                return "date";
+            } else if (parts.length === 2) {
+                if (parts[1] === "00" || parts[0].length === 4) {
+                    return "month";
+                }
+            }
+        } else {
+            if (dateValueString.length === 4 || dateValueString.slice(-2) === "00") {
+                return "month";
+            } else {
+                return "date";
+            }
+        }
     }
 
     getFirstTwoDigitsOfYear() {
@@ -100,6 +118,9 @@ export class BatchesService {
                 dateValueString.slice(0, 2)
         } else {
             /* returns 'MM-YYYY' */
+            if(dateValueString.slice(-2).includes("00")){
+                dateValueString=dateValueString.slice(0,4);
+            }
             inputStringDate = dateValueString.slice(2, 4) +
                 separator +
                 this.getFirstTwoDigitsOfYear() +
@@ -118,7 +139,8 @@ export class BatchesService {
         dateInput.setAttribute('type', dateInputType);
         dateInput.required = true;
         if (assignDateValue) {
-            dateInput.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
+            /* to reverse the format of the date displayed on UI */
+            dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue));
             dateInput.value = assignDateValue;
             if (!dateInput.value) {
                 console.error(`${assignDateValue} is not a valid date. Input type: ${dateInput}`)
@@ -152,6 +174,12 @@ export class BatchesService {
             : dateParts[1] + separator + dateParts[0];
     }
 
+    /* mm-yyyy to yyyy-mm  || yyyy-mm->mm-yyyy || */
+    reverseSeparatedDateString(dateString){
+        const separator='-'
+        let dateParts=dateString.split(separator);
+        return dateParts.reverse().join(separator);
+    }
     getCurrentDateTimeCET() {
         const date = new Date();
 

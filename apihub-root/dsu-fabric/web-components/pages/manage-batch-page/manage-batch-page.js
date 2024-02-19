@@ -168,8 +168,9 @@ export class ManageBatchPage {
                 });
             },
             EDIT_BATCH: () => {
+                debugger;
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate);
-                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseInputFormattedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate)));
+                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate)));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
             }
 
