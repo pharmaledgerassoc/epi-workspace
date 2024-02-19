@@ -295,27 +295,6 @@
             "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/external-volume/wallets/dsu-fabric-wallet/apps-patch/dsu-fabric-ssapp/readme"
           }
         ]
-      }
-    ],
-    "ssapps-and-wallets-build": [
-      {
-        "name": "gtin-resolver-build",
-        "src": "",
-        "actions": [
-          {
-            "type": "execute",
-            "cmd": "cd gtin-resolver && npm run build"
-          }
-        ]
-      },
-      {
-        "name": "epi-ssapps-and-wallets-build",
-        "actions": [
-          {
-            "type": "execute",
-            "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js epi-ssapps-and-wallets-build\""
-          }
-        ]
       },
       {
         "name": "dsu-fabric-build",
@@ -338,7 +317,27 @@
           }
         ]
       }
-
+    ],
+    "ssapps-and-wallets-build": [
+      {
+        "name": "gtin-resolver-build",
+        "src": "",
+        "actions": [
+          {
+            "type": "execute",
+            "cmd": "cd gtin-resolver && npm run build"
+          }
+        ]
+      },
+      {
+        "name": "epi-ssapps-and-wallets-build",
+        "actions": [
+          {
+            "type": "execute",
+            "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js epi-ssapps-and-wallets-build\""
+          }
+        ]
+      }
     ],
     "build": [
       {
