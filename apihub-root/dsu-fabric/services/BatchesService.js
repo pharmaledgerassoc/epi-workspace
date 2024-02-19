@@ -205,7 +205,7 @@ export class BatchesService {
         return dateString + prefix;
     }
 
-    removeMarkedForDeletion(key, value) {
+    removeEPIForDeletion(key, value) {
         if (key === "EPIs") {
             return value.filter(unit => unit.action !== "delete");
         } else {

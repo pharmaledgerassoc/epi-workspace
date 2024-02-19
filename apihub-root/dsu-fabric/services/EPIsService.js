@@ -41,5 +41,6 @@ export class EPIsService {
         let id = epiUnitElement.getAttribute("data-id");
         let epiUnit = epiUnits.find(unit => unit.id === id);
         epiUnit.action = "delete";
+        return epiUnit;
     }
 }

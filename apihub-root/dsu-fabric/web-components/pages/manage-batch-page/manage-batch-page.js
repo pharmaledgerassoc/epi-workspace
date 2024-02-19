@@ -102,7 +102,7 @@ export class ManageBatchPage {
 
     onChange() {
         this.element.querySelector("#formActionButton").disabled =
-            JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeMarkedForDeletion);
+            JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeEPIForDeletion);
     }
 
     detectInputChange(event) {
@@ -168,7 +168,6 @@ export class ManageBatchPage {
                 });
             },
             EDIT_BATCH: () => {
-                debugger;
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate)));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
@@ -197,8 +196,10 @@ export class ManageBatchPage {
     }
 
     deleteEpi(_target) {
-        webSkel.appServices.deleteEPI(_target, this.updatedBatch.EPIs);
-        this.invalidate();
+        let epiUnit = webSkel.appServices.deleteEPI(_target, this.updatedBatch.EPIs);
+        //trigger on change for epis
+        this.updatedBatch.EPIs = JSON.parse(JSON.stringify(this.updatedBatch.EPIs));
+        this.reloadLeafletTab(this.getEncodedEPIS(this.updatedBatch.EPIs));
     }
 
     addOrUpdateEpi(EPIData) {
@@ -264,8 +265,14 @@ export class ManageBatchPage {
         this.updatedBatch.expiryDate = expiryDate;
         this.updatedBatch.enableExpiryDay = data.enableExpiryDay;
         let diffs = webSkel.appServices.getBatchDiffs(this.batch, this.updatedBatch);
-        let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-        let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
+        let selectedProduct = {
+            inventedName: this.batch.inventedName,
+            nameMedicinalProduct: this.batch.nameMedicinalProduct
+        }
+        let confirmation = await webSkel.showModal("data-diffs-modal", {
+            diffs: encodeURIComponent(JSON.stringify(diffs)),
+            productData: encodeURIComponent(JSON.stringify(selectedProduct))
+        }, true);
         if (confirmation) {
             if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
                 await webSkel.changeToDynamicPage("batches-page", "batches-page");

@@ -270,8 +270,10 @@ export class ManageProductPage {
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         if (formData.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
-            let encodeDiffs = encodeURIComponent(JSON.stringify(diffs));
-            let confirmation = await webSkel.showModal("data-diffs-modal", {diffs: encodeDiffs}, true);
+            let confirmation = await webSkel.showModal("data-diffs-modal", {
+                diffs: encodeURIComponent(JSON.stringify(diffs)),
+                productData: encodeURIComponent(JSON.stringify(this.productData))
+            }, true);
             if (confirmation) {
                 let modal = await webSkel.showModal("progress-info-modal", {
                     header: "Info",
@@ -290,7 +292,6 @@ export class ManageProductPage {
         let epiPreviewModel = webSkel.appServices.getEpiPreviewModel(epiObject, this.productData);
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }
-
 
     deleteMarket(_target) {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
