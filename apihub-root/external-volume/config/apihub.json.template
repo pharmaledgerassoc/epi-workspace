@@ -65,7 +65,9 @@
     "/getAuthorization",
     "/external-volume/config/oauthConfig.js",
     "/gtinOwner/",
-    "/leaflets/"
+    "/leaflets/",
+    "/bricking",
+    "/anchor"
   ],
   "oauthConfig": {
     "issuer": {
