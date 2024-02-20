@@ -295,6 +295,18 @@
             "cmd": "echo Use this folder template in order to customize the application instance by adding configuration, pages etc. > ./apihub-root/external-volume/wallets/dsu-fabric-wallet/apps-patch/dsu-fabric-ssapp/readme"
           }
         ]
+      }
+    ],
+    "ssapps-and-wallets-build": [
+      {
+        "name": "gtin-resolver-build",
+        "src": "",
+        "actions": [
+          {
+            "type": "execute",
+            "cmd": "cd gtin-resolver && npm run build"
+          }
+        ]
       },
       {
         "name": "dsu-fabric-build",
@@ -314,18 +326,6 @@
             "options": {
               "overwrite": true
             }
-          }
-        ]
-      }
-    ],
-    "ssapps-and-wallets-build": [
-      {
-        "name": "gtin-resolver-build",
-        "src": "",
-        "actions": [
-          {
-            "type": "execute",
-            "cmd": "cd gtin-resolver && npm run build"
           }
         ]
       },
