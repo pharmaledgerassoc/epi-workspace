@@ -12,6 +12,7 @@
     "leaflet-web-api",
     "mq",
     "secrets",
+    "versionlessDSU",
     "lightDBEnclave",
     "staticServer"
   ],
@@ -31,6 +32,9 @@
     "get-gtin-owner": {
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
+    },
+    "versionlessDSU": {
+      "module": "./components/versionlessDSU"
     },
     "staticServer": {
       "excludedFiles": [
