@@ -1,5 +1,4 @@
 import {getUserDetails} from "../utils/utils.js";
-import constants from "../constants.js";
 
 export class UtilsService {
     constructor() {
@@ -33,16 +32,6 @@ export class UtilsService {
 
     }
 
-    cleanMessage(message) {
-        let cleanMessage = JSON.parse(JSON.stringify(message));
-        this.dbMessageFields.forEach(field => {
-            if (field in cleanMessage) {
-                delete cleanMessage[field]
-            }
-        })
-        return cleanMessage;
-    }
-
     getDiffsForAudit(prevData, newData) {
         if (prevData && (Array.isArray(prevData) || Object.keys(prevData).length > 0)) {
             prevData = this.cleanMessage(prevData);
@@ -60,7 +49,6 @@ export class UtilsService {
             return diffs;
         }
     }
-
 
     getPhotoDiffViewObj(diff, property, modelLabelsMap) {
         const gtinResolverUtils = gtinResolver.getMappingsUtils();
@@ -144,71 +132,13 @@ export class UtilsService {
         }
     }
 
-    getProductPayload(productData) {
-        let result = this.initMessage(constants.API_MESSAGE_TYPES.PRODUCT);
-        result.payload = {
-            productCode: productData.productCode,
-            internalMaterialCode: productData.internalMaterialCode,
-            inventedName: productData.inventedName,
-            nameMedicinalProduct: productData.nameMedicinalProduct,
-            strength: productData.strength,
-            patientLeafletInfo: productData.patientLeafletInfo
-        };
-        return result;
+    cleanMessage(message) {
+        let cleanMessage = JSON.parse(JSON.stringify(message));
+        this.dbMessageFields.forEach(field => {
+            if (field in cleanMessage) {
+                delete cleanMessage[field]
+            }
+        })
+        return cleanMessage;
     }
-
-    getPhotoPayload(productData) {
-        const regex = /\/([^\/;]+);/;
-        const match = productData.photo.match(regex);
-        let imageType;
-        if (match) {
-            imageType = match[1];
-        } else {
-            imageType = "unknown";
-        }
-        let result = this.initMessage(constants.API_MESSAGE_TYPES.PRODUCT_PHOTO);
-        result.payload = {
-            productCode: productData.productCode,
-            imageId: this.generateNumericID(12),
-            imageType: "front",
-            imageFormat: imageType,
-            imageData: productData.photo
-        };
-        return result;
-    }
-
-    getEPIPayload(epi, productCode, batchCode) {
-        let result = this.initMessage(epi.type);
-        if (epi.action !== constants.EPI_ACTIONS.DELETE) {
-            result.payload = {
-                productCode: productCode,
-                batchCode: batchCode,
-                action: epi.action,
-                language: epi.language,
-                xmlFileContent: epi.xmlFileContent,
-                otherFilesContent: epi.otherFilesContent
-            };
-        } else {
-            result.payload = {
-                productCode: productCode,
-                batchCode: batchCode,
-                action: epi.action,
-                language: epi.language
-            };
-        }
-        return result;
-    }
-
-    cleanDBData(dbObject) {
-        if (dbObject) {
-            Object.keys(dbObject).forEach(batchKey => {
-                if (batchKey.startsWith("__")) {
-                    delete dbObject[batchKey];
-                }
-            });
-            delete dbObject["pk"];
-        }
-
-    }
-
 }

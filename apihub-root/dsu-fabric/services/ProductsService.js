@@ -47,6 +47,39 @@ export class ProductsService {
         return EPIs
     }
 
+    getProductPayload(productData) {
+        let result = webSkel.appServices.initMessage(constants.API_MESSAGE_TYPES.PRODUCT);
+        result.payload = {
+            productCode: productData.productCode,
+            internalMaterialCode: productData.internalMaterialCode,
+            inventedName: productData.inventedName,
+            nameMedicinalProduct: productData.nameMedicinalProduct,
+            strength: productData.strength,
+            patientLeafletInfo: productData.patientLeafletInfo
+        };
+        return result;
+    }
+
+    getPhotoPayload(productData) {
+        const regex = /\/([^\/;]+);/;
+        const match = productData.photo.match(regex);
+        let imageType;
+        if (match) {
+            imageType = match[1];
+        } else {
+            imageType = "unknown";
+        }
+        let result = webSkel.appServices.initMessage(constants.API_MESSAGE_TYPES.PRODUCT_PHOTO);
+        result.payload = {
+            productCode: productData.productCode,
+            imageId: webSkel.appServices.generateNumericID(12),
+            imageType: "front",
+            imageFormat: imageType,
+            imageData: productData.photo
+        };
+        return result;
+    }
+
     async getProductData(productCode) {
         let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
         delete productPayload.pk;
@@ -60,10 +93,10 @@ export class ProductsService {
     }
 
     async addProduct(productData) {
-        let productDetails = webSkel.appServices.getProductPayload(productData);
+        let productDetails = this.getProductPayload(productData);
         await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
         if (productData.photo) {
-            let photoDetails = webSkel.appServices.getPhotoPayload(productData)
+            let photoDetails = this.getPhotoPayload(productData)
             await $$.promisify(webSkel.client.addImage)(productData.productCode, photoDetails);
         }
         for (let epi of productData.epiUnits) {
@@ -73,10 +106,10 @@ export class ProductsService {
     }
 
     async updateProduct(productData, existingEpiUnits) {
-        let productDetails = webSkel.appServices.getProductPayload(productData);
+        let productDetails = this.getProductPayload(productData);
         await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
         if (productData.photo) {
-            let photoDetails = webSkel.appServices.getPhotoPayload(productData)
+            let photoDetails = this.getPhotoPayload(productData)
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, photoDetails);
         }
         for (let epi of productData.epiUnits) {

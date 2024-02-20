@@ -1,4 +1,5 @@
 import {getTextDirection} from "../utils/utils.js";
+import constants from "../constants.js";
 
 export class EPIsService {
     constructor() {
@@ -11,6 +12,31 @@ export class EPIsService {
         return l_unit;
     }
 
+    getEPIPayload(epi, productCode, batchCode) {
+        let result = webSkel.appServices.initMessage(epi.type);
+        if (epi.action !== constants.EPI_ACTIONS.DELETE) {
+            result.payload = {
+                productCode: productCode,
+                batchCode: batchCode,
+                language: epi.language,
+                xmlFileContent: epi.xmlFileContent,
+                otherFilesContent: epi.otherFilesContent.map(payload => {
+                    return {
+                        filename: payload.filename,
+                        fileContent: payload.fileContent.split("base64,")[1]
+                    }
+                }),
+            };
+        } else {
+            result.payload = {
+                productCode: productCode,
+                batchCode: batchCode,
+                language: epi.language
+            };
+        }
+        return result;
+    }
+
     getEpiPreviewModel(epiObject, productData) {
         let previewModalTitle = `Preview ${gtinResolver.Languages.getLanguageName(epiObject.language)} ${epiObject.type}`;
         let textDirection = getTextDirection(epiObject.language)
@@ -20,7 +46,8 @@ export class EPIsService {
             "otherFilesContent": epiObject.otherFilesContent,
             "productName": productData.inventedName,
             "productDescription": productData.nameMedicinalProduct,
-            textDirection
+            textDirection,
+            epiLanguage: epiObject.language
         };
     }
 

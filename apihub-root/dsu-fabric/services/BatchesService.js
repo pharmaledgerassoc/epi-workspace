@@ -439,8 +439,8 @@ export class BatchesService {
             });
             delete batch["pk"];
         }
-        webSkel.appServices.cleanDBData(batch);
-        webSkel.appServices.cleanDBData(product);
+        webSkel.appServices.cleanMessage(batch);
+        webSkel.appServices.cleanMessage(product);
         let leafletEPIs = await this.getBatchEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
         let smpcEPIs = await this.getBatchEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.SMPC);
         let EPIs = [...leafletEPIs, ...smpcEPIs];

@@ -281,7 +281,7 @@ export class ManageBatchPage {
     }
 
     async viewLeaflet(_target) {
-        let epiObject = webSkel.appServices.getEpitUnit(_target, this.batch.EPIs);
+        let epiObject = webSkel.appServices.getEpitUnit(_target, this.updatedBatch.EPIs);
         let selectedProduct = {
             inventedName: this.batch.inventedName,
             nameMedicinalProduct: this.batch.nameMedicinalProduct

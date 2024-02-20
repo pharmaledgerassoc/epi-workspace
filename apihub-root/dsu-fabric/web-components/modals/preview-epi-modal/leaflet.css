@@ -1,5 +1,30 @@
 @import "prerequisites.css";
 
+.epi-container {
+    font-family: "Noto Sans"
+}
+
+.epi-container[app-lang="ko"],
+.epi-container[app-lang="ko"] button {
+    font-family: "Noto Sans", "Noto Sans Korea"
+}
+
+.epi-container[app-lang="zh"],
+.epi-container[app-lang="zh"] button {
+    font-family: "Noto Sans", "Noto Sans China"
+}
+
+.epi-container[app-lang="ja"],
+.epi-container[app-lang="ja"] button {
+    font-family: "Noto Sans", "Noto Sans Japan"
+}
+
+.epi-container[app-lang="ar"],
+.epi-container[app-lang="ar"] button {
+    font-family: "Noto Sans", "Noto Sans Arab"
+}
+
+
 .product-name {
     font-size: var(--font-size--XL);
     font-weight: 700;
