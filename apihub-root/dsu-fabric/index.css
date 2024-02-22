@@ -1,10 +1,129 @@
-html {
-    height: 100%;
+@font-face {
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-stretch: 100%;
+    src: local(''), url("./assets/fonts/NotoSans-Regular.ttf") format('truetype');
 }
 
-body {
-    height: 100%;
-    display: flex;
+@font-face {
+    font-family: 'Noto Sans Japan';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-stretch: 100%;
+    src: local(''),
+    url("./assets/fonts/NotoSansJP-Regular.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Korea';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-stretch: 100%;
+    src: local(''),
+    url("./assets/fonts/NotoSansKR-Regular.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans China';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-stretch: 100%;
+    src: local(''),
+    url("./assets/fonts/NotoSansTC-Regular.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Arab';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    font-stretch: 100%;
+    src: local(''),
+    url("./assets/fonts/NotoSansArabic-Regular.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''), url("./assets/fonts/NotoSans-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Japan';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url("./assets/fonts/NotoSansJP-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Korea';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url("./assets/fonts/NotoSansKR-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans China';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url("./assets/fonts/NotoSansTC-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Arab';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url("./assets/fonts/NotoSansArabic-SemiBold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url("./assets/fonts/NotoSans-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Japan';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url("./assets/fonts/NotoSansJP-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Korea';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url("./assets/fonts/NotoSansKR-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans China';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url("./assets/fonts/NotoSansTC-Bold.ttf") format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Arab';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url("./assets/fonts/NotoSansArabic-Bold.ttf") format('truetype');
 }
 
 :root {
@@ -28,31 +147,54 @@ body {
     --highlight-green: #28a745;
     --highlight-green-hover: #218838;
     --select-color: #495057;
+    --olivegreen: #013646;
+    --mintgreen: #61E4A3;
+    --beige: #FDF0EC;
+    --grey: #E1E7EF;
+    --info-grey: #F0EEEC;
+    --green-200: #5F0808;
+    --red-200: #CC2A2A;
+    --red-100: #FEEFEE;
+    --yellow-200: #FFCB45;
+    --yellow-100: #FFECBB;
+    --font-scale: 1;
+    /* font-size: 62.5%; !* (62.5/100) * 16px = 10px *!*/
+    --font-size--basic: calc((1.6rem + 0.1vmin) * var(--font-scale));
+    --font-size--M: calc((1.6rem + 0.65vmin) * var(--font-scale));
+    --font-size--L: calc((1.6rem + 1.7vmin) * var(--font-scale));
+    --font-size--XL: calc((1.6rem + 2.3vmin) * var(--font-scale));
+    --default-font: "Noto Sans";
 }
 
-* {
-    box-sizing: border-box;
-    -ms-overflow-style: none;
-    /* Internet Explorer 10+ */
-    scrollbar-width: none;
-    /* Firefox */
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+html {
+    height: 100%;
+    font-family: "Noto Sans";
+    font-weight: 400;
+    font-style: normal;
 }
-
 
 body {
+    height: 100%;
+    display: flex;
     margin: 0;
     overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
     word-wrap: break-word;
     text-size-adjust: none;
+    font-family: "Noto Sans";
+    font-weight: 400;
 }
 
 dialog {
     padding: 0;
     outline: none !important;
+    font-family: var(--default-font);
 }
+
+button, label, input, h1, h2, h3, h4, div {
+    font-family: var(--default-font);
+    font-weight: 400;
+}
+
 
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.25);
@@ -151,11 +293,13 @@ pre code {
     border-radius: 5px;
     cursor: pointer;
 }
-.default-button:disabled{
+
+.default-button:disabled {
     cursor: unset;
     background: var(--very-light-grey);
     color: grey;
 }
+
 .hidden {
     display: none;
 }
@@ -179,55 +323,64 @@ pre code {
 .copy-button .button-icon {
     height: 20px;
     width: 20px;
-    mask-image: url(./assets/icons/copy.svg);
+    mask-image: url(../assets/icons/copy.svg);
     background-color: white;
     mask-repeat: no-repeat;
 }
+
 .input-invalid {
     border: 1px solid red !important;
     border-radius: 8px !important;
 }
-.transparent{
+
+.transparent {
     opacity: 0;
 }
 
-dialog[class="spinner"]{
+dialog[class="spinner"] {
     border: none;
     background: none;
+    overflow: hidden;
 }
-    /*spinner*/
-.spinner-container{
+
+/*spinner*/
+.spinner-container {
     border-radius: 50%;
     border: none;
     padding: 5px;
     background-color: white;
 }
+
 .spin {
     width: 30px;
     aspect-ratio: 1;
-    display:grid;
-    -webkit-mask-image: conic-gradient(from 15deg,#0000,#000);
+    display: grid;
+    -webkit-mask-image: conic-gradient(from 15deg, #0000, #000);
     animation: l26 1s infinite steps(12);
 }
+
 .spin,
 .spin:before,
-.spin:after{
-    background:
-            radial-gradient(closest-side at 50% 12.5%,
-            #488ffe 96%,#0000) 50% 0/20% 80% repeat-y,
-            radial-gradient(closest-side at 12.5% 50%,
-            #488FFEFF 96%,#0000) 0 50%/80% 20% repeat-x;
+.spin:after {
+    background: radial-gradient(closest-side at 50% 12.5%,
+    #488ffe 96%, #0000) 50% 0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%,
+            #488FFEFF 96%, #0000) 0 50%/80% 20% repeat-x;
 }
+
 .spin:before,
 .spin:after {
     content: "";
     grid-area: 1/1;
     transform: rotate(30deg);
 }
+
 .spin:after {
     transform: rotate(60deg);
 }
 
 @keyframes l26 {
-    100% {transform:rotate(1turn)}
+    100% {
+        transform: rotate(1turn)
+    }
 }
