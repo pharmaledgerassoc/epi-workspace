@@ -323,7 +323,7 @@ pre code {
 .copy-button .button-icon {
     height: 20px;
     width: 20px;
-    mask-image: url(../assets/icons/copy.svg);
+    mask-image: url(./assets/icons/copy.svg);
     background-color: white;
     mask-repeat: no-repeat;
 }
@@ -384,3 +384,9 @@ dialog[class="spinner"] {
         transform: rotate(1turn)
     }
 }
+
+*[userRights="readonly"] {
+    pointer-events: none !important;
+    opacity: 0.9 !important;
+}
+

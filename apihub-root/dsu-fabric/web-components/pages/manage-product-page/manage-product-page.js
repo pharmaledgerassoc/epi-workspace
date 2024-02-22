@@ -1,9 +1,9 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
+import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
-export class ManageProductPage {
+export class ManageProductPage extends CommonPresenterClass{
     constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
+        super(element,invalidate);
         this.invalidate(async () => {
             await this.initModel();
         });

@@ -1,7 +1,10 @@
-export class ProductsPage {
+import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
+
+export class ProductsPage extends CommonPresenterClass {
     constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
+        super(element, invalidate);
+        this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "View/Edit";
         this.invalidate(async () => {
             this.products = await webSkel.appServices.getProducts();
         });
@@ -17,7 +20,7 @@ export class ProductsPage {
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.inventedName}</div>
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.nameMedicinalProduct}</div>
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.productCode}</div>
-            <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">View/Edit</div>
+            <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">${this.editModeLabel}</div>
         `;
     }
 

@@ -13,7 +13,7 @@ export class LandingPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.sourcePage= this.element.getAttribute("data-source-page");
+        this.sourcePage = this.element.getAttribute("data-source-page");
         this.invalidate(async () => {
             let mainDSU;
             const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId()}`)
@@ -39,7 +39,6 @@ export class LandingPage {
             });
         });
     }
-
 
     getSSODetectedId = () => {
         return getUserDetails();
@@ -71,10 +70,6 @@ export class LandingPage {
 
     getWalletAccess = async () => {
         try {
-            /*        if (getUserDetails() === "usr1@example.com") {
-                        webSkel.hideLoading();
-                        return await navigateToPage("home-page");
-                    }*/
             let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
             let did;
             try {
@@ -90,7 +85,7 @@ export class LandingPage {
             }
 
 
-            if(this.sourcePage === "#landing-page"){
+            if (this.sourcePage === "#landing-page" || this.sourcePage === "#generate-did-page") {
                 this.sourcePage = "#home-page";
             }
 

@@ -1,12 +1,13 @@
 import {
     createObservableObject,
 } from "../../../utils/utils.js";
+import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
-export class ManageBatchPage {
+export class ManageBatchPage extends CommonPresenterClass {
 
     constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
+        super(element, invalidate);
+
         let params = webSkel.getHashParams();
         this.gtin = params.gtin;
         this.batchId = params.batchId;

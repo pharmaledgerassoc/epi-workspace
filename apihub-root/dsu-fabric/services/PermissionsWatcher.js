@@ -40,8 +40,11 @@ class PermissionsWatcher {
             webSkel.hideLoading();
             let unAuthorizedPages = ["generate-did-page", "landing-page"];
             if (hasAccess) {
+                webSkel.userRights = await this.getUserRights();
                 if (unAuthorizedPages.indexOf(getCurrentPageTag()) !== -1) {
-                    document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar"></left-sidebar>`);
+                    if (!document.querySelector("left-sidebar")) {
+                        document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar"></left-sidebar>`);
+                    }
                     //if we are on a booting page then we need to redirect...
                     return this.isAuthorizedHandler();
                 }
@@ -58,7 +61,6 @@ class PermissionsWatcher {
 
                 this.notificationHandler.reportUserRelevantInfo("Your credentials were removed.");
                 this.notificationHandler.reportUserRelevantInfo("Application will refresh soon...");
-                $$.forceTabRefresh();
                 return;
             }
         }).catch(async err => {
@@ -147,6 +149,49 @@ class PermissionsWatcher {
             console.debug("Caught an error during checking access", err);
         }
         return false;
+    }
+
+    async isInGroup(groupDID, did) {
+        let resolveDID = $$.promisify(openDSU.loadApi("w3cdid").resolveDID);
+        let groupDIDDocument = await resolveDID(groupDID);
+        let groupMembers = await $$.promisify(groupDIDDocument.listMembersByIdentity, groupDIDDocument)();
+
+        for (let member of groupMembers) {
+            if (member === did) {
+                return true;
+            }
+        }
+        return false
+    }
+
+    async getUserRights() {
+        let userRights;
+        const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
+        let credential = await $$.promisify(mainEnclave.readKey)(constants.CREDENTIAL_KEY);
+
+        if (credential.allPossibleGroups) {
+            for (let group of credential.allPossibleGroups) {
+                if (await this.isInGroup(group.did, this.did)) {
+                    switch (group.accessMode) {
+                        case "read":
+                            userRights = constants.USER_RIGHTS.READ;
+                            break;
+                        case "write":
+                            userRights = constants.USER_RIGHTS.WRITE;
+                            break;
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        if (!userRights) {
+            //todo: add new constant in opendsu.containts for root-cause security
+            this.notificationHandler.reportUserRelevantError("Unable to get user rights!");
+        }
+
+        return userRights;
     }
 }
 

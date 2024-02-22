@@ -8,11 +8,13 @@
 </div>
 
 <div class="page-body">
+    <div class="read-only-label">$$readOnlyLabel</div>
     <form class="product-data-form">
         <div class="column-left">
             <div class="form-field product-code">
                 <label class="label" for="productCode">Product Code</label>
-                <input type="text" class="text-input" name="productCode" id="productCode" placeholder="Add product code"
+                <input userRights="$$userRights" type="text" class="text-input" name="productCode" id="productCode"
+                       placeholder="Add product code"
                        data-condition="productCodeCondition">
                 <div class="gtin-validity"></div>
             </div>
@@ -21,7 +23,7 @@
                     <label class="label" for="inventedName">Brand/invented name</label>
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
-                <input type="text" class="text-input" name="inventedName" id="inventedName"
+                <input userRights="$$userRights" type="text" class="text-input" name="inventedName" id="inventedName"
                        placeholder="Add product name" required>
             </div>
             <div class="form-field-container">
@@ -30,7 +32,8 @@
                         <label class="label" for="nameMedicinalProduct">Name of Medicinal Product</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-                    <textarea class="text-input medicinal-product-name-input" name="nameMedicinalProduct"
+                    <textarea userRights="$$userRights" class="text-input medicinal-product-name-input"
+                              name="nameMedicinalProduct"
                               id="nameMedicinalProduct" placeholder="Add product description" required></textarea>
                 </div>
                 <div class="form-field product-photo-field">
@@ -40,7 +43,8 @@
                     </div>
                     <input class="hidden" type="file" accept="image/jpeg, image/jpg, image/png, image/gif, image/bmp"
                            name="photo" id="photo">
-                    <div class="product-photo-container pointer" data-local-action="uploadPhoto">
+                    <div userRights="$$userRights" class="product-photo-container pointer"
+                         data-local-action="uploadPhoto">
                         <div class="shadow"><img class="pen-square-white" src="./assets/icons/pen-square-white.svg"
                                                  alt="pen-square"></div>
                         <img src="./assets/images/no-picture.png" alt="product photo" class="product-photo no-image">
@@ -53,7 +57,8 @@
                         <label class="label" for="internalMaterialCode">Internal Material Code</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-                    <input type="text" class="text-input" name="internalMaterialCode" id="internalMaterialCode"
+                    <input userRights="$$userRights" type="text" class="text-input" name="internalMaterialCode"
+                           id="internalMaterialCode"
                            placeholder="Add internal material code">
                 </div>
                 <div class="form-field strength">
@@ -61,7 +66,7 @@
                         <label class="label" for="strength">Strength</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-                    <input type="text" class="text-input" name="strength" id="strength"
+                    <input userRights="$$userRights" type="text" class="text-input" name="strength" id="strength"
                            placeholder="Add product strength">
                 </div>
             </div>
@@ -70,12 +75,14 @@
                     <label class="label" for="patientLeafletInfo">Patient Specific Information Leaflet</label>
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
-                <input type="text" class="text-input" name="patientLeafletInfo" id="patientLeafletInfo"
+                <input userRights="$$userRights" type="text" class="text-input" name="patientLeafletInfo"
+                       id="patientLeafletInfo"
                        placeholder="Add Patient Specific Information Leaflet">
             </div>
             <div class="form-buttons">
                 <button class="default-button" data-local-action="navigateToProductsPage">Cancel</button>
-                <button class="default-button" id="accept-button" data-local-action="$$operationFnName">$$buttonName
+                <button userRights="$$userRights" class="default-button" id="accept-button"
+                        data-local-action="$$operationFnName">$$buttonName
                 </button>
             </div>
         </div>

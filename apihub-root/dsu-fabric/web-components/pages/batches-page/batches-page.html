@@ -4,8 +4,10 @@
     </div>
 </div>
 <div class="page-body">
+    <div class="read-only-label">$$readOnlyLabel</div>
     <div class="buttons-section">
-        <button class="add-batch pointer" data-local-action="navigateToAddBatch">+ADD BATCH</button>
+        <button userRights="$$userRights" class="add-batch pointer" data-local-action="navigateToAddBatch">+ADD BATCH
+        </button>
     </div>
     <div class="batches-section">
         <form class="search-section">
@@ -24,7 +26,7 @@
             <div class="column-header">Expiry Date(yy/mm/dd)</div>
             <div class="column-header">2D Data Matrix</div>
             <div class="column-header">Batch Version</div>
-            <div class="column-header last-column">Edit Batch</div>
+            <div class="column-header last-column">$$editBatchLabel</div>
             $$items
         </div>
     </div>

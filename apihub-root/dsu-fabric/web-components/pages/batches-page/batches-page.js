@@ -1,7 +1,11 @@
-export class BatchesPage {
+import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
+
+export class BatchesPage extends CommonPresenterClass {
     constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
+        super(element, invalidate);
+        this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "Edit";
+        this.editBatchLabel = `${this.editModeLabel} Batch`;
         this.invalidate(async () => {
             this.batches = await $$.promisify(webSkel.client.listBatches)(undefined, undefined, undefined, "desc");
             this.products = await $$.promisify(webSkel.client.listProducts)();
@@ -30,7 +34,7 @@ export class BatchesPage {
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="openDataMatrixModal ${batch.productCode}">View</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>-</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}"
-             data-local-action="navigateToEditBatch ${batch.productCode} ${batch.batchNumber}">Edit</div>`
+             data-local-action="navigateToEditBatch ${batch.productCode} ${batch.batchNumber}">${this.editModeLabel}</div>`
     }
 
     beforeRender() {
