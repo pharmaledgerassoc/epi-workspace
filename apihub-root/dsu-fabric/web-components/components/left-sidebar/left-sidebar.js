@@ -1,19 +1,19 @@
-import {changeSidebarFromURL} from "../../../utils/utils.js";
+import {changeSidebarFromURL, getUserDetails} from "../../../utils/utils.js";
 
 export class LeftSidebar {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
         this.selectedSidebarItem = this.element.getAttribute('data-sidebar-selection');
+        this.userName = getUserDetails();
         this.invalidate();
-
     }
 
     beforeRender() {
     }
 
     afterRender() {
-        if(this.selectedSidebarItem){
+        if (this.selectedSidebarItem) {
             const desiredSidebarSelection = this.element.querySelector(`[data-id="${this.selectedSidebarItem}"]`);
             if (desiredSidebarSelection) {
                 this.activateSidebarSelection(desiredSidebarSelection);
@@ -22,7 +22,6 @@ export class LeftSidebar {
             changeSidebarFromURL();
         }
     }
-
 
 
     activateSidebarSelection(clickTargetElement) {
