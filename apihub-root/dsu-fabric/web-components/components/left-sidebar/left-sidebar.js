@@ -34,6 +34,10 @@ export class LeftSidebar {
         return newSidebarSelection.getAttribute('data-id');
     }
 
+    logout() {
+        window.top.location = "/logout";
+    }
+
     async navigateToPage(clickTargetElement) {
         const webComponentPage = this.activateSidebarSelection(clickTargetElement);
         await webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
