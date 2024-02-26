@@ -107,7 +107,6 @@ export class ProductsService {
 
     async updateProduct(productData, existingEpiUnits) {
         let productDetails = this.getProductPayload(productData);
-        await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
         if (productData.photo) {
             let photoDetails = this.getPhotoPayload(productData)
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, photoDetails);
@@ -124,6 +123,8 @@ export class ProductsService {
                 await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epi.language, epi.type);
             }
         }
+        await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
+
     }
 
     getMarketDiffViewObj(marketDiffObj) {

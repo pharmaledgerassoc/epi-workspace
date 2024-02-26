@@ -31,7 +31,7 @@ export default {
         PRODUCT_PHOTO: "ProductPhoto",
         EPI: {LEAFLET: "leaflet", SMPC: "smpc"}
     },
-    EPI_ACTIONS:{
+    EPI_ACTIONS: {
         ADD: "add",
         UPDATE: "update",
         DELETE: "delete"
@@ -51,12 +51,6 @@ export default {
         INFO: "info",
         ERROR: "error"
     },
-    HOOKS: {
-        BEFORE_PAGE_LOADS: "beforePageLoads",
-        WHEN_PAGE_CLOSE: "whenPageClose",
-        BEFORE_APP_LOADS: "beforeAppLoads",
-        AFTER_APP_LOADS: "afterAppLoads"
-    },
     HTML_EVENTS: {
         CLOSED: "closed",
         CONFIRMED: "confirmed",
@@ -67,14 +61,13 @@ export default {
         CHANGE: "change",
         UPLOADPRODUCTS: "uploadProducts"
     },
-    BLOOMFILTER_SERIAL_TYPES: {
-        VALID: "validSerialNumbers",
-        RECALLED: "recalledSerialNumbers",
-        DECOMMISSIONED: "decommissionedSerialNumbers"
-    },
     USER_RIGHTS: {
         READ: "readonly",
         WRITE: "readwrite"
+    },
+    AUDIT_LOG_TYPES: {
+        USER_ACCESS: "userAccess",
+        USER_ACCTION: "userAction"
     },
     MODEL_LABELS_MAP: {
         PRODUCT: {
@@ -90,7 +83,7 @@ export default {
         BATCH: {
             batchNumber: "Batch",
             packagingSiteName: "Packaging site name",
-      expiryDate: "Expiry date",
+            expiryDate: "Expiry date",
             enableExpiryDay: "Enable day selection",
             gtin: "Product Code",
             productName: "Product Brand/Invented name"

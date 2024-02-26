@@ -90,6 +90,7 @@ export class LandingPage {
             }
 
             getPermissionsWatcher(did, async () => {
+                await webSkel.appServices.addAccessLog(did);
                 await loadPage(this.sourcePage);
             });
 

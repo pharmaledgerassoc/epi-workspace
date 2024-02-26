@@ -34,7 +34,7 @@ action-logs{
 .table{
     border-radius: 7px;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     border: 1px solid var(--very-light-grey);
 }
 .table div{

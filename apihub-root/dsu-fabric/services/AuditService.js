@@ -1,13 +1,16 @@
-export class AuditService{
+import constants from "../constants.js"
+
+export class AuditService {
     constructor() {
     }
-    objectToArray(item){
+
+    objectToArray(item) {
         let itemCopy = Object.assign({}, item);
         delete itemCopy.__version;
         delete itemCopy.pk;
         delete itemCopy.__timestamp;
         let batch = "-";
-        if(itemCopy.logInfo.payload.batch){
+        if (itemCopy.logInfo.payload.batch) {
             batch = itemCopy.logInfo.payload.batch;
             delete itemCopy.logInfo.payload.batch;
         }
@@ -16,8 +19,9 @@ export class AuditService{
         arr.push(JSON.stringify(details));
         return arr;
     }
-    convertToCSV(items){
-        let headers = ["gtin","batch","reason","username","creationTime","details"];
+
+    convertToCSV(items) {
+        let headers = ["gtin", "batch", "reason", "username", "creationTime", "details"];
         let columnTitles = headers.join(",") + "\n";
         let rows = "";
         for (let item of items) {
@@ -26,4 +30,17 @@ export class AuditService{
         }
         return [columnTitles + rows];
     }
+
+    async addAccessLog(did) {
+        let auditDetails = {
+            payload: {
+                userDID: did,
+                userGroup: window.currentGroup
+            }
+        }
+
+        await $$.promisify(webSkel.client.addAuditLog)(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails);
+
+    }
+
 }
