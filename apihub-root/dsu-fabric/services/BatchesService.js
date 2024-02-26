@@ -293,7 +293,7 @@ export class BatchesService {
             await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
             for (const EPI of EPIs) {
                 let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);
-                await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, epiDetails);
+                await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
             }
             return true;
         } else {
