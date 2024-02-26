@@ -181,8 +181,7 @@ export class ProductsService {
         return result;
     }
 
-    async getProducts(sortDirection = "desc") {
-        return await $$.promisify(webSkel.client.listProducts)(undefined, undefined, undefined, sortDirection);
-
+    async getProducts(number = undefined, query = undefined, sortDirection = "desc") {
+        return await $$.promisify(webSkel.client.listProducts)( undefined, number, query, sortDirection);
     }
 }

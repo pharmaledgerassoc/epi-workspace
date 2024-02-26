@@ -5,9 +5,26 @@ export class ProductsPage extends CommonPresenterClass {
     constructor(element, invalidate) {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "View/Edit";
-        this.invalidate(async () => {
-            this.products = await webSkel.appServices.getProducts();
-        });
+        this.productsNumber = 16;
+        this.disableNextBtn = true;
+        this.firstElementTimestamp = 0;
+        this.lastElementTimestamp = undefined;
+        this.previousPageFirstElements = [];
+        this.loadProducts = (query)=>{
+            this.invalidate(async () => {
+                this.products = await webSkel.appServices.getProducts(this.productsNumber, query);
+                if(this.products.length === this.productsNumber){
+                    this.products.pop();
+                    this.disableNextBtn = false;
+                }
+                else if(this.products.length < this.productsNumber){
+                    this.disableNextBtn = true;
+                }
+                this.lastElementTimestamp = this.products[this.products.length-1].__timestamp;
+                this.firstElementTimestamp = this.products[0].__timestamp;
+            });
+        };
+        this.loadProducts();
     }
 
     createProductRowHTML(product, lastRowItem = false) {
@@ -38,6 +55,8 @@ export class ProductsPage extends CommonPresenterClass {
         let products = this.element.querySelector(".products-section");
         if (this.products.length === 0) {
             products.style.display = "none";
+            let paginationSection = this.element.querySelector(".table-pagination");
+            paginationSection.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
                                         There are no data on any previous product
@@ -87,6 +106,14 @@ export class ProductsPage extends CommonPresenterClass {
             xMark.style.display = "block";
             this.focusInput = false;
         }
+        let previousBtn = this.element.querySelector("#previous");
+        let nextBtn = this.element.querySelector("#next");
+        if(this.previousPageFirstElements.length === 0){
+            previousBtn.classList.add("disabled");
+        }
+        if(this.disableNextBtn){
+            nextBtn.classList.add("disabled");
+        }
     }
 
     toggleSearchIcons(xMark, event) {
@@ -127,7 +154,7 @@ export class ProductsPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode=${this.inputValue}`]);
+                let products = await webSkel.appServices.getProducts(undefined, [`productCode = ${this.inputValue}`]);
                 if (products.length > 0) {
                     this.products = products;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
@@ -144,7 +171,23 @@ export class ProductsPage extends CommonPresenterClass {
         this.searchResultIcon = "";
         delete this.inputValue;
         this.invalidate(async () => {
-            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.products = await webSkel.appServices.getProducts();
         });
+    }
+
+    previousProductsPage(_target){
+        if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
+            this.firstElementTimestamp = this.previousPageFirstElements.pop();
+            this.lastElementTimestamp = undefined;
+            this.loadProducts([`__timestamp <= ${this.firstElementTimestamp}`]);
+        }
+    }
+    nextProductsPage(_target){
+        if(!_target.classList.contains("disabled")){
+            this.previousPageFirstElements.push(this.firstElementTimestamp);
+            this.firstElementTimestamp = this.lastElementTimestamp;
+            this.lastElementTimestamp = undefined;
+            this.loadProducts([`__timestamp < ${this.firstElementTimestamp}`]);
+        }
     }
 }
