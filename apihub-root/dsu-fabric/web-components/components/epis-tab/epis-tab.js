@@ -22,9 +22,8 @@ export class EPIsTab extends CommonPresenterClass {
                             </div>
                             <div class="epi-buttons">
                             ${this.userRights === constants.USER_RIGHTS.WRITE ?
-                    '<div className="epi-button pointer" data-local-action="deleteEpi">' +
-                    '<img className="epi-img" src="./assets/icons/thrash.svg" alt="thrash"/> ' +
-                    '</div>}' : ''
+                    '<div class="epi-button pointer" data-local-action="deleteEpi">' +
+                    '<img class="epi-img" src="./assets/icons/thrash.svg" alt="thrash"/></div>' : ''
                 }
                             <div class="epi-button pointer" data-local-action="viewLeaflet">
                                 <img class="epi-img" src="./assets/icons/eye.svg" alt="eye">

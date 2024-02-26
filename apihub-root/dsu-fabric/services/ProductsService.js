@@ -11,8 +11,8 @@ export class ProductsService {
             "inventedName",
             "nameMedicinalProduct",
             "internalMaterialCode",
-            "strength",
-            "patientLeafletInfo"
+            "strength"/*,
+            "patientLeafletInfo"*/
         ]
     }
 
@@ -54,8 +54,8 @@ export class ProductsService {
             internalMaterialCode: productData.internalMaterialCode,
             inventedName: productData.inventedName,
             nameMedicinalProduct: productData.nameMedicinalProduct,
-            strength: productData.strength,
-            patientLeafletInfo: productData.patientLeafletInfo
+            strength: productData.strength/*,
+            patientLeafletInfo: productData.patientLeafletInfo*/
         };
         return result;
     }
