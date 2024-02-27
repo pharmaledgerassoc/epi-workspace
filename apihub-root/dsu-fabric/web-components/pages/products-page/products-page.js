@@ -154,7 +154,7 @@ export class ProductsPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let products = await webSkel.appServices.getProducts(undefined, [`productCode = ${this.inputValue}`]);
+                let products = await webSkel.appServices.getProducts(undefined, [`productCode == ${this.inputValue}`]);
                 if (products.length > 0) {
                     this.products = products;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
@@ -170,9 +170,7 @@ export class ProductsPage extends CommonPresenterClass {
     async deleteInput(xMark) {
         this.searchResultIcon = "";
         delete this.inputValue;
-        this.invalidate(async () => {
-            this.products = await webSkel.appServices.getProducts();
-        });
+        this.loadProducts();
     }
 
     previousTablePage(_target){

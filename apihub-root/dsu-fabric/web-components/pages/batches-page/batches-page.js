@@ -6,7 +6,6 @@ export class BatchesPage extends CommonPresenterClass {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "Edit";
         this.editBatchLabel = `${this.editModeLabel} Batch`;
-        this.products = {};
         this.batchesNumber = 16;
         this.disableNextBtn = true;
         this.firstElementTimestamp = 0;
@@ -15,11 +14,6 @@ export class BatchesPage extends CommonPresenterClass {
         this.loadBatches = (query)=>{
             this.invalidate(async () => {
                 this.batches = await webSkel.appServices.getBatches(this.batchesNumber, query);
-                for(let batch of this.batches){
-                    if(!this.products[batch.productCode]){
-                        this.products[batch.productCode] = await $$.promisify(webSkel.client.getProductMetadata)(batch.productCode);
-                    }
-                }
                 if(this.batches.length === this.batchesNumber){
                     this.batches.pop();
                     this.disableNextBtn = false;
@@ -40,15 +34,15 @@ export class BatchesPage extends CommonPresenterClass {
             : [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator)
     }
 
-    createBatchRowHTML(batch, product, lastRowItem = false) {
+    createBatchRowHTML(batch, lastRowItem = false) {
         const createClassString = (...classNames) => {
             return classNames.filter(Boolean).join(' ');
         }
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
         return `
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.inventedName}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.nameMedicinalProduct}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.inventedName}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.nameMedicinalProduct}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.productCode}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.batchNumber}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${this.addSeparatorToDateString(batch.expiryDate, '/')}</div>
@@ -62,9 +56,8 @@ export class BatchesPage extends CommonPresenterClass {
         let string = "";
         const batchesCount = this.batches.length;
         this.batches.forEach((batch, index) => {
-            string += this.createBatchRowHTML(batch, this.products[batch.productCode], index === batchesCount - 1);
+            string += this.createBatchRowHTML(batch, index === batchesCount - 1);
         });
-
         this.items = string;
     }
 
@@ -164,11 +157,9 @@ export class BatchesPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                this.batches = await webSkel.appServices.getBatches(undefined,[`productCode = ${this.inputValue}`]);
-                if (this.batches.length > 0) {
-                    let product = await $$.promisify(webSkel.client.getProductMetadata)(undefined, undefined, [`productCode = ${this.inputValue}`]);
-                    this.products = {};
-                    this.products[this.batches[0].productCode] = product;
+                let batches = await webSkel.appServices.getBatches(undefined,[`productCode == ${this.inputValue}`]);
+                if (batches.length > 0) {
+                    this.batches = batches;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
                 } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
@@ -182,15 +173,7 @@ export class BatchesPage extends CommonPresenterClass {
     async deleteInput(xMark) {
         this.searchResultIcon = "";
         delete this.inputValue;
-        this.invalidate(async () => {
-            this.products = {};
-            this.batches = await $$.promisify(webSkel.client.listBatches)();
-            for(let batch of this.batches){
-                if(!this.products[batch.productCode]) {
-                    this.products[batch.productCode] = await $$.promisify(webSkel.client.getProductMetadata)(batch.productCode);
-                }
-            }
-        });
+        this.loadBatches();
     }
 
     async navigateToAddBatch() {

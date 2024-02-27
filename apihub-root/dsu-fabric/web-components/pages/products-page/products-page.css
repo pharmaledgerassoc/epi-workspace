@@ -62,7 +62,6 @@ products-page {
 .input-container {
     display: inline-block;
     position: relative;
-    width: 240px;
     min-width: 240px;
 }
 
