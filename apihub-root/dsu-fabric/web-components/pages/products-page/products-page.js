@@ -175,14 +175,14 @@ export class ProductsPage extends CommonPresenterClass {
         });
     }
 
-    previousProductsPage(_target){
+    previousTablePage(_target){
         if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             this.loadProducts([`__timestamp <= ${this.firstElementTimestamp}`]);
         }
     }
-    nextProductsPage(_target){
+    nextTablePage(_target){
         if(!_target.classList.contains("disabled")){
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;

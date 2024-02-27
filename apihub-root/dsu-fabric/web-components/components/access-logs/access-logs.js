@@ -4,9 +4,26 @@ export class AccessLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.invalidate(async () => {
-            this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, 0, undefined, "__timestamp > 0", "desc");
-        });
+        this.logsNumber = 16;
+        this.disableNextBtn = true;
+        this.firstElementTimestamp = 0;
+        this.lastElementTimestamp = undefined;
+        this.previousPageFirstElements = [];
+        this.loadLogs = (query)=>{
+            this.invalidate(async () => {
+                this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS,  undefined, this.logsNumber, query, "desc");
+                if(this.logs.length === this.logsNumber){
+                    this.logs.pop();
+                    this.disableNextBtn = false;
+                }
+                else if(this.logs.length < this.logsNumber){
+                    this.disableNextBtn = true;
+                }
+                this.lastElementTimestamp = this.logs[this.logs.length-1].__timestamp;
+                this.firstElementTimestamp = this.logs[0].__timestamp;
+            });
+        };
+        this.loadLogs(["__timestamp > 0"]);
     }
 
     beforeRender() {
@@ -60,6 +77,20 @@ export class AccessLogs {
             this.searchInput.focus();
             xMark.style.display = "block";
             this.focusInput = false;
+        }
+        let logs = this.element.querySelector(".logs-section");
+        if (this.logs.length === 0) {
+            logs.style.display = "none";
+            let noData = `<div class="no-data">No Data ...</div>`;
+            this.element.insertAdjacentHTML("beforeend", noData)
+        }
+        let previousBtn = this.element.querySelector("#previous");
+        let nextBtn = this.element.querySelector("#next");
+        if(this.previousPageFirstElements.length === 0){
+            previousBtn.classList.add("disabled");
+        }
+        if(this.disableNextBtn){
+            nextBtn.classList.add("disabled");
         }
     }
 
@@ -124,5 +155,21 @@ export class AccessLogs {
         link.download = 'AccessLogs.csv';
         link.click();
         link.remove();
+    }
+
+    previousTablePage(_target){
+        if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
+            this.firstElementTimestamp = this.previousPageFirstElements.pop();
+            this.lastElementTimestamp = undefined;
+            this.loadLogs([`__timestamp <= ${this.firstElementTimestamp}`]);
+        }
+    }
+    nextTablePage(_target){
+        if(!_target.classList.contains("disabled")){
+            this.previousPageFirstElements.push(this.firstElementTimestamp);
+            this.firstElementTimestamp = this.lastElementTimestamp;
+            this.lastElementTimestamp = undefined;
+            this.loadLogs([`__timestamp < ${this.firstElementTimestamp}`]);
+        }
     }
 }

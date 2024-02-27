@@ -6,11 +6,32 @@ export class BatchesPage extends CommonPresenterClass {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "Edit";
         this.editBatchLabel = `${this.editModeLabel} Batch`;
-        this.invalidate(async () => {
-            this.batches = await $$.promisify(webSkel.client.listBatches)(undefined, undefined, undefined, "desc");
-            this.products = await $$.promisify(webSkel.client.listProducts)();
-        });
-
+        this.products = {};
+        this.batchesNumber = 16;
+        this.disableNextBtn = true;
+        this.firstElementTimestamp = 0;
+        this.lastElementTimestamp = undefined;
+        this.previousPageFirstElements = [];
+        this.loadBatches = (query)=>{
+            this.invalidate(async () => {
+                this.batches = await webSkel.appServices.getBatches(this.batchesNumber, query);
+                for(let batch of this.batches){
+                    if(!this.products[batch.productCode]){
+                        this.products[batch.productCode] = await $$.promisify(webSkel.client.getProductMetadata)(batch.productCode);
+                    }
+                }
+                if(this.batches.length === this.batchesNumber){
+                    this.batches.pop();
+                    this.disableNextBtn = false;
+                }
+                else if(this.batches.length < this.batchesNumber){
+                    this.disableNextBtn = true;
+                }
+                this.lastElementTimestamp = this.batches[this.batches.length-1].__timestamp;
+                this.firstElementTimestamp = this.batches[0].__timestamp;
+            });
+        };
+        this.loadBatches();
     }
 
     addSeparatorToDateString(dateString, separator) {
@@ -41,8 +62,7 @@ export class BatchesPage extends CommonPresenterClass {
         let string = "";
         const batchesCount = this.batches.length;
         this.batches.forEach((batch, index) => {
-            let product = this.products.find(prodObj => prodObj.productCode === batch.productCode)
-            string += this.createBatchRowHTML(batch, product, index === batchesCount - 1);
+            string += this.createBatchRowHTML(batch, this.products[batch.productCode], index === batchesCount - 1);
         });
 
         this.items = string;
@@ -52,6 +72,8 @@ export class BatchesPage extends CommonPresenterClass {
         let pageBody = this.element.querySelector(".page-body");
         let batches = this.element.querySelector(".batches-section");
         if (this.batches.length === 0) {
+            let paginationSection = this.element.querySelector(".table-pagination");
+            paginationSection.style.display = "none";
             batches.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
@@ -102,6 +124,14 @@ export class BatchesPage extends CommonPresenterClass {
             xMark.style.display = "block";
             this.focusInput = false;
         }
+        let previousBtn = this.element.querySelector("#previous");
+        let nextBtn = this.element.querySelector("#next");
+        if(this.previousPageFirstElements.length === 0){
+            previousBtn.classList.add("disabled");
+        }
+        if(this.disableNextBtn){
+            nextBtn.classList.add("disabled");
+        }
     }
 
     toggleSearchIcons(xMark, event) {
@@ -134,10 +164,11 @@ export class BatchesPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let products = await $$.promisify(webSkel.client.listProducts)(undefined, undefined, [`productCode == ${this.inputValue}`]);
-                if (products.length > 0) {
-                    this.products = products;
-                    this.batches = await $$.promisify(webSkel.client.listBatches)(undefined, undefined, [`productCode == ${this.inputValue}`]);
+                this.batches = await webSkel.appServices.getBatches(undefined,[`productCode = ${this.inputValue}`]);
+                if (this.batches.length > 0) {
+                    let product = await $$.promisify(webSkel.client.getProductMetadata)(undefined, undefined, [`productCode = ${this.inputValue}`]);
+                    this.products = {};
+                    this.products[this.batches[0].productCode] = product;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
                 } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
@@ -152,8 +183,13 @@ export class BatchesPage extends CommonPresenterClass {
         this.searchResultIcon = "";
         delete this.inputValue;
         this.invalidate(async () => {
-            this.products = await $$.promisify(webSkel.client.listProducts)();
+            this.products = {};
             this.batches = await $$.promisify(webSkel.client.listBatches)();
+            for(let batch of this.batches){
+                if(!this.products[batch.productCode]) {
+                    this.products[batch.productCode] = await $$.promisify(webSkel.client.getProductMetadata)(batch.productCode);
+                }
+            }
         });
     }
 
@@ -167,5 +203,21 @@ export class BatchesPage extends CommonPresenterClass {
 
     async openDataMatrixModal(_target, productCode) {
         await webSkel.showModal("data-matrix-modal", {["product-code"]: productCode});
+    }
+
+    previousTablePage(_target){
+        if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
+            this.firstElementTimestamp = this.previousPageFirstElements.pop();
+            this.lastElementTimestamp = undefined;
+            this.loadBatches([`__timestamp <= ${this.firstElementTimestamp}`]);
+        }
+    }
+    nextTablePage(_target){
+        if(!_target.classList.contains("disabled")){
+            this.previousPageFirstElements.push(this.firstElementTimestamp);
+            this.firstElementTimestamp = this.lastElementTimestamp;
+            this.lastElementTimestamp = undefined;
+            this.loadBatches([`__timestamp < ${this.firstElementTimestamp}`]);
+        }
     }
 }

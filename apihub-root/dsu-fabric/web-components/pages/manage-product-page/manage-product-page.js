@@ -24,6 +24,9 @@ export class ManageProductPage extends CommonPresenterClass{
                 EPIs
             } = await webSkel.appServices.getProductData(params["product-code"]);
             let productModel = webSkel.appServices.createNewProduct(productPayload, productPhotoPayload, EPIs, []);
+            if(!productModel.photo.startsWith("data:image")){
+                productModel.photo = "./assets/images/no-picture.png";
+            }
             //save initial state
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
