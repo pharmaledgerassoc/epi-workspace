@@ -293,9 +293,21 @@ export class ManageProductPage extends CommonPresenterClass {
         return !inputContainer.classList.contains("product-code-invalid");
 
     }
+    otherFieldsCondition(element, formData){
+        return !webSkel.appServices.hasCodeOrHTML(element.value);
+    }
 
     async saveProduct(_target) {
-        const conditions = {"productCodeCondition": {fn: this.productCodeCondition, errorMessage: "Invalid GTIN!"}};
+        const conditions = {
+            "productCodeCondition": {
+                fn: this.productCodeCondition,
+                errorMessage: "Invalid GTIN!"
+            },
+            "otherFieldsCondition": {
+                fn: this.otherFieldsCondition,
+                errorMessage: "Invalid input!"
+            }
+        };
         let formData = await webSkel.extractFormInformation(_target, conditions);
         if (formData.isValid) {
             for (const key in formData.data) {
@@ -311,7 +323,8 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async updateProduct() {
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        const conditions = {"otherFieldsCondition": {fn: this.otherFieldsCondition, errorMessage: "Invalid input!"}};
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
         if (formData.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
             let confirmation = await webSkel.showModal("data-diffs-modal", {

@@ -11,21 +11,21 @@
     <div class="read-only-label">$$readOnlyLabel</div>
     <form class="batch-data-form">
         <div class="column-left">
-            <div class="form-field $$formFieldStateClass" data-id="productCode">
+            <div class="form-field $$formFieldStateClass">
                 <div class="label-container">
                     <label class="label" for="productCode">Product Code</label>
                     $$penImage
                 </div>
                 $$productCodeInput
             </div>
-            <div class="form-field $$formFieldStateClass" data-id="batchNumber">
+            <div class="form-field $$formFieldStateClass">
                 <div class="label-container">
                     <label class="label" for="batchNumber">Batch</label>
                     $$penImage
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="batchNumber" id="batchNumber"
                        placeholder="Add batch id"
-                       autocomplete="off" $$inputState value="$$batchName" required>
+                       autocomplete="off" $$inputState value="$$batchName" required data-condition="otherFieldsCondition">
             </div>
 
             <div class="form-field">
@@ -35,10 +35,10 @@
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="packagingSiteName"
                        id="packagingSiteName" autocomplete="off"
-                       placeholder="Add site name" value="$$packagingSiteName">
+                       placeholder="Add site name" value="$$packagingSiteName" data-condition="otherFieldsCondition">
             </div>
             <div userRights="$$userRights" class="form-field-container">
-                <div class="form-field" id="date" data-id="date">
+                <div class="form-field" id="date">
                     <div class="label-container">
                         <label class="label" for="expiryDate">Expiry date</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">

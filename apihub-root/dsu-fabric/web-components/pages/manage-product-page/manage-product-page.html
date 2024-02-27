@@ -24,7 +24,7 @@
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="inventedName" id="inventedName"
-                       placeholder="Add product name" required>
+                       placeholder="Add product name" data-condition="otherFieldsCondition" required>
             </div>
             <div class="form-field-container">
                 <div class="form-field name-of-medicinal-product">
@@ -34,7 +34,7 @@
                     </div>
                     <textarea userRights="$$userRights" class="text-input medicinal-product-name-input"
                               name="nameMedicinalProduct"
-                              id="nameMedicinalProduct" placeholder="Add product description" required></textarea>
+                              id="nameMedicinalProduct" placeholder="Add product description" required data-condition="otherFieldsCondition"></textarea>
                 </div>
                 <div class="form-field product-photo-field">
                     <div class="label-container">
@@ -58,7 +58,7 @@
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="internalMaterialCode"
                        id="internalMaterialCode"
-                       placeholder="Add internal material code">
+                       placeholder="Add internal material code" data-condition="otherFieldsCondition">
             </div>
 
             <!-- <div class="form-field">

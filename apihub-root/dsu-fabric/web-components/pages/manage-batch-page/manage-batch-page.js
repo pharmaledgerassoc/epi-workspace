@@ -235,11 +235,18 @@ export class ManageBatchPage extends CommonPresenterClass {
         return inputContainer.value !== "no-selection"
     }
 
+    otherFieldsCondition(element, formData){
+        return !webSkel.appServices.hasCodeOrHTML(element.value);
+    }
     async addBatch(_target) {
         const conditions = {
             "productCodeCondition": {
                 fn: this.productCodeCondition,
                 errorMessage: "Please select a product code! "
+            },
+            "otherFieldsCondition": {
+                fn: this.otherFieldsCondition,
+                errorMessage: "Invalid input!"
             }
         };
 
@@ -259,27 +266,35 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     async updateBatch() {
-        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form")));
-        let expiryDate = webSkel.appServices.formatBatchExpiryDate(data.expiryDate);
-        if (webSkel.appServices.getDateInputTypeFromDateString(expiryDate) === 'month') {
-            expiryDate = webSkel.appServices.prefixMonthDate(expiryDate);
-        }
-        this.updatedBatch.expiryDate = expiryDate;
-        this.updatedBatch.enableExpiryDay = data.enableExpiryDay;
-        let diffs = webSkel.appServices.getBatchDiffs(this.batch, this.updatedBatch);
-        let selectedProduct = {
-            inventedName: this.batch.inventedName,
-            nameMedicinalProduct: this.batch.nameMedicinalProduct
-        }
-        let confirmation = await webSkel.showModal("data-diffs-modal", {
-            diffs: encodeURIComponent(JSON.stringify(diffs)),
-            productData: encodeURIComponent(JSON.stringify(selectedProduct))
-        }, true);
-        if (confirmation) {
-            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
-            if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
-                await webSkel.closeModal(modal);
-                await webSkel.changeToDynamicPage("batches-page", "batches-page");
+        const conditions = {
+            "otherFieldsCondition": {
+                fn: this.otherFieldsCondition,
+                errorMessage: "Invalid input!"
+            }
+        };
+        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form"), conditions));
+        if(data.isValid){
+            let expiryDate = webSkel.appServices.formatBatchExpiryDate(data.expiryDate);
+            if (webSkel.appServices.getDateInputTypeFromDateString(expiryDate) === 'month') {
+                expiryDate = webSkel.appServices.prefixMonthDate(expiryDate);
+            }
+            this.updatedBatch.expiryDate = expiryDate;
+            this.updatedBatch.enableExpiryDay = data.enableExpiryDay;
+            let diffs = webSkel.appServices.getBatchDiffs(this.batch, this.updatedBatch);
+            let selectedProduct = {
+                inventedName: this.batch.inventedName,
+                nameMedicinalProduct: this.batch.nameMedicinalProduct
+            }
+            let confirmation = await webSkel.showModal("data-diffs-modal", {
+                diffs: encodeURIComponent(JSON.stringify(diffs)),
+                productData: encodeURIComponent(JSON.stringify(selectedProduct))
+            }, true);
+            if (confirmation) {
+                let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
+                if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
+                    await webSkel.closeModal(modal);
+                    await webSkel.changeToDynamicPage("batches-page", "batches-page");
+                }
             }
         }
     }

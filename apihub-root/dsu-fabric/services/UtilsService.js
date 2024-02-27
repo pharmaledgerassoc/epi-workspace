@@ -141,4 +141,9 @@ export class UtilsService {
         })
         return cleanMessage;
     }
+
+    hasCodeOrHTML(string){
+        const regex = /<[^>]+>/;
+        return regex.test(string);
+    }
 }
