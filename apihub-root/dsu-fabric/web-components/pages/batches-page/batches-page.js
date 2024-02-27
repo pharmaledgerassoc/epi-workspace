@@ -14,7 +14,7 @@ export class BatchesPage extends CommonPresenterClass {
         this.loadBatches = (query) => {
             this.invalidate(async () => {
                 this.batches = await webSkel.appServices.getBatches(this.batchesNumber, query);
-                if (this.batches && this.batches.length) {
+                if (this.batches && this.batches.length > 0) {
                     if (this.batches.length === this.batchesNumber) {
                         this.batches.pop();
                         this.disableNextBtn = false;

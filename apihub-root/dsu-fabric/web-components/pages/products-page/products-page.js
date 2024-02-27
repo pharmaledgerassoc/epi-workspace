@@ -13,7 +13,7 @@ export class ProductsPage extends CommonPresenterClass {
         this.loadProducts = (query) => {
             this.invalidate(async () => {
                 this.products = await webSkel.appServices.getProducts(this.productsNumber, query);
-                if (this.products && this.products.length) {
+                if (this.products && this.products.length > 0) {
                     if (this.products.length === this.productsNumber) {
                         this.products.pop();
                         this.disableNextBtn = false;
