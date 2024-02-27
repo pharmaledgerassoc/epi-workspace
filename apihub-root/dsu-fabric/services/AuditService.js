@@ -4,28 +4,33 @@ export class AuditService {
     constructor() {
     }
 
-    objectToArray(item) {
-        let itemCopy = Object.assign({}, item);
-        delete itemCopy.__version;
-        delete itemCopy.pk;
-        delete itemCopy.__timestamp;
-        let batch = "-";
-        if (itemCopy.logInfo.payload.batch) {
-            batch = itemCopy.logInfo.payload.batch;
-            delete itemCopy.logInfo.payload.batch;
+    objectToArray(item, type) {
+
+        if (type === "action") {
+            return [item.gtin, item.batchNumber || "-", item.operation, item.userId, new Date(item.__timestamp).toISOString()];
         }
-        let arr = [itemCopy.itemCode, batch, itemCopy.reason, itemCopy.logInfo.senderId, itemCopy.logInfo.messageDateTime];
-        let details = {logInfo: itemCopy};
-        arr.push(JSON.stringify(details));
+
+        if (type === "access") {
+            return [item.userId, "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
+
+        }
+        /*  let details = {logInfo: itemCopy};
+          arr.push(JSON.stringify(details));*/
         return arr;
     }
 
-    convertToCSV(items) {
-        let headers = ["gtin", "batch", "reason", "username", "creationTime", "details"];
+    convertToCSV(items, type) {
+        let headers;
+        if (type === "action") {
+            headers = ["gtin", "batch", "reason", "user", "creationTime"];
+        }
+        if (type === "access") {
+            headers = ["user", "action", "user DID", "user group", "creationTime"];
+        }
         let columnTitles = headers.join(",") + "\n";
         let rows = "";
         for (let item of items) {
-            item = this.objectToArray(item).join(",");
+            item = this.objectToArray(item, type).join(",");
             rows += item + "\n";
         }
         return [columnTitles + rows];

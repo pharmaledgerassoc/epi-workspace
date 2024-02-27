@@ -31,10 +31,9 @@ export class ActionLogs {
     beforeRender() {
         let string = "";
         for (let item of this.logs) {
-            let batch = item.batchNumber || "-";
             string += `
                         <div>${item.gtin}</div>
-                        <div>${batch}</div>
+                        <div>${item.batchNumber || "-"}</div>
                         <div>${item.operation}</div>
                         <div>${item.userId}</div>
                         <div>${new Date(item.__timestamp).toISOString()}</div>`;
@@ -155,7 +154,7 @@ export class ActionLogs {
     }
 
     async downloadCSV() {
-        let csvData = webSkel.appServices.convertToCSV(this.logs);
+        let csvData = webSkel.appServices.convertToCSV(this.logs, "action");
         let csvBlob = new Blob(csvData, {type: "text/csv"});
         let csvUrl = URL.createObjectURL(csvBlob);
         let link = document.createElement('a');

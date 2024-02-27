@@ -148,7 +148,7 @@ export class AccessLogs {
     }
 
     async downloadCSV() {
-        let csvData = webSkel.appServices.convertToCSV(this.logs);
+        let csvData = webSkel.appServices.convertToCSV(this.logs, "access");
         let csvBlob = new Blob(csvData, {type: "text/csv"});
         let csvUrl = URL.createObjectURL(csvBlob);
         let link = document.createElement('a');
