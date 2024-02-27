@@ -465,5 +465,8 @@ export class BatchesService {
         return {productOptions, products}
     }
 
+    async getBatches(number = undefined, query = undefined, sortDirection = "desc"){
+        return await $$.promisify(webSkel.client.listBatches)(undefined, number, query, sortDirection);
+    }
 
 }

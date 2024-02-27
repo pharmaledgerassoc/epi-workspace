@@ -250,8 +250,9 @@ export class ManageBatchPage extends CommonPresenterClass {
             if (webSkel.appServices.getDateInputTypeFromDateString(formData.data.expiryDate) === 'month') {
                 formData.data.expiryDate = webSkel.appServices.prefixMonthDate(formData.data.expiryDate);
             }
-
+            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
             await webSkel.appServices.addBatch(formData.data, this.updatedBatch.EPIs);
+            await webSkel.closeModal(modal);
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
         }
 
@@ -275,7 +276,9 @@ export class ManageBatchPage extends CommonPresenterClass {
             productData: encodeURIComponent(JSON.stringify(selectedProduct))
         }, true);
         if (confirmation) {
+            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
             if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
+                await webSkel.closeModal(modal);
                 await webSkel.changeToDynamicPage("batches-page", "batches-page");
             }
         }
