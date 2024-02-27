@@ -1,9 +1,9 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
-export class ManageProductPage extends CommonPresenterClass{
+export class ManageProductPage extends CommonPresenterClass {
     constructor(element, invalidate) {
-        super(element,invalidate);
+        super(element, invalidate);
         this.invalidate(async () => {
             await this.initModel();
         });
@@ -13,6 +13,7 @@ export class ManageProductPage extends CommonPresenterClass{
         let params = webSkel.getHashParams();
         this.buttonName = "Save Product";
         this.operationFnName = "saveProduct";
+        this.selected = "epi";
         this.productData = webSkel.appServices.createNewProduct();
 
         if (params["product-code"]) {
@@ -21,10 +22,10 @@ export class ManageProductPage extends CommonPresenterClass{
             let {
                 productPayload,
                 productPhotoPayload,
-                EPIs
+                EPIs,
             } = await webSkel.appServices.getProductData(params["product-code"]);
-            let productModel = webSkel.appServices.createNewProduct(productPayload, productPhotoPayload, EPIs, []);
-            if(!productModel.photo.startsWith("data:image")){
+            let productModel = webSkel.appServices.createNewProduct(productPayload, productPhotoPayload, EPIs);
+            if (!productModel.photo.startsWith("data:image")) {
                 productModel.photo = "./assets/images/no-picture.png";
             }
             //save initial state
@@ -46,6 +47,14 @@ export class ManageProductPage extends CommonPresenterClass{
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
         this.epiTab = `<epis-tab data-presenter="epis-tab" data-units="${tabInfo}"></epis-tab>`;
+
+        let strengthsInfo = this.productData.strengthUnits.map((data) => {
+            return {substance: data.substance, strength: data.strength, id: data.id, action: data.action};
+        });
+
+        strengthsInfo = encodeURIComponent(JSON.stringify(strengthsInfo));
+        this.strengthTab = `<strengths-tab data-presenter="strengths-tab" data-units="${strengthsInfo}"></strengths-tab>`;
+
         let marketsInfo = this.productData.marketUnits.map((data) => {
             return {country: data.country, mah: data.mah, id: data.id, action: data.action};
         });
@@ -54,18 +63,31 @@ export class ManageProductPage extends CommonPresenterClass{
 
         if (this.selected === "market") {
             this.tab = this.marketTab;
-        } else {
+        }
+        if (this.selected === "epi") {
             this.tab = this.epiTab;
+        }
+        if (this.selected === "strength") {
+            this.tab = this.strengthTab;
         }
     }
 
     afterRender() {
-        this.highlightTabs();
+
         let productCode = this.element.querySelector("#productCode");
         for (const key of webSkel.appServices.productInputFieldNames()) {
             let input = this.element.querySelector(`#${key}`)
             input.value = this.productData[key] || "";
         }
+
+        this.element.querySelectorAll(".epi-market-tabs button.epi-market-button").forEach(item => {
+            item.classList.add("inactive");
+            item.classList.remove("highlighted");
+        })
+        let selectedElement = this.element.querySelector(`.epi-market-tabs button.epi-market-button#${this.selected}`)
+        selectedElement.classList.remove("inactive");
+        selectedElement.classList.add("highlighted");
+
         this.element.removeEventListener("input", this.boundDetectInputChange);
         this.boundDetectInputChange = this.detectInputChange.bind(this);
         this.element.addEventListener("input", this.boundDetectInputChange);
@@ -94,37 +116,21 @@ export class ManageProductPage extends CommonPresenterClass{
         button.disabled = JSON.stringify(this.existingProduct) === JSON.stringify(this.productData, webSkel.appServices.removeMarkedForDeletion);
     }
 
-    highlightTabs() {
-        let epi = this.element.querySelector("#epi");
-        let market = this.element.querySelector("#market");
-        if (this.selected === "market") {
-            market.classList.remove("inactive");
-            market.classList.add("highlighted");
-            epi.classList.add("inactive");
-            epi.classList.remove("highlighted");
-        } else {
-            epi.classList.remove("inactive");
-            epi.classList.add("highlighted");
-            market.classList.add("inactive");
-            market.classList.remove("highlighted");
-        }
-    }
-
     switchTab(_target) {
         if (this.selected !== _target.getAttribute("id")) {
             this.selected = _target.getAttribute("id");
-            let tabName = _target.getAttribute("id");
             let container = this.element.querySelector(".inner-tab");
             container.innerHTML = "";
-            if (tabName === "epi") {
+            if (this.selected === "epi") {
                 this.tab = this.epiTab;
-                this.selected = "epi";
-                container.innerHTML = this.tab;
-            } else {
-                this.tab = this.marketTab;
-                this.selected = "market";
-                container.innerHTML = this.tab;
             }
+            if (this.selected === "strength") {
+                this.tab = this.strengthTab;
+            }
+            if (this.selected === "market") {
+                this.tab = this.marketTab;
+            }
+            container.innerHTML = this.tab;
             this.afterRender();
         }
     }
@@ -228,11 +234,36 @@ export class ManageProductPage extends CommonPresenterClass{
         return false;
     }
 
+    updateStrength(modalData) {
+        if (!modalData.id) {
+            return false;
+        }
+        let existingStrengthIndex = this.productData.strengthUnits.findIndex(strength => strength.id === modalData.id);
+        if (existingStrengthIndex !== -1) {
+            this.productData.strengthUnits[existingStrengthIndex] = modalData;
+            console.log(`updated strengthUnits, substance: ${modalData.substance}`);
+            return true;
+        }
+        return false;
+    }
+
     async handleMarketModalData(data) {
         if (!this.updateMarket(data)) {
             data.id = webSkel.appServices.generateID(16);
+            data.action = "add";
             this.productData.marketUnits.push(data);
         }
+        this.selected = "market";
+        this.invalidate();
+    }
+
+    async handleStrengthModalData(data) {
+        if (!this.updateStrength(data)) {
+            data.id = webSkel.appServices.generateID(16);
+            data.action = "add";
+            this.productData.strengthUnits.push(data);
+        }
+        this.selected = "strength";
         this.invalidate();
     }
 
@@ -243,6 +274,16 @@ export class ManageProductPage extends CommonPresenterClass{
         let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions}, true);
         if (modalData) {
             await this.handleMarketModalData(modalData);
+        }
+        //else closed without submitting
+    }
+
+    async addStrengthModal() {
+        let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete");
+        let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+        let modalData = await webSkel.showModal("strengths-management-modal", {excluded: encodedExcludedOptions}, true);
+        if (modalData) {
+            await this.handleStrengthModalData(modalData);
         }
         //else closed without submitting
     }
@@ -301,6 +342,15 @@ export class ManageProductPage extends CommonPresenterClass{
         let id = marketUnit.getAttribute("data-id");
         let selectedMarketUnit = this.productData.marketUnits.find(unit => unit.id === id);
         selectedMarketUnit.action = "delete";
+        //this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.id !== id);
+        this.invalidate();
+    }
+
+    deleteStrength(_target) {
+        let strengthUnit = webSkel.getClosestParentElement(_target, ".strength-unit");
+        let id = strengthUnit.getAttribute("data-id");
+        let selectedStrengthUnit = this.productData.strengthUnits.find(unit => unit.id === id);
+        selectedStrengthUnit.action = "delete";
         //this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.id !== id);
         this.invalidate();
     }

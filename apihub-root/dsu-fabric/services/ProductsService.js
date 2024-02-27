@@ -10,26 +10,26 @@ export class ProductsService {
             "productCode",
             "inventedName",
             "nameMedicinalProduct",
-            "internalMaterialCode",
-            "strength"/*,
+            "internalMaterialCode"/*,
             "patientLeafletInfo"*/
         ]
     }
 
-    createNewProduct(product = {}, image = "", epiUnits = [], marketUnits = []) {
+    createNewProduct(product = {}, image = "", epiUnits = []) {
         let productObj = {};
         for (let key of this.productInputFieldNames()) {
             productObj[key] = product[key] || "";
         }
         productObj.photo = image;
         productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
-        productObj.marketUnits = JSON.parse(JSON.stringify(marketUnits));
+        productObj.strengthUnits = product.strengths || [];
+        productObj.marketUnits = product.markets || []
         return productObj;
     }
 
     removeMarkedForDeletion(key, value) {
-        if (key === "epiUnits" || key === "marketUnits") {
-            return value.filter(unit => unit.action !== "delete");
+        if (key === "epiUnits" || key === "marketUnits" || key === "strengthUnits") {
+            return value.filter(unit => !unit.action || unit.action !== "delete");
         } else {
             return value;
         }
@@ -47,6 +47,14 @@ export class ProductsService {
         return EPIs
     }
 
+    cleanUnitsForPayload(units) {
+        return units.filter(unit => unit.action !== "delete").map(unitItem => {
+            delete unitItem.action;
+            return unitItem
+        })
+
+    }
+
     getProductPayload(productData) {
         let result = webSkel.appServices.initMessage(constants.API_MESSAGE_TYPES.PRODUCT);
         result.payload = {
@@ -54,7 +62,9 @@ export class ProductsService {
             internalMaterialCode: productData.internalMaterialCode,
             inventedName: productData.inventedName,
             nameMedicinalProduct: productData.nameMedicinalProduct,
-            strength: productData.strength/*,
+            strengths: this.cleanUnitsForPayload(productData.strengthUnits),
+            markets: this.cleanUnitsForPayload(productData.marketUnits)
+            /*,
             patientLeafletInfo: productData.patientLeafletInfo*/
         };
         return result;
@@ -131,10 +141,12 @@ export class ProductsService {
         let newValueCountry = "";
         if (marketDiffObj.newValue) {
             newValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.newValue.country);
+            delete marketDiffObj.newValue.id
         }
         let oldValueCountry = "";
         if (marketDiffObj.oldValue) {
             oldValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.oldValue.country);
+            delete marketDiffObj.oldValue.id
         }
 
         let changedProperty = marketDiffObj.newValue ? `${newValueCountry}  Market` : `${oldValueCountry}  Market`
@@ -149,18 +161,35 @@ export class ProductsService {
         }
     }
 
+    getStrengthDiffViewObj(strengthDiffsObj) {
+        delete strengthDiffsObj.oldValue.id
+        delete strengthDiffsObj.newValue.id
+        return {
+            "changedProperty": strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance}` : `${strengthDiffsObj.oldValue.substance} `,
+            "oldValue": {"value": strengthDiffsObj.oldValue || "-", "directDisplay": !!!strengthDiffsObj.oldValue},
+            "newValue": {
+                "value": strengthDiffsObj.newValue && strengthDiffsObj.newValue.action !== "delete" ? strengthDiffsObj.newValue : "-",
+                "directDisplay": !!!strengthDiffsObj.newValue || strengthDiffsObj.newValue.action === "delete"
+            },
+            "dataType": "strength"
+        }
+    }
+
+
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
-            let {epiUnits, marketUnits, ...initialProductData} = initialProduct;
+            let {epiUnits, marketUnits, strengthUnits, ...initialProductData} = initialProduct;
             let {
                 epiUnits: updatedLeafletUnits,
                 marketUnits: updatedMarketUnits,
+                strengthUnits: updatedStrengthUnits,
                 ...updatedProductData
             } = updatedProduct;
             let diffs = webSkel.appServices.getDiffsForAudit(initialProductData, updatedProductData);
             let epiDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
             let marketDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
+            let strengthDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.strengthUnits, updatedProduct.strengthUnits);
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {
                     result.push(webSkel.appServices.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
@@ -171,8 +200,12 @@ export class ProductsService {
             Object.keys(epiDiffs).forEach(key => {
                 result.push(webSkel.appServices.getEpiDiffViewObj(epiDiffs[key]));
             });
+
             Object.keys(marketDiffs).forEach(key => {
                 result.push(this.getMarketDiffViewObj(marketDiffs[key]));
+            });
+            Object.keys(strengthDiffs).forEach(key => {
+                result.push(this.getStrengthDiffViewObj(strengthDiffs[key]));
             });
 
         } catch (e) {
@@ -182,6 +215,6 @@ export class ProductsService {
     }
 
     async getProducts(number = undefined, query = undefined, sortDirection = "desc") {
-        return await $$.promisify(webSkel.client.listProducts)( undefined, number, query, sortDirection);
+        return await $$.promisify(webSkel.client.listProducts)(undefined, number, query, sortDirection);
     }
 }

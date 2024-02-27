@@ -126,12 +126,14 @@ manage-product-page {
     z-index: 1;
     pointer-events: none;
 }
+/*
 .material-code{
     width: 50%;
 }
 .strength{
     width: 40%;
 }
+*/
 
 /*color: #328569;*/
 

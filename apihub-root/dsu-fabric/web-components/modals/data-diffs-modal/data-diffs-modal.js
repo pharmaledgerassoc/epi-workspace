@@ -17,23 +17,23 @@ export class DataDiffsModal {
                 oldValue = `<img class="photo" src="${oldValue}" alt="oldValue">`;
                 newValue = `<img class="photo" src="${newValue}" alt="newValue">`;
             }
-            if (newValue.filesCount) {
+            if (newValue && newValue.filesCount) {
                 newValue = `<div class="view-details pointer" data-item-id=${newValue.id} data-item-type="newValue" data-local-action="viewEPI">view</div>`;
             }
-            if (oldValue.filesCount) {
+            if (oldValue && oldValue.filesCount) {
                 oldValue = `<div class="view-details pointer" data-item-id=${oldValue.id} data-item-type="oldValue" data-local-action="viewEPI">view</div>`;
             }
             if (i === this.diffs.length - 1) {
                 stringHTML += `
                         <div class="cell border border-radius-left">${property}</div>
-                        <div class="cell border">${oldValue}</div>
-                        <div class="cell border-radius-right">${newValue}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? JSON.stringify(oldValue) : oldValue}</div>
+                        <div class="cell border-radius-right">${typeof newValue === "object" ? JSON.stringify(newValue) : newValue}</div>
             `;
             } else {
                 stringHTML += `
                         <div class="cell border">${property}</div>
-                        <div class="cell border">${oldValue}</div>
-                        <div class="cell">${newValue}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? JSON.stringify(oldValue) : oldValue}</div>
+                        <div class="cell">${typeof newValue === "object" ? JSON.stringify(newValue) : newValue}</div>
             `;
             }
         }
