@@ -190,7 +190,7 @@ dialog {
     font-family: var(--default-font);
 }
 
-button, label, input, h1, h2, h3, h4, div {
+button, label, input, h1, h2, h3, h4, div ,textarea{
     font-family: var(--default-font);
     font-weight: 400;
 }
