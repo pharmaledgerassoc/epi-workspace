@@ -121,10 +121,10 @@ export class BatchesPage extends CommonPresenterClass {
         }
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
-        if (this.previousPageFirstElements.length === 0) {
+        if (this.previousPageFirstElements.length === 0 && previousBtn) {
             previousBtn.classList.add("disabled");
         }
-        if (this.disableNextBtn) {
+        if (this.disableNextBtn && nextBtn) {
             nextBtn.classList.add("disabled");
         }
     }
