@@ -10,18 +10,20 @@ export class ProductsPage extends CommonPresenterClass {
         this.firstElementTimestamp = 0;
         this.lastElementTimestamp = undefined;
         this.previousPageFirstElements = [];
-        this.loadProducts = (query)=>{
+        this.loadProducts = (query) => {
             this.invalidate(async () => {
                 this.products = await webSkel.appServices.getProducts(this.productsNumber, query);
-                if(this.products.length === this.productsNumber){
-                    this.products.pop();
-                    this.disableNextBtn = false;
+                if (this.products && this.products.length) {
+                    if (this.products.length === this.productsNumber) {
+                        this.products.pop();
+                        this.disableNextBtn = false;
+                    } else if (this.products.length < this.productsNumber) {
+                        this.disableNextBtn = true;
+                    }
+                    this.lastElementTimestamp = this.products[this.products.length - 1].__timestamp;
+                    this.firstElementTimestamp = this.products[0].__timestamp;
                 }
-                else if(this.products.length < this.productsNumber){
-                    this.disableNextBtn = true;
-                }
-                this.lastElementTimestamp = this.products[this.products.length-1].__timestamp;
-                this.firstElementTimestamp = this.products[0].__timestamp;
+
             });
         };
         this.loadProducts();
@@ -108,10 +110,10 @@ export class ProductsPage extends CommonPresenterClass {
         }
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
-        if(this.previousPageFirstElements.length === 0){
+        if (this.previousPageFirstElements.length === 0) {
             previousBtn.classList.add("disabled");
         }
-        if(this.disableNextBtn){
+        if (this.disableNextBtn) {
             nextBtn.classList.add("disabled");
         }
     }
@@ -173,15 +175,16 @@ export class ProductsPage extends CommonPresenterClass {
         this.loadProducts();
     }
 
-    previousTablePage(_target){
-        if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
+    previousTablePage(_target) {
+        if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             this.loadProducts([`__timestamp <= ${this.firstElementTimestamp}`]);
         }
     }
-    nextTablePage(_target){
-        if(!_target.classList.contains("disabled")){
+
+    nextTablePage(_target) {
+        if (!_target.classList.contains("disabled")) {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;

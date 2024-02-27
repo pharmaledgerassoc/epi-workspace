@@ -11,18 +11,20 @@ export class BatchesPage extends CommonPresenterClass {
         this.firstElementTimestamp = 0;
         this.lastElementTimestamp = undefined;
         this.previousPageFirstElements = [];
-        this.loadBatches = (query)=>{
+        this.loadBatches = (query) => {
             this.invalidate(async () => {
                 this.batches = await webSkel.appServices.getBatches(this.batchesNumber, query);
-                if(this.batches.length === this.batchesNumber){
-                    this.batches.pop();
-                    this.disableNextBtn = false;
+                if (this.batches && this.batches.length) {
+                    if (this.batches.length === this.batchesNumber) {
+                        this.batches.pop();
+                        this.disableNextBtn = false;
+                    } else if (this.batches.length < this.batchesNumber) {
+                        this.disableNextBtn = true;
+                    }
+                    this.lastElementTimestamp = this.batches[this.batches.length - 1].__timestamp;
+                    this.firstElementTimestamp = this.batches[0].__timestamp;
                 }
-                else if(this.batches.length < this.batchesNumber){
-                    this.disableNextBtn = true;
-                }
-                this.lastElementTimestamp = this.batches[this.batches.length-1].__timestamp;
-                this.firstElementTimestamp = this.batches[0].__timestamp;
+
             });
         };
         this.loadBatches();
@@ -119,10 +121,10 @@ export class BatchesPage extends CommonPresenterClass {
         }
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
-        if(this.previousPageFirstElements.length === 0){
+        if (this.previousPageFirstElements.length === 0) {
             previousBtn.classList.add("disabled");
         }
-        if(this.disableNextBtn){
+        if (this.disableNextBtn) {
             nextBtn.classList.add("disabled");
         }
     }
@@ -157,7 +159,7 @@ export class BatchesPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let batches = await webSkel.appServices.getBatches(undefined,[`productCode == ${this.inputValue}`]);
+                let batches = await webSkel.appServices.getBatches(undefined, [`productCode == ${this.inputValue}`]);
                 if (batches.length > 0) {
                     this.batches = batches;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
@@ -188,15 +190,16 @@ export class BatchesPage extends CommonPresenterClass {
         await webSkel.showModal("data-matrix-modal", {["product-code"]: productCode});
     }
 
-    previousTablePage(_target){
-        if(!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0){
+    previousTablePage(_target) {
+        if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             this.loadBatches([`__timestamp <= ${this.firstElementTimestamp}`]);
         }
     }
-    nextTablePage(_target){
-        if(!_target.classList.contains("disabled")){
+
+    nextTablePage(_target) {
+        if (!_target.classList.contains("disabled")) {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
