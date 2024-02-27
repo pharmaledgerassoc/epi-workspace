@@ -51,15 +51,41 @@
                     </div>
                 </div>
             </div>
-            <div class="form-field-container">
-                <div class="form-field material-code">
+            <div class="form-field material-code">
+                <div class="label-container">
+                    <label class="label" for="internalMaterialCode">Internal Material Code</label>
+                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                </div>
+                <input userRights="$$userRights" type="text" class="text-input" name="internalMaterialCode"
+                       id="internalMaterialCode"
+                       placeholder="Add internal material code">
+            </div>
+
+            <!-- <div class="form-field">
+                 <div class="label-container">
+                     <label class="label" for="patientLeafletInfo">Patient Specific Information Leaflet</label>
+                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                 </div>
+                 <input userRights="$$userRights" type="text" class="text-input" name="patientLeafletInfo"
+                        id="patientLeafletInfo"
+                        placeholder="Add Patient Specific Information Leaflet">
+             </div>-->
+            <div class="form-buttons">
+                <button class="default-button" data-local-action="navigateToProductsPage">Cancel</button>
+                <button userRights="$$userRights" class="default-button" id="accept-button"
+                        data-local-action="$$operationFnName">$$buttonName
+                </button>
+            </div>
+        </div>
+        <div class="column-right">
+            <!--<div class="form-field-container">
+                <div class="form-field substance">
                     <div class="label-container">
-                        <label class="label" for="internalMaterialCode">Internal Material Code</label>
+                        <label class="label" for="substance">Substance</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-                    <input userRights="$$userRights" type="text" class="text-input" name="internalMaterialCode"
-                           id="internalMaterialCode"
-                           placeholder="Add internal material code">
+                    <input userRights="$$userRights" type="text" class="text-input" name="substance" id="substance"
+                           placeholder="Add substance">
                 </div>
                 <div class="form-field strength">
                     <div class="label-container">
@@ -69,31 +95,19 @@
                     <input userRights="$$userRights" type="text" class="text-input" name="strength" id="strength"
                            placeholder="Add product strength">
                 </div>
-            </div>
-           <!-- <div class="form-field">
-                <div class="label-container">
-                    <label class="label" for="patientLeafletInfo">Patient Specific Information Leaflet</label>
-                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
-                </div>
-                <input userRights="$$userRights" type="text" class="text-input" name="patientLeafletInfo"
-                       id="patientLeafletInfo"
-                       placeholder="Add Patient Specific Information Leaflet">
+                <button userrights="$$userRights" class="tab-button pointer" data-local-action="addS">+ Add ePI</button>
+
             </div>-->
-            <div class="form-buttons">
-                <button class="default-button" data-local-action="navigateToProductsPage">Cancel</button>
-                <button userRights="$$userRights" class="default-button" id="accept-button"
-                        data-local-action="$$operationFnName">$$buttonName
-                </button>
-            </div>
-        </div>
-        <div class="column-right">
             <div class="epi-market-management">
                 <div class="epi-market-tabs">
-                    <button class="epi-market-button pointer inactive" id="epi" data-local-action="switchTab">
-                        Leaflet management
+                    <button class="epi-market-button pointer highlighted" id="epi" data-local-action="switchTab">
+                        EPI's
+                    </button>
+                    <button class="epi-market-button pointer inactive" id="strength" data-local-action="switchTab">
+                        Strengths
                     </button>
                     <button class="epi-market-button pointer inactive" id="market" data-local-action="switchTab">
-                        Market management
+                        Markets
                     </button>
                 </div>
                 <div class="inner-tab">

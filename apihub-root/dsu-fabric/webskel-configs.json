@@ -21,6 +21,11 @@
       "presenterClassName": "MarketsTab"
     },
     {
+      "name": "strengths-tab",
+      "type": "components",
+      "presenterClassName": "StrengthsTab"
+    },
+    {
       "name": "epis-tab",
       "type": "components",
       "presenterClassName": "EPIsTab"
@@ -29,6 +34,11 @@
       "name": "data-matrix-modal",
       "type": "modals",
       "presenterClassName": "DataMatrixModal"
+    },
+    {
+      "name": "strengths-management-modal",
+      "type": "modals",
+      "presenterClassName": "StrengthsManagementModal"
     },
     {
       "name": "markets-management-modal",
@@ -138,7 +148,7 @@
       "path": "../services/EPIsService.js"
     }
   ],
-  "webComponentsRootDir" : "web-components",
+  "webComponentsRootDir": "web-components",
   "defaultPage": "landing-page",
   "storageServices": []
 }
