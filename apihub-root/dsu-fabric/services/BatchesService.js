@@ -118,8 +118,8 @@ export class BatchesService {
                 dateValueString.slice(0, 2)
         } else {
             /* returns 'MM-YYYY' */
-            if(dateValueString.slice(-2).includes("00")){
-                dateValueString=dateValueString.slice(0,4);
+            if (dateValueString.slice(-2).includes("00")) {
+                dateValueString = dateValueString.slice(0, 4);
             }
             inputStringDate = dateValueString.slice(2, 4) +
                 separator +
@@ -175,11 +175,12 @@ export class BatchesService {
     }
 
     /* mm-yyyy to yyyy-mm  || yyyy-mm->mm-yyyy || */
-    reverseSeparatedDateString(dateString){
-        const separator='-'
-        let dateParts=dateString.split(separator);
+    reverseSeparatedDateString(dateString) {
+        const separator = '-'
+        let dateParts = dateString.split(separator);
         return dateParts.reverse().join(separator);
     }
+
     getCurrentDateTimeCET() {
         const date = new Date();
 
@@ -459,13 +460,17 @@ export class BatchesService {
                 await navigateToPage("manage-product-page");
             }, 3000);
         }
+
+
         const productOptions = products.map(product => {
-            return `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
+            let option = `<option value="${product.productCode}"> ${product.productCode} - ${product.inventedName} </option>`;
+            webSkel.appServices.hasCodeOrHTML(option)
+            return webSkel.appServices.hasCodeOrHTML(option) ? option : "";
         }).join("");
         return {productOptions, products}
     }
 
-    async getBatches(number = undefined, query = undefined, sortDirection = "desc"){
+    async getBatches(number = undefined, query = undefined, sortDirection = "desc") {
         return await $$.promisify(webSkel.client.listBatches)(undefined, number, query, sortDirection);
     }
 
