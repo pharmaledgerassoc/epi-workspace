@@ -73,7 +73,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.formActionButtonFunction = "updateBatch";
                 this.batch = batchModel;
                 this.batchName = batchModel.batch;
-                this.batchVersion = batchModel.__version; //TODO use getBatchVersion API when it becomes available
+                this.batchVersion = batch.version; //TODO use getBatchVersion API when it becomes available
                 this.product = product;
                 this.productCode = product.productCode;
                 this.packagingSiteName = batchModel.packagingSiteName;
@@ -235,9 +235,10 @@ export class ManageBatchPage extends CommonPresenterClass {
         return inputContainer.value !== "no-selection"
     }
 
-    otherFieldsCondition(element, formData){
+    otherFieldsCondition(element, formData) {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
+
     async addBatch(_target) {
         const conditions = {
             "productCodeCondition": {
@@ -272,14 +273,14 @@ export class ManageBatchPage extends CommonPresenterClass {
                 errorMessage: "Invalid input!"
             }
         };
-        const {data} = (await webSkel.extractFormInformation(this.element.querySelector("form"), conditions));
-        if(data.isValid){
-            let expiryDate = webSkel.appServices.formatBatchExpiryDate(data.expiryDate);
+        const formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
+        if (formData.isValid) {
+            let expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);
             if (webSkel.appServices.getDateInputTypeFromDateString(expiryDate) === 'month') {
                 expiryDate = webSkel.appServices.prefixMonthDate(expiryDate);
             }
             this.updatedBatch.expiryDate = expiryDate;
-            this.updatedBatch.enableExpiryDay = data.enableExpiryDay;
+            this.updatedBatch.enableExpiryDay = formData.data.enableExpiryDay;
             let diffs = webSkel.appServices.getBatchDiffs(this.batch, this.updatedBatch);
             let selectedProduct = {
                 inventedName: this.batch.inventedName,
@@ -290,7 +291,10 @@ export class ManageBatchPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(selectedProduct))
             }, true);
             if (confirmation) {
-                let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
+                let modal = await webSkel.showModal("progress-info-modal", {
+                    header: "Info",
+                    message: "Saving Batch..."
+                },);
                 if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
                     await webSkel.closeModal(modal);
                     await webSkel.changeToDynamicPage("batches-page", "batches-page");

@@ -23,7 +23,8 @@ export class ProductsService {
         productObj.photo = image;
         productObj.epiUnits = JSON.parse(JSON.stringify(epiUnits));
         productObj.strengthUnits = product.strengths || [];
-        productObj.marketUnits = product.markets || []
+        productObj.marketUnits = product.markets || [];
+        productObj.productVersion = product.version || 0;
         return productObj;
     }
 

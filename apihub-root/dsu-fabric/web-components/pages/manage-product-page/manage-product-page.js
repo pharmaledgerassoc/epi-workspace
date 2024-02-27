@@ -11,11 +11,7 @@ export class ManageProductPage extends CommonPresenterClass {
 
     async initModel() {
         let params = webSkel.getHashParams();
-        this.buttonName = "Save Product";
-        this.operationFnName = "saveProduct";
-        this.selected = "epi";
-        this.productData = webSkel.appServices.createNewProduct();
-
+        //update an existing product (edit mode)
         if (params["product-code"]) {
             this.buttonName = "Update Product";
             this.operationFnName = "updateProduct";
@@ -32,7 +28,14 @@ export class ManageProductPage extends CommonPresenterClass {
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
             this.productData = createObservableObject(productModel, this.onChange.bind(this));
+        } else {
+            this.buttonName = "Save Product";
+            this.operationFnName = "saveProduct";
+            this.productData = webSkel.appServices.createNewProduct();
         }
+        this.selected = "epi";
+        this.productVersion = this.productData.productVersion;
+
     }
 
     beforeRender() {
@@ -291,9 +294,9 @@ export class ManageProductPage extends CommonPresenterClass {
     productCodeCondition(element, formData) {
         let inputContainer = webSkel.getClosestParentElement(element, ".product-code");
         return !inputContainer.classList.contains("product-code-invalid");
-
     }
-    otherFieldsCondition(element, formData){
+
+    otherFieldsCondition(element, formData) {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
 
