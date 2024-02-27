@@ -49,7 +49,7 @@ export class BatchesPage extends CommonPresenterClass {
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.batchNumber}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${this.addSeparatorToDateString(batch.expiryDate, '/')}</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="openDataMatrixModal ${batch.productCode}">View</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>-</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.version}</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}"
              data-local-action="navigateToEditBatch ${batch.productCode} ${batch.batchNumber}">${this.editModeLabel}</div>`
     }
