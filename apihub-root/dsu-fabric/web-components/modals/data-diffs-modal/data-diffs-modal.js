@@ -26,9 +26,15 @@ export class DataDiffsModal {
                 oldValue = `<div class="view-details pointer" data-item-id=${oldValue.id} data-item-type="oldValue" data-local-action="viewEPI">view</div>`;
                 sanitize = false;
             }
+            if(typeof oldValue === "object" && oldValue.action){
+                delete oldValue.action;
+            }
+            if(typeof newValue === "object" && newValue.action){
+                delete newValue.action;
+            }
             if (i === this.diffs.length - 1) {
                 stringHTML += `
-                        <div class="cell border border-radius-left">${property}</div>
+                        <div class="cell border border-radius-left">${webSkel.sanitize(property)}</div>
                         <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : sanitize ? webSkel.sanitize(oldValue) : oldValue}</div>
                         <div class="cell border-radius-right">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : sanitize ? webSkel.sanitize(newValue) : newValue}</div>
             `;

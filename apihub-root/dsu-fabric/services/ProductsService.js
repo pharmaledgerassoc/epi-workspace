@@ -166,7 +166,7 @@ export class ProductsService {
         delete strengthDiffsObj.oldValue.id
         delete strengthDiffsObj.newValue.id
         return {
-            "changedProperty": strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance}` : `${strengthDiffsObj.oldValue.substance} `,
+            "changedProperty": strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance} Strength` : `${strengthDiffsObj.oldValue.substance} `,
             "oldValue": {"value": strengthDiffsObj.oldValue || "-", "directDisplay": !!!strengthDiffsObj.oldValue},
             "newValue": {
                 "value": strengthDiffsObj.newValue && strengthDiffsObj.newValue.action !== "delete" ? strengthDiffsObj.newValue : "-",
