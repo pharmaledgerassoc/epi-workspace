@@ -7,7 +7,14 @@
 </head>
 <body>
 <div id="page-content"></div>
-
+<dialog id="before-webskel-loader" class="spinner">
+    <div class="spinner-container">
+        <div class="spin"></div>
+    </div>
+</dialog>
+<script>
+    document.querySelector("#before-webskel-loader").showModal();
+</script>
 <script src="bundles/versionLessBoot.js"></script>
 <script src="bundles/gtinResolver.js"></script>
 <script type="module" src="main.js"></script>
