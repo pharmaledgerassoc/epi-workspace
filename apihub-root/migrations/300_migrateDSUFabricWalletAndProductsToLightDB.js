@@ -1,7 +1,7 @@
 const path = require("path");
 const process = require("process");
-process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../../../"));
-require(path.join(__dirname, '../../../../builds/output/pskWebServer.js'));
+process.env.PSK_ROOT_INSTALATION_FOLDER = path.resolve(path.join(__dirname, "../../opendsu-sdk"));
+require(path.join(__dirname, '../../opendsu-sdk/builds/output/pskWebServer.js'));
 const fs = require('fs');
 const API_HUB = require('apihub');
 const openDSU = require("opendsu");
@@ -37,26 +37,37 @@ const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName,
     }
 };
 
-const getEpiEnclave = async () => {
+const getEpiEnclave = (callback) => {
     const enclaveAPI = openDSU.loadAPI("enclave");
     const walletDBEnclave = enclaveAPI.initialiseWalletDBEnclave(process.env.DEMIURGE_SHARED_ENCLAVE_KEY_SSI);
-    await $$.promisify(walletDBEnclave.on)("initialised");
-    const _enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
-    const epiEnclave = enclaveAPI.initialiseWalletDBEnclave(_enclaves[0].enclaveKeySSI);
-    await $$.promisify(epiEnclave.on)("initialised");
-    console.log($$.promisify(epiEnclave.getAllTableNames)(undefined));
-    return epiEnclave;
+    walletDBEnclave.on("error", (err) => {
+        return callback(err);
+    })
+    walletDBEnclave.on("initialised", async () => {
+        const _enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
+        const epiEnclave = enclaveAPI.initialiseWalletDBEnclave(_enclaves[0].enclaveKeySSI);
+        epiEnclave.on("error", (err) => {
+            return callback(err);
+        })
+        epiEnclave.on("initialised", async () => {
+            console.log($$.promisify(epiEnclave.getAllTableNames)(undefined));
+            callback(undefined, epiEnclave);
+        });
+    });
 }
 
+const getEpiEnclaveAsync = async () => {
+    return $$.promisify(getEpiEnclave)();
+}
 const getSlotFromEpiEnclave = async (epiEnclave) => {
     const privateKey = await $$.promisify(epiEnclave.getPrivateKeyForSlot)(undefined, 0);
-    return privateKey;
+    return privateKey.toString("base64");
 }
 
 const getLightDBEnclave = async () => {
     const lightDBPath = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, config.storage, `/external-volume/lightDB/${generateEnclaveName(process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN)}/database`);
     try {
-        fs.mkdirSync(path.dirname(lightDBPath), { recursive: true });
+        fs.mkdirSync(path.dirname(lightDBPath), {recursive: true});
     } catch (e) {
         if (e.code !== "EEXIST") throw e;
     }
@@ -71,24 +82,35 @@ const startServer = async () => {
     return API_HUB.createInstance(listeningPort, rootFolder);
 }
 
+const generateSlot = () => {
+    const crypto = require('opendsu').loadAPI('crypto');
+    return crypto.generateRandom(32).toString('base64');
+}
 const migrateDataFromEpiEnclaveToLightDB = async () => {
     const server = await startServer();
-    const epiEnclave = await getEpiEnclave();
-    const lightDBEnclave = await getLightDBEnclave();
     let slot;
+    let epiEnclave;
+    try {
+        epiEnclave = await getEpiEnclaveAsync();
+    } catch (e) {
+        slot = generateSlot();
+        await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
+        server.close();
+        return;
+    }
     try {
         slot = await getSlotFromEpiEnclave(epiEnclave);
     } catch (err) {
-        const crypto = require('opendsu').loadAPI('crypto');
-        slot = crypto.generateRandom(32).toString('base64');
+        slot = generateSlot();
     }
     await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
+    const lightDBEnclave = await getLightDBEnclave();
 
     // Define transformations for specific tables
     const transformProduct = record => {
         delete record.pk;
         record.productCode = record.gtin;
-        record.inventedName= record.name;
+        record.inventedName = record.name;
         record.nameMedicinalProduct = record.description;
         return record;
     };
