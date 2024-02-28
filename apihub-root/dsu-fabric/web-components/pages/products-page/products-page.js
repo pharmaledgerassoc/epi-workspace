@@ -5,11 +5,14 @@ export class ProductsPage extends CommonPresenterClass {
     constructor(element, invalidate) {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "View/Edit";
-        this.productsNumber = 16;
-        this.disableNextBtn = true;
-        this.firstElementTimestamp = 0;
-        this.lastElementTimestamp = undefined;
-        this.previousPageFirstElements = [];
+        this.setPaginationDefaultValues = ()=>{
+            this.productsNumber = 16;
+            this.disableNextBtn = true;
+            this.firstElementTimestamp = 0;
+            this.lastElementTimestamp = undefined;
+            this.previousPageFirstElements = [];
+        };
+        this.setPaginationDefaultValues();
         this.loadProducts = (query) => {
             this.invalidate(async () => {
                 this.products = await webSkel.appServices.getProducts(this.productsNumber, query);
@@ -36,8 +39,8 @@ export class ProductsPage extends CommonPresenterClass {
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
         return `
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.inventedName}</div>
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.nameMedicinalProduct}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.inventedName)}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.nameMedicinalProduct)}</div>
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.productCode}</div>
             <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">${this.editModeLabel}</div>
         `;
@@ -61,10 +64,10 @@ export class ProductsPage extends CommonPresenterClass {
             paginationSection.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
-                                        There are no data on any previous product
+                                        There is no data on any previous product
                                     </div>
                                     <div class="no-data-instructions">
-                                        Start by using one of the right side actions (import or add).
+                                        Start by using the right side action (add).
                                     </div>
                                 </div>`;
             pageBody.insertAdjacentHTML("beforeend", noData)
@@ -156,7 +159,8 @@ export class ProductsPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let products = await webSkel.appServices.getProducts(undefined, [`productCode == ${this.inputValue}`]);
+                this.setPaginationDefaultValues();
+                let products = await webSkel.appServices.getProducts(undefined, ["__timestamp > 0", `productCode == ${this.inputValue}`]);
                 if (products.length > 0) {
                     this.products = products;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";

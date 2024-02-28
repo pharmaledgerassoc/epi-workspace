@@ -6,11 +6,14 @@ export class BatchesPage extends CommonPresenterClass {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "Edit";
         this.editBatchLabel = `${this.editModeLabel} Batch`;
-        this.batchesNumber = 16;
-        this.disableNextBtn = true;
-        this.firstElementTimestamp = 0;
-        this.lastElementTimestamp = undefined;
-        this.previousPageFirstElements = [];
+        this.setPaginationDefaultValues = ()=>{
+            this.batchesNumber = 16;
+            this.disableNextBtn = true;
+            this.firstElementTimestamp = 0;
+            this.lastElementTimestamp = undefined;
+            this.previousPageFirstElements = [];
+        };
+        this.setPaginationDefaultValues();
         this.loadBatches = (query) => {
             this.invalidate(async () => {
                 this.batches = await webSkel.appServices.getBatches(this.batchesNumber, query);
@@ -43,15 +46,15 @@ export class BatchesPage extends CommonPresenterClass {
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
         return `
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.inventedName}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.nameMedicinalProduct}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.productCode}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.batchNumber}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.inventedName)}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.nameMedicinalProduct)}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.productCode)}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.batchNumber)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${this.addSeparatorToDateString(batch.expiryDate, '/')}</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="openDataMatrixModal ${batch.productCode}">View</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.version}</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}"
-             data-local-action="navigateToEditBatch ${batch.productCode} ${batch.batchNumber}">${this.editModeLabel}</div>`
+             data-local-action="navigateToEditBatch ${batch.productCode} ${webSkel.sanitize(batch.batchNumber)}">${this.editModeLabel}</div>`
     }
 
     beforeRender() {
@@ -72,10 +75,10 @@ export class BatchesPage extends CommonPresenterClass {
             batches.style.display = "none";
             let noData = `<div>
                                     <div class="no-data-label">
-                                        There are no data on any previous batch
+                                        There is no data on any previous batch
                                     </div>
                                     <div class="no-data-instructions">
-                                        Start by using one of the right side actions (import or add).
+                                        Start by using the right side action (add).
                                     </div>
                                 </div>`;
             pageBody.insertAdjacentHTML("beforeend", noData)
@@ -159,9 +162,19 @@ export class BatchesPage extends CommonPresenterClass {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.productCode;
-                let batches = await webSkel.appServices.getBatches(undefined, [`productCode == ${this.inputValue}`]);
+                this.setPaginationDefaultValues();
+                let batches = await webSkel.appServices.getBatches(this.batchesNumber, ["__timestamp > 0",`productCode == ${this.inputValue}`]);
                 if (batches.length > 0) {
                     this.batches = batches;
+                    this.productCodeFilter = `productCode == ${this.inputValue}`;
+                    if (this.batches.length === this.batchesNumber) {
+                        this.batches.pop();
+                        this.disableNextBtn = false;
+                    } else if (this.batches.length < this.batchesNumber) {
+                        this.disableNextBtn = true;
+                    }
+                    this.lastElementTimestamp = this.batches[this.batches.length - 1].__timestamp;
+                    this.firstElementTimestamp = this.batches[0].__timestamp;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
                 } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
@@ -175,6 +188,7 @@ export class BatchesPage extends CommonPresenterClass {
     async deleteInput(xMark) {
         this.searchResultIcon = "";
         delete this.inputValue;
+        delete this.productCodeFilter;
         this.loadBatches();
     }
 
@@ -194,7 +208,11 @@ export class BatchesPage extends CommonPresenterClass {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            this.loadBatches([`__timestamp <= ${this.firstElementTimestamp}`]);
+            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            if(this.productCodeFilter){
+                query.push(this.productCodeFilter);
+            }
+            this.loadBatches(query);
         }
     }
 
@@ -203,7 +221,11 @@ export class BatchesPage extends CommonPresenterClass {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            this.loadBatches([`__timestamp < ${this.firstElementTimestamp}`]);
+            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            if(this.productCodeFilter){
+                query.push(this.productCodeFilter);
+            }
+            this.loadBatches(query);
         }
     }
 }

@@ -4,11 +4,14 @@ export class AccessLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.logsNumber = 16;
-        this.disableNextBtn = true;
-        this.firstElementTimestamp = 0;
-        this.lastElementTimestamp = undefined;
-        this.previousPageFirstElements = [];
+        this.setPaginationDefaultValues = ()=>{
+            this.logsNumber = 16;
+            this.disableNextBtn = true;
+            this.firstElementTimestamp = 0;
+            this.lastElementTimestamp = undefined;
+            this.previousPageFirstElements = [];
+        };
+        this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
                 this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
@@ -125,9 +128,19 @@ export class AccessLogs {
             let formData = await webSkel.extractFormInformation(this.searchInput);
             if (formData.isValid) {
                 this.inputValue = formData.data.userId;
-                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`userId == ${this.inputValue}`]);
+                this.setPaginationDefaultValues();
+                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, [`userId == ${this.inputValue}`], "desc");
                 if (logs.length > 0) {
                     this.logs = logs;
+                    this.userIdFilter = `userId == ${this.inputValue}`;
+                    if (this.logs.length === this.logsNumber) {
+                        this.logs.pop();
+                        this.disableNextBtn = false;
+                    } else if (this.logs.length < this.logsNumber) {
+                        this.disableNextBtn = true;
+                    }
+                    this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
+                    this.firstElementTimestamp = this.logs[0].__timestamp;
                     this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
                 } else {
                     this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
@@ -141,10 +154,7 @@ export class AccessLogs {
     async deleteInput(xMark) {
         this.searchResultIcon = "";
         delete this.inputValue;
-        this.invalidate(async () => {
-            this.products = await $$.promisify(webSkel.client.listProducts)();
-            this.batches = await $$.promisify(webSkel.client.listBatches)();
-        });
+        this.loadLogs(["__timestamp > 0"]);
     }
 
     async downloadCSV() {
@@ -162,7 +172,11 @@ export class AccessLogs {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            this.loadLogs([`__timestamp <= ${this.firstElementTimestamp}`]);
+            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            if(this.userIdFilter){
+                query.push(this.userIdFilter);
+            }
+            this.loadLogs(query);
         }
     }
 
@@ -171,7 +185,11 @@ export class AccessLogs {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            this.loadLogs([`__timestamp < ${this.firstElementTimestamp}`]);
+            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            if(this.userIdFilter){
+                query.push(this.userIdFilter);
+            }
+            this.loadLogs(query);
         }
     }
 }

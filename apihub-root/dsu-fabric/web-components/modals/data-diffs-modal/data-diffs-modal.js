@@ -26,14 +26,14 @@ export class DataDiffsModal {
             if (i === this.diffs.length - 1) {
                 stringHTML += `
                         <div class="cell border border-radius-left">${property}</div>
-                        <div class="cell border">${typeof oldValue === "object" ? JSON.stringify(oldValue) : oldValue}</div>
-                        <div class="cell border-radius-right">${typeof newValue === "object" ? JSON.stringify(newValue) : newValue}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : webSkel.sanitize(oldValue)}</div>
+                        <div class="cell border-radius-right">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : webSkel.sanitize(newValue)}</div>
             `;
             } else {
                 stringHTML += `
                         <div class="cell border">${property}</div>
-                        <div class="cell border">${typeof oldValue === "object" ? JSON.stringify(oldValue) : oldValue}</div>
-                        <div class="cell">${typeof newValue === "object" ? JSON.stringify(newValue) : newValue}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : webSkel.sanitize(oldValue)}</div>
+                        <div class="cell">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : webSkel.sanitize(newValue)}</div>
             `;
             }
         }

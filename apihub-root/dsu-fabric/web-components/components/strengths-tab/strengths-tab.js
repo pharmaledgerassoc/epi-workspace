@@ -15,7 +15,7 @@ export class StrengthsTab extends CommonPresenterClass {
                     continue;
                 }
                 stringHTML += `<div class="strength-unit pointer" data-id="${strength.id}" data-local-action="viewstrength">
-                                <div class="strength-details">${strength.substance} - ${strength.strength}</div>
+                                <div class="strength-details">${webSkel.sanitize(strength.substance)} - ${webSkel.sanitize(strength.strength)}</div>
                                     <div userrights="$$userRights" class="delete-button pointer" data-local-action="deleteStrength">
                                         <img class="strength-img" src="./assets/icons/thrash.svg" alt="thrash">
                                     </div>

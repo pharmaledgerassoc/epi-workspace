@@ -45,8 +45,12 @@ export class StrengthsManagementModal {
         }
     }
 
+    hasCodeOrHTML(element, formData){
+        return !webSkel.appServices.hasCodeOrHTML(element.value);
+    }
     async addStrength(_target) {
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        const conditions = {"hasCodeOrHTML": {fn: this.hasCodeOrHTML, errorMessage: "Invalid input!"}};
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
         if (formData.isValid) {
             let resultObject = {};
             Object.keys(formData.data).forEach(key => {
