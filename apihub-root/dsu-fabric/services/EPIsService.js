@@ -72,6 +72,27 @@ export class EPIsService {
         return epiUnit;
     }
 
+    generateMissingToastList(missingImgFiles) {
+        let missingFilesErrText = ``;
+        missingImgFiles.forEach(item => {
+            missingFilesErrText = missingFilesErrText + `<li>Image ${item} does not exist</li>`
+        })
+        return missingFilesErrText;
+    }
+
+    generateDifferentCaseToastList(differentCaseImgFiles) {
+        let differentCaseErrText = ``;
+        differentCaseImgFiles.forEach(item => {
+            differentCaseErrText = differentCaseErrText + `<li>Image ${item.xmlName} does not exist, but a similar file ${item.fileName}  exists and will be used instead</li>`
+        })
+        return differentCaseErrText;
+    }
+
+    getToastContent(htmlList) {
+        return `<div class="toast-content"><div>Uploaded XML file contains unknown image reference</div> <br>
+            <div> <ul>${htmlList}</ul></div></div>`
+    }
+
     async validateEPIFilesContent(epiFiles) {
         try {
             let xmlContent;
