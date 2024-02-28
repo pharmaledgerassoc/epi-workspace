@@ -7,11 +7,11 @@ export class AuditService {
     objectToArray(item, type) {
 
         if (type === "action") {
-            return [item.gtin, item.batchNumber || "-", item.operation, item.userId, new Date(item.__timestamp).toISOString()];
+            return [`'${item.gtin}'`, item.batchNumber ? `'${item.batchNumber}'` : "-", item.operation, item.userId ? `'${item.userId}'` : "", new Date(item.__timestamp).toISOString()];
         }
 
         if (type === "access") {
-            return [item.userId, "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
+            return [item.userId ? `'${item.userId}'` : "", "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
 
         }
         /*  let details = {logInfo: itemCopy};
