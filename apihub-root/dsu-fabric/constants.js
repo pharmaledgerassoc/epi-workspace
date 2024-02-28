@@ -77,7 +77,7 @@ export default {
             internalMaterialCode: "Internal material code",
             strength: "Strength",
             photo: "Product Photo",
-   /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
+            /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management"
         },
         BATCH: {
@@ -88,5 +88,11 @@ export default {
             gtin: "Product Code",
             productName: "Product Brand/Invented name"
         }
+    },
+    GTIN_AVAILABILITY_STATUS: {
+        OWNED: "owned",
+        USED: "used",
+        FREE: "free",
+        UNKNOWN: "unknown"
     }
 }
