@@ -56,6 +56,8 @@
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
   "enableOAuth": ${enable_oauth},
+  "enableAPIKeyAuth": true,
+  "enableClientCredentialsOauth": true,
   "oauthJWKSEndpoint": "${oauth_jwks_endpoint}",
   "enableLocalhostAuthorization": false,
   "skipOAuth": [
@@ -86,7 +88,7 @@
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
-    "debugLogEnabled": false
+    "debugLogEnabled": true
   },
   "serverAuthentication": ${server_authentication}
 }
