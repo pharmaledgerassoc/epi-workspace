@@ -13,21 +13,24 @@ export class DataDiffsModal {
             let property = this.diffs[i].changedProperty;
             let oldValue = this.diffs[i].oldValue.value;
             let newValue = this.diffs[i].newValue.value;
+            let sanitize = true;
             if (property === "Product Photo") {
                 oldValue = `<img class="photo" src="${oldValue}" alt="oldValue">`;
                 newValue = `<img class="photo" src="${newValue}" alt="newValue">`;
             }
             if (newValue && newValue.filesCount) {
                 newValue = `<div class="view-details pointer" data-item-id=${newValue.id} data-item-type="newValue" data-local-action="viewEPI">view</div>`;
+                sanitize = false;
             }
             if (oldValue && oldValue.filesCount) {
                 oldValue = `<div class="view-details pointer" data-item-id=${oldValue.id} data-item-type="oldValue" data-local-action="viewEPI">view</div>`;
+                sanitize = false;
             }
             if (i === this.diffs.length - 1) {
                 stringHTML += `
                         <div class="cell border border-radius-left">${property}</div>
-                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : webSkel.sanitize(oldValue)}</div>
-                        <div class="cell border-radius-right">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : webSkel.sanitize(newValue)}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : sanitize ? webSkel.sanitize(oldValue) : oldValue}</div>
+                        <div class="cell border-radius-right">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : sanitize ? webSkel.sanitize(newValue) : newValue}</div>
             `;
             } else {
                 stringHTML += `
