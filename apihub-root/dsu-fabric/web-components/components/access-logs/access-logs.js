@@ -129,7 +129,7 @@ export class AccessLogs {
             if (formData.isValid) {
                 this.inputValue = formData.data.userId;
                 this.setPaginationDefaultValues();
-                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, [`userId == ${this.inputValue}`], "desc");
+                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `userId == ${this.inputValue}`], "desc");
                 if (logs.length > 0) {
                     this.logs = logs;
                     this.userIdFilter = `userId == ${this.inputValue}`;
