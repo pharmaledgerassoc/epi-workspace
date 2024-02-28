@@ -35,7 +35,7 @@ export class LandingPage {
             }
             sc.on("initialised", async () => {
                 console.log("Initialised");
-                await this.getWalletAccess();
+                return await this.getWalletAccess();
             });
         });
     }
@@ -69,6 +69,7 @@ export class LandingPage {
     }
 
     getWalletAccess = async () => {
+        await webSkel.showLoading();
         try {
             let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
             let did;
@@ -124,6 +125,9 @@ export class LandingPage {
 
     beforeRender() {
 
+    }
+
+    afterRender() {
     }
 
 }
