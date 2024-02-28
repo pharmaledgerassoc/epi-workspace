@@ -273,9 +273,9 @@ export class BatchesService {
     generateSerializationForBatch(batch, serialNumber, element) {
         let barcodeData;
         if (serialNumber === "" || typeof serialNumber === "undefined") {
-            barcodeData = `(01)${batch.productCode}(10)${batch.batch}(17)${batch.expiryDate}`;
+            barcodeData = `(01)${batch.productCode}(10)${batch.batchNumber}(17)${batch.expiryDate}`;
         } else {
-            barcodeData = `(01)${batch.productCode}(21)${this.bwipjsEscape(serialNumber)}(10)${this.bwipjsEscape(batch.batch)}(17)${batch.expiryDate}`;
+            barcodeData = `(01)${batch.productCode}(21)${this.bwipjsEscape(serialNumber)}(10)${this.bwipjsEscape(batch.batchNumber)}(17)${batch.expiryDate}`;
         }
         barcodeData = this.sanitizeCode(barcodeData);
         let model = {

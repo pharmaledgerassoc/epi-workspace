@@ -2,10 +2,10 @@ export class DataMatrixModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.productCode = this.element.getAttribute("data-product-code");
+        this.productCode = this.element.variables["data-product-code"];
+        this.batchNumber = this.element.variables["data-batch-number"];
         this.invalidate(async ()=>{
-            let batches =await $$.promisify(webSkel.client.listBatches)(undefined, undefined, [`productCode == ${this.productCode}`]);
-            this.batch = batches[0];
+            this.batch = await $$.promisify(webSkel.client.getBatchMetadata)(this.productCode, this.batchNumber);
         });
     }
 
