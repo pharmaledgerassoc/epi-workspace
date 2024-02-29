@@ -377,10 +377,19 @@ export class BatchesService {
         if (!batchObj.expiryDate) {
             return {valid: false, message: 'Expiration date is a mandatory field'};
         }
-        const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
-        if (batch) {
-            return {valid: false, message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`};
+        try {
+            const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
+            if (batch) {
+                return {
+                    valid: false,
+                    message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`
+                };
+            }
+        } catch (e) {
+            //batch not found so can be used
+            return {valid: true, message: ''};
         }
+
         return {valid: true, message: ''};
     }
 
