@@ -10,22 +10,9 @@ access-logs{
     border-radius: 7px;
     margin-bottom: 10px;
 }
-.search-section input{
-    border-radius: 4px;
-    padding: 4px;
-    border: 1px solid var(--primary-background-color);
-    font-size: 0.8rem;
-    width: 16%;
-    min-width: 240px;
-}
 .input-container-container{
     display: flex;
     align-items: center;
-}
-.input-container{
-    display: inline-block;
-    position: relative;
-    min-width: 240px;
 }
 .search-label{
     margin-right: 5px;
@@ -95,4 +82,8 @@ access-logs{
 .disabled{
     cursor: initial;
     background-color: var(--tab-green);
+}
+search-input{
+    display: inline-block;
+    height: 27px;
 }

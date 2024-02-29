@@ -12,11 +12,8 @@
     <div class="batches-section">
         <form class="search-section">
             <label class="search-label" for="productCode">Search by product code</label>
-            <div class="input-container">
-                <input type="text" id="productCode" name="productCode" placeholder="Search by code">
-                <div class="x-mark pointer" data-local-action="deleteInput">&times;</div>
-            </div>
-            $$searchResultIcon
+            <search-input data-presenter="search-input" data-input="productCode" data-result-icon="$$searchResultIcon" data-value="$$inputValue"
+                          data-focus="$$focusInput" data-placeholder="Search by code"></search-input>
         </form>
         <div class="table">
             <div class="column-header first-column">Brand / Invented Name</div>

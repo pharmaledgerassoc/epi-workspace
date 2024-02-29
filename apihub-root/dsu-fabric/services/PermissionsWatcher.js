@@ -56,11 +56,12 @@ class PermissionsWatcher {
                     return;
                 }
 
+                if (unAuthorizedPages.indexOf(getCurrentPageTag()) === -1) {
+                    this.notificationHandler.reportUserRelevantInfo("Your credentials were removed.");
+                }
                 //we try to reset no matter if we had or no any credentials...
                 await this.resettingCredentials();
 
-                this.notificationHandler.reportUserRelevantInfo("Your credentials were removed.");
-                this.notificationHandler.reportUserRelevantInfo("Application will refresh soon...");
                 return;
             }
         }).catch(async err => {
@@ -169,7 +170,7 @@ class PermissionsWatcher {
         const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
         let credential = await $$.promisify(mainEnclave.readKey)(constants.CREDENTIAL_KEY);
 
-        if (credential.allPossibleGroups) {
+        if (typeof credential === "object" && credential.allPossibleGroups) {
             for (let group of credential.allPossibleGroups) {
                 if (await this.isInGroup(group.did, this.did)) {
                     switch (group.accessMode) {
@@ -189,6 +190,7 @@ class PermissionsWatcher {
         if (!userRights) {
             //todo: add new constant in opendsu.containts for root-cause security
             this.notificationHandler.reportUserRelevantError("Unable to get user rights!");
+            return $$.forceTabRefresh();
         }
 
         return userRights;

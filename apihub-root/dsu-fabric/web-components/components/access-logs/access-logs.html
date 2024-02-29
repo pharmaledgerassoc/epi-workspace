@@ -2,11 +2,8 @@
     <form class="search-section">
         <div class="input-container-container">
             <label class="search-label" for="userId">Search by user ID</label>
-            <div class="input-container">
-                <input type="text" id="userId" name="userId" placeholder="Search by user ID">
-                <div class="x-mark pointer" data-local-action="deleteInput">&times;</div>
-            </div>
-            $$searchResultIcon
+            <search-input data-presenter="search-input" data-input="userId" data-result-icon="$$searchResultIcon"
+                          data-value="$$inputValue" data-focus="$$focusInput" data-placeholder="Search by user ID"></search-input>
         </div>
         <button class="export-csv pointer" data-local-action="downloadCSV">Export as CSV</button>
     </form>

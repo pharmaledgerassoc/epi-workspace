@@ -24,7 +24,7 @@ export class LandingPage {
                 this.encryptedSSOSecret = this.encrypt(DEFAULT_PIN, generateRandom(32));
             }
 
-            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId}`, this.encryptedSSOSecret);
+            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId}`);
             try {
                 const dsu = await this.loadWallet();
                 let envJson = await dsu.readFileAsync("environment.json");

@@ -43,45 +43,6 @@ export class AccessLogs {
     }
 
     afterRender() {
-        this.searchInput = this.element.querySelector("#userId");
-        this.searchInput.value = this.inputValue || "";
-        let xMark = this.element.querySelector(".x-mark");
-
-        if (this.boundFnKeypress) {
-            this.searchInput.removeEventListener("keypress", this.boundFnKeypress);
-        }
-        this.boundFnKeypress = this.searchLog.bind(this);
-        this.searchInput.addEventListener("keypress", this.boundFnKeypress);
-
-        if (this.boundFnMouseLeave) {
-            this.searchInput.removeEventListener("mouseleave", this.boundFnMouseLeave);
-        }
-        this.boundFnMouseLeave = this.hideXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseleave", this.boundFnMouseLeave);
-
-        if (this.boundFnMouseEnter) {
-            this.searchInput.removeEventListener("mouseenter", this.boundFnMouseEnter);
-        }
-        this.boundFnMouseEnter = this.showXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseenter", this.boundFnMouseEnter);
-
-        if (this.boundFnFocusout) {
-            this.searchInput.removeEventListener("focusout", this.boundFnFocusout);
-        }
-        this.boundFnFocusout = this.removeFocus.bind(this, xMark);
-        this.searchInput.addEventListener("focusout", this.boundFnFocusout);
-
-        if (this.boundFnInput) {
-            this.searchInput.removeEventListener("input", this.boundFnInput);
-        }
-        this.boundFnInput = this.toggleSearchIcons.bind(this, xMark);
-        this.searchInput.addEventListener("input", this.boundFnInput);
-
-        if (this.focusInput) {
-            this.searchInput.focus();
-            xMark.style.display = "block";
-            this.focusInput = false;
-        }
         let logs = this.element.querySelector(".logs-section");
         if (this.logs.length === 0) {
             logs.style.display = "none";
@@ -96,6 +57,14 @@ export class AccessLogs {
         if (this.disableNextBtn && nextBtn) {
             nextBtn.classList.add("disabled");
         }
+        this.searchInput = this.element.querySelector("search-input");
+        if(this.searchInput){
+            if(this.boundSearchLogs){
+                this.searchInput.removeEventListener("search", this.boundSearchLogs);
+            }
+            this.boundSearchLogs = this.searchLogs.bind(this);
+            this.searchInput.addEventListener("search", this.boundSearchLogs);
+        }
     }
 
     toggleSearchIcons(xMark, event) {
@@ -106,54 +75,38 @@ export class AccessLogs {
         }
     }
 
-    removeFocus(xMark, event) {
-        xMark.style.display = "none";
-    }
-
-    showXMark(xMark, event) {
-        if (this.searchInput.value !== "") {
-            xMark.style.display = "block";
-        }
-    }
-
-    hideXMark(xMark, event) {
-        if (document.activeElement !== this.searchInput) {
-            xMark.style.display = "none";
-        }
-    }
-
-    async searchLog(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            let formData = await webSkel.extractFormInformation(this.searchInput);
-            if (formData.isValid) {
-                this.inputValue = formData.data.userId;
-                this.setPaginationDefaultValues();
-                let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `userId == ${this.inputValue}`], "desc");
-                if (logs.length > 0) {
-                    this.logs = logs;
-                    this.userIdFilter = `userId == ${this.inputValue}`;
-                    if (this.logs.length === this.logsNumber) {
-                        this.logs.pop();
-                        this.disableNextBtn = false;
-                    } else if (this.logs.length < this.logsNumber) {
-                        this.disableNextBtn = true;
-                    }
-                    this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
-                    this.firstElementTimestamp = this.logs[0].__timestamp;
-                    this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
-                } else {
-                    this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
+    async searchLogs(event) {
+        event.preventDefault();
+        let formData = await webSkel.extractFormInformation(this.searchInput);
+        if (formData.isValid) {
+            this.inputValue = formData.data.userId;
+            this.setPaginationDefaultValues();
+            this.focusInput = "true";
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `userId == ${this.inputValue}`], "desc");
+            if (logs.length > 0) {
+                this.logs = logs;
+                this.userIdFilter = `userId == ${this.inputValue}`;
+                if (this.logs.length === this.logsNumber) {
+                    this.logs.pop();
+                    this.disableNextBtn = false;
+                } else if (this.logs.length < this.logsNumber) {
+                    this.disableNextBtn = true;
                 }
-                this.focusInput = true;
-                this.invalidate();
+                this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
+                this.firstElementTimestamp = this.logs[0].__timestamp;
+                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
+            } else {
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
             }
+            this.focusInput = true;
+            this.invalidate();
         }
     }
 
     async deleteInput(xMark) {
         this.searchResultIcon = "";
-        delete this.inputValue;
+        this.inputValue = "";
+        this.focusInput = "";
         this.loadLogs(["__timestamp > 0"]);
     }
 
