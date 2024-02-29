@@ -28,11 +28,20 @@ const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName,
 
     for (let record of records) {
         const transformedRecord = transformRecord(record);
+        let existingRecord;
         try {
-            await $$.promisify(lightDBEnclave.insertRecord)($$.SYSTEM_IDENTIFIER, targetTableName, generatePK(record), transformedRecord);
+            existingRecord = await $$.promisify(lightDBEnclave.getRecord)($$.SYSTEM_IDENTIFIER, targetTableName, generatePK(record));
         } catch (e) {
-            console.error("Failed to insert record", transformedRecord, "in table", targetTableName, e);
-            throw e;
+            //table does not exist
+        }
+
+        if (!existingRecord) {
+            try {
+                await $$.promisify(lightDBEnclave.insertRecord)($$.SYSTEM_IDENTIFIER, targetTableName, generatePK(record), transformedRecord);
+            } catch (e) {
+                console.error("Failed to insert record", transformedRecord, "in table", targetTableName, e);
+                throw e;
+            }
         }
     }
 };
@@ -44,8 +53,13 @@ const getEpiEnclave = (callback) => {
         return callback(err);
     })
     walletDBEnclave.on("initialised", async () => {
-        const _enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
-        const epiEnclave = enclaveAPI.initialiseWalletDBEnclave(_enclaves[0].enclaveKeySSI);
+        let epiEnclave;
+        try {
+            const enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
+            epiEnclave = enclaveAPI.initialiseWalletDBEnclave(enclaves[0].enclaveKeySSI);
+        } catch (e) {
+            return callback(e);
+        }
         epiEnclave.on("error", (err) => {
             return callback(err);
         })
