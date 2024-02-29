@@ -259,8 +259,12 @@ export class ManageBatchPage extends CommonPresenterClass {
                 formData.data.expiryDate = webSkel.appServices.prefixMonthDate(formData.data.expiryDate);
             }
             let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
-            await webSkel.appServices.addBatch(formData.data, this.updatedBatch.EPIs);
+            let addBatchResult = await webSkel.appServices.addBatch(formData.data, this.updatedBatch.EPIs);
             await webSkel.closeModal(modal);
+            if (!addBatchResult.valid) {
+                webSkel.notificationHandler.reportUserRelevantError(addBatchResult.message);
+                return;
+            }
             await webSkel.changeToDynamicPage("batches-page", "batches-page");
         }
 

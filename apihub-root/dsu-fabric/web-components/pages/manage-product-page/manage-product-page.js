@@ -301,30 +301,6 @@ export class ManageProductPage extends CommonPresenterClass {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
 
-    async checkProductCodeOwnerStatus(productCode) {
-        const openDSU = require("opendsu");
-        const scAPI = openDSU.loadAPI("sc");
-        const mainDSU = await $$.promisify(scAPI.getMainDSU)();
-        let env = await $$.promisify(mainDSU.readFile)("/environment.json");
-        env = JSON.parse(env.toString());
-
-        try {
-            let result = await $$.promisify(webSkel.client.getGTINStatus)(productCode);
-            if (result && result.domain === env.epiDomain) {
-                return constants.GTIN_AVAILABILITY_STATUS.OWNED
-            } else {
-                return constants.GTIN_AVAILABILITY_STATUS.USED
-            }
-        } catch (e) {
-            if (e.message.includes("Status Code: 404")) {
-                return constants.GTIN_AVAILABILITY_STATUS.FREE
-            } else {
-                return constants.GTIN_AVAILABILITY_STATUS.UNKNOWN
-            }
-
-        }
-
-    }
 
     async saveProduct(_target) {
         const conditions = {
@@ -344,7 +320,7 @@ export class ManageProductPage extends CommonPresenterClass {
                     this.productData[key] = formData.data[key];
                 }
             }
-            let gtinAvailabilityStatus = await this.checkProductCodeOwnerStatus(this.productData.productCode);
+            let gtinAvailabilityStatus = await webSkel.appServices.checkProductCodeOwnerStatus(this.productData.productCode);
 
             if (gtinAvailabilityStatus === constants.GTIN_AVAILABILITY_STATUS.OWNED) {
                 webSkel.notificationHandler.reportUserRelevantWarning('The product code already exists and will be updated!!!');

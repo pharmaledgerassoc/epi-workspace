@@ -118,8 +118,8 @@ export class BatchesService {
                 dateValueString.slice(0, 2)
         } else {
             /* returns 'MM-YYYY' */
-            if(dateValueString.slice(-2).includes("00")){
-                dateValueString=dateValueString.slice(0,4);
+            if (dateValueString.slice(-2).includes("00")) {
+                dateValueString = dateValueString.slice(0, 4);
             }
             inputStringDate = dateValueString.slice(2, 4) +
                 separator +
@@ -175,11 +175,12 @@ export class BatchesService {
     }
 
     /* mm-yyyy to yyyy-mm  || yyyy-mm->mm-yyyy || */
-    reverseSeparatedDateString(dateString){
-        const separator='-'
-        let dateParts=dateString.split(separator);
+    reverseSeparatedDateString(dateString) {
+        const separator = '-'
+        let dateParts = dateString.split(separator);
         return dateParts.reverse().join(separator);
     }
+
     getCurrentDateTimeCET() {
         const date = new Date();
 
@@ -288,19 +289,15 @@ export class BatchesService {
     }
 
     async addBatch(batchData, EPIs) {
-        const batchValidationResult = this.validateBatch(batchData);
+        const batchValidationResult = await this.validateBatch(batchData);
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
             for (const EPI of EPIs) {
                 let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);
                 await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, batchData.batchNumber, EPI.language, EPI.type, epiDetails);
             }
-            return true;
-        } else {
-            /* TODO Replace console error logging with toasts */
-            console.error(batchValidationResult.message);
-            return false;
         }
+        return batchValidationResult;
     }
 
     createBatchPayload(batchData) {
@@ -362,10 +359,9 @@ export class BatchesService {
         }
     }
 
-    validateBatch(batchObj) {
+    async validateBatch(batchObj) {
         if (!batchObj.productCode) {
             return {valid: false, message: 'Product code is a mandatory field'};
-
         }
         if (!batchObj.batchNumber) {
             return {valid: false, message: 'Batch number is a mandatory field'};
@@ -381,7 +377,10 @@ export class BatchesService {
         if (!batchObj.expiryDate) {
             return {valid: false, message: 'Expiration date is a mandatory field'};
         }
-
+        const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
+        if (batch) {
+            return {valid: false, message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`};
+        }
         return {valid: true, message: ''};
     }
 
@@ -465,7 +464,7 @@ export class BatchesService {
         return {productOptions, products}
     }
 
-    async getBatches(number = undefined, query = undefined, sortDirection = "desc"){
+    async getBatches(number = undefined, query = undefined, sortDirection = "desc") {
         return await $$.promisify(webSkel.client.listBatches)(undefined, number, query, sortDirection);
     }
 
