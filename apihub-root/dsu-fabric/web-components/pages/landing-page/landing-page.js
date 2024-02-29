@@ -1,7 +1,6 @@
 import {getUserDetails, loadPage, getSSOId, generateRandom} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
-
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 const crypto = openDSU.loadAPI("crypto");
@@ -21,7 +20,7 @@ export class LandingPage {
             try {
                 this.encryptedSSOSecret = await this.getSSOSecret();
             } catch (e) {
-                this.encryptedSSOSecret = this.encrypt(DEFAULT_PIN, generateRandom(32));
+                this.encryptedSSOSecret = await this.putSSOSecret(this.encryptedSSOSecret);
             }
 
             const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId}`);
@@ -68,20 +67,31 @@ export class LandingPage {
     getSSOUserId = () => {
         return getSSOId("SSOUserId");
     }
-    putSSOSecret = async (secret) => {
+    putSSOSecret = async () => {
+        let secret = generateRandom(32);
+        let encrypted = this.encrypt(DEFAULT_PIN, secret);
+        let putData = {secret: JSON.stringify(JSON.parse(encrypted).data)};
         const url = `${systemAPI.getBaseURL()}/putSSOSecret/${env.appName}`;
-        const encryptedSecret = this.encrypt(DEFAULT_PIN, secret);
-        await fetch(url, {
-            method: "PUT",
-            body: encryptedSecret
-        });
+        try {
+            await fetch(url, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(putData)
+            });
+        }catch (e) {
+            debugger
+            console.log(e);
+        }
+        return JSON.stringify(putData);
     }
 
     getSSOSecret = async () => {
         const url = `${systemAPI.getBaseURL()}/getSSOSecret/${env.appName}`;
         const response = await fetch(url);
         if (!response.ok) {
-            if(response.status === 404){
+            if (response.status === 404) {
                 throw new Error("Secret not found");
             }
 
