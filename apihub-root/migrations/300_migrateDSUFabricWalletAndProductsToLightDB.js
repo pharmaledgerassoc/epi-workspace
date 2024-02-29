@@ -161,6 +161,21 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
         return record;
     }
 
+    const transformAuditLog = record => {
+        if (record.logType === "BATCH_LOG") {
+            record.batchNumber = record.itemCode;
+            record.itemCode = record.gtin;
+        }
+
+        if(record.logType === "LEAFLET_LOG"){
+            if (record.metadata && record.metadata.attachedTo === "BATCH") {
+                record.batchNumber = record.metadata.batch;
+                record.itemCode = record.metadata.gtin;
+            }
+        }
+
+        return record;
+    }
     const generateBatchPk = record => {
         return `${record.gtin}_${record.batchNumber}`;
     }
@@ -168,12 +183,25 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
 
     // Use the generalized migration function for different tables with appropriate transformations
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "products", "products", transformProduct, generateProductPk);
+    console.log("Products migrated")
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "batches", "batches", transformBatch, generateBatchPk);
-    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "logs", "audit", noTransform);
+    console.log("Batches migrated")
+    await migrateDataToLightDB(epiEnclave, lightDBEnclave, "logs", "audit", transformAuditLog);
+    console.log("Audit migrated")
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "login_logs", "user-actions", noTransform);
+    console.log("User actions migrated")
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "path-keyssi-private-keys", "path-keyssi-private-keys", noTransform);
+    console.log("Path keyssi private keys migrated")
 
+    function timeout(delay) {
+        return new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    await timeout(10000);
+    await lightDBEnclave.close();
     await $$.promisify(server.close)();
+    console.log("=============================================================")
+    console.log("Migration of old wallet completed");
+    console.log("=============================================================")
 }
 
 module.exports = migrateDataFromEpiEnclaveToLightDB;
