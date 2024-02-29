@@ -1,27 +1,28 @@
 require("../../opendsu-sdk/builds/output/pskWebServer");
-const PREFIX = 'DB_';
-
-const createSecret = async (domain, subdomain) => {
+function base58DID(did){
+    const opendsu = require("opendsu");
+    const crypto = opendsu.loadApi("crypto");
+    if(typeof did === "object"){
+        did = did.getIdentifier();
+    }
+    return crypto.encodeBase58(did);
+}
+const createSecret = async () => {
     const rootFolder = "../"
     const secretsServiceInstance = await require('apihub').getSecretsServiceInstanceAsync(rootFolder);
-    const generateEnclaveName = (domain, subdomain) => {
-        return `${PREFIX}${domain}_${subdomain}`;
+    const SECRET_NAME = "mqMigration";
+    const w3cdid = require("opendsu").loadApi("w3cdid");
+    const migrationDID = await $$.promisify(w3cdid.getKeyDIDFromSecret)("Migration_2023.2.0");
+
+    const migrationDIDIdentifier = base58DID(migrationDID);
+    let secret = {
+        enclave: process.env.DEMIURGE_SHARED_ENCLAVE_KEY_SSI
     }
-
-    const crypto = require('opendsu').loadAPI('crypto');
-    let secret = crypto.generateRandom(32).toString('base64');
-    await secretsServiceInstance.putSecretAsync("default", generateEnclaveName(domain, subdomain), secret);
-    console.log(`Secret for enclave ${generateEnclaveName(domain, subdomain)} created`);
+    await secretsServiceInstance.putSecretAsync(SECRET_NAME, migrationDIDIdentifier, JSON.stringify(secret));
+    console.log("Secret created");
 }
 
-// Extract domain and subdomain from command line arguments
-const [domain, subdomain] = process.argv.slice(2);
-if (!domain || !subdomain) {
-    console.log("Usage: node script.js <domain> <subdomain>");
-    process.exit(1);
-}
-
-createSecret(domain, subdomain).then(() => {
+createSecret().then(() => {
     console.log("Done");
 }).catch((err) => {
     console.log(err);
