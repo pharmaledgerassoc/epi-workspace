@@ -44,27 +44,16 @@ products-page {
 }
 
 .search-section {
+    display: flex;
+    align-items: center;
     background: var(--light-grey);
     padding: 10px;
     border-radius: 7px;
     margin-bottom: 10px;
 }
-
-.search-section input {
-    border-radius: 4px;
-    padding: 4px;
-    border: 1px solid var(--primary-background-color);
-    font-size: 0.8rem;
-    width: 16%;
-    min-width: 240px;
+.search-label{
+    margin-right: 5px;
 }
-
-.input-container {
-    display: inline-block;
-    position: relative;
-    min-width: 240px;
-}
-
 .x-mark {
     font-weight: bold;
     position: absolute;
@@ -156,4 +145,8 @@ products-page {
 .disabled{
     cursor: initial;
     background-color: var(--tab-green);
+}
+search-input{
+    display: inline-block;
+    height: 27px;
 }

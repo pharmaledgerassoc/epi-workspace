@@ -72,45 +72,6 @@ export class ProductsPage extends CommonPresenterClass {
                                 </div>`;
             pageBody.insertAdjacentHTML("beforeend", noData)
         }
-        this.searchInput = this.element.querySelector("#productCode");
-        this.searchInput.value = this.inputValue || "";
-        let xMark = this.element.querySelector(".x-mark");
-
-        if (this.boundFnKeypress) {
-            this.searchInput.removeEventListener("keypress", this.boundFnKeypress);
-        }
-        this.boundFnKeypress = this.searchProduct.bind(this);
-        this.searchInput.addEventListener("keypress", this.boundFnKeypress);
-
-        if (this.boundFnMouseLeave) {
-            this.searchInput.removeEventListener("mouseleave", this.boundFnMouseLeave);
-        }
-        this.boundFnMouseLeave = this.hideXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseleave", this.boundFnMouseLeave);
-
-        if (this.boundFnMouseEnter) {
-            this.searchInput.removeEventListener("mouseenter", this.boundFnMouseEnter);
-        }
-        this.boundFnMouseEnter = this.showXMark.bind(this, xMark);
-        this.searchInput.addEventListener("mouseenter", this.boundFnMouseEnter);
-
-        if (this.boundFnFocusout) {
-            this.searchInput.removeEventListener("focusout", this.boundFnFocusout);
-        }
-        this.boundFnFocusout = this.removeFocus.bind(this, xMark);
-        this.searchInput.addEventListener("focusout", this.boundFnFocusout);
-
-        if (this.boundFnInput) {
-            this.searchInput.removeEventListener("input", this.boundFnInput);
-        }
-        this.boundFnInput = this.toggleSearchIcons.bind(this, xMark);
-        this.searchInput.addEventListener("input", this.boundFnInput);
-
-        if (this.focusInput) {
-            this.searchInput.focus();
-            xMark.style.display = "block";
-            this.focusInput = false;
-        }
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
         if (this.previousPageFirstElements.length === 0 && previousBtn) {
@@ -119,29 +80,13 @@ export class ProductsPage extends CommonPresenterClass {
         if (this.disableNextBtn && nextBtn) {
             nextBtn.classList.add("disabled");
         }
-    }
-
-    toggleSearchIcons(xMark, event) {
-        if (this.searchInput.value === "") {
-            xMark.style.display = "none";
-        } else {
-            xMark.style.display = "block";
-        }
-    }
-
-    removeFocus(xMark, event) {
-        xMark.style.display = "none";
-    }
-
-    showXMark(xMark, event) {
-        if (this.searchInput.value !== "") {
-            xMark.style.display = "block";
-        }
-    }
-
-    hideXMark(xMark, event) {
-        if (document.activeElement !== this.searchInput) {
-            xMark.style.display = "none";
+        this.searchInput = this.element.querySelector("search-input");
+        if(this.searchInput){
+            if(this.boundSearchProducts){
+                this.searchInput.removeEventListener("search", this.boundSearchProducts);
+            }
+            this.boundSearchProducts = this.searchProducts.bind(this);
+            this.searchInput.addEventListener("search", this.boundSearchProducts);
         }
     }
 
@@ -153,29 +98,29 @@ export class ProductsPage extends CommonPresenterClass {
         await webSkel.changeToDynamicPage("manage-product-page", `manage-product-page?product-code=${productCode}`);
     }
 
-    async searchProduct(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            let formData = await webSkel.extractFormInformation(this.searchInput);
-            if (formData.isValid) {
-                this.inputValue = formData.data.productCode;
-                this.setPaginationDefaultValues();
-                let products = await webSkel.appServices.getProducts(undefined, ["__timestamp > 0", `productCode == ${this.inputValue}`]);
-                if (products.length > 0) {
-                    this.products = products;
-                    this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
-                } else {
-                    this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
-                }
-                this.focusInput = true;
-                this.invalidate();
+    async searchProducts(event) {
+        let formData = await webSkel.extractFormInformation(this.searchInput);
+        if (formData.isValid) {
+            this.inputValue = formData.data.productCode;
+            this.focusInput = "true";
+            this.setPaginationDefaultValues();
+            let products = await webSkel.appServices.getProducts(undefined, ["__timestamp > 0", `productCode == ${this.inputValue}`]);
+            if (products.length > 0) {
+                this.products = products;
+                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
+            } else {
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
             }
+            this.focusInput = true;
+            this.invalidate();
         }
+
     }
 
     async deleteInput(xMark) {
         this.searchResultIcon = "";
-        delete this.inputValue;
+        this.inputValue = "";
+        this.focusInput = "";
         this.loadProducts();
     }
 

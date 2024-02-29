@@ -1,6 +1,11 @@
 {
   "components": [
     {
+      "name": "search-input",
+      "type": "components",
+      "presenterClassName": "SearchInput"
+    },
+    {
       "name": "progress-info-modal",
       "type": "modals",
       "presenterClassName": "ProgressInfoModal"
