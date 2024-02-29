@@ -72,7 +72,6 @@ function renderToast(type, message, timeoutValue = 5000) {
     toastContainer.appendChild(toastElement);
 }
 
-
 function parseCookies(cookies) {
     const parsedCookies = {};
     if (!cookies) {
@@ -93,13 +92,16 @@ function parseCookies(cookies) {
     return parsedCookies;
 }
 
+function getSSOId(ssoIdFieldName) {
+  let ssoId = localStorage.getItem(ssoIdFieldName);
+  if(!ssoId) {
+    const parsedCookies = parseCookies(document.cookie);
+    ssoId = parsedCookies[ssoIdFieldName];  }
+  return ssoId;
+}
+
 function getUserDetails() {
-    let userData = localStorage.getItem("SSODetectedId");
-    if (!userData) {
-        const parsedCookies = parseCookies(document.cookie);
-        userData = parsedCookies["SSODetectedId"];
-    }
-    return userData;
+  return getSSOId("SSODetectedId");
 }
 
 async function setupGlobalErrorHandlers() {
@@ -158,7 +160,6 @@ function getTextDirection(lang) {
     }
     return textDirection;
 }
-
 function changeSidebarFromURL() {
     let currentPage = window.location.hash;
     let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
@@ -181,13 +182,13 @@ function changeSidebarFromURL() {
         }
     }
 }
-
 export {
     createObservableObject,
     loadPage,
     getCurrentPageTag,
     showError,
     getUserDetails,
+    getSSOId,
     setupGlobalErrorHandlers,
     navigateToPage,
     copyToClipboard,
