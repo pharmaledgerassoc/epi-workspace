@@ -116,9 +116,9 @@ export class ProductsService {
         }
     }
 
-    async updateProduct(productData, existingEpiUnits) {
+    async updateProduct(productData, existingProduct) {
         let productDetails = this.getProductPayload(productData);
-        if (productData.photo) {
+        if (existingProduct.photo !== productData.photo) {
             let photoDetails = this.getPhotoPayload(productData)
             await $$.promisify(webSkel.client.updateImage)(productData.productCode, photoDetails);
         }

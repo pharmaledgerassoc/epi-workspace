@@ -15,6 +15,7 @@ export class DataDiffsModal {
             let newValue = this.diffs[i].newValue.value;
             let sanitize = true;
             if (property === "Product Photo") {
+                sanitize = false;
                 oldValue = `<img class="photo" src="${oldValue}" alt="oldValue">`;
                 newValue = `<img class="photo" src="${newValue}" alt="newValue">`;
             }

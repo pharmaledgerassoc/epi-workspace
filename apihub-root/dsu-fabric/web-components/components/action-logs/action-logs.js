@@ -35,10 +35,10 @@ export class ActionLogs {
         let string = "";
         for (let item of this.logs) {
             string += `
-                        <div>${item.gtin}</div>
+                        <div>${item.itemCode}</div>
                         <div>${item.batchNumber || "-"}</div>
-                        <div>${item.operation}</div>
-                        <div>${item.userId}</div>
+                        <div>${item.reason}</div>
+                        <div>${item.username}</div>
                         <div>${new Date(item.__timestamp).toISOString()}</div>`;
         }
         this.items = string;
