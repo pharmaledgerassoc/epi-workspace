@@ -1,4 +1,4 @@
-import {getUserDetails, loadPage} from "../../../utils/utils.js";
+import {getUserDetails, loadPage, getSSOId, generateRandom} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
 
@@ -8,6 +8,9 @@ const crypto = openDSU.loadAPI("crypto");
 const scAPI = openDSU.loadAPI("sc");
 const w3cDID = openDSU.loadAPI("w3cdid");
 const resolver = openDSU.loadAPI("resolver");
+const systemAPI = openDSU.loadAPI("system");
+const enclaveAPI = openDSU.loadAPI("enclave");
+const DEFAULT_PIN = "1qaz";
 
 export class LandingPage {
     constructor(element, invalidate) {
@@ -15,8 +18,26 @@ export class LandingPage {
         this.invalidate = invalidate;
         this.sourcePage = this.element.getAttribute("data-source-page");
         this.invalidate(async () => {
+            try {
+                this.encryptedSSOSecret = await this.getSSOSecret();
+            } catch (e) {
+                this.encryptedSSOSecret = this.encrypt(DEFAULT_PIN, generateRandom(32));
+            }
+
+            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId}`, this.encryptedSSOSecret);
+            try {
+                const dsu = await this.loadWallet();
+                let envJson = await dsu.readFileAsync("environment.json");
+                envJson = JSON.parse(envJson);
+                console.log(envJson);
+                env.WALLET_MAIN_DID = envJson.WALLET_MAIN_DID;
+                env.enclaveKeySSI = envJson.enclaveKeySSI;
+                env.enclaveType = envJson.enclaveType;
+                env.enclaveDID = envJson.enclaveDID;
+            } catch (e) {
+                // No previous version wallet found
+            }
             let mainDSU;
-            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId()}`)
             try {
                 mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
             } catch (error) {
@@ -41,7 +62,58 @@ export class LandingPage {
     }
 
     getSSODetectedId = () => {
-        return getUserDetails();
+        return getSSOId("SSODetectedId");
+    }
+
+    getSSOUserId = () => {
+        return getSSOId("SSOUserId");
+    }
+    putSSOSecret = async (secret) => {
+        const url = `${systemAPI.getBaseURL()}/putSSOSecret/${env.appName}`;
+        const encryptedSecret = this.encrypt(DEFAULT_PIN, secret);
+        await fetch(url, {
+            method: "PUT",
+            body: encryptedSecret
+        });
+    }
+
+    getSSOSecret = async () => {
+        const url = `${systemAPI.getBaseURL()}/getSSOSecret/${env.appName}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            if(response.status === 404){
+                throw new Error("Secret not found");
+            }
+
+            throw new Error(`Failed to get secret: ${response.status}`);
+        }
+        const encryptedSecret = await response.text();
+        return encryptedSecret;
+    }
+
+    encrypt(key, dataObj) {
+        const encryptionKey = crypto.deriveEncryptionKey(key);
+        const encryptedCredentials = crypto.encrypt(JSON.stringify(dataObj), encryptionKey);
+        return JSON.stringify(encryptedCredentials);
+    }
+
+    decrypt(key, encryptedData) {
+        const encryptionKey = crypto.deriveEncryptionKey(key);
+        const decryptData = crypto.decrypt($$.Buffer.from(JSON.parse(encryptedData)), encryptionKey);
+        return JSON.parse(decryptData.toString());
+    }
+
+    getWalletSecretsArray(encryptedSSOSecret) {
+        const ssoSecret = this.decrypt(DEFAULT_PIN, encryptedSSOSecret);
+        return [this.getSSODetectedId(), this.getSSOUserId(), ssoSecret, env.appName];
+    }
+
+    loadWallet = async () => {
+        let resolver = require("opendsu").loadApi("resolver");
+        let keyssi = require("opendsu").loadApi("keyssi");
+        let walletSSI = keyssi.createTemplateWalletSSI(env.vaultDomain, this.getWalletSecretsArray(this.encryptedSSOSecret));
+        const constDSU = await $$.promisify(resolver.loadDSU)(walletSSI);
+        return constDSU.getWritableDSU();
     }
 
     createDID = async () => {

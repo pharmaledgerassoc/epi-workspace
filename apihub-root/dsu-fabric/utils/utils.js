@@ -92,6 +92,18 @@ function parseCookies(cookies) {
     return parsedCookies;
 }
 
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+function generateRandom(length) {
+    let charactersSet = characters;
+    let result = '';
+    const charactersLength = charactersSet.length;
+    for (let i = 0; i < length; i++) {
+        result += charactersSet.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
 function getSSOId(ssoIdFieldName) {
   let ssoId = localStorage.getItem(ssoIdFieldName);
   if(!ssoId) {
@@ -194,5 +206,6 @@ export {
     copyToClipboard,
     isCopyToClipboardSupported,
     getTextDirection,
-    changeSidebarFromURL
+    changeSidebarFromURL,
+    generateRandom
 }
