@@ -46,28 +46,51 @@ const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName,
     }
 };
 
+function base58DID(did){
+    const opendsu = require("opendsu");
+    const crypto = opendsu.loadApi("crypto");
+    if(typeof did === "object"){
+        did = did.getIdentifier();
+    }
+    return crypto.encodeBase58(did);
+}
+
+const getDemiurgeSharedEnclaveKeySSI = async () => {
+    const SECRET_NAME = "mqMigration";
+    const w3cdid = require("opendsu").loadApi("w3cdid");
+    const migrationDID = await $$.promisify(w3cdid.getKeyDIDFromSecret)("Migration_2023.2.0");
+    const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
+    const migrationDIDIdentifier = base58DID(migrationDID);
+    const secret = secretsServiceInstance.getSecretSync(SECRET_NAME, migrationDIDIdentifier);
+    return JSON.parse(secret).enclave;
+}
 const getEpiEnclave = (callback) => {
     const enclaveAPI = openDSU.loadAPI("enclave");
-    const walletDBEnclave = enclaveAPI.initialiseWalletDBEnclave(process.env.DEMIURGE_SHARED_ENCLAVE_KEY_SSI);
-    walletDBEnclave.on("error", (err) => {
-        return callback(err);
-    })
-    walletDBEnclave.on("initialised", async () => {
-        let epiEnclave;
-        try {
-            const enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
-            epiEnclave = enclaveAPI.initialiseWalletDBEnclave(enclaves[0].enclaveKeySSI);
-        } catch (e) {
-            return callback(e);
-        }
-        epiEnclave.on("error", (err) => {
+    getDemiurgeSharedEnclaveKeySSI().then((keySSI) => {
+        const walletDBEnclave = enclaveAPI.initialiseWalletDBEnclave(keySSI);
+        walletDBEnclave.on("error", (err) => {
             return callback(err);
         })
-        epiEnclave.on("initialised", async () => {
-            console.log($$.promisify(epiEnclave.getAllTableNames)(undefined));
-            callback(undefined, epiEnclave);
+        walletDBEnclave.on("initialised", async () => {
+            let epiEnclave;
+            try {
+                const enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
+                epiEnclave = enclaveAPI.initialiseWalletDBEnclave(enclaves[0].enclaveKeySSI);
+            } catch (e) {
+                return callback(e);
+            }
+            epiEnclave.on("error", (err) => {
+                return callback(err);
+            })
+            epiEnclave.on("initialised", async () => {
+                console.log($$.promisify(epiEnclave.getAllTableNames)(undefined));
+                callback(undefined, epiEnclave);
+            });
         });
-    });
+    }).catch((err) => {
+        console.error(err);
+        return callback(err);
+    })
 }
 
 const getEpiEnclaveAsync = async () => {
@@ -79,15 +102,14 @@ const getSlotFromEpiEnclave = async (epiEnclave) => {
 }
 
 const getLightDBEnclave = async () => {
-    const lightDBPath = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, config.storage, `/external-volume/lightDB/${generateEnclaveName(process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN)}/database`);
+    const lightDBPath = path.join(process.env.PSK_ROOT_INSTALATION_FOLDER, config.storage, `external-volume/lightDB/${generateEnclaveName(process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN)}/database`);
     try {
         fs.mkdirSync(path.dirname(lightDBPath), {recursive: true});
     } catch (e) {
         if (e.code !== "EEXIST") throw e;
     }
     const LokiEnclaveFacade = require("loki-enclave-facade");
-    const adapters = LokiEnclaveFacade.Adaptors;
-    return LokiEnclaveFacade.createLokiEnclaveFacadeInstance(lightDBPath, undefined, adapters.STRUCTURED);
+    return LokiEnclaveFacade.createLokiEnclaveFacadeInstance(lightDBPath);
 }
 
 const startServer = async () => {
@@ -151,7 +173,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "login_logs", "user-actions", noTransform);
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "path-keyssi-private-keys", "path-keyssi-private-keys", noTransform);
 
-    server.close();
+    await $$.promisify(server.close)();
 }
 
 module.exports = migrateDataFromEpiEnclaveToLightDB;
