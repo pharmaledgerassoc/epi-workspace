@@ -7,11 +7,11 @@ export class AuditService {
     objectToArray(item, type) {
 
         if (type === "action") {
-            return [`'${item.gtin}'`, item.batchNumber ? `'${item.batchNumber}'` : "-", item.operation, item.userId ? `'${item.userId}'` : "", new Date(item.__timestamp).toISOString()];
+            return [`'${item.itemCode}'`, item.batchNumber ? `'${item.batchNumber}'` : "-", item.reason, item.username ? `'${item.username}'` : "", new Date(item.__timestamp).toISOString()];
         }
 
         if (type === "access") {
-            return [item.userId ? `'${item.userId}'` : "", "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
+            return [item.username ? `'${item.username}'` : "", "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
 
         }
         /*  let details = {logInfo: itemCopy};
@@ -22,10 +22,10 @@ export class AuditService {
     convertToCSV(items, type) {
         let headers;
         if (type === "action") {
-            headers = ["gtin", "batch", "reason", "user", "creationTime"];
+            headers = ["Product Code", "Batch number", "Reason", "User", "Creation Time"];
         }
         if (type === "access") {
-            headers = ["user", "action", "user DID", "user group", "creationTime"];
+            headers = ["User", "Action", "User DID", "User Group", "Creation Time"];
         }
         let columnTitles = headers.join(",") + "\n";
         let rows = "";

@@ -351,7 +351,7 @@ export class ManageProductPage extends CommonPresenterClass {
                     header: "Info",
                     message: "Saving Product..."
                 });
-                await webSkel.appServices.updateProduct(this.productData, this.existingProduct.epiUnits);
+                await webSkel.appServices.updateProduct(this.productData, this.existingProduct);
                 await webSkel.closeModal(modal);
                 await navigateToPage("products-page");
             }

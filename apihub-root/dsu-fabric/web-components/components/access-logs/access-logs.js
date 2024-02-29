@@ -33,7 +33,7 @@ export class AccessLogs {
     beforeRender() {
         let string = "";
         for (let item of this.logs) {
-            string += ` <div>${item.userId}</div>
+            string += ` <div>${item.username}</div>
                         <div>Access Wallet</div>
                         <div>${item.userDID}</div>
                         <div>${item.userGroup}</div>
