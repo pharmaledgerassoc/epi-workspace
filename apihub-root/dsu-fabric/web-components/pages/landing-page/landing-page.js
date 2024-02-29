@@ -20,10 +20,10 @@ export class LandingPage {
             try {
                 this.encryptedSSOSecret = await this.getSSOSecret();
             } catch (e) {
-                this.encryptedSSOSecret = await this.putSSOSecret(this.encryptedSSOSecret);
+                this.encryptedSSOSecret = await this.putSSOSecret();
             }
 
-            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId}`);
+            const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${this.getSSODetectedId()}`, this.deriveEncryptionKey(this.encryptedSSOSecret));
             try {
                 const dsu = await this.loadWallet();
                 let envJson = await dsu.readFileAsync("environment.json");
@@ -60,6 +60,9 @@ export class LandingPage {
         });
     }
 
+    deriveEncryptionKey = (key) => {
+        return crypto.deriveEncryptionKey(key);
+    }
     getSSODetectedId = () => {
         return getSSOId("SSODetectedId");
     }
