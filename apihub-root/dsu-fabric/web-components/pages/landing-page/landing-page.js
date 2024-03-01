@@ -20,6 +20,7 @@ export class LandingPage {
             try {
                 this.encryptedSSOSecret = await this.getSSOSecret();
             } catch (e) {
+                console.log("generate new secret")
                 this.encryptedSSOSecret = await this.putSSOSecret();
             }
 
@@ -71,7 +72,7 @@ export class LandingPage {
         return getSSOId("SSOUserId");
     }
     putSSOSecret = async () => {
-        let secret = generateRandom(32);
+        let secret = crypto.generateRandom(32).toString("base64");
         let encrypted = this.encrypt(DEFAULT_PIN, secret);
         let putData = {secret: JSON.stringify(JSON.parse(encrypted).data)};
         const url = `${systemAPI.getBaseURL()}/putSSOSecret/${env.appName}`;
@@ -87,7 +88,7 @@ export class LandingPage {
             debugger
             console.log(e);
         }
-        return JSON.stringify(putData);
+        return putData.secret;
     }
 
     getSSOSecret = async () => {
