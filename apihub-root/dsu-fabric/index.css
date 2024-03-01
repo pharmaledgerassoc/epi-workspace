@@ -163,7 +163,7 @@
     --font-size--M: calc((16px + 0.65vmin) * var(--font-scale));
     --font-size--L: calc((16px + 1.7vmin) * var(--font-scale));
     --font-size--XL: calc((16px + 2.3vmin) * var(--font-scale));
-    --default-font: "Noto Sans", "Noto Sans Arab" ,"Noto Sans Japan", "Noto Sans Korea", "Noto Sans China";
+    --default-font: "Noto Sans", "Noto Sans Arab", "Noto Sans Japan", "Noto Sans Korea", "Noto Sans China";
 }
 
 html {
@@ -446,3 +446,7 @@ dialog[class="spinner"] {
     padding: 10px;
 }
 
+.pagination-btn.disabled {
+    cursor: initial;
+    background-color: var(--very-light-grey);
+}

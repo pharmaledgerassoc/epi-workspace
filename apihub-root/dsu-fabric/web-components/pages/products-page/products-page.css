@@ -51,9 +51,11 @@ products-page {
     border-radius: 7px;
     margin-bottom: 10px;
 }
-.search-label{
+
+.search-label {
     margin-right: 5px;
 }
+
 .x-mark {
     font-weight: bold;
     position: absolute;
@@ -124,12 +126,13 @@ products-page {
     border-bottom: 1px solid var(--very-light-grey);
 }
 
-.table-pagination{
+.table-pagination {
     margin-top: 16px;
     display: flex;
     justify-content: center;
 }
-.pagination-btn{
+
+.pagination-btn {
     cursor: pointer;
     background-color: var(--primary-background-color);
     border: none;
@@ -139,14 +142,12 @@ products-page {
     font-size: 0.75rem;
     font-weight: bolder;
 }
-.margin-right{
+
+.margin-right {
     margin-right: 16px;
 }
-.disabled{
-    cursor: initial;
-    background-color: var(--tab-green);
-}
-search-input{
+
+search-input {
     display: inline-block;
     height: 27px;
 }

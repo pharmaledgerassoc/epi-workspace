@@ -90,10 +90,7 @@ action-logs{
 .margin-right{
     margin-right: 16px;
 }
-.disabled{
-    cursor: initial;
-    background-color: var(--tab-green);
-}
+
 search-input{
     display: inline-block;
     height: 27px;
