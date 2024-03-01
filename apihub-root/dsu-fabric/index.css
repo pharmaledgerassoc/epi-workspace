@@ -159,16 +159,16 @@
     --yellow-100: #FFECBB;
     --font-scale: 1;
     /* font-size: 62.5%; !* (62.5/100) * 16px = 10px *!*/
-    --font-size--basic: calc((1.6rem + 0.1vmin) * var(--font-scale));
-    --font-size--M: calc((1.6rem + 0.65vmin) * var(--font-scale));
-    --font-size--L: calc((1.6rem + 1.7vmin) * var(--font-scale));
-    --font-size--XL: calc((1.6rem + 2.3vmin) * var(--font-scale));
-    --default-font: "Noto Sans";
+    --font-size--basic: calc((16px + 0.1vmin) * var(--font-scale));
+    --font-size--M: calc((16px + 0.65vmin) * var(--font-scale));
+    --font-size--L: calc((16px + 1.7vmin) * var(--font-scale));
+    --font-size--XL: calc((16px + 2.3vmin) * var(--font-scale));
+    --default-font: "Noto Sans", "Noto Sans Arab" ,"Noto Sans Japan", "Noto Sans Korea", "Noto Sans China";
 }
 
 html {
     height: 100%;
-    font-family: "Noto Sans";
+    font-family: var(--default-font);
     font-weight: 400;
     font-style: normal;
 }
@@ -180,7 +180,7 @@ body {
     overflow: hidden;
     word-wrap: break-word;
     text-size-adjust: none;
-    font-family: "Noto Sans";
+    font-family: var(--default-font);
     font-weight: 400;
 }
 
@@ -194,7 +194,6 @@ button, label, input, h1, h2, h3, h4, div, textarea {
     font-family: var(--default-font);
     font-weight: 400;
 }
-
 
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.25);
