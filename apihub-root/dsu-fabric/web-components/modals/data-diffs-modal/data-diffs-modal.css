@@ -1,17 +1,19 @@
-dialog{
+dialog {
     background: none;
     max-height: 95vh;
     border-radius: 3px;
     width: 75%;
     max-width: 75vw;
 }
-data-diffs-modal{
+
+data-diffs-modal {
     background-color: var(--diffs-background);
     margin-left: 240px;
     display: flex;
     flex-direction: column;
 }
-.modal-header{
+
+.modal-header {
     background-color: var(--primary-background-color);
     color: white;
     display: flex;
@@ -19,45 +21,52 @@ data-diffs-modal{
     align-items: center;
     padding: 16px;
 }
-.modal-title{
+
+.modal-title {
     font-size: 1.25rem;
     font-weight: 500;
 }
-.right-section{
+
+.right-section {
     display: flex;
     align-items: center;
 }
-.expand-icon{
+
+.expand-icon {
     margin-right: 20px;
 }
-.modal-body{
+
+.modal-body {
     display: flex;
     justify-content: center;
-    align-items: center;
     padding: 16px;
     background-color: var(--diffs-background);
 }
 
-.modal-footer{
+.modal-footer {
     padding: 16px;
     display: flex;
     justify-content: end;
     background-color: var(--diffs-background);
 }
-.column-header{
+
+.column-header {
     padding: 16px 24px;
     background: var(--light-green);
     font-size: 110%;
     border-bottom: 1px solid var(--very-light-grey);
     text-align: left;
 }
-.first-column{
+
+.first-column {
     border-top-left-radius: 7px;
 }
-.last-column{
+
+.last-column {
     border-top-right-radius: 7px;
 }
-.table{
+
+.table {
     overflow: scroll;
     width: 100%;
     border-radius: 7px;
@@ -65,30 +74,37 @@ data-diffs-modal{
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--very-light-grey);
 }
-.right-margin{
+
+.right-margin {
     margin-right: 16px;
 }
-.cell{
+
+.cell {
     overflow-wrap: anywhere;
     background-color: white;
     padding: 16px 24px;
     border-bottom: 1px solid var(--very-light-grey);
 }
-.border{
+
+.border {
     border-right: 1px solid var(--very-light-grey);
 }
-.border-radius-left{
+
+.border-radius-left {
     border-bottom-left-radius: 7px;
 }
-.border-radius-right{
+
+.border-radius-right {
     border-bottom-right-radius: 7px;
 }
-.view-details{
+
+.view-details {
     color: var(--primary-background-color);
     font-weight: bold;
     transition: color 0.3s ease;
 }
-.view-details:hover{
+
+.view-details:hover {
     text-decoration: underline;
     color: var(--highlight-green);
 }

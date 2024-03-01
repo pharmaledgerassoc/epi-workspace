@@ -3,7 +3,9 @@
 .preview-epi-modal-dialog {
     overflow: hidden;
     width: 75vw;
-    height: 95vh;
+    height: 100vh;
+    margin: 5px auto;
+    max-height: calc(100vh - 20px);
 }
 
 preview-epi-modal {
@@ -51,7 +53,7 @@ preview-epi-modal {
 .preview-modal-container .modal-body {
     background: #646464;
     position: relative;
-    overflow: unset;
+    overflow: auto;
     font-size: var(--font-size--basic);
     font-family: "Noto Sans";
     flex-grow: 1;
@@ -71,14 +73,12 @@ preview-epi-modal {
     position: relative;
     max-width: 414px;
     min-width: 414px;
-    margin-left: auto;
-    margin-right: auto;
-    top: 15px;
-    height: 88%;
     border-radius: 30px;
     overflow: auto;
     display: flex;
     flex-direction: column;
+    height: 960px;
+    margin: 15px auto;
 }
 
 .epi-container {
