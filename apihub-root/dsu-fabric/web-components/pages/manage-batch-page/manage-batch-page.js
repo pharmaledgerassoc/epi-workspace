@@ -298,11 +298,16 @@ export class ManageBatchPage extends CommonPresenterClass {
                 let modal = await webSkel.showModal("progress-info-modal", {
                     header: "Info",
                     message: "Saving Batch..."
-                },);
-                if (await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs) === true) {
-                    await webSkel.closeModal(modal);
-                    await webSkel.changeToDynamicPage("batches-page", "batches-page");
+                });
+
+                let updateBatchResult = await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs);
+
+                await webSkel.closeModal(modal);
+                if (!updateBatchResult.valid) {
+                    webSkel.notificationHandler.reportUserRelevantError(updateBatchResult.message);
+                    return;
                 }
+                await webSkel.changeToDynamicPage("batches-page", "batches-page");
             }
         }
     }

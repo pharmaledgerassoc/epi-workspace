@@ -289,7 +289,7 @@ export class BatchesService {
     }
 
     async addBatch(batchData, EPIs) {
-        const batchValidationResult = await this.validateBatch(batchData);
+        const batchValidationResult = await this.validateBatch(batchData, true);
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
             for (const EPI of EPIs) {
@@ -351,15 +351,12 @@ export class BatchesService {
                      }
                  }
              }*/
-            return true;
-        } else {
-            /* TODO Replace console error logging with toasts */
-            console.error(batchValidationResult.message);
-            return false;
+
         }
+        return batchValidationResult;
     }
 
-    async validateBatch(batchObj) {
+    async validateBatch(batchObj, existenceCheck) {
         if (!batchObj.productCode) {
             return {valid: false, message: 'Product code is a mandatory field'};
         }
@@ -377,17 +374,20 @@ export class BatchesService {
         if (!batchObj.expiryDate) {
             return {valid: false, message: 'Expiration date is a mandatory field'};
         }
-        try {
-            const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
-            if (batch) {
-                return {
-                    valid: false,
-                    message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`
-                };
+
+        if(existenceCheck){
+            try {
+                const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
+                if (batch) {
+                    return {
+                        valid: false,
+                        message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`
+                    };
+                }
+            } catch (e) {
+                //batch not found so can be used
+                return {valid: true, message: ''};
             }
-        } catch (e) {
-            //batch not found so can be used
-            return {valid: true, message: ''};
         }
 
         return {valid: true, message: ''};
