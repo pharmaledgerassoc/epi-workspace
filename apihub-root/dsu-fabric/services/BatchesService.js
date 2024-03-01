@@ -319,7 +319,7 @@ export class BatchesService {
     };
 
     async updateBatch(batchData, existingEPIs) {
-        const batchValidationResult = this.validateBatch(batchData)
+        const batchValidationResult = await this.validateBatch(batchData)
         if (batchValidationResult.valid) {
             await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
 
