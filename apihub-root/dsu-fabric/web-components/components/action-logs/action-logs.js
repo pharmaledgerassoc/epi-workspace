@@ -76,10 +76,10 @@ export class ActionLogs {
             this.inputValue = formData.data.productCode;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, this.logsNumber, ["__timestamp > 0", `gtin == ${this.inputValue}`], "desc");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, this.logsNumber, ["__timestamp > 0", `itemCode == ${this.inputValue}`], "desc");
             if (logs && logs.length > 0) {
                 this.logs = logs;
-                this.gtinFilter = `gtin == ${this.inputValue}`;
+                this.gtinFilter = `itemCode == ${this.inputValue}`;
                 if (this.logs.length === this.logsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;

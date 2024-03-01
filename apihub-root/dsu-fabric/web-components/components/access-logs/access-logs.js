@@ -82,10 +82,10 @@ export class AccessLogs {
             this.inputValue = formData.data.userId;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `userId == ${this.inputValue}`], "desc");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
             if (logs.length > 0) {
                 this.logs = logs;
-                this.userIdFilter = `userId == ${this.inputValue}`;
+                this.userIdFilter = `username == ${this.inputValue}`;
                 if (this.logs.length === this.logsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;
