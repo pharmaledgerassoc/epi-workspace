@@ -42,8 +42,8 @@ export class DataDiffsModal {
             } else {
                 stringHTML += `
                         <div class="cell border">${property}</div>
-                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : webSkel.sanitize(oldValue)}</div>
-                        <div class="cell">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : webSkel.sanitize(newValue)}</div>
+                        <div class="cell border">${typeof oldValue === "object" ? webSkel.sanitize(JSON.stringify(oldValue)) : sanitize ? webSkel.sanitize(oldValue) : oldValue}</div>
+                        <div class="cell">${typeof newValue === "object" ? webSkel.sanitize(JSON.stringify(newValue)) : sanitize ? webSkel.sanitize(newValue) : newValue}</div>
             `;
             }
         }
