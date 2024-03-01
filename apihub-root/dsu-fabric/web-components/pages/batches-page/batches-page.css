@@ -36,6 +36,10 @@ batches-page {
     display: none;
 }
 
+.batches-section {
+    min-width: min-content;
+}
+
 .buttons-section {
     display: flex;
     justify-content: end;
@@ -50,7 +54,8 @@ batches-page {
     border-radius: 7px;
     margin-bottom: 10px;
 }
-.search-label{
+
+.search-label {
     margin-right: 5px;
 }
 
@@ -121,12 +126,13 @@ batches-page {
     border-bottom: 1px solid var(--very-light-grey);
 }
 
-.table-pagination{
+.table-pagination {
     margin-top: 16px;
     display: flex;
     justify-content: center;
 }
-.pagination-btn{
+
+.pagination-btn {
     cursor: pointer;
     background-color: var(--primary-background-color);
     border: none;
@@ -136,11 +142,12 @@ batches-page {
     font-size: 0.75rem;
     font-weight: bolder;
 }
-.margin-right{
+
+.margin-right {
     margin-right: 16px;
 }
 
-search-input{
+search-input {
     display: inline-block;
     height: 27px;
 }
