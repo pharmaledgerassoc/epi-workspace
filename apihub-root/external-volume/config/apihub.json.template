@@ -10,8 +10,10 @@
     "epi-mapping-engine-results",
     "get-gtin-owner",
     "leaflet-web-api",
+    "integration-api",
     "mq",
     "secrets",
+    "versionlessDSU",
     "lightDBEnclave",
     "staticServer"
   ],
@@ -31,6 +33,13 @@
     "get-gtin-owner": {
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
+    },
+    "integration-api": {
+      "module": "./../../gtin-resolver",
+      "function": "getIntegrationAPIs"
+    },
+    "versionlessDSU": {
+      "module": "./components/versionlessDSU"
     },
     "staticServer": {
       "excludedFiles": [
