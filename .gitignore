@@ -24,7 +24,7 @@ dsu-fabric-ssapp
 node_modules
 package-lock.json
 env.json.devel
-opendsu-sdk/builds/output
+opendsu-sdk/builds/output/
 
 
 acdc-authentication-feature-template/
