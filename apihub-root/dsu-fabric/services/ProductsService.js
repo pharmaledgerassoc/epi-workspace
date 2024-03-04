@@ -228,17 +228,9 @@ export class ProductsService {
 
         try {
             let result = await $$.promisify(webSkel.client.getGTINStatus)(productCode);
-            if (result && result.domain === env.epiDomain) {
-                return constants.GTIN_AVAILABILITY_STATUS.OWNED
-            } else {
-                return constants.GTIN_AVAILABILITY_STATUS.USED
-            }
+            return JSON.parse(result).gtinStatus
         } catch (e) {
-            if (e.message.includes("Status Code: 404")) {
-                return constants.GTIN_AVAILABILITY_STATUS.FREE
-            } else {
-                return constants.GTIN_AVAILABILITY_STATUS.UNKNOWN
-            }
+            return constants.GTIN_AVAILABILITY_STATUS.UNKNOWN
 
         }
 

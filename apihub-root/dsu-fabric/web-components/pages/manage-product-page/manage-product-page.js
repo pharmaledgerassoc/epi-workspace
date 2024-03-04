@@ -323,7 +323,7 @@ export class ManageProductPage extends CommonPresenterClass {
             let gtinAvailabilityStatus = await webSkel.appServices.checkProductCodeOwnerStatus(this.productData.productCode);
 
             if (gtinAvailabilityStatus === constants.GTIN_AVAILABILITY_STATUS.OWNED) {
-                webSkel.notificationHandler.reportUserRelevantWarning('The product code already exists and will be updated!!!');
+                webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
             }
             if (gtinAvailabilityStatus === constants.GTIN_AVAILABILITY_STATUS.USED) {
                 webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
