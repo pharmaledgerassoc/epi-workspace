@@ -86,8 +86,13 @@ export class UtilsService {
             "dataType": "epi"
         }
     }
-
     getDateDiffViewObj(diff, property, enableDaySelection, modelLabelsMap) {
+        const formatDate = (value) => {
+            value = webSkel.appServices.parseDateStringToDateInputValue(value);
+            return value.split("-").join("/");
+        };
+        diff.oldValue = formatDate(diff.oldValue);
+        diff.newValue = formatDate(diff.newValue);
         return {
             "changedProperty": modelLabelsMap[property],
             "oldValue": {

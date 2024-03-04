@@ -132,11 +132,13 @@ export class ManageBatchPage extends CommonPresenterClass {
             if (isChecked) {
                 /* MM-YYYY -> DD-MM-YYYY */
                 const [year, month] = oldDateInput.value.split('-');
-                const assignValue = `${year}-${month}-${webSkel.appServices.getLastDayOfMonth(year, month)}`;
+                let assignValue = `${year}-${month}-${webSkel.appServices.getLastDayOfMonth(year, month)}`;
+                assignValue = assignValue.split("-").join("/");
                 newDateInput = webSkel.appServices.createDateInput('date', assignValue);
             } else {
                 /* DD-MM-YYYY -> MM-YYYY */
-                const assignValue = oldDateInput.value.slice(0, 7);
+                let assignValue = oldDateInput.value.slice(0, 7);
+                assignValue = assignValue.split("-").join("/");
                 newDateInput = webSkel.appServices.createDateInput('month', assignValue);
             }
             dateContainer.replaceChild(newDateInput, oldDateInput);
@@ -170,7 +172,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             },
             EDIT_BATCH: () => {
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate);
-                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate)));
+                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
             }
 

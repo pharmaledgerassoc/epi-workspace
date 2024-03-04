@@ -140,8 +140,8 @@ export class BatchesService {
         dateInput.required = true;
         if (assignDateValue) {
             /* to reverse the format of the date displayed on UI */
-            dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue));
-            dateInput.value = assignDateValue;
+            dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
+            dateInput.value = assignDateValue.split("/").join("-");
             if (!dateInput.value) {
                 console.error(`${assignDateValue} is not a valid date. Input type: ${dateInput}`)
             }
@@ -170,15 +170,14 @@ export class BatchesService {
         const separator = '-';
         const dateParts = dateString.split(separator);
         return this.getDateInputTypeFromDateString(dateString) === 'date'
-            ? dateParts[2] + separator + dateParts[1] + separator + dateParts[0]
-            : dateParts[1] + separator + dateParts[0];
+            ? dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0]
+            : dateParts[1] + "/" + dateParts[0];
     }
 
     /* mm-yyyy to yyyy-mm  || yyyy-mm->mm-yyyy || */
-    reverseSeparatedDateString(dateString) {
-        const separator = '-'
+    reverseSeparatedDateString(dateString, separator) {
         let dateParts = dateString.split(separator);
-        return dateParts.reverse().join(separator);
+        return dateParts.reverse().join("/");
     }
 
     getCurrentDateTimeCET() {
