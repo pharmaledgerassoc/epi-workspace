@@ -96,11 +96,11 @@ export class AddEpiModal {
     }
 
     async addEPI(_target) {
-        const filesErrorMessage = "Attention: uploaded files format is not supported. To proceed successfully verify that you have an XML file and your XML file adheres to the prescribed format and structure. To obtain the correct XML specifications we recommend consulting our documentation. Thank you!  "
-        const conditions = {"filesValidation": {fn: this.filesValidation, errorMessage: filesErrorMessage}};
-        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
+        //  const filesErrorMessage = "Attention: uploaded files format is not supported. To proceed successfully verify that you have an XML file and your XML file adheres to the prescribed format and structure. To obtain the correct XML specifications we recommend consulting our documentation. Thank you!  "
+        //  const conditions = {"filesValidation": {fn: this.filesValidation, errorMessage: filesErrorMessage}};
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         let validEPIContent = await webSkel.appServices.validateEPIFilesContent(formData.data.epiFiles);
-        if (formData.isValid && validEPIContent) {
+        if (formData.isValid && validEPIContent.isValid) {
             let resultObject = {};
             Object.keys(formData.data).forEach(key => {
                 resultObject[key] = formData.data[key];
@@ -120,10 +120,13 @@ export class AddEpiModal {
                 }
             }
             delete resultObject.epiFiles;
-
+            if (validEPIContent.message) {
+                webSkel.notificationHandler.reportUserRelevantInfo(validEPIContent.message);
+            }
 
             webSkel.closeModal(_target, resultObject);
         } else {
+            webSkel.notificationHandler.reportUserRelevantError(validEPIContent.message);
             this.acceptButton.disabled = true;
         }
     }
