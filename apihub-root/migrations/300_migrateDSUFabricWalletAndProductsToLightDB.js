@@ -129,7 +129,9 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     try {
         epiEnclave = await getEpiEnclaveAsync();
     } catch (e) {
+        console.error("Failed to get epi enclave", e);
         slot = generateSlot();
+        console.log("GENERATING NEW SLOT", slot);
         await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
         server.close();
         return;
@@ -137,7 +139,9 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     try {
         slot = await getSlotFromEpiEnclave(epiEnclave);
     } catch (err) {
+        console.error("Failed to get slot from epi enclave", err);
         slot = generateSlot();
+        console.log("GENERATING NEW SLOT", slot)
     }
     await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
     const lightDBEnclave = await getLightDBEnclave();
