@@ -13,6 +13,8 @@ const generateEnclaveName = (domain, subdomain) => `${PREFIX}${domain}_${subdoma
 
 const copySlotToSecrets = async (slot, domain, subdomain) => {
     const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
+    console.log("PUTTING SECRET", slot);
+    console.log("PUTTING SECRET", JSON.stringify($$.Buffer.from(slot, "base64")));
     await secretsServiceInstance.putSecretAsync("default", generateEnclaveName(domain, subdomain), slot);
 }
 
