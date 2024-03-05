@@ -76,8 +76,10 @@ const getEpiEnclave = (callback) => {
         walletDBEnclave.on("initialised", async () => {
             let epiEnclave;
             try {
-                const enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
-                epiEnclave = enclaveAPI.initialiseWalletDBEnclave(enclaves[0].enclaveKeySSI);
+                const enclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table");
+                console.log("ENCLAVES", JSON.stringify(enclaves));
+                const epiEnclaves = await $$.promisify(walletDBEnclave.filter)(undefined, "group_databases_table", "enclaveName == epiEnclave");
+                epiEnclave = enclaveAPI.initialiseWalletDBEnclave(epiEnclaves[0].enclaveKeySSI);
             } catch (e) {
                 return callback(e);
             }
