@@ -100,6 +100,7 @@ const getEpiEnclaveAsync = async () => {
 }
 const getSlotFromEpiEnclave = async (epiEnclave) => {
     const privateKey = await $$.promisify(epiEnclave.getPrivateKeyForSlot)(undefined, 0);
+    console.log("GETTING SLOT FROM EPI ENCLAVE", privateKey);
     return privateKey.toString("base64");
 }
 
