@@ -48,10 +48,10 @@ const migrateDataToLightDB = async (epiEnclave, lightDBEnclave, sourceTableName,
     }
 };
 
-function base58DID(did){
+function base58DID(did) {
     const opendsu = require("opendsu");
     const crypto = opendsu.loadApi("crypto");
-    if(typeof did === "object"){
+    if (typeof did === "object") {
         did = did.getIdentifier();
     }
     return crypto.encodeBase58(did);
@@ -128,6 +128,17 @@ const generateSlot = () => {
     return crypto.generateRandom(32).toString('base64');
 }
 const migrateDataFromEpiEnclaveToLightDB = async () => {
+    const MIGRATION_SECRET_NAME = "migration";
+    const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
+    let secret;
+    try {
+        secret = secretsServiceInstance.readSecretFromDefaultContainerSync(MIGRATION_SECRET_NAME);
+    } catch (e) {
+        console.log("Failed to read secret", MIGRATION_SECRET_NAME, e);
+    }
+    if (secret && secret === process.env.APP_VERSION) {
+        console.log("Migration already done");
+    }
     const server = await startServer();
     let slot;
     let epiEnclave;
@@ -176,7 +187,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
             record.itemCode = record.gtin;
         }
 
-        if(record.logType === "LEAFLET_LOG"){
+        if (record.logType === "LEAFLET_LOG") {
             if (record.metadata && record.metadata.attachedTo === "BATCH") {
                 record.batchNumber = record.metadata.batch;
                 record.itemCode = record.metadata.gtin;
@@ -202,9 +213,12 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "path-keyssi-private-keys", "path-keyssi-private-keys", noTransform);
     console.log("Path keyssi private keys migrated")
 
+    await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.APP_VERSION);
+
     function timeout(delay) {
         return new Promise((resolve) => setTimeout(resolve, delay));
     }
+
     await timeout(10000);
     await lightDBEnclave.close();
     await $$.promisify(server.close)();
