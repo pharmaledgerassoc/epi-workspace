@@ -18,7 +18,7 @@ export class ManageBatchPage extends CommonPresenterClass {
         this.formActionButtonText = "";
         this.formActionButtonFunction = "";
         this.batch = {};
-        this.batchName = "";
+        this.batchNumber = "";
         this.batchVersion = 0;
         this.product = {};
         this.productCode = "";
@@ -72,7 +72,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.formActionButtonText = "Update Batch";
                 this.formActionButtonFunction = "updateBatch";
                 this.batch = batchModel;
-                this.batchName = batchModel.batch;
+                this.batchNumber = batchModel.batchNumber;
                 this.batchVersion = batch.version; //TODO use getBatchVersion API when it becomes available
                 this.product = product;
                 this.productCode = product.productCode;
