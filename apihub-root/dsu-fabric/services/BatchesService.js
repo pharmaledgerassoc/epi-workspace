@@ -46,7 +46,6 @@ export class BatchesService {
 
     batchFields() {
         return [
-            "batch",
             "batchNumber",
             "enableExpiryDay",
             "epiProtocol",
