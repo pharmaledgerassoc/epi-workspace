@@ -13,12 +13,12 @@ export class EPIsService {
         return l_unit;
     }
 
-    getEPIPayload(epi, productCode, batchCode) {
+    getEPIPayload(epi, productCode, batchNumber) {
         let result = webSkel.appServices.initMessage(epi.type);
         if (epi.action !== constants.EPI_ACTIONS.DELETE) {
             result.payload = {
                 productCode: productCode,
-                batchCode: batchCode,
+                batchNumber: batchNumber,
                 language: epi.language,
                 xmlFileContent: epi.xmlFileContent,
                 otherFilesContent: epi.otherFilesContent.map(payload => {
@@ -31,7 +31,7 @@ export class EPIsService {
         } else {
             result.payload = {
                 productCode: productCode,
-                batchCode: batchCode,
+                batchNumber: batchNumber,
                 language: epi.language
             };
         }

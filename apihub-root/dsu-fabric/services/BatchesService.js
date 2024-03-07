@@ -322,7 +322,7 @@ export class BatchesService {
             await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
 
             for (let epi of batchData.EPIs) {
-                let epiDetails = webSkel.appServices.getEPIPayload(epi, batchData.productCode);
+                let epiDetails = webSkel.appServices.getEPIPayload(epi, batchData.productCode, batchData.batchNumber);
                 if (epi.action === constants.EPI_ACTIONS.ADD) {
                     await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
                 }
@@ -373,7 +373,7 @@ export class BatchesService {
             return {valid: false, message: 'Expiration date is a mandatory field'};
         }
 
-        if(existenceCheck){
+        if (existenceCheck) {
             try {
                 const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
                 if (batch) {
