@@ -362,7 +362,7 @@ export class BatchesService {
             return {valid: false, message: 'Batch number is a mandatory field'};
         }
 
-        if (!/^[A-Za-z0-9]{1,20}$/.test(batchObj.batchNumber)) {
+        if (!/^[a-zA-Z0-9\/\-]{1,20}$/.test(batchObj.batchNumber)) {
             return {
                 valid: false,
                 message: 'Batch number can contain only alphanumeric characters and a maximum length of 20'
