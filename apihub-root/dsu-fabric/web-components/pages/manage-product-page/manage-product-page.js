@@ -323,18 +323,17 @@ export class ManageProductPage extends CommonPresenterClass {
                     this.productData[key] = formData.data[key];
                 }
             }
+            let productStatus = await webSkel.appServices.checkProductStatus(this.productData.productCode);
 
-            let gtinAvailabilityStatus = await webSkel.appServices.checkProductCodeOwnerStatus(this.productData.productCode);
-
-            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
+            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
                 webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
             }
-            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
+            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
                 webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
                 return;
             }
 
-            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
+            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
                 let accept = await webSkel.showModal("dialog-modal", {header: "Action required", message: "Product version needs recovery. Start the recovery process?", denyButtonText:"Cancel", acceptButtonText: "Proceed"});
                 if(accept){
                     try{
@@ -346,10 +345,8 @@ export class ManageProductPage extends CommonPresenterClass {
                     webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
                 }
             }
-            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Product..."},);
-            await webSkel.appServices.addProduct(this.productData);
-            await webSkel.closeModal(modal);
-            await navigateToPage("products-page");
+            await webSkel.appServices.saveProduct(this.productData);
+
         }
     }
 
@@ -363,13 +360,8 @@ export class ManageProductPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(this.productData))
             }, true);
             if (confirmation) {
-                let modal = await webSkel.showModal("progress-info-modal", {
-                    header: "Info",
-                    message: "Saving Product..."
-                });
-                await webSkel.appServices.updateProduct(this.productData, this.existingProduct);
-                await webSkel.closeModal(modal);
-                await navigateToPage("products-page");
+                await webSkel.appServices.saveProduct(this.productData, this.existingProduct.photo, true);
+
             }
             //else cancel button pressed
         }
