@@ -60,7 +60,13 @@ export class ManageProductPage extends CommonPresenterClass {
         this.strengthTab = `<strengths-tab data-presenter="strengths-tab" data-units="${strengthsInfo}"></strengths-tab>`;
 
         let marketsInfo = this.productData.marketUnits.map((data) => {
-            return {marketId: data.marketId, mahName: data.mahName, id: data.id, action: data.action};
+            return {
+                marketId: data.marketId,
+                mahName: data.mahName,
+                mahAddress: data.mahAddress,
+                id: data.id,
+                action: data.action
+            };
         });
         marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
@@ -179,7 +185,7 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async uploadPhoto() {
-        if(this.userRights === "readonly"){
+        if (this.userRights === "readonly") {
             return;
         }
         let photoInput = this.element.querySelector("#photo");

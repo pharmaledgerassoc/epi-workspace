@@ -28,7 +28,7 @@ export class MarketsManagementModal extends CommonPresenterClass{
     }
     afterRender(){
         if(this.existingData){
-            let keys = ["nationalCode", "mahName", "legalEntityName"];
+            let keys = ["nationalCode", "mahName", "legalEntityName", "mahAddress"];
             for(let key of keys){
                 let input = this.element.querySelector(`#${key}`);
                 input.value = this.existingData[key];
