@@ -128,7 +128,7 @@ const generateSlot = () => {
     return crypto.generateRandom(32).toString('base64');
 }
 const migrateDataFromEpiEnclaveToLightDB = async () => {
-    const MIGRATION_SECRET_NAME = "migration";
+    const MIGRATION_SECRET_NAME = "wallet_migration";
     const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
     let secret;
     try {
