@@ -323,30 +323,7 @@ export class ManageProductPage extends CommonPresenterClass {
                     this.productData[key] = formData.data[key];
                 }
             }
-            let productStatus = await webSkel.appServices.checkProductStatus(this.productData.productCode);
-
-            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
-                webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
-            }
-            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
-                webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
-                return;
-            }
-
-            if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
-                let accept = await webSkel.showModal("dialog-modal", {header: "Action required", message: "Product version needs recovery. Start the recovery process?", denyButtonText:"Cancel", acceptButtonText: "Proceed"});
-                if(accept){
-                    try{
-                        await $$.promisify(webSkel.client.recover)(this.productData.productCode);
-                    }catch(err){
-                        webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
-                        return;
-                    }
-                    webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
-                }
-            }
             await webSkel.appServices.saveProduct(this.productData);
-
         }
     }
 

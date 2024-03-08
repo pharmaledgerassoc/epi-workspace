@@ -286,75 +286,84 @@ export class BatchesService {
         this.drawQRCodeCanvas(model, element);
     }
 
-    async addBatch(batchData, EPIs) {
-        const batchValidationResult = await this.validateBatch(batchData, true);
-        if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
-            for (const EPI of EPIs) {
-                let epiDetails = webSkel.appServices.getEPIPayload(EPI, batchData.productCode, batchData.batchNumber);
-                await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, batchData.batchNumber, EPI.language, EPI.type, epiDetails);
-            }
-        }
-        return batchValidationResult;
-    }
-
     createBatchPayload(batchData) {
-        return {payload: batchData};
+        let result = webSkel.appServices.initMessage(constants.API_MESSAGE_TYPES.BATCH);
+        result.payload = {
+            productCode: batchData.productCode,
+            batchNumber: batchData.batchNumber,
+            expiryDate: batchData.expiryDate,
+            packagingSiteName: batchData.packagingSiteName,
+        };
+        return result;
     }
 
     async loadEditData(gtin, batchId) {
         const batch = await $$.promisify(webSkel.client.getBatchMetadata)(gtin, batchId);
-        if (!batch) {
-            console.error(`Unable to find batch with ID: ${batchId}.`);
-            return {batch: undefined, product: undefined};
-        }
         const product = await $$.promisify(webSkel.client.getProductMetadata)(gtin);
-        if (!product) {
-            console.error(`Unable to find product with product code: ${batch.productCode} for batch ID: ${batchId}.`);
-            return {batch, product: undefined};
-        }
         return {batch, product};
     };
 
-    async updateBatch(batchData, existingEPIs) {
+
+    async saveBatch(batchData, isUpdate) {
+
+        let modal = await webSkel.showModal("progress-info-modal", {
+            header: "Info",
+            message: "Saving Batch..."
+        });
+        let batchStatus;
+        try {
+            batchStatus = await $$.promisify(webSkel.client.objectStatus)(batchData.productCode, batchData.batchNumber);
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for batch code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            return;
+        }
+        if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantWarning("The batch code already exists and is being updated!!!");
+        }
+        if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantError('Batch code validation failed. Provided batch code is already used.');
+            return;
+        }
+
+        if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
+            let accept = await webSkel.showModal("dialog-modal", {
+                header: "Action required",
+                message: "Batch version needs recovery. Start the recovery process?",
+                denyButtonText: "Cancel",
+                acceptButtonText: "Proceed"
+            });
+            if (accept) {
+                try {
+                    await $$.promisify(webSkel.client.recover)(batchData.productCode, batchData.batchNumber);
+                } catch (err) {
+                    webSkel.notificationHandler.reportUserRelevantError('Batch recovery process failed.');
+                    return;
+                }
+                webSkel.notificationHandler.reportUserRelevantWarning("Batch recovery success.");
+            }
+        }
         const batchValidationResult = await this.validateBatch(batchData)
         if (batchValidationResult.valid) {
-            await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
-
-            for (let epi of batchData.EPIs) {
-                let epiDetails = webSkel.appServices.getEPIPayload(epi, batchData.productCode, batchData.batchNumber);
-                if (epi.action === constants.EPI_ACTIONS.ADD) {
-                    await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
+            try {
+                if (isUpdate) {
+                    await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+                } else {
+                    await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
                 }
-                if (epi.action === constants.EPI_ACTIONS.UPDATE) {
-                    await $$.promisify(webSkel.client.updateBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type, epiDetails);
-                }
-                if (epi.action === constants.EPI_ACTIONS.DELETE) {
-                    await $$.promisify(webSkel.client.deleteBatchEPI)(batchData.productCode, batchData.batchNumber, epi.language, epi.type);
-                }
+            } catch (err) {
+                webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+                await navigateToPage("home-page");
             }
-            /* for (const epi of updatedEPIs) {
-                 let epiPayload=webSkel.appServices.createEPIPayload(epi,batchData.productCode);
-                 if(epi.action === "update" && existingEPIs.some(obj => obj.language === epi.language)){
-                     await $$.promisify(webSkel.client.updateBatchEPI)(batchData.productCode, batchData.batchNumber,epiPayload);
-                 }else if (epi.action === "add") {
-                     await $$.promisify(webSkel.client.addBatchEPI)(batchData.productCode,batchData.batchNumber, epiPayload);
-                 } else if (epi.action === "delete"){
-                     let language;
-                     if (existingEPIs.some(obj => {
-                         language = obj.language;
-                         return obj.language === epi.language;
-                     })) {
-                         await $$.promisify(webSkel.client.deleteBatchEPI)(batchData.productCode, language);
-                     }
-                 }
-             }*/
-
+            await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
+            await webSkel.closeModal(modal);
+        } else {
+            webSkel.notificationHandler.reportUserRelevantError(batchValidationResult.message);
+            return;
         }
-        return batchValidationResult;
+        await navigateToPage("batches-page");
     }
 
-    async validateBatch(batchObj, existenceCheck) {
+    async validateBatch(batchObj) {
         if (!batchObj.productCode) {
             return {valid: false, message: 'Product code is a mandatory field'};
         }
@@ -371,21 +380,6 @@ export class BatchesService {
 
         if (!batchObj.expiryDate) {
             return {valid: false, message: 'Expiration date is a mandatory field'};
-        }
-
-        if (existenceCheck) {
-            try {
-                const batch = await $$.promisify(webSkel.client.getBatchMetadata)(batchObj.productCode, batchObj.batchNumber);
-                if (batch) {
-                    return {
-                        valid: false,
-                        message: `Batch ID is already in use for product with gtin ${batchObj.productCode}`
-                    };
-                }
-            } catch (e) {
-                //batch not found so can be used
-                return {valid: true, message: ''};
-            }
         }
 
         return {valid: true, message: ''};
@@ -423,34 +417,29 @@ export class BatchesService {
         return result;
     }
 
-    async getBatchEPIs(productCode, batchNumber, epiType) {
-        let epiLanguages = await $$.promisify(webSkel.client.listBatchLangs)(productCode, batchNumber, epiType)
-        let EPIs = [];
-        if (epiLanguages && epiLanguages.length > 0) {
-            for (let i = 0; i < epiLanguages.length; i++) {
-                let epiPayload = await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguages[i], epiType);
-                EPIs.push(webSkel.appServices.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
-            }
-        }
-        return EPIs
-    }
-
     async getBatchData(productCode, batchNumber) {
-        let {batch, product} = await this.loadEditData(productCode, batchNumber);
-        const formatBatchForDiffProcess = (batch) => {
-            Object.keys(batch).forEach(batchKey => {
-                if (batchKey.startsWith("__")) {
-                    delete batch[batchKey];
-                }
-            });
-            delete batch["pk"];
+        try {
+            let {batch, product} = await this.loadEditData(productCode, batchNumber);
+            if (!batch || !product) {
+                throw new Error(`Couldn't get data for batchNumber: ${batchNumber}  and productCode: ${productCode} `)
+            }
+            const formatBatchForDiffProcess = (batch) => {
+                Object.keys(batch).forEach(batchKey => {
+                    if (batchKey.startsWith("__")) {
+                        delete batch[batchKey];
+                    }
+                });
+                delete batch["pk"];
+            }
+            webSkel.appServices.cleanMessage(batch);
+            webSkel.appServices.cleanMessage(product);
+            let leafletEPIs = await webSkel.appServices.retrieveEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
+            let smpcEPIs = await webSkel.appServices.retrieveEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.SMPC);
+            let EPIs = [...leafletEPIs, ...smpcEPIs];
+            return {batch, product, EPIs}
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve batch data. <br> Please check your network connection and configuration and try again.`), err);
         }
-        webSkel.appServices.cleanMessage(batch);
-        webSkel.appServices.cleanMessage(product);
-        let leafletEPIs = await this.getBatchEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
-        let smpcEPIs = await this.getBatchEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.SMPC);
-        let EPIs = [...leafletEPIs, ...smpcEPIs];
-        return {batch, product, EPIs}
     }
 
     async getProductsForSelect() {
@@ -472,7 +461,13 @@ export class BatchesService {
     }
 
     async getBatches(number = undefined, query = undefined, sortDirection = "desc") {
-        return await $$.promisify(webSkel.client.listBatches)(undefined, number, query, sortDirection);
+        let result = [];
+        try {
+            result = await $$.promisify(webSkel.client.listBatches)(undefined, number, query, sortDirection);
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve batches. <br> Please check your network connection and configuration and try again.`), err);
+        }
+        return result
     }
 
 }

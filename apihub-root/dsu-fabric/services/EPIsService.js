@@ -180,7 +180,7 @@ export class EPIsService {
         let epiLanguages = [];
         try {
             if (batchNumber) {
-                let epiLanguages = await $$.promisify(webSkel.client.listBatchLangs)(productCode, batchNumber, epiType);
+                epiLanguages = await $$.promisify(webSkel.client.listBatchLangs)(productCode, batchNumber, epiType);
             } else {
                 epiLanguages = await $$.promisify(webSkel.client.listProductLangs)(productCode, epiType);
             }

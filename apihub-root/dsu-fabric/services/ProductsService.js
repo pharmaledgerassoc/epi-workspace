@@ -133,10 +133,44 @@ export class ProductsService {
     }
 
     async saveProduct(productData, updatedPhoto, isUpdate) {
+
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
             message: "Saving Product..."
         });
+        let productStatus;
+        try {
+            productStatus = await $$.promisify(webSkel.client.objectStatus)(productData.productCode);
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${productData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            return;
+        }
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
+        }
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
+            return;
+        }
+
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
+            let accept = await webSkel.showModal("dialog-modal", {
+                header: "Action required",
+                message: "Product version needs recovery. Start the recovery process?",
+                denyButtonText: "Cancel",
+                acceptButtonText: "Proceed"
+            });
+            if (accept) {
+                try {
+                    await $$.promisify(webSkel.client.recover)(productData.productCode);
+                } catch (err) {
+                    webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
+                    return;
+                }
+                webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
+            }
+        }
+
         try {
             let productDetails = this.getProductPayload(productData);
             if (isUpdate) {
@@ -239,18 +273,6 @@ export class ProductsService {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve products. <br> Please check your network connection and configuration and try again.`), err);
         }
         return result
-    }
-
-    async checkProductStatus(productCode) {
-
-        try {
-            return await $$.promisify(webSkel.client.objectStatus)(productCode);
-        } catch (e) {
-            // TODO: return error to user or try recover
-            return constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED
-
-        }
-
     }
 
 }
