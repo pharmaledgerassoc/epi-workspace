@@ -141,12 +141,12 @@ export class ProductsService {
     getMarketDiffViewObj(marketDiffObj) {
         let newValueCountry = "";
         if (marketDiffObj.newValue) {
-            newValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.newValue.country);
+            newValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.newValue.marketId);
             delete marketDiffObj.newValue.id
         }
         let oldValueCountry = "";
         if (marketDiffObj.oldValue) {
-            oldValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.oldValue.country);
+            oldValueCountry = gtinResolver.Countries.getCountry(marketDiffObj.oldValue.marketId);
             delete marketDiffObj.oldValue.id
         }
 
