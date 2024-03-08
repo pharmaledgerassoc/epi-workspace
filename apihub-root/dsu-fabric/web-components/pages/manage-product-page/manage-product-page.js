@@ -335,9 +335,16 @@ export class ManageProductPage extends CommonPresenterClass {
             }
 
             if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
-                webSkel.notificationHandler.reportUserRelevantWarning('Product needs recovery before proceeding');
-                return
-
+                let accept = await webSkel.showModal("dialog-modal", {header: "Action required", message: "Product version needs recovery. Start the recovery process?", denyButtonText:"Cancel", acceptButtonText: "Proceed"});
+                if(accept){
+                    try{
+                        await $$.promisify(webSkel.client.recover)(this.productData.productCode);
+                    }catch(err){
+                        webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
+                        return;
+                    }
+                    webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
+                }
             }
             let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Product..."},);
             await webSkel.appServices.addProduct(this.productData);

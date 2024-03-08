@@ -11,6 +11,11 @@
             "presenterClassName": "ProgressInfoModal"
         },
         {
+            "name": "dialog-modal",
+            "type": "modals",
+            "presenterClassName": "DialogModal"
+        },
+        {
             "name": "preview-epi-modal",
             "type": "modals",
             "presenterClassName": "PreviewEpiModal"

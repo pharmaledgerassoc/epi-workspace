@@ -128,7 +128,7 @@ const generateSlot = () => {
     return crypto.generateRandom(32).toString('base64');
 }
 const migrateDataFromEpiEnclaveToLightDB = async () => {
-    const MIGRATION_SECRET_NAME = "migration";
+    const MIGRATION_SECRET_NAME = "wallet_migration";
     const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
     let secret;
     try {
@@ -136,7 +136,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     } catch (e) {
         console.log("Failed to read secret", MIGRATION_SECRET_NAME, e);
     }
-    if (secret && secret === process.env.APP_VERSION) {
+    if (secret && secret === process.env.EPI_VERSION) {
         console.log("Migration already done");
     }
     const server = await startServer();
@@ -213,7 +213,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     await migrateDataToLightDB(epiEnclave, lightDBEnclave, "path-keyssi-private-keys", "path-keyssi-private-keys", noTransform);
     console.log("Path keyssi private keys migrated")
 
-    await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.APP_VERSION);
+    await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.EPI_VERSION);
 
     function timeout(delay) {
         return new Promise((resolve) => setTimeout(resolve, delay));
