@@ -52,7 +52,7 @@ const checkIfMigrationIsNeeded = async () => {
     } catch (e) {
         console.log("Failed to read secret", MIGRATION_SECRET_NAME, e);
     }
-    if (secret && secret === process.env.APP_VERSION) {
+    if (secret && secret === process.env.EPI_VERSION) {
         return false;
     }
 
@@ -70,7 +70,7 @@ const moveBricks = async () => {
         await moveBricksForDomain(domain);
     }
 
-    await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.APP_VERSION);
+    await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.EPI_VERSION);
 
     console.log("Brick storage migration finished");
 }
