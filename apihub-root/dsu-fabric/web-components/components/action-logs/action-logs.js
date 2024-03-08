@@ -39,7 +39,9 @@ export class ActionLogs {
                         <div>${item.batchNumber || "-"}</div>
                         <div>${item.reason}</div>
                         <div>${item.username}</div>
-                        <div>${new Date(item.__timestamp).toISOString()}</div>`;
+                        <div>${new Date(item.__timestamp).toISOString()}</div>
+                        <div class="view-details pointer" data-local-action="openAuditEntryModal ${item.pk}">View</div>`;
+
         }
         this.items = string;
     }
@@ -105,8 +107,7 @@ export class ActionLogs {
         this.loadLogs(["__timestamp > 0"]);
     }
 
-    async openAuditEntryModal(_target) {
-        let pk = _target.getAttribute("data-pk");
+    async openAuditEntryModal(_target, pk) {
         await webSkel.showModal("audit-entry-modal", {"pk": pk});
     }
 
