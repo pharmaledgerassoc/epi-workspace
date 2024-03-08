@@ -1,5 +1,8 @@
-export class MarketsManagementModal{
+import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+
+export class MarketsManagementModal extends CommonPresenterClass{
     constructor(element, invalidate) {
+        super();
         this.element = element;
         this.invalidate = invalidate;
         this.id = this.element.getAttribute("data-id");
@@ -25,12 +28,12 @@ export class MarketsManagementModal{
     }
     afterRender(){
         if(this.existingData){
-            let keys = ["nationalCode", "mah", "entityName"];
+            let keys = ["nationalCode", "mahName", "legalEntityName"];
             for(let key of keys){
                 let input = this.element.querySelector(`#${key}`);
                 input.value = this.existingData[key];
             }
-            let option = this.element.querySelector(`option[value = ${this.existingData.country}]`);
+            let option = this.element.querySelector(`option[value = ${this.existingData.marketId}]`);
             option.selected = true;
         }
     }

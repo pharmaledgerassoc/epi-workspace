@@ -12,26 +12,26 @@
 <div class="modal-body">
     <form class="markets-management-form">
         <div class="form-item">
-            <label class="form-label" for="country">Select Country</label>
-            <select class="form-input" id="country" name="country" required>
+            <label class="form-label" for="marketId">Select Country</label>
+            <select class="form-input" id="marketId" name="marketId" required userrights="$$userRights">
                 $$countries
             </select>
         </div>
         <div class="form-item">
             <label class="form-label" for="nationalCode">National Code</label>
-            <input class="form-input" type="text" id="nationalCode" name="nationalCode" placeholder="Enter national code" data-condition="hasCodeOrHTML">
+            <input class="form-input" type="text" id="nationalCode" name="nationalCode" placeholder="Enter national code" data-condition="hasCodeOrHTML" userrights="$$userRights">
         </div>
         <div class="form-item">
-            <label class="form-label" for="mah">MAH Name</label>
-            <input class="form-input" type="text" id="mah" name="mah" placeholder="Enter MAH Name" data-condition="hasCodeOrHTML">
+            <label class="form-label" for="mahName">MAH Name</label>
+            <input class="form-input" type="text" id="mahName" name="mahName" placeholder="Enter MAH Name" data-condition="hasCodeOrHTML" userrights="$$userRights">
         </div>
         <div class="form-item">
-            <label class="form-label" for="entityName">Legal Entity Name</label>
-            <input class="form-input" type="text" id="entityName" name="entityName" placeholder="Enter legal entity name" data-condition="hasCodeOrHTML">
+            <label class="form-label" for="legalEntityName">Legal Entity Name</label>
+            <input class="form-input" type="text" id="legalEntityName" name="legalEntityName" placeholder="Enter legal entity name" data-condition="hasCodeOrHTML" userrights="$$userRights">
         </div>
     </form>
 </div>
 <div class="modal-footer">
     <button class="default-button margin-right" data-local-action="closeModal">Close</button>
-    <button class="default-button" data-local-action="addMarketplace">$$buttonName</button>
+    <button class="default-button" data-local-action="addMarketplace" userrights="$$userRights">$$buttonName</button>
 </div>

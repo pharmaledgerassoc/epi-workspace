@@ -17,8 +17,8 @@ export class MarketsTab extends CommonPresenterClass {
                     continue;
                 }
                 stringHTML += `<div class="market-unit pointer" data-id="${market.id}" data-local-action="viewMarket">
-                                <div class="market-details">${market.country} - ${webSkel.sanitize(market.mah)}</div>
-                                    <div userrights="$$userRights" class="delete-button pointer" data-local-action="deleteMarket">
+                                <div class="market-details">${market.marketId} - ${webSkel.sanitize(market.mahName)}</div>
+                                    <div userrights="${this.userRights}" class="delete-button pointer" data-local-action="deleteMarket">
                                         <img class="market-img" src="./assets/icons/thrash.svg" alt="thrash">
                                     </div>
                               </div>`;

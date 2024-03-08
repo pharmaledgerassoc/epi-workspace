@@ -60,7 +60,7 @@ export class ManageProductPage extends CommonPresenterClass {
         this.strengthTab = `<strengths-tab data-presenter="strengths-tab" data-units="${strengthsInfo}"></strengths-tab>`;
 
         let marketsInfo = this.productData.marketUnits.map((data) => {
-            return {country: data.country, mah: data.mah, id: data.id, action: data.action};
+            return {marketId: data.marketId, mahName: data.mahName, id: data.id, action: data.action};
         });
         marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
@@ -179,6 +179,9 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async uploadPhoto() {
+        if(this.userRights === "readonly"){
+            return;
+        }
         let photoInput = this.element.querySelector("#photo");
         const controller = new AbortController();
         photoInput.addEventListener("input", this.showPhoto.bind(this, controller, photoInput), {signal: controller.signal});
@@ -232,7 +235,7 @@ export class ManageProductPage extends CommonPresenterClass {
         let existingMarketIndex = this.productData.marketUnits.findIndex(market => market.id === modalData.id);
         if (existingMarketIndex !== -1) {
             this.productData.marketUnits[existingMarketIndex] = modalData;
-            console.log(`updated market, country: ${modalData.country}`);
+            console.log(`updated market, country: ${modalData.marketId}`);
             return true;
         }
         return false;
@@ -273,7 +276,7 @@ export class ManageProductPage extends CommonPresenterClass {
 
     async showAddMarketModal() {
         let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete")
-            .map(data => data.country);
+            .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
         let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions}, true);
         if (modalData) {
@@ -395,8 +398,8 @@ export class ManageProductPage extends CommonPresenterClass {
         let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit));
         let excludedOptions = this.productData.marketUnits
-            .filter(data => data.country !== selectedUnit.country && data.action !== "delete")
-            .map(data => data.country);
+            .filter(data => data.marketId !== selectedUnit.marketId && data.action !== "delete")
+            .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
         let modalData = await webSkel.showModal(
             "markets-management-modal",
