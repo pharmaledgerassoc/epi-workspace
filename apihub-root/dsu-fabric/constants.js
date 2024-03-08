@@ -89,10 +89,10 @@ export default {
             productName: "Product Brand/Invented name"
         }
     },
-    GTIN_AVAILABILITY_STATUS: {
-        OWNED: "owned",
-        USED: "used",
-        FREE: "free",
-        UNKNOWN: "unknown"
+    OBJECT_AVAILABILITY_STATUS: {
+        FREE_OBJECT: "FREE_OBJECT",
+        EXTERNAL_OBJECT: "EXTERNAL_OBJECT",
+        MY_OBJECT: "MY_OBJECT",
+        RECOVERY_REQUIRED: "RECOVERY_REQUIRED"
     }
 }

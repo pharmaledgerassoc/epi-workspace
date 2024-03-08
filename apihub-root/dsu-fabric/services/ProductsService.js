@@ -220,17 +220,12 @@ export class ProductsService {
     }
 
     async checkProductCodeOwnerStatus(productCode) {
-        const openDSU = require("opendsu");
-        const scAPI = openDSU.loadAPI("sc");
-        const mainDSU = await $$.promisify(scAPI.getMainDSU)();
-        let env = await $$.promisify(mainDSU.readFile)("/environment.json");
-        env = JSON.parse(env.toString());
 
         try {
-            let result = await $$.promisify(webSkel.client.getGTINStatus)(productCode);
-            return JSON.parse(result).gtinStatus
+            return await $$.promisify(webSkel.client.objectStatus)(productCode);
         } catch (e) {
-            return constants.GTIN_AVAILABILITY_STATUS.UNKNOWN
+            // TODO: return error to user or try recover
+            return constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED
 
         }
 

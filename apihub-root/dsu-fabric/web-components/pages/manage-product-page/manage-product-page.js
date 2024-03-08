@@ -320,16 +320,22 @@ export class ManageProductPage extends CommonPresenterClass {
                     this.productData[key] = formData.data[key];
                 }
             }
+
             let gtinAvailabilityStatus = await webSkel.appServices.checkProductCodeOwnerStatus(this.productData.productCode);
 
-            if (gtinAvailabilityStatus === constants.GTIN_AVAILABILITY_STATUS.OWNED) {
+            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
                 webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
             }
-            if (gtinAvailabilityStatus === constants.GTIN_AVAILABILITY_STATUS.USED) {
+            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
                 webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
                 return;
             }
-            // TODO: if gtin status is unknown  try recover ??? check with business
+
+            if (gtinAvailabilityStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
+                webSkel.notificationHandler.reportUserRelevantWarning('Product needs recovery before proceeding');
+                return
+
+            }
             let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Product..."},);
             await webSkel.appServices.addProduct(this.productData);
             await webSkel.closeModal(modal);
