@@ -7,10 +7,9 @@ const API_HUB = require('apihub');
 const openDSU = require("opendsu");
 
 let config = API_HUB.getServerConfig();
-
-const PREFIX = 'DB_';
 const PATH_TO_SECRETS_FOLDER = path.join(config.storage, "external-volume", "secrets");
 
+const PREFIX = 'DB_';
 const generateEnclaveName = (domain, subdomain) => `${PREFIX}${domain}_${subdomain}`;
 
 const copySlotToSecrets = async (slot, domain, subdomain) => {
@@ -59,13 +58,13 @@ function base58DID(did) {
     return crypto.encodeBase58(did);
 }
 
-const MQ_MIGRATION_SECRET_NAME = "mqMigration";
 const getDemiurgeSharedEnclaveKeySSI = async () => {
+    const SECRET_NAME = "mqMigration";
     const w3cdid = require("opendsu").loadApi("w3cdid");
     const migrationDID = await $$.promisify(w3cdid.getKeyDIDFromSecret)("Migration_2023.2.0");
     const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
     const migrationDIDIdentifier = base58DID(migrationDID);
-    const secret = secretsServiceInstance.getSecretSync(MQ_MIGRATION_SECRET_NAME, migrationDIDIdentifier);
+    const secret = secretsServiceInstance.getSecretSync(SECRET_NAME, migrationDIDIdentifier);
     return JSON.parse(secret).enclave;
 }
 const getEpiEnclave = (callback) => {
@@ -129,10 +128,9 @@ const generateSlot = () => {
     const crypto = require('opendsu').loadAPI('crypto');
     return crypto.generateRandom(32).toString('base64');
 }
-
-const MIGRATION_SECRET_NAME = "wallet_migration";
-
-const checkIfMigrationIsNeeded = async (secretsServiceInstance) => {
+const migrateDataFromEpiEnclaveToLightDB = async () => {
+    const MIGRATION_SECRET_NAME = "wallet_migration";
+    const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
     let secret;
     try {
         secret = secretsServiceInstance.readSecretFromDefaultContainerSync(MIGRATION_SECRET_NAME);
@@ -140,17 +138,7 @@ const checkIfMigrationIsNeeded = async (secretsServiceInstance) => {
         console.log("Failed to read secret", MIGRATION_SECRET_NAME, e);
     }
     if (secret && secret === process.env.EPI_VERSION) {
-        return false;
-    }
-
-    return true;
-}
-const migrateDataFromEpiEnclaveToLightDB = async () => {
-    const secretsServiceInstance = await API_HUB.getSecretsServiceInstanceAsync(config.storage);
-    const migrationNeeded = await checkIfMigrationIsNeeded();
-    if (!migrationNeeded) {
-        console.log("Migration is not needed");
-        return; // Migration is not needed, exit the function
+        console.log("Migration already done");
     }
     const server = await startServer();
     let slot;
@@ -228,9 +216,9 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
 
     await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.EPI_VERSION);
     try {
-        fs.unlinkSync(path.join(PATH_TO_SECRETS_FOLDER, `${MQ_MIGRATION_SECRET_NAME}.secret`));
+        fs.unlinkSync(path.join(PATH_TO_SECRETS_FOLDER, MIGRATION_SECRET_NAME));
     } catch (e) {
-        console.log("Failed to delete secret", MQ_MIGRATION_SECRET_NAME, e);
+        console.log("Failed to delete secret", MIGRATION_SECRET_NAME, e);
     }
 
     function timeout(delay) {
