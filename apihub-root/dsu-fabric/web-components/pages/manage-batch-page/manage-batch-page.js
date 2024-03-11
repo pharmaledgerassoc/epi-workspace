@@ -299,9 +299,10 @@ export class ManageBatchPage extends CommonPresenterClass {
     async viewLeaflet(_target) {
         let epiObject = webSkel.appServices.getEpitUnit(_target, this.updatedBatch.EPIs);
         let selectedProduct = {
-            inventedName: this.batch.inventedName,
-            nameMedicinalProduct: this.batch.nameMedicinalProduct
+            inventedName: this.element.querySelector('#inventedName').value,
+            nameMedicinalProduct: this.element.querySelector('#nameMedicinalProduct').value
         }
+
         let epiPreviewModel = webSkel.appServices.getEpiPreviewModel(epiObject, selectedProduct);
         await webSkel.showModal("preview-epi-modal", {epidata: encodeURIComponent(JSON.stringify(epiPreviewModel))});
     }

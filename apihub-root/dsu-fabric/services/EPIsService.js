@@ -40,8 +40,8 @@ export class EPIsService {
             previewModalTitle,
             "xmlFileContent": epiObject.xmlFileContent,
             "otherFilesContent": epiObject.otherFilesContent,
-            "productName": productData.inventedName,
-            "productDescription": productData.nameMedicinalProduct,
+            "inventedName": productData.inventedName,
+            "nameMedicinalProduct": productData.nameMedicinalProduct,
             textDirection,
             epiLanguage: epiObject.language
         };

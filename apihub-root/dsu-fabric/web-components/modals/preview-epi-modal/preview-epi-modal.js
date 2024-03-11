@@ -4,8 +4,8 @@ export class PreviewEpiModal {
         this.invalidate = invalidate;
         this.epiData = JSON.parse(decodeURIComponent(this.element.getAttribute("data-epidata")));
         this.previewModalTitle = this.epiData.previewModalTitle;
-        this.productName = this.epiData.productName;
-        this.productDescription = this.epiData.productDescription;
+        this.productInventedName = this.epiData.inventedName;
+        this.productNameMedicinalProduct = this.epiData.nameMedicinalProduct;
         this.textDirection = this.epiData.textDirection;
         this.epiLanguage = this.epiData.epiLanguage;
         this.invalidate();
