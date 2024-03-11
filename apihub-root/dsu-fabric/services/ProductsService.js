@@ -83,7 +83,7 @@ export class ProductsService {
     async retrieveProductPayload(productCode) {
         let productPayload;
 
-        await this.checkProductStatus(productCode);
+        await this.checkProductStatus(productCode, true);
 
         try {
             productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
@@ -135,7 +135,7 @@ export class ProductsService {
         }
     }
 
-    async checkProductStatus(gtin){
+    async checkProductStatus(gtin, preventMyObjectWarning){
         let productStatus;
         try {
             productStatus = await $$.promisify(webSkel.client.objectStatus)(gtin);
@@ -144,7 +144,9 @@ export class ProductsService {
             return;
         }
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
-            webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
+            if(!preventMyObjectWarning){
+                webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
+            }
         }
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
             webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
@@ -177,7 +179,7 @@ export class ProductsService {
             message: "Saving Product..."
         });
 
-        await this.checkProductStatus(productData.productCode);
+        await this.checkProductStatus(productData.productCode, isUpdate);
 
         try {
             let productDetails = this.getProductPayload(productData);
