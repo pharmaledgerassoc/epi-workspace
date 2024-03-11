@@ -5,8 +5,8 @@ export class DialogModal {
 
         this.message = this.element.variables["data-message"];
         this.header = this.element.variables["data-header"];
-        this.denyButtonText = this.element.variables["data-deny-label"];
-        this.acceptButtonText = this.element.variables["data-accept-label"];
+        this.denyButtonText = this.element.variables["data-denybuttontext"];
+        this.acceptButtonText = this.element.variables["data-acceptbuttontext"];
 
         this.invalidate();
     }
