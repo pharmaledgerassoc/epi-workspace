@@ -139,6 +139,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     }
     if (secret && secret === process.env.EPI_VERSION) {
         console.log("Migration already done");
+        return;
     }
     const server = await startServer();
     let slot;
