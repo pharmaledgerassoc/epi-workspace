@@ -133,7 +133,7 @@ export class UtilsService {
             senderId: getUserDetails(),
             receiverId: "QPNVR",
             messageId: webSkel.appServices.generateID(16),
-            messageDateTime: new Date().getTime()
+            messageDateTime: new Date().toISOString()
         }
     }
 
