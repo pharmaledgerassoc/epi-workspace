@@ -1,4 +1,5 @@
 import constants from "../constants.js";
+import {navigateToPage} from "../utils/utils.js";
 
 export class ProductsService {
     constructor() {
@@ -34,18 +35,6 @@ export class ProductsService {
         } else {
             return value;
         }
-    }
-
-    async getProductEPIs(productCode, epiType) {
-        let epiLanguages = await $$.promisify(webSkel.client.listProductLangs)(productCode, epiType)
-        let EPIs = [];
-        if (epiLanguages && epiLanguages.length > 0) {
-            for (let i = 0; i < epiLanguages.length; i++) {
-                let epiPayload = await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguages[i], epiType);
-                EPIs.push(webSkel.appServices.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
-            }
-        }
-        return EPIs
     }
 
     cleanUnitsForPayload(units) {
@@ -91,51 +80,113 @@ export class ProductsService {
         return result;
     }
 
+    async retrieveProductPayload(productCode) {
+        let productPayload;
+        try {
+            productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
+            delete productPayload.pk;
+            delete productPayload.__version;
+            delete productPayload.__timestamp;
+            return productPayload
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve data for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            await navigateToPage("home-page");
+            return
+        }
+
+    }
+
+    async retrieveProductPhotoPayload(productCode) {
+        let productPhotoPayload;
+        try {
+            productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantWarning(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve image for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
+        }
+        return productPhotoPayload;
+    }
+
     async getProductData(productCode) {
-        let productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
-        delete productPayload.pk;
-        delete productPayload.__version;
-        delete productPayload.__timestamp;
-        let productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
-        let leafletEPIs = await this.getProductEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
-        let smpcEPIs = await this.getProductEPIs(productCode, constants.API_MESSAGE_TYPES.EPI.SMPC);
+        let productPayload = await this.retrieveProductPayload(productCode);
+        let productPhotoPayload = await this.retrieveProductPhotoPayload(productCode)
+
+        let leafletEPIs = await webSkel.appServices.retrieveEPIs(productCode, undefined, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
+        let smpcEPIs = await webSkel.appServices.retrieveEPIs(productCode, undefined, constants.API_MESSAGE_TYPES.EPI.SMPC);
         let EPIs = [...leafletEPIs, ...smpcEPIs];
         return {productPayload, productPhotoPayload, EPIs}
     }
 
-    async addProduct(productData) {
-        let productDetails = this.getProductPayload(productData);
-        await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
-        if (productData.photo) {
-            let photoDetails = this.getPhotoPayload(productData)
-            await $$.promisify(webSkel.client.addImage)(productData.productCode, photoDetails);
-        }
-        for (let epi of productData.epiUnits) {
-            let epiDetails = webSkel.appServices.getEPIPayload(epi, productData.productCode);
-            await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
+    async saveProductPhoto(productData, updatedPhoto, isUpdate) {
+        try {
+            if (isUpdate && updatedPhoto !== productData.photo) {
+                let photoDetails = this.getPhotoPayload(productData)
+                await $$.promisify(webSkel.client.updateImage)(productData.productCode, photoDetails);
+            }
+            if (!isUpdate && productData.photo) {
+                let photoDetails = this.getPhotoPayload(productData)
+                await $$.promisify(webSkel.client.addImage)(productData.productCode, photoDetails);
+            }
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't save Product Photo`), err);
+
         }
     }
 
-    async updateProduct(productData, existingProduct) {
-        let productDetails = this.getProductPayload(productData);
-        if (existingProduct.photo !== productData.photo) {
-            let photoDetails = this.getPhotoPayload(productData)
-            await $$.promisify(webSkel.client.updateImage)(productData.productCode, photoDetails);
-        }
-        for (let epi of productData.epiUnits) {
-            let epiDetails = webSkel.appServices.getEPIPayload(epi, productData.productCode);
-            if (epi.action === constants.EPI_ACTIONS.ADD) {
-                await $$.promisify(webSkel.client.addProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
-            }
-            if (epi.action === constants.EPI_ACTIONS.UPDATE) {
-                await $$.promisify(webSkel.client.updateProductEPI)(productData.productCode, epi.language, epi.type, epiDetails);
-            }
-            if (epi.action === constants.EPI_ACTIONS.DELETE) {
-                await $$.promisify(webSkel.client.deleteProductEPI)(productData.productCode, epi.language, epi.type);
-            }
-        }
-        await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
+    async saveProduct(productData, updatedPhoto, isUpdate) {
 
+        let modal = await webSkel.showModal("progress-info-modal", {
+            header: "Info",
+            message: "Saving Product..."
+        });
+        let productStatus;
+        try {
+            productStatus = await $$.promisify(webSkel.client.objectStatus)(productData.productCode);
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${productData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            return;
+        }
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
+        }
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
+            webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
+            return;
+        }
+
+        if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
+            let accept = await webSkel.showModal("dialog-modal", {
+                header: "Action required",
+                message: "Product version needs recovery. Start the recovery process?",
+                denyButtonText: "Cancel",
+                acceptButtonText: "Proceed"
+            });
+            if (accept) {
+                try {
+                    await $$.promisify(webSkel.client.recover)(productData.productCode);
+                } catch (err) {
+                    webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
+                    return;
+                }
+                webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
+            }
+        }
+
+        try {
+            let productDetails = this.getProductPayload(productData);
+            if (isUpdate) {
+                await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
+            } else {
+                await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
+            }
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            await navigateToPage("home-page");
+        }
+        await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
+        await this.saveProductPhoto(productData, updatedPhoto, isUpdate);
+
+        await webSkel.closeModal(modal);
+        await navigateToPage("products-page");
     }
 
     getMarketDiffViewObj(marketDiffObj) {
@@ -176,7 +227,6 @@ export class ProductsService {
         }
     }
 
-
     getProductDiffs(initialProduct, updatedProduct) {
         let result = [];
         try {
@@ -216,19 +266,13 @@ export class ProductsService {
     }
 
     async getProducts(number = undefined, query = undefined, sortDirection = "desc") {
-        return await $$.promisify(webSkel.client.listProducts)(undefined, number, query, sortDirection);
-    }
-
-    async checkProductCodeOwnerStatus(productCode) {
-
+        let result = [];
         try {
-            return await $$.promisify(webSkel.client.objectStatus)(productCode);
-        } catch (e) {
-            // TODO: return error to user or try recover
-            return constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED
-
+            result = await $$.promisify(webSkel.client.listProducts)(undefined, number, query, sortDirection);
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve products. <br> Please check your network connection and configuration and try again.`), err);
         }
-
+        return result
     }
 
 }

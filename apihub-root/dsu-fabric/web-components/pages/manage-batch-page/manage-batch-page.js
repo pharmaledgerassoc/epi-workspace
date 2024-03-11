@@ -260,14 +260,8 @@ export class ManageBatchPage extends CommonPresenterClass {
             if (webSkel.appServices.getDateInputTypeFromDateString(formData.data.expiryDate) === 'month') {
                 formData.data.expiryDate = webSkel.appServices.prefixMonthDate(formData.data.expiryDate);
             }
-            let modal = await webSkel.showModal("progress-info-modal", {header: "Info", message: "Saving Batch..."},);
-            let addBatchResult = await webSkel.appServices.addBatch(formData.data, this.updatedBatch.EPIs);
-            await webSkel.closeModal(modal);
-            if (!addBatchResult.valid) {
-                webSkel.notificationHandler.reportUserRelevantError(addBatchResult.message);
-                return;
-            }
-            await webSkel.changeToDynamicPage("batches-page", "batches-page");
+            formData.data.EPIs = this.updatedBatch.EPIs;
+            await webSkel.appServices.saveBatch(formData.data);
         }
 
     }
@@ -297,19 +291,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(selectedProduct))
             }, true);
             if (confirmation) {
-                let modal = await webSkel.showModal("progress-info-modal", {
-                    header: "Info",
-                    message: "Saving Batch..."
-                });
-
-                let updateBatchResult = await webSkel.appServices.updateBatch(this.updatedBatch, this.batch.EPIs);
-
-                await webSkel.closeModal(modal);
-                if (!updateBatchResult.valid) {
-                    webSkel.notificationHandler.reportUserRelevantError(updateBatchResult.message);
-                    return;
-                }
-                await webSkel.changeToDynamicPage("batches-page", "batches-page");
+                await webSkel.appServices.saveBatch(this.updatedBatch, true);
             }
         }
     }

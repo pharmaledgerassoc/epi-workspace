@@ -147,8 +147,36 @@ export class UtilsService {
         return cleanMessage;
     }
 
-    hasCodeOrHTML(string){
+    hasCodeOrHTML(string) {
         const regex = /<[^>]+>/;
         return regex.test(string);
     }
+
+
+    generateMissingToastList(missingImgFiles) {
+        let missingFilesErrText = ``;
+        missingImgFiles.forEach(item => {
+            missingFilesErrText = missingFilesErrText + `<li> ${item} not found</li>`
+        })
+        return missingFilesErrText;
+    }
+
+    generateDifferentCaseToastList(differentCaseImgFiles) {
+        let differentCaseErrText = ``;
+        differentCaseImgFiles.forEach(item => {
+            differentCaseErrText = differentCaseErrText + `<li>Image ${item.xmlName} does not exist, but a similar file ${item.fileName}  exists and will be used instead</li>`
+        })
+        return differentCaseErrText;
+    }
+
+    getToastListContent(message, htmlList) {
+        let toastContent = `<div class="toast-content"><div>${message}</div>`
+        if (htmlList) {
+            toastContent = toastContent + `<br> <div> <ul>${htmlList}</ul></div></div>`
+        } else {
+            toastContent = toastContent + `</div>`
+        }
+        return toastContent;
+    }
+
 }

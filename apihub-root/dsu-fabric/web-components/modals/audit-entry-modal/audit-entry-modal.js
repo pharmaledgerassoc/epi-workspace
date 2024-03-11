@@ -1,11 +1,13 @@
+import constants from "../../../constants.js";
+
 export class AuditEntryModal{
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
         this.pk = this.element.getAttribute("data-pk");
         this.invalidate(async ()=>{
-            let entries = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, undefined, [`pk == ${this.pk}`]);
-            this.entry = entries[0];
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, undefined, ["__timestamp > 0", `pk == ${this.pk}`], "desc");
+            this.entry = logs[0];
         });
     }
     JSONstringifyOrder(obj) {

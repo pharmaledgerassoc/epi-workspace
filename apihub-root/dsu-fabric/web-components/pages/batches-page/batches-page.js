@@ -34,9 +34,13 @@ export class BatchesPage extends CommonPresenterClass {
     }
 
     addSeparatorToDateString(dateString, separator) {
-        return dateString.slice(4, 6) === '00'
-            ? [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator)
-            : [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator)
+        if(dateString.slice(4, 6) === '00')
+        {
+            dateString = [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator);
+        } else {
+            dateString = [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator);
+        }
+        return webSkel.appServices.reverseSeparatedDateString(dateString, "/");
     }
 
     createBatchRowHTML(batch, lastRowItem = false) {
