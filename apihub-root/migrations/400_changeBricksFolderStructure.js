@@ -31,8 +31,9 @@ async function moveBricksForDomain(domain) {
             }
 
             try {
-                await fs.rmdir(subfolderPath);
+                await fs.rm(subfolderPath, {recursive: true, maxRetries: 5, force: true});
             } catch (error) {
+                // fake error dir not empty
                 console.error(`Error removing old subfolder ${subfolderPath}: ${error}`);
             }
         }
