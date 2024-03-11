@@ -82,6 +82,9 @@ export class ProductsService {
 
     async retrieveProductPayload(productCode) {
         let productPayload;
+
+        await this.checkProductStatus(productCode);
+
         try {
             productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
             delete productPayload.pk;
@@ -132,17 +135,12 @@ export class ProductsService {
         }
     }
 
-    async saveProduct(productData, updatedPhoto, isUpdate) {
-
-        let modal = await webSkel.showModal("progress-info-modal", {
-            header: "Info",
-            message: "Saving Product..."
-        });
+    async checkProductStatus(gtin){
         let productStatus;
         try {
-            productStatus = await $$.promisify(webSkel.client.objectStatus)(productData.productCode);
+            productStatus = await $$.promisify(webSkel.client.objectStatus)(gtin);
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${productData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${gtin}. <br> Please check your network connection and configuration and try again.`), err);
             return;
         }
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
@@ -159,10 +157,10 @@ export class ProductsService {
                 message: "Product version needs recovery. Start the recovery process?",
                 denyButtonText: "Cancel",
                 acceptButtonText: "Proceed"
-            });
+            }, true);
             if (accept) {
                 try {
-                    await $$.promisify(webSkel.client.recover)(productData.productCode);
+                    await $$.promisify(webSkel.client.recover)(gtin);
                 } catch (err) {
                     webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
                     return;
@@ -170,6 +168,16 @@ export class ProductsService {
                 webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
             }
         }
+    }
+
+    async saveProduct(productData, updatedPhoto, isUpdate) {
+
+        let modal = await webSkel.showModal("progress-info-modal", {
+            header: "Info",
+            message: "Saving Product..."
+        });
+
+        await this.checkProductStatus(productData.productCode);
 
         try {
             let productDetails = this.getProductPayload(productData);
