@@ -16,13 +16,11 @@
     font-size: 16px;
     font-weight: 400;
 }
-.titles-container{
-    display: flex;
-}
 .read-only-label{
-    margin-top: 14px;
-    margin-left: 10px;
-    font-size: 1rem;
+    font-weight: 700;
+    color: var(--light-green);
+    font-size: 1.802rem;
+    margin-bottom: 10px;
 }
 .page-body {
     font-size: 1rem;
