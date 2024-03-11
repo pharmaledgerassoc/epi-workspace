@@ -32,7 +32,7 @@
 
             <div class="form-field">
                 <div class="label-container">
-                    <label class="label" for="packagingSiteName">Packaging site name</label>
+                    <label class="label" for="packagingSiteName" userRights="$$userRights">Packaging site name</label>
                     <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="packagingSiteName"
@@ -69,7 +69,7 @@
             <div class="form-buttons">
                 <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
                 <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction"
-                        $$formActionButtonState>$$formActionButtonText
+                        $$formActionButtonState userRights="$$userRights">$$formActionButtonText
                 </button>
             </div>
         </div>
