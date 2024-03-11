@@ -148,9 +148,16 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
         epiEnclave = await getEpiEnclaveAsync();
     } catch (e) {
         console.error("Failed to get epi enclave", e);
-        slot = generateSlot();
-        console.log("GENERATING NEW SLOT", slot);
-        await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
+        try {
+            slot = secretsServiceInstance.readSecretFromDefaultContainerSync(generateEnclaveName(process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN));
+        } catch (e) {
+            console.log("Failed to read secret", generateEnclaveName(process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN), e);
+        }
+        if (!slot) {
+            slot = generateSlot();
+            console.log("GENERATING NEW SLOT", slot);
+            await copySlotToSecrets(slot, process.env.EPI_DOMAIN, process.env.EPI_SUBDOMAIN);
+        }
         server.close();
         return;
     }
