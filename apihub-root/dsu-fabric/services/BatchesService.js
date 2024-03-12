@@ -72,9 +72,14 @@ export class BatchesService {
         return code.replace(/"/g, "\\\"");
     }
 
-    getDateInputTypeFromDateString(dateValueString) {
+    getDateInputTypeFromDateString(dateValueString, enableExpiryDateCheck) {
         if (!dateValueString) {
-            return "empty";
+            if (enableExpiryDateCheck) {
+                return "date";
+            } else {
+                return "month"
+            }
+
         }
 
         const isDateSeparated = dateValueString.includes('-');
@@ -105,8 +110,11 @@ export class BatchesService {
     }
 
     parseDateStringToDateInputValue(dateValueString) {
-        let inputStringDate = "";
+        if (!dateValueString || dateValueString === "undefined") {
+            return "";
+        }
         const separator = '-'
+        let inputStringDate = "";
         if (this.getDateInputTypeFromDateString(dateValueString) === "date") {
             /* returns 'DD-MM-YYYY' */
             inputStringDate = dateValueString.slice(4, 6) +
@@ -305,7 +313,7 @@ export class BatchesService {
         return {batch, product};
     };
 
-    async checkBatchStatus(gtin, batchNumber, preventMyObjectWarning){
+    async checkBatchStatus(gtin, batchNumber, preventMyObjectWarning) {
         let batchStatus;
         try {
             batchStatus = await $$.promisify(webSkel.client.objectStatus)(gtin, batchNumber);
@@ -314,7 +322,7 @@ export class BatchesService {
             return;
         }
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
-            if(!preventMyObjectWarning){
+            if (!preventMyObjectWarning) {
                 webSkel.notificationHandler.reportUserRelevantWarning("The batch code already exists and is being updated!!!");
             }
         }
@@ -342,7 +350,7 @@ export class BatchesService {
                     webSkel.notificationHandler.reportUserRelevantError('Batch recovery process failed.');
                     return;
                 }
-                if(modal){
+                if (modal) {
                     await webSkel.closeModal(modal);
                 }
                 webSkel.notificationHandler.reportUserRelevantWarning("Batch recovery success.");
@@ -454,6 +462,7 @@ export class BatchesService {
             let leafletEPIs = await webSkel.appServices.retrieveEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
             let smpcEPIs = await webSkel.appServices.retrieveEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.SMPC);
             let EPIs = [...leafletEPIs, ...smpcEPIs];
+            this.getDateInputTypeFromDateString(batch.expiryDate) !== "month" ? batch.enableExpiryDay = "on" : "off";
             return {batch, product, EPIs}
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve batch data. <br> Please check your network connection and configuration and try again.`), err);
