@@ -1,4 +1,5 @@
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
 
 export class StrengthsTab extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -14,11 +15,12 @@ export class StrengthsTab extends CommonPresenterClass {
                 if (strength.action === "delete") {
                     continue;
                 }
-                stringHTML += `<div class="strength-unit" data-id="${strength.id}" data-local-action="viewStrength">
+                stringHTML += `<div class="strength-unit" data-id="${strength.id}">
                                 <div class="strength-details">${webSkel.sanitize(strength.substance)} - ${webSkel.sanitize(strength.strength)}</div>
-                                    <div userrights="${this.userRights}" class="delete-button pointer" data-local-action="deleteStrength">
+                                ${this.userRights === constants.USER_RIGHTS.WRITE ? `<div class="delete-button pointer" data-local-action="deleteStrength">
                                         <img class="strength-img" src="./assets/icons/thrash.svg" alt="thrash">
-                                    </div>
+                                    </div>` : ''
+                                }   
                               </div>`;
             }
         } else {

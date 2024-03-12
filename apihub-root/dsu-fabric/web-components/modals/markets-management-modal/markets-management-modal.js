@@ -1,4 +1,5 @@
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
 
 export class MarketsManagementModal extends CommonPresenterClass{
     constructor(element, invalidate) {
@@ -35,6 +36,10 @@ export class MarketsManagementModal extends CommonPresenterClass{
             }
             let option = this.element.querySelector(`option[value = ${this.existingData.marketId}]`);
             option.selected = true;
+        }
+        let confirmButton = this.element.querySelector("#confirmButton");
+        if(this.userRights === constants.USER_RIGHTS.READ){
+            confirmButton.disabled = true;
         }
     }
     closeModal(_target) {

@@ -1,4 +1,5 @@
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
 
 export class MarketsTab extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -18,9 +19,10 @@ export class MarketsTab extends CommonPresenterClass {
                 }
                 stringHTML += `<div class="market-unit pointer" data-id="${market.id}" data-local-action="viewMarket">
                                 <div class="market-details">${market.marketId} - ${webSkel.sanitize(market.mahName)}</div>
-                                    <div userrights="${this.userRights}" class="delete-button pointer" data-local-action="deleteMarket">
+                                ${this.userRights === constants.USER_RIGHTS.WRITE ? `<div class="delete-button pointer" data-local-action="deleteMarket">
                                         <img class="market-img" src="./assets/icons/thrash.svg" alt="thrash">
-                                    </div>
+                                    </div>` : ''
+                                }   
                               </div>`;
             }
         } else {
