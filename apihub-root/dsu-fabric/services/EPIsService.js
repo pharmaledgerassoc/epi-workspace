@@ -97,32 +97,36 @@ export class EPIsService {
             }
 
             let leafletHtmlImages = htmlXMLContent.querySelectorAll("img");
-            let htmlImageNames = Array.from(leafletHtmlImages).map(img => img.getAttribute("src"));
-            //removing from validation image src that are data URLs ("data:....")
-            htmlImageNames = htmlImageNames.filter((imageSrc) => {
-                let dataUrlRegex = new RegExp(/^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i);
-                if (!!imageSrc.match(dataUrlRegex) || imageSrc.startsWith("data:")) {
-                    returnMsg = "The XML file contains an unsupported embedded image."
-                    return {isValid: false, message: returnMsg};
-                }
-                return {isValid: true, message: returnMsg};
-            });
             let uploadedImageNames = Object.keys(epiImages);
             let differentCaseImgFiles = [];
-            let missingImgFiles = []
+            let missingImgFiles = [];
+            let htmlImageNames = Array.from(leafletHtmlImages).map(img => img.getAttribute("src"));
+
+            let dataUrlRegex = new RegExp(/^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*$/i);
+            let hasUnsupportedEmbeddedImage = false;
+
             htmlImageNames.forEach(imgName => {
                 if (!epiImages[imgName]) {
                     let differentCaseImg = uploadedImageNames.find((item) => item.toLowerCase() === imgName.toLowerCase())
                     if (differentCaseImg) {
                         differentCaseImgFiles.push({xmlName: imgName, fileName: differentCaseImg});
+                    } else if (imgName.startsWith("data:")) {
+                        if (!hasUnsupportedEmbeddedImage && !imgName.match(dataUrlRegex)) {
+                            hasUnsupportedEmbeddedImage = true;
+                        }
                     } else {
                         missingImgFiles.push(imgName);
                     }
                 }
+
             })
 
+            if (hasUnsupportedEmbeddedImage) {
+                missingImgFiles.push("The XML file contains an unsupported embedded image.");
+            }
+
             if (missingImgFiles.length > 0) {
-                returnMsg = webSkel.appServices.getToastListContent(toastMessage, webSkel.appServices.generateMissingToastList(missingImgFiles))
+                returnMsg = webSkel.appServices.getToastListContent(toastMessage, webSkel.appServices.generateMissingToastList(missingImgFiles));
                 return {isValid: false, message: returnMsg};
             }
             if (differentCaseImgFiles.length > 0) {
