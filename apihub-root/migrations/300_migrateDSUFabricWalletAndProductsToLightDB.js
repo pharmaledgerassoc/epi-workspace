@@ -183,6 +183,7 @@ const migrateDataFromEpiEnclaveToLightDB = async () => {
     const generateProductPk = record => record.gtin;
     const transformBatch = record => {
         delete record.pk;
+        record.batchNumber = record.batchNumber || record.batch;
         record.inventedName = record.productName;
         record.nameMedicinalProduct = record.productDescription;
         record.productCode = record.gtin;
