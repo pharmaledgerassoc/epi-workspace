@@ -161,11 +161,19 @@ export class ProductsService {
                 acceptButtonText: "Proceed"
             }, true);
             if (accept) {
+                let modal;
                 try {
+                     modal = await webSkel.showModal("progress-info-modal", {
+                        header: "Info",
+                        message: "Recover process in progress..."
+                    });
                     await $$.promisify(webSkel.client.recover)(gtin);
                 } catch (err) {
                     webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
                     return;
+                }
+                if(modal){
+                    await webSkel.closeModal(modal);
                 }
                 webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
             }

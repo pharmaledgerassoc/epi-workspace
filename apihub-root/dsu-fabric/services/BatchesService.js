@@ -298,27 +298,25 @@ export class BatchesService {
     }
 
     async loadEditData(gtin, batchId) {
+        await this.checkBatchStatus(gtin, batchId, true);
+
         const batch = await $$.promisify(webSkel.client.getBatchMetadata)(gtin, batchId);
         const product = await $$.promisify(webSkel.client.getProductMetadata)(gtin);
         return {batch, product};
     };
 
-
-    async saveBatch(batchData, isUpdate) {
-
-        let modal = await webSkel.showModal("progress-info-modal", {
-            header: "Info",
-            message: "Saving Batch..."
-        });
+    async checkBatchStatus(gtin, batchNumber, preventMyObjectWarning){
         let batchStatus;
         try {
-            batchStatus = await $$.promisify(webSkel.client.objectStatus)(batchData.productCode, batchData.batchNumber);
+            batchStatus = await $$.promisify(webSkel.client.objectStatus)(gtin, batchNumber);
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for batch code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for batch code: ${batchNumber}. <br> Please check your network connection and configuration and try again.`), e);
             return;
         }
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
-            webSkel.notificationHandler.reportUserRelevantWarning("The batch code already exists and is being updated!!!");
+            if(!preventMyObjectWarning){
+                webSkel.notificationHandler.reportUserRelevantWarning("The batch code already exists and is being updated!!!");
+            }
         }
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
             webSkel.notificationHandler.reportUserRelevantError('Batch code validation failed. Provided batch code is already used.');
@@ -331,17 +329,37 @@ export class BatchesService {
                 message: "Batch version needs recovery. Start the recovery process?",
                 denyButtonText: "Cancel",
                 acceptButtonText: "Proceed"
-            });
+            }, true);
             if (accept) {
+                let modal;
                 try {
-                    await $$.promisify(webSkel.client.recover)(batchData.productCode, batchData.batchNumber);
+                    modal = await webSkel.showModal("progress-info-modal", {
+                        header: "Info",
+                        message: "Recover process in progress..."
+                    });
+                    await $$.promisify(webSkel.client.recover)(gtin, batchNumber);
                 } catch (err) {
                     webSkel.notificationHandler.reportUserRelevantError('Batch recovery process failed.');
                     return;
                 }
+                if(modal){
+                    await webSkel.closeModal(modal);
+                }
                 webSkel.notificationHandler.reportUserRelevantWarning("Batch recovery success.");
             }
         }
+    }
+
+
+    async saveBatch(batchData, isUpdate) {
+
+        let modal = await webSkel.showModal("progress-info-modal", {
+            header: "Info",
+            message: "Saving Batch..."
+        });
+
+        await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
+
         const batchValidationResult = await this.validateBatch(batchData)
         if (batchValidationResult.valid) {
             try {
