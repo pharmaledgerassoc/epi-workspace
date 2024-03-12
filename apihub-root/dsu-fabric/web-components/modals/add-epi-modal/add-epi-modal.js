@@ -39,6 +39,11 @@ export class AddEpiModal {
     }
 
     displaySelectedFiles(input, event) {
+        let epiError = this.element.querySelector(".epi-error");
+        let inputContainer = this.element.querySelector(".input-file-container");
+        inputContainer.style.background= "none";
+        epiError.style.visibility = "hidden";
+
         const files = input.files;
         const container = this.element.querySelector('.files-table');
         if ('webkitdirectory' in input) {
@@ -78,7 +83,7 @@ export class AddEpiModal {
         inputFile.files = dataTransfer.files;
         let item = webSkel.getClosestParentElement(_target, ".file-item");
         item.remove();
-        this.acceptButton.disabled = inputFile.files === 0;
+        this.acceptButton.disabled = inputFile.files.length === 0;
     }
 
     filesValidation(element, formData) {
@@ -92,7 +97,7 @@ export class AddEpiModal {
                 return false;
             }
         }
-        return true
+        return true;
     }
 
     async addEPI(_target) {
@@ -126,7 +131,11 @@ export class AddEpiModal {
 
             webSkel.closeModal(_target, resultObject);
         } else {
-            webSkel.notificationHandler.reportUserRelevantError(validEPIContent.message);
+            let epiError = this.element.querySelector(".epi-error");
+            let inputContainer = this.element.querySelector(".input-file-container");
+            inputContainer.style.backgroundColor = "var(--input-invalid)";
+            epiError.innerHTML = validEPIContent.message;
+            epiError.style.visibility = "visible";
             this.acceptButton.disabled = true;
         }
     }

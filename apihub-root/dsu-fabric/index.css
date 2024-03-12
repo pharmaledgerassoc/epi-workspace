@@ -188,6 +188,7 @@ dialog {
     padding: 0;
     outline: none !important;
     font-family: var(--default-font);
+    position: relative;
 }
 
 button, label, input, h1, h2, h3, h4, div, textarea {
@@ -393,7 +394,7 @@ dialog[class="spinner"] {
     display: flex;
     flex-direction: column;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     width: 40%;
     right: 0;

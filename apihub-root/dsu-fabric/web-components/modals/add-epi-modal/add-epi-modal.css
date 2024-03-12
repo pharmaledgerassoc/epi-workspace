@@ -121,3 +121,11 @@ add-epi-modal{
 #leafletFiles{
     position: absolute;
 }
+.epi-error{
+    margin-top: 5px;
+    visibility: hidden;
+    color: red;
+}
+.error-background{
+    background-color: var(--input-invalid);
+}
