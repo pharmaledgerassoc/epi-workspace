@@ -383,6 +383,7 @@ export class BatchesService {
             await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
             await webSkel.closeModal(modal);
         } else {
+            await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(batchValidationResult.message);
             return;
         }
