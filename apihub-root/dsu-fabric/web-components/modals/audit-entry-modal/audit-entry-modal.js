@@ -12,10 +12,10 @@ export class AuditEntryModal{
     }
     JSONstringifyOrder(obj) {
         const objToDisplay = {};
-        let displayKeys = ["username", "reason", "status", "itemCode", "diffs", "anchorId", "hashLink", "metadata", "logInfo"];
+        let displayKeys = ["username", "reason", "status", "itemCode", "details", "anchorId", "hashLink", "metadata", "logInfo", "version"];
         displayKeys.forEach(key => {
             objToDisplay[key] = obj[key];
-        })
+        });
         return objToDisplay;
     }
     beforeRender(){
