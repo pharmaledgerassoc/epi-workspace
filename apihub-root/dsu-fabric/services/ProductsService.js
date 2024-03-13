@@ -206,7 +206,7 @@ export class ProductsService {
                 await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
             }
         } catch (err) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> ${err.message}`), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> ${err.reason}`), err);
             await navigateToPage("home-page");
         }
         await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
