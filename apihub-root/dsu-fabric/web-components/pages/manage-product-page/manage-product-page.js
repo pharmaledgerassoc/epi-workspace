@@ -53,7 +53,12 @@ export class ManageProductPage extends CommonPresenterClass {
         this.epiTab = `<epis-tab data-presenter="epis-tab" data-units="${tabInfo}"></epis-tab>`;
 
         let strengthsInfo = this.productData.strengthUnits.map((data) => {
-            return {substance: data.substance, strength: data.strength, id: data.id, action: data.action};
+            return {
+                substance: data.substance,
+                strength: data.strength,
+                id: data.id,
+                action: data.action
+            };
         });
 
         strengthsInfo = encodeURIComponent(JSON.stringify(strengthsInfo));

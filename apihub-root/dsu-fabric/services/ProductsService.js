@@ -40,6 +40,7 @@ export class ProductsService {
     cleanUnitsForPayload(units) {
         return units.filter(unit => unit.action !== "delete").map(unitItem => {
             delete unitItem.action;
+            delete unitItem.id
             return unitItem
         })
 
@@ -90,6 +91,14 @@ export class ProductsService {
             delete productPayload.pk;
             delete productPayload.__version;
             delete productPayload.__timestamp;
+            productPayload.strengths = productPayload.strengths.map(item => {
+                item.id = webSkel.appServices.generateID(16);
+                return item
+            });
+            productPayload.markets = productPayload.markets.map(item => {
+                item.id = webSkel.appServices.generateID(16);
+                return item
+            })
             return productPayload
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve data for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
@@ -135,7 +144,7 @@ export class ProductsService {
         }
     }
 
-    async checkProductStatus(gtin, preventMyObjectWarning){
+    async checkProductStatus(gtin, preventMyObjectWarning) {
         let productStatus;
         try {
             productStatus = await $$.promisify(webSkel.client.objectStatus)(gtin);
@@ -144,7 +153,7 @@ export class ProductsService {
             return;
         }
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
-            if(!preventMyObjectWarning){
+            if (!preventMyObjectWarning) {
                 webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
             }
         }
@@ -163,7 +172,7 @@ export class ProductsService {
             if (accept) {
                 let modal;
                 try {
-                     modal = await webSkel.showModal("progress-info-modal", {
+                    modal = await webSkel.showModal("progress-info-modal", {
                         header: "Info",
                         message: "Recover process in progress..."
                     });
@@ -172,7 +181,7 @@ export class ProductsService {
                     webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
                     return;
                 }
-                if(modal){
+                if (modal) {
                     await webSkel.closeModal(modal);
                 }
                 webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
@@ -197,7 +206,7 @@ export class ProductsService {
                 await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
             }
         } catch (err) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> ${err.message}`), err);
             await navigateToPage("home-page");
         }
         await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
