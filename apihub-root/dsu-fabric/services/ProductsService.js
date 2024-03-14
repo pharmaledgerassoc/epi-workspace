@@ -91,14 +91,20 @@ export class ProductsService {
             delete productPayload.pk;
             delete productPayload.__version;
             delete productPayload.__timestamp;
-            productPayload.strengths = productPayload.strengths.map(item => {
-                item.id = webSkel.appServices.generateID(16);
-                return item
-            });
-            productPayload.markets = productPayload.markets.map(item => {
-                item.id = webSkel.appServices.generateID(16);
-                return item
-            })
+
+            if(productPayload.strengths){
+                productPayload.strengths = productPayload.strengths.map(item => {
+                    item.id = webSkel.appServices.generateID(16);
+                    return item
+                });
+            }
+
+            if(productPayload.markets){
+                productPayload.markets = productPayload.markets.map(item => {
+                    item.id = webSkel.appServices.generateID(16);
+                    return item
+                })
+            }
             return productPayload
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve data for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
