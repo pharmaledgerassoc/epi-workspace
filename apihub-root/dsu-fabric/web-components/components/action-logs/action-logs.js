@@ -4,7 +4,7 @@ export class ActionLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.setPaginationDefaultValues = ()=>{
+        this.setPaginationDefaultValues = () => {
             this.logsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
@@ -63,14 +63,15 @@ export class ActionLogs {
             nextBtn.classList.add("disabled");
         }
         this.searchInput = this.element.querySelector("search-input");
-        if(this.searchInput){
-            if(this.boundSearchLogs){
+        if (this.searchInput) {
+            if (this.boundSearchLogs) {
                 this.searchInput.removeEventListener("search", this.boundSearchLogs);
             }
             this.boundSearchLogs = this.searchLogs.bind(this);
             this.searchInput.addEventListener("search", this.boundSearchLogs);
         }
     }
+
     async searchLogs(event) {
         event.preventDefault();
         let formData = await webSkel.extractFormInformation(this.searchInput);
@@ -108,7 +109,8 @@ export class ActionLogs {
     }
 
     async openAuditEntryModal(_target, pk) {
-        await webSkel.showModal("audit-entry-modal", {"pk": pk});
+        let logEntry = this.logs.find(item => item.pk === pk)
+        await webSkel.showModal("audit-entry-modal", {"entry": encodeURIComponent(JSON.stringify(logEntry))});
     }
 
     async downloadCSV() {
@@ -127,7 +129,7 @@ export class ActionLogs {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp <= ${this.firstElementTimestamp}`];
-            if(this.gtinFilter){
+            if (this.gtinFilter) {
                 query.push(this.gtinFilter);
             }
             this.loadLogs(query);
@@ -140,7 +142,7 @@ export class ActionLogs {
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp < ${this.firstElementTimestamp}`];
-            if(this.gtinFilter){
+            if (this.gtinFilter) {
                 query.push(this.gtinFilter);
             }
             this.loadLogs(query);

@@ -1,4 +1,4 @@
-dialog{
+dialog {
     background: none;
     max-height: 95vh;
     height: 95%;
@@ -7,14 +7,16 @@ dialog{
     max-width: 75vw;
     width: 75%;
 }
-audit-entry-modal{
+
+audit-entry-modal {
     margin-left: 240px;
     height: 100%;
     display: flex;
     flex-direction: column;
 
 }
-.modal-header{
+
+.modal-header {
     background-color: var(--primary-text-color);
     display: flex;
     justify-content: space-between;
@@ -22,27 +24,33 @@ audit-entry-modal{
     padding: 16px;
     border-bottom: 1px solid var(--very-light-grey);
 }
-.modal-title{
+
+.modal-title {
     font-size: 1.25rem;
     font-weight: 500;
 }
-.right-section{
+
+.right-section {
     display: flex;
     align-items: center;
 }
-.close-icon{
+
+.close-icon {
     font-size: 24px;
 }
-.expand-icon{
+
+.expand-icon {
     margin-right: 20px;
 }
-.modal-body{
+
+.modal-body {
     background-color: var(--primary-text-color);
     padding: 16px;
     color: var(--medium-grey);
     height: calc(100% - 131px);
 }
-.data-container{
+
+.data-container {
     margin: 0;
     white-space: pre-wrap;
     background-color: white;
@@ -53,19 +61,27 @@ audit-entry-modal{
     font-size: 16px;
 }
 
-.modal-footer{
+.modal-footer {
     border-top: 1px solid var(--very-light-grey);
     background-color: var(--primary-text-color);
     padding: 16px;
     display: flex;
     justify-content: end;
+    gap: 16px;
 }
-.download-icon{
+
+.download-icon {
     height: 15px;
 }
-.default-button{
+
+.default-button {
     font-size: 110%;
 }
-.margin-right{
-    margin-right: 16px;
+
+.downloadEPIBtn {
+    display: none;
+}
+
+.downloadEPIBtn.show {
+    display: block;
 }

@@ -174,7 +174,7 @@ export class EPIsService {
             }
         }
         if (failedEpiOperations.length > 0) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't execute following actions:`, failedEpiOperations), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't execute following actions:`, failedEpiOperations));
         }
     }
 
@@ -193,11 +193,7 @@ export class EPIsService {
                 for (let i = 0; i < epiLanguages.length; i++) {
                     let epiPayload;
                     try {
-                        if (batchNumber) {
-                            epiPayload = await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguages[i], epiType);
-                        } else {
-                            epiPayload = await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguages[i], epiType);
-                        }
+                        epiPayload = await this.retrieveEPI(productCode, batchNumber, epiLanguages[i], epiType);
                         EPIs.push(webSkel.appServices.getEpiModelObject(epiPayload, epiLanguages[i], epiType));
                     } catch (err) {
                         failedEPIs.push(`${epiType} for ${epiLanguages[i]}`);
@@ -205,13 +201,22 @@ export class EPIsService {
                 }
                 if (failedEPIs.length > 0) {
                     let toastContent = webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve following EPI's for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`, webSkel.appServices.generateMissingToastList(failedEPIs));
-                    webSkel.notificationHandler.reportUserRelevantWarning(toastContent, err);
+                    webSkel.notificationHandler.reportUserRelevantWarning(toastContent);
                 }
             }
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve all EPI data for batch ${batchNumber} and product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
         }
         return EPIs
+    }
+
+    async retrieveEPI(productCode, batchNumber, epiLanguage, epiType) {
+        if (batchNumber) {
+            return await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguage, epiType);
+        } else {
+            return await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguage, epiType);
+        }
+
     }
 
 }

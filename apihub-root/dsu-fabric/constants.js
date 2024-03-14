@@ -69,6 +69,9 @@ export default {
         USER_ACCESS: "userAccess",
         USER_ACCTION: "userAction"
     },
+    AUDIT_OPERATIONS: {
+        EPI: ['Added Leaflet', 'Updated Leaflet']
+    },
     MODEL_LABELS_MAP: {
         PRODUCT: {
             productCode: "Product Code",
@@ -94,5 +97,6 @@ export default {
         EXTERNAL_OBJECT: "EXTERNAL_OBJECT",
         MY_OBJECT: "MY_OBJECT",
         RECOVERY_REQUIRED: "RECOVERY_REQUIRED"
-    }
+    },
+
 }
