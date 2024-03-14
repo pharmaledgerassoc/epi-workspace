@@ -7,6 +7,7 @@ const apihubRootFolder = apihubModule.getServerConfig().storage;
 const getBricksStoragePathForDomain = (domain) => {
     return path.join(apihubRootFolder, "external-volume", "domains", domain, "brick-storage");
 }
+
 async function moveBricksForDomain(domain) {
     const BRICK_STORAGE_PATH = getBricksStoragePathForDomain(domain);
     console.log("Starting to move bricks from", BRICK_STORAGE_PATH, "for domain", domain)
@@ -22,7 +23,7 @@ async function moveBricksForDomain(domain) {
                 const newSubfolderPath = path.join(BRICK_STORAGE_PATH, newSubfolderName);
 
                 // Create new subfolder if it doesn't exist
-                await fs.mkdir(newSubfolderPath, { recursive: true });
+                await fs.mkdir(newSubfolderPath, {recursive: true});
 
                 // Move brick file to new subfolder
                 const oldBrickPath = path.join(subfolderPath, brickName);
@@ -60,13 +61,21 @@ const checkIfMigrationIsNeeded = async () => {
     return true;
 }
 const moveBricks = async () => {
-    if(!await checkIfMigrationIsNeeded()){
+    if (!await checkIfMigrationIsNeeded()) {
         console.log("Migration is not needed");
         return;
     }
     const secretsServiceInstance = await apihubModule.getSecretsServiceInstanceAsync(apihubRootFolder);
-
-    const domains = await fs.readdir(path.join(apihubRootFolder, "external-volume", "domains"));
+    const domainsPath = path.join(apihubRootFolder, "external-volume", "domains");
+    try {
+        await fs.access(domainsPath);
+    } catch (e) {
+        console.log("No domains found in", domainsPath);
+        await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.EPI_VERSION);
+        console.log("Brick storage migration finished");
+        return;
+    }
+    const domains = await fs.readdir(domainsPath);
     for (const domain of domains) {
         await moveBricksForDomain(domain);
     }
