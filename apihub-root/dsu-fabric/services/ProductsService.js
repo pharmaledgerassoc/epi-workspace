@@ -114,10 +114,10 @@ export class ProductsService {
 
     }
 
-    async retrieveProductPhotoPayload(productCode) {
+    async retrieveProductPhotoPayload(productCode, version) {
         let productPhotoPayload;
         try {
-            productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode);
+            productPhotoPayload = await $$.promisify(webSkel.client.getImage)(productCode, version);
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantWarning(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve image for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
         }

@@ -70,7 +70,8 @@ export default {
         USER_ACCTION: "userAction"
     },
     AUDIT_OPERATIONS: {
-        EPI: ['Added Leaflet', 'Updated Leaflet']
+        EPI: ['Added Leaflet', 'Updated Leaflet'],
+        PHOTO: ['Added ProductPhoto', 'Updated ProductPhoto']
     },
     MODEL_LABELS_MAP: {
         PRODUCT: {

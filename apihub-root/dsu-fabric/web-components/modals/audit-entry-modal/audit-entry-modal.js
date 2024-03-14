@@ -9,6 +9,9 @@ export class AuditEntryModal {
         if (constants.AUDIT_OPERATIONS.EPI.includes(this.entry.reason)) {
             this.downloadEPICLass = "show";
         }
+        if (constants.AUDIT_OPERATIONS.PHOTO.includes(this.entry.reason)) {
+            this.downloadImgCLass = "show";
+        }
         this.invalidate();
         /*this.invalidate(async () => {
             let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, undefined, ["__timestamp > 0", `pk == ${this.pk}`], "desc");
@@ -32,7 +35,6 @@ export class AuditEntryModal {
     closeModal(_target) {
         webSkel.closeModal(_target);
     }
-
 
     switchModalView() {
         let modal = webSkel.getClosestParentElement(this.element, "dialog");
@@ -77,6 +79,16 @@ export class AuditEntryModal {
             let toastContent = webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve following EPI's for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`, webSkel.appServices.generateMissingToastList(err.message));
             webSkel.notificationHandler.reportUserRelevantWarning(toastContent, err);
         }
+    }
 
+    async downloadImage() {
+        let imgPayload;
+        imgPayload = await webSkel.appServices.retrieveProductPhotoPayload(this.entry.itemCode, this.entry.version);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imgPayload;
+        downloadLink.download = "ProductImage.jpeg";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
     }
 }

@@ -85,3 +85,11 @@ audit-entry-modal {
 .downloadEPIBtn.show {
     display: block;
 }
+
+.downloadImgBtn {
+    display: none;
+}
+
+.downloadImgBtn.show {
+    display: block;
+}
