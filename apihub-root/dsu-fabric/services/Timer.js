@@ -18,4 +18,4 @@ window.sessionHandler = setInterval(async () => {
         window.disableRefreshSafetyAlert = true;
         window.location = "/logout"
     }
-}, 1000);
+}, 10000);
