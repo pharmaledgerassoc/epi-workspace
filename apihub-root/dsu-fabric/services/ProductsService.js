@@ -92,14 +92,14 @@ export class ProductsService {
             delete productPayload.__version;
             delete productPayload.__timestamp;
 
-            if(productPayload.strengths){
+            if (productPayload.strengths) {
                 productPayload.strengths = productPayload.strengths.map(item => {
                     item.id = webSkel.appServices.generateID(16);
                     return item
                 });
             }
 
-            if(productPayload.markets){
+            if (productPayload.markets) {
                 productPayload.markets = productPayload.markets.map(item => {
                     item.id = webSkel.appServices.generateID(16);
                     return item
@@ -145,7 +145,7 @@ export class ProductsService {
                 await $$.promisify(webSkel.client.addImage)(productData.productCode, photoDetails);
             }
         } catch (err) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't save Product Photo`), err);
+            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't save Product Photo <br> ${err.reason}`), err);
 
         }
     }

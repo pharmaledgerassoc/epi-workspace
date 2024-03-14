@@ -86,7 +86,7 @@ export class AuditEntryModal {
         imgPayload = await webSkel.appServices.retrieveProductPhotoPayload(this.entry.itemCode, this.entry.version);
         const downloadLink = document.createElement('a');
         downloadLink.href = imgPayload;
-        downloadLink.download = "ProductImage.jpeg";
+        downloadLink.download = "ProductImage.png";
         document.body.appendChild(downloadLink);
         downloadLink.click();
         downloadLink.remove();
