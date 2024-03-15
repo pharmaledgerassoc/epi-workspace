@@ -171,7 +171,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 });
             },
             EDIT_BATCH: () => {
-                const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate,this.enableExpiryDateCheck);
+                const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
             }
@@ -283,8 +283,8 @@ export class ManageBatchPage extends CommonPresenterClass {
             this.updatedBatch.enableExpiryDay = formData.data.enableExpiryDay;
             let diffs = webSkel.appServices.getBatchDiffs(this.batch, this.updatedBatch);
             let selectedProduct = {
-                inventedName: this.batch.inventedName,
-                nameMedicinalProduct: this.batch.nameMedicinalProduct
+                inventedName: this.productInventedName,
+                nameMedicinalProduct: this.productMedicinalName
             }
             let confirmation = await webSkel.showModal("data-diffs-modal", {
                 diffs: encodeURIComponent(JSON.stringify(diffs)),
