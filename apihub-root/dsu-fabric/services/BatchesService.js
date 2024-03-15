@@ -359,7 +359,7 @@ export class BatchesService {
     }
 
 
-    async saveBatch(batchData, isUpdate) {
+    async saveBatch(batchData, isUpdate, skipMetadataUpdate=false) {
 
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
@@ -368,17 +368,19 @@ export class BatchesService {
 
         await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
 
-        const batchValidationResult = await this.validateBatch(batchData)
+        const batchValidationResult = await this.validateBatch(batchData);
         if (batchValidationResult.valid) {
-            try {
-                if (isUpdate) {
-                    await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
-                } else {
-                    await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+            if(!skipMetadataUpdate){
+                try {
+                    if (isUpdate) {
+                        await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+                    } else {
+                        await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+                    }
+                } catch (err) {
+                    webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
+                    await navigateToPage("home-page");
                 }
-            } catch (err) {
-                webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
-                await navigateToPage("home-page");
             }
             await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
             await webSkel.closeModal(modal);
