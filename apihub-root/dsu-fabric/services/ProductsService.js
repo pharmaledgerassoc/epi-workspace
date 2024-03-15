@@ -195,7 +195,7 @@ export class ProductsService {
         }
     }
 
-    async saveProduct(productData, updatedPhoto, isUpdate) {
+    async saveProduct(productData, updatedPhoto, isUpdate, skipMetadataUpdate=false) {
 
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
@@ -204,13 +204,14 @@ export class ProductsService {
 
         await this.checkProductStatus(productData.productCode, isUpdate);
 
-        try {
-            let productDetails = this.getProductPayload(productData);
-            if (isUpdate) {
-                await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
-            } else {
-                await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
-            }
+        if(!skipMetadataUpdate){
+            try {
+                let productDetails = this.getProductPayload(productData);
+                if (isUpdate) {
+                    await $$.promisify(webSkel.client.updateProduct)(productData.productCode, productDetails);
+                } else {
+                    await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
+                }
             await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
             await this.saveProductPhoto(productData, updatedPhoto, isUpdate);
         } catch (err) {

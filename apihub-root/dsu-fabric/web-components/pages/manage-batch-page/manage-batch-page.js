@@ -58,7 +58,8 @@ export class ManageBatchPage extends CommonPresenterClass {
             },
 
             EDIT_BATCH: async () => {
-                let {batch, product, EPIs} = await webSkel.appServices.getBatchData(this.gtin, this.batchId)
+                let {batch, product, EPIs} = await webSkel.appServices.getBatchData(this.gtin, this.batchId);
+                this.existingBatch = batch;
                 let batchModel = webSkel.appServices.createNewBatch(batch, EPIs);
                 let enableExpiryDayCheck = "";
                 if (batchModel.enableExpiryDay === "on") {
@@ -291,7 +292,23 @@ export class ManageBatchPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(selectedProduct))
             }, true);
             if (confirmation) {
-                await webSkel.appServices.saveBatch(this.updatedBatch, true);
+
+                let shouldSkipMetadataUpdate = true;
+                //they are readonly props
+                let ignorableMetadatas = ["batch", "batchNumber", "version"];
+                if(this.existingBatch){
+                    for(let metadata of Object.keys(this.existingBatch)){
+                        if(Array.isArray(this.existingBatch[metadata])){
+                            continue;
+                        }
+                        if(ignorableMetadatas.indexOf(metadata) === -1 && this.batch[metadata]!== this.existingBatch[metadata]){
+                            shouldSkipMetadataUpdate = false;
+                            break;
+                        }
+                    }
+                }
+
+                await webSkel.appServices.saveBatch(this.updatedBatch, true, shouldSkipMetadataUpdate);
             }
         }
     }

@@ -359,7 +359,7 @@ export class BatchesService {
     }
 
 
-    async saveBatch(batchData, isUpdate) {
+    async saveBatch(batchData, isUpdate, skipMetadataUpdate=false) {
 
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
@@ -368,14 +368,15 @@ export class BatchesService {
 
         await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
 
-        const batchValidationResult = await this.validateBatch(batchData)
+        const batchValidationResult = await this.validateBatch(batchData);
         if (batchValidationResult.valid) {
-            try {
-                if (isUpdate) {
-                    await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
-                } else {
-                    await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
-                }
+            if(!skipMetadataUpdate){
+                try {
+                    if (isUpdate) {
+                        await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+                    } else {
+                        await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
+                    }
                 await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
 
             } catch (err) {
