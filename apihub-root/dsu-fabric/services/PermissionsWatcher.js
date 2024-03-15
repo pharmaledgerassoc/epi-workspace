@@ -41,6 +41,10 @@ class PermissionsWatcher {
             let unAuthorizedPages = ["generate-did-page", "landing-page"];
             if (hasAccess) {
                 webSkel.userRights = await this.getUserRights();
+                if (!webSkel.userRights) {
+                    // user hasAccess but userRights are not updated try to refresh to update
+                    return $$.forceTabRefresh();
+                }
                 if (unAuthorizedPages.indexOf(getCurrentPageTag()) !== -1) {
                     if (!document.querySelector("left-sidebar")) {
                         document.querySelector("#page-content").insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar"></left-sidebar>`);
@@ -144,6 +148,11 @@ class PermissionsWatcher {
             }
         } catch (err) {
             let knownStatusCodes = [404];
+            if (window.lastGroupDID) {
+                this.notificationHandler.reportUserRelevantInfo("Your credentials have changed!");
+                this.notificationHandler.reportUserRelevantInfo("Application will refresh soon...");
+                window.lastGroupDID = "";
+            }
             if (knownStatusCodes.indexOf(err.code) === -1) {
                 throw err;
             }
@@ -185,14 +194,6 @@ class PermissionsWatcher {
                 }
             }
         }
-
-
-        if (!userRights) {
-            //todo: add new constant in opendsu.containts for root-cause security
-            this.notificationHandler.reportUserRelevantError("Unable to get user rights!");
-            return $$.forceTabRefresh();
-        }
-
         return userRights;
     }
 }
