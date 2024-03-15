@@ -85,7 +85,6 @@ export class LandingPage {
                 body: JSON.stringify(putData)
             });
         }catch (e) {
-            debugger
             console.log(e);
         }
         return putData.secret;
