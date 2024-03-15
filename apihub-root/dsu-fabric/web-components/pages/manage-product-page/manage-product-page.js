@@ -1,6 +1,5 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
-import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -155,7 +154,6 @@ export class ManageProductPage extends CommonPresenterClass {
         productCodeContainer.classList.add("disabled-form-field")
         productCode.disabled = true;
     }
-
 
     detectInputChange(event) {
         let inputName = event.target.name;
@@ -348,8 +346,19 @@ export class ManageProductPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(this.productData))
             }, true);
             if (confirmation) {
-                await webSkel.appServices.saveProduct(this.productData, this.existingProduct.photo, true);
-
+                let shouldSkipMetadataUpdate = true;
+                if(this.existingProduct){
+                    for(let metadata of Object.keys(this.existingProduct)){
+                        if(Array.isArray(this.existingProduct[metadata])){
+                            continue;
+                        }
+                        if(this.productData[metadata]!== this.existingProduct[metadata]){
+                            shouldSkipMetadataUpdate = false;
+                            break;
+                        }
+                    }
+                }
+                await webSkel.appServices.saveProduct(this.productData, this.existingProduct.photo, true, shouldSkipMetadataUpdate);
             }
             //else cancel button pressed
         }
