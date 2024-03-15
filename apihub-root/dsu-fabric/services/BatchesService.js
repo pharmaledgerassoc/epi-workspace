@@ -376,11 +376,13 @@ export class BatchesService {
                 } else {
                     await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
                 }
+                await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
+
             } catch (err) {
-                webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> Please check your network connection and configuration and try again.`), err);
-                await navigateToPage("home-page");
+                await webSkel.closeModal(modal);
+                webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
+                return;
             }
-            await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
             await webSkel.closeModal(modal);
         } else {
             await webSkel.closeModal(modal);

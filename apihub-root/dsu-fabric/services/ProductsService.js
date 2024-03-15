@@ -211,14 +211,16 @@ export class ProductsService {
             } else {
                 await $$.promisify(webSkel.client.addProduct)(productData.productCode, productDetails);
             }
+            await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
+            await this.saveProductPhoto(productData, updatedPhoto, isUpdate);
         } catch (err) {
+            await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for product code: ${productData.productCode}. <br> ${err.reason}`), err);
-            await navigateToPage("home-page");
+            return;
         }
-        await webSkel.appServices.executeEPIActions(productData.epiUnits, productData.productCode);
-        await this.saveProductPhoto(productData, updatedPhoto, isUpdate);
 
         await webSkel.closeModal(modal);
+
         await navigateToPage("products-page");
     }
 

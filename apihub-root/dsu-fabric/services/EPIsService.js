@@ -170,11 +170,14 @@ export class EPIsService {
                     }
                 }
             } catch (e) {
-                failedEpiOperations.push(`${EPI.action} ${EPI.language} ${EPI.type}`)
+                failedEpiOperations.push(`${EPI.action} ${EPI.language} ${EPI.type} - failed<br>`);
             }
         }
         if (failedEpiOperations.length > 0) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't execute following actions:`, failedEpiOperations));
+            let err = new Error("");
+            err.reason = failedEpiOperations;
+            throw err;
+            // webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't execute following actions:`, failedEpiOperations));
         }
     }
 
