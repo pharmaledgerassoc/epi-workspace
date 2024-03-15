@@ -359,7 +359,7 @@ export class BatchesService {
     }
 
 
-    async saveBatch(batchData, isUpdate, skipMetadataUpdate=false) {
+    async saveBatch(batchData, isUpdate, skipMetadataUpdate = false) {
 
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
@@ -370,21 +370,22 @@ export class BatchesService {
 
         const batchValidationResult = await this.validateBatch(batchData);
         if (batchValidationResult.valid) {
-            if(!skipMetadataUpdate){
+            if (!skipMetadataUpdate) {
                 try {
                     if (isUpdate) {
                         await $$.promisify(webSkel.client.updateBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
                     } else {
                         await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
                     }
-                await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
+                    await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
 
-            } catch (err) {
+                } catch (err) {
+                    await webSkel.closeModal(modal);
+                    webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
+                    return;
+                }
                 await webSkel.closeModal(modal);
-                webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
-                return;
             }
-            await webSkel.closeModal(modal);
         } else {
             await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(batchValidationResult.message);
