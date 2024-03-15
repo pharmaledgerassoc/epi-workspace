@@ -347,12 +347,13 @@ export class ManageProductPage extends CommonPresenterClass {
             }, true);
             if (confirmation) {
                 let shouldSkipMetadataUpdate = true;
+                let ignorableMetadatas = ["photo"];
                 if(this.existingProduct){
                     for(let metadata of Object.keys(this.existingProduct)){
                         if(Array.isArray(this.existingProduct[metadata])){
                             continue;
                         }
-                        if(this.productData[metadata]!== this.existingProduct[metadata]){
+                        if(ignorableMetadatas.indexOf(metadata) === -1 && this.productData[metadata]!== this.existingProduct[metadata]){
                             shouldSkipMetadataUpdate = false;
                             break;
                         }
