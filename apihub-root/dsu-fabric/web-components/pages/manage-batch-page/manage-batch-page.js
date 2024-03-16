@@ -293,19 +293,9 @@ export class ManageBatchPage extends CommonPresenterClass {
             }, true);
             if (confirmation) {
 
-                let shouldSkipMetadataUpdate = true;
-                //they are readonly props
-                let ignorableMetadatas = ["batch", "batchNumber", "version"];
-                if(this.existingBatch){
-                    for(let metadata of Object.keys(this.existingBatch)){
-                        if(Array.isArray(this.existingBatch[metadata])){
-                            continue;
-                        }
-                        if(ignorableMetadatas.indexOf(metadata) === -1 && this.batch[metadata]!== this.existingBatch[metadata]){
-                            shouldSkipMetadataUpdate = false;
-                            break;
-                        }
-                    }
+                let shouldSkipMetadataUpdate = false;
+                if(!diffs.needsMetadataUpdate){
+                    shouldSkipMetadataUpdate = true;
                 }
 
                 await webSkel.appServices.saveBatch(this.updatedBatch, true, shouldSkipMetadataUpdate);

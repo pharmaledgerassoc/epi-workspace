@@ -1,5 +1,6 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -346,18 +347,9 @@ export class ManageProductPage extends CommonPresenterClass {
                 productData: encodeURIComponent(JSON.stringify(this.productData))
             }, true);
             if (confirmation) {
-                let shouldSkipMetadataUpdate = true;
-                let ignorableMetadatas = ["photo"];
-                if(this.existingProduct){
-                    for(let metadata of Object.keys(this.existingProduct)){
-                        if(Array.isArray(this.existingProduct[metadata])){
-                            continue;
-                        }
-                        if(ignorableMetadatas.indexOf(metadata) === -1 && this.productData[metadata]!== this.existingProduct[metadata]){
-                            shouldSkipMetadataUpdate = false;
-                            break;
-                        }
-                    }
+                let shouldSkipMetadataUpdate = false;
+                if(!diffs.needsMetadataUpdate){
+                    shouldSkipMetadataUpdate = true;
                 }
                 await webSkel.appServices.saveProduct(this.productData, this.existingProduct.photo, true, shouldSkipMetadataUpdate);
             }

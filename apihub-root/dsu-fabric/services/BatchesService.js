@@ -432,6 +432,10 @@ export class BatchesService {
             let diffs = webSkel.appServices.getDiffsForAudit(initialBatchData, updatedBatchData);
             let epiDiffs = webSkel.appServices.getDiffsForAudit(EPIs, updatedEPIs);
 
+            if(Object.keys(diffs).length>0){
+                result.needsMetadataUpdate = true;
+            }
+
             Object.keys(diffs).forEach(key => {
                 if (key === "expiryDate") {
                     let daySelectionObj = {

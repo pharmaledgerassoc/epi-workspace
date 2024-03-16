@@ -283,6 +283,9 @@ export class ProductsService {
             let epiDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
             let marketDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
             let strengthDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.strengthUnits, updatedProduct.strengthUnits);
+            if(Object.keys(diffs).length>0 || Object.keys(marketDiffs).length>0 || Object.keys(strengthDiffs).length>0){
+                result.needsMetadataUpdate = true;
+            }
             Object.keys(diffs).forEach(key => {
                 if (key === "photo") {
                     result.push(webSkel.appServices.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
