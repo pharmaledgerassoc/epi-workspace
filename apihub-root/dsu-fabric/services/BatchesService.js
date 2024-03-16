@@ -377,13 +377,11 @@ export class BatchesService {
                     } else {
                         await $$.promisify(webSkel.client.addBatch)(batchData.productCode, batchData.batchNumber, this.createBatchPayload(batchData));
                     }
-
                 } catch (err) {
                     await webSkel.closeModal(modal);
                     webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
                     return;
                 }
-                await webSkel.closeModal(modal);
             }
 
             try{
@@ -393,12 +391,17 @@ export class BatchesService {
                 webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
                 return;
             }
-            await webSkel.closeModal(modal);
         } else {
             await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(batchValidationResult.message);
             return;
         }
+        try{
+            await webSkel.closeModal(modal);
+        }catch(err){
+            //for now i believe that this error can be ignored...
+        }
+
         await navigateToPage("batches-page");
     }
 
