@@ -41,11 +41,12 @@ export class AddEpiModal {
     displaySelectedFiles(input, event) {
         let epiError = this.element.querySelector(".epi-error");
         let inputContainer = this.element.querySelector(".input-file-container");
-        inputContainer.style.background= "none";
+        inputContainer.style.background = "none";
         epiError.style.visibility = "hidden";
 
         const files = input.files;
         const container = this.element.querySelector('.files-table');
+        container.innerHTML = "";
         if ('webkitdirectory' in input) {
             let stringHMTL = "";
             for (let i = 0; i < files.length; i++) {
