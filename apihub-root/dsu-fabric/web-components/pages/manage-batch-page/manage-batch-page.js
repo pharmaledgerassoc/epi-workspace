@@ -88,7 +88,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.formActionButtonState = "disabled";
                 this.leafletsInfo = this.getEncodedEPIS(EPIs);
                 this.updatedBatch = createObservableObject(webSkel.appServices.createNewBatch(batch, EPIs), this.onChange.bind(this));
-
+                this.gs1Date = this.updatedBatch.expiryDate;
             }
         }
         await initPage[pageMode]();
@@ -111,6 +111,8 @@ export class ManageBatchPage extends CommonPresenterClass {
         let inputName = event.target.name;
         if (inputName === "expiryDate") {
             this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
+            //to do format with 00 if no day in date
+            this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
         } else {
             if (inputName === "enableExpiryDay") {
                 event.target.value = event.target.checked ? "on" : "off";
@@ -120,6 +122,7 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     attachEventListeners() {
+        let newDateInput;
         this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
             const dateContainer = this.element.querySelector('#custom-date-icon');
             const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
@@ -129,7 +132,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             const isChecked = enableDayCheckbox.checked;
             svg1.style.display = isChecked ? 'none' : 'block';
             svg2.style.display = isChecked ? 'block' : 'none';
-            let newDateInput;
+
             if (isChecked) {
                 /* MM-YYYY -> DD-MM-YYYY */
                 const [year, month] = oldDateInput.value.split('-');
@@ -143,6 +146,10 @@ export class ManageBatchPage extends CommonPresenterClass {
                 newDateInput = webSkel.appServices.createDateInput('month', assignValue);
             }
             dateContainer.replaceChild(newDateInput, oldDateInput);
+            let newGS1value = webSkel.appServices.formatBatchExpiryDate(newDateInput.value);
+            newGS1value = newGS1value.length === 4 ? newGS1value + "00" : newGS1value;
+            this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${newGS1value})`
+
         });
         this.element.removeEventListener("input", this.boundDetectInputChange);
         this.boundDetectInputChange = this.detectInputChange.bind(this);
@@ -294,7 +301,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             if (confirmation) {
 
                 let shouldSkipMetadataUpdate = false;
-                if(!diffs.needsMetadataUpdate){
+                if (!diffs.needsMetadataUpdate) {
                     shouldSkipMetadataUpdate = true;
                 }
 

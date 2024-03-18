@@ -113,25 +113,29 @@ export class BatchesService {
         if (!dateValueString || dateValueString === "undefined") {
             return "";
         }
-        const separator = '-'
+        let formatType = this.getDateInputTypeFromDateString(dateValueString);
+        return this.transformExpiryDate(dateValueString, formatType);
+    }
+
+    transformExpiryDate(expiryDate, formatType, separator = "-") {
         let inputStringDate = "";
-        if (this.getDateInputTypeFromDateString(dateValueString) === "date") {
+        if (formatType === "date") {
             /* returns 'DD-MM-YYYY' */
-            inputStringDate = dateValueString.slice(4, 6) +
+            inputStringDate = expiryDate.slice(4, 6) +
                 separator +
-                dateValueString.slice(2, 4) +
+                expiryDate.slice(2, 4) +
                 separator +
                 this.getFirstTwoDigitsOfYear() +
-                dateValueString.slice(0, 2)
+                expiryDate.slice(0, 2)
         } else {
             /* returns 'MM-YYYY' */
-            if (dateValueString.slice(-2).includes("00")) {
-                dateValueString = dateValueString.slice(0, 4);
+            if (expiryDate.slice(-2).includes("00")) {
+                expiryDate = expiryDate.slice(0, 4);
             }
-            inputStringDate = dateValueString.slice(2, 4) +
+            inputStringDate = expiryDate.slice(2, 4) +
                 separator +
                 this.getFirstTwoDigitsOfYear() +
-                dateValueString.slice(0, 2)
+                expiryDate.slice(0, 2)
         }
         return inputStringDate;
     }
@@ -204,6 +208,7 @@ export class BatchesService {
     }
 
     formatBatchExpiryDate(dateString) {
+        //to do format with 00 if no day in date
         return dateString.split('-').map((part, index) => index === 0 ? part.slice(2) : part).join('');
     }
 
@@ -384,9 +389,9 @@ export class BatchesService {
                 }
             }
 
-            try{
+            try {
                 await webSkel.appServices.executeEPIActions(batchData.EPIs, batchData.productCode, batchData.batchNumber);
-            }catch(err){
+            } catch (err) {
                 await webSkel.closeModal(modal);
                 webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't update data for batch ${batchData.batchNumber} and product code: ${batchData.productCode}. <br> ${err.reason}`), err);
                 return;
@@ -396,9 +401,9 @@ export class BatchesService {
             webSkel.notificationHandler.reportUserRelevantError(batchValidationResult.message);
             return;
         }
-        try{
+        try {
             await webSkel.closeModal(modal);
-        }catch(err){
+        } catch (err) {
             //for now i believe that this error can be ignored...
         }
 
@@ -435,7 +440,7 @@ export class BatchesService {
             let diffs = webSkel.appServices.getDiffsForAudit(initialBatchData, updatedBatchData);
             let epiDiffs = webSkel.appServices.getDiffsForAudit(EPIs, updatedEPIs);
 
-            if(Object.keys(diffs).length>0){
+            if (Object.keys(diffs).length > 0) {
                 result.needsMetadataUpdate = true;
             }
 

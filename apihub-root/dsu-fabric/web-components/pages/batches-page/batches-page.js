@@ -6,7 +6,7 @@ export class BatchesPage extends CommonPresenterClass {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "Edit";
         this.editBatchLabel = `${this.editModeLabel} Batch`;
-        this.setPaginationDefaultValues = ()=>{
+        this.setPaginationDefaultValues = () => {
             this.batchesNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
@@ -33,14 +33,28 @@ export class BatchesPage extends CommonPresenterClass {
         this.loadBatches();
     }
 
-    addSeparatorToDateString(dateString, separator) {
-        if(dateString.slice(4, 6) === '00')
-        {
-            dateString = [dateString.slice(0, 2), dateString.slice(2, 4)].join(separator);
+    getFormattedDate(dateString, separator) {
+        let fullDate = true;
+        if (dateString.slice(4, 6) === '00') {
+            fullDate = false;
+            dateString = [parseInt("20" + dateString.slice(0, 2)), parseInt(dateString.slice(2, 4)), 0]
         } else {
-            dateString = [dateString.slice(0, 2), dateString.slice(2, 4), dateString.slice(4, 6)].join(separator);
+            dateString = [parseInt("20" + dateString.slice(0, 2)), parseInt(dateString.slice(2, 4)) - 1, parseInt(dateString.slice(4, 6))];
         }
-        return webSkel.appServices.reverseSeparatedDateString(dateString, "/");
+        let objectDate = new Date(dateString[0], dateString[1], dateString[2]);
+        let day = objectDate.getDate();
+        let month = objectDate.getMonth() + 1;
+        let year = objectDate.getFullYear();
+        if (day < 10) {
+            day = '0' + day;
+        }
+
+        if (month < 10) {
+            month = `0${month}`;
+        }
+
+        return fullDate ? `${day}${separator}${month}${separator}${year}` : `${month}${separator}${year}`;
+
     }
 
     createBatchRowHTML(batch, lastRowItem = false) {
@@ -49,12 +63,13 @@ export class BatchesPage extends CommonPresenterClass {
         }
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
+
         return `
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.inventedName)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.nameMedicinalProduct)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.productCode)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.batchNumber)}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${this.addSeparatorToDateString(batch.expiryDate, '/')}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}><label class="date-col-label">${this.getFormattedDate(batch.expiryDate, "/")}</label><br><label class="gs1-col-label">(${batch.expiryDate})</label></div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="openDataMatrixModal ${batch.productCode} ${webSkel.sanitize(batch.batchNumber)}">View</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${batch.version}</div>
         <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}"
@@ -97,8 +112,8 @@ export class BatchesPage extends CommonPresenterClass {
             nextBtn.classList.add("disabled");
         }
         this.searchInput = this.element.querySelector("search-input");
-        if(this.searchInput){
-            if(this.boundSearchBatches){
+        if (this.searchInput) {
+            if (this.boundSearchBatches) {
                 this.searchInput.removeEventListener("search", this.boundSearchBatches);
             }
             this.boundSearchBatches = this.searchBatches.bind(this);
@@ -112,7 +127,7 @@ export class BatchesPage extends CommonPresenterClass {
             this.inputValue = formData.data.productCode;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let batches = await webSkel.appServices.getBatches(this.batchesNumber, ["__timestamp > 0",`productCode == ${this.inputValue}`]);
+            let batches = await webSkel.appServices.getBatches(this.batchesNumber, ["__timestamp > 0", `productCode == ${this.inputValue}`]);
             if (batches.length > 0) {
                 this.batches = batches;
                 this.productCodeFilter = `productCode == ${this.inputValue}`;
@@ -157,7 +172,7 @@ export class BatchesPage extends CommonPresenterClass {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp <= ${this.firstElementTimestamp}`];
-            if(this.productCodeFilter){
+            if (this.productCodeFilter) {
                 query.push(this.productCodeFilter);
             }
             this.loadBatches(query);
@@ -170,7 +185,7 @@ export class BatchesPage extends CommonPresenterClass {
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp < ${this.firstElementTimestamp}`];
-            if(this.productCodeFilter){
+            if (this.productCodeFilter) {
                 query.push(this.productCodeFilter);
             }
             this.loadBatches(query);

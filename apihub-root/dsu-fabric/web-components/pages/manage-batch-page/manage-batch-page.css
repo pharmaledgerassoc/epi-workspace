@@ -12,16 +12,19 @@
     padding-right: 60px;
     font-size: 1.802rem;
 }
+
 .batch-version {
     font-size: 16px;
     font-weight: 400;
 }
-.read-only-label{
+
+.read-only-label {
     font-weight: 700;
     color: var(--light-green);
     font-size: 1.802rem;
     margin-bottom: 10px;
 }
+
 .page-body {
     font-size: 1rem;
     display: flex;
@@ -125,10 +128,20 @@
 
 #day-selection {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
     border: none;
+    gap: 5px;
+    align-items: self-end;
+}
+
+#enableExpiryDay {
+    top: 2px;
+    position: relative;
+}
+
+#day-selection .gs1-date {
+    font-size: 12px;
 }
 
 #date {
@@ -188,21 +201,23 @@ input[type="month"] {
     cursor: pointer;
     font-size: inherit;
 }
-#nameMedicinalProduct{
+
+#nameMedicinalProduct {
     resize: none;
 }
+
 .form-buttons {
     margin-top: calc(60px - 1rem);
 }
 
 #invented-name, #name-of-medicinal-product {
     color: var(--select-color);
-    resize:none;
+    resize: none;
 }
 
 .checkbox-container {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 #custom-date-icon {
@@ -271,5 +286,5 @@ input[type="month"]::-webkit-calendar-picker-indicator {
 }
 
 #custom-date-icon svg {
-    z-index:-1  ;
+    z-index: -1;
 }

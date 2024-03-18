@@ -89,6 +89,17 @@ batches-page {
     border-top-right-radius: 7px;
 }
 
+.date-header-format {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.gs1-col-label,
+.gs1-col-header {
+    font-size: 12px;
+    opacity: 0.6;
+}
+
 .view-details {
     color: var(--primary-background-color);
     font-weight: bold;
