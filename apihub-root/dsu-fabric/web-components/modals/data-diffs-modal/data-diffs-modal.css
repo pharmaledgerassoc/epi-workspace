@@ -43,11 +43,13 @@ data-diffs-modal {
     padding: 16px;
     background-color: var(--diffs-background);
 }
-@media screen and (max-height:650px){
-    .modal-body{
+
+@media screen and (max-height: 650px) {
+    .modal-body {
         max-height: 50vh;
     }
 }
+
 .modal-footer {
     padding: 16px;
     display: flex;
@@ -112,4 +114,9 @@ data-diffs-modal {
 .view-details:hover {
     text-decoration: underline;
     color: var(--highlight-green);
+}
+
+.gs1-label {
+    font-size: 12px;
+    opacity: 0.6;
 }

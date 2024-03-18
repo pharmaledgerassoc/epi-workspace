@@ -19,6 +19,9 @@ export class DataDiffsModal {
                 oldValue = `<img class="photo" src="${oldValue}" alt="oldValue">`;
                 newValue = `<img class="photo" src="${newValue}" alt="newValue">`;
             }
+            if (property === "Expiry date") {
+                sanitize = false;
+            }
             if (newValue && newValue.filesCount) {
                 newValue = `<div class="view-details pointer" data-item-id=${newValue.id} data-item-type="newValue" data-local-action="viewEPI">view</div>`;
                 sanitize = false;
@@ -27,10 +30,10 @@ export class DataDiffsModal {
                 oldValue = `<div class="view-details pointer" data-item-id=${oldValue.id} data-item-type="oldValue" data-local-action="viewEPI">view</div>`;
                 sanitize = false;
             }
-            if(typeof oldValue === "object" && oldValue.action){
+            if (typeof oldValue === "object" && oldValue.action) {
                 delete oldValue.action;
             }
-            if(typeof newValue === "object" && newValue.action){
+            if (typeof newValue === "object" && newValue.action) {
                 delete newValue.action;
             }
             if (i === this.diffs.length - 1) {

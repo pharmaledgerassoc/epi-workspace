@@ -451,7 +451,11 @@ export class BatchesService {
                         newValue: updatedBatch.enableExpiryDay
                     }
 
-                    result.push(webSkel.appServices.getDateDiffViewObj(diffs[key], key, daySelectionObj, constants.MODEL_LABELS_MAP.BATCH))
+                    let item = webSkel.appServices.getDateDiffViewObj(diffs[key], key, daySelectionObj, constants.MODEL_LABELS_MAP.BATCH);
+                    item.oldValue.value = `<label>${item.oldValue.value}</label><br><label class="gs1-label">GS1 format (${initialBatch.expiryDate})</label>`
+
+                    item.newValue.value = `<label>${item.newValue.value}</label><br><label class="gs1-label">GS1 format (${updatedBatch.expiryDate})</label>`
+                    result.push(item);
                     return;
                 }
                 result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
