@@ -37,12 +37,17 @@ data-diffs-modal {
 }
 
 .modal-body {
+    max-height: 70vh;
     display: flex;
     justify-content: center;
     padding: 16px;
     background-color: var(--diffs-background);
 }
-
+@media screen and (max-height:650px){
+    .modal-body{
+        max-height: 50vh;
+    }
+}
 .modal-footer {
     padding: 16px;
     display: flex;
@@ -67,7 +72,7 @@ data-diffs-modal {
 }
 
 .table {
-    overflow: scroll;
+    overflow: auto;
     width: 100%;
     border-radius: 7px;
     display: grid;
