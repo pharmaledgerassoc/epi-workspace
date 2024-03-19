@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "24f1f6b4-6c80-4f99-96e5-a03a00f56cc6",
+		"_postman_id": "ef084a37-788a-4ed7-9f91-110e3b78f916",
 		"name": "batch-apis",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27978909"
 	},
 	"item": [
 		{
@@ -12,13 +13,13 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiJhcGk6Ly81ZGFmMTFkMC1kYzI4LTRkMDktYjhjNy0yZWVjNmYxNmViNzgiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNjk5NjhkZC04ZjM2LTQ3ZWItYjcyNC03ZjVlNmU2NjAwNjYvIiwiaWF0IjoxNzEwNzcwNDk4LCJuYmYiOjE3MTA3NzA0OTgsImV4cCI6MTcxMDc3NDM5OCwiYWlvIjoiRTJOZ1lPak1zNS95OWtoa2tPdVM1NDFSU1VLNUFBPT0iLCJhcHBpZCI6IjVkYWYxMWQwLWRjMjgtNGQwOS1iOGM3LTJlZWM2ZjE2ZWI3OCIsImFwcGlkYWNyIjoiMSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2Q2OTk2OGRkLThmMzYtNDdlYi1iNzI0LTdmNWU2ZTY2MDA2Ni8iLCJvaWQiOiJlZDdlYmFjMS1jNDMyLTQ4ZmEtYjQ1Ny0xMzk3ZmFkYTE0MWYiLCJyaCI6IjAuQVdBQTNXaVoxamFQNjBlM0pIOWVibVlBWnRBUnIxMG8zQWxOdU1jdTdHOFc2M2hoQUFBLiIsInN1YiI6ImVkN2ViYWMxLWM0MzItNDhmYS1iNDU3LTEzOTdmYWRhMTQxZiIsInRpZCI6ImQ2OTk2OGRkLThmMzYtNDdlYi1iNzI0LTdmNWU2ZTY2MDA2NiIsInV0aSI6IjF5ZU15XzNXZTBXbzY2QW1HVFp2QUEiLCJ2ZXIiOiIxLjAifQ.oOOtfS-jo5SgeBu3fdmXmy2aQpKUgUN0YIdJyIqiypuKi_yrBIEMGVVweNwAHczzd-ko_Ws_Qr8o9Kg4PaYYoK5IzJW0MuQpY0rH0PiwZOFAVYhcoeJJmhnQyQhYDhiXQPiA8lQVKz3bkKRpER5UxRH_kvMj3OLzaIoROiV4Le56ePcWRFHEb00xpaJl61mh_lhmrbOtGldXuVuRo7Zfy4d0VLsRXQxS7z3xeWnfILufWTszEuUiH5ZesATFCOXMSfuLgIn7UIX_O7HMqSp5MVMs9vh1DDxv0OhFFieR9wRqXKV5U6tAHCyCe7CIvR8lSpR5Eeyd57VHJnEm2bltlQ",
 						"type": "default"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"messageType\": \"Batch\",\n    \"messageTypeVersion\": 1,\n    \"senderId\": \"ManualUpload\",\n    \"messageId\": \"S000001\",\n    \"payload\": {\n        \"productCode\": \"00000000000017\",\n        \"batchNumber\": \"bat0017\",\n        \"expiryDate\": \"251230\",\n        \"packagingSiteName\": \"factory\"\n    }\n}",
+					"raw": "{\n    \"messageType\": \"Batch\",\n    \"messageTypeVersion\": 1,\n    \"senderId\": \"ManualUpload\",\n    \"messageId\": \"S000001\",\n    \"payload\": {\n        \"productCode\": \"00000000011211\",\n        \"batchNumber\": \"batch1\",\n        \"expiryDate\": \"301230\",\n        \"packagingSiteName\": \"factory\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -26,7 +27,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://mah1.dev.pladevs.com/integration/batch/00000000015455/bat0017",
+					"raw": "https://mah1.dev.pladevs.com/integration/batch/00000000011211/batch1",
 					"protocol": "https",
 					"host": [
 						"mah1",
@@ -37,8 +38,8 @@
 					"path": [
 						"integration",
 						"batch",
-						"00000000015455",
-						"bat0017"
+						"00000000011211",
+						"batch1"
 					]
 				}
 			},
@@ -51,12 +52,12 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSIsImtpZCI6IlhSdmtvOFA3QTNVYVdTblU3Yk05blQwTWpoQSJ9.eyJhdWQiOiJhcGk6Ly81ZGFmMTFkMC1kYzI4LTRkMDktYjhjNy0yZWVjNmYxNmViNzgiLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNjk5NjhkZC04ZjM2LTQ3ZWItYjcyNC03ZjVlNmU2NjAwNjYvIiwiaWF0IjoxNzEwNzcwNDk4LCJuYmYiOjE3MTA3NzA0OTgsImV4cCI6MTcxMDc3NDM5OCwiYWlvIjoiRTJOZ1lPak1zNS95OWtoa2tPdVM1NDFSU1VLNUFBPT0iLCJhcHBpZCI6IjVkYWYxMWQwLWRjMjgtNGQwOS1iOGM3LTJlZWM2ZjE2ZWI3OCIsImFwcGlkYWNyIjoiMSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0L2Q2OTk2OGRkLThmMzYtNDdlYi1iNzI0LTdmNWU2ZTY2MDA2Ni8iLCJvaWQiOiJlZDdlYmFjMS1jNDMyLTQ4ZmEtYjQ1Ny0xMzk3ZmFkYTE0MWYiLCJyaCI6IjAuQVdBQTNXaVoxamFQNjBlM0pIOWVibVlBWnRBUnIxMG8zQWxOdU1jdTdHOFc2M2hoQUFBLiIsInN1YiI6ImVkN2ViYWMxLWM0MzItNDhmYS1iNDU3LTEzOTdmYWRhMTQxZiIsInRpZCI6ImQ2OTk2OGRkLThmMzYtNDdlYi1iNzI0LTdmNWU2ZTY2MDA2NiIsInV0aSI6IjF5ZU15XzNXZTBXbzY2QW1HVFp2QUEiLCJ2ZXIiOiIxLjAifQ.oOOtfS-jo5SgeBu3fdmXmy2aQpKUgUN0YIdJyIqiypuKi_yrBIEMGVVweNwAHczzd-ko_Ws_Qr8o9Kg4PaYYoK5IzJW0MuQpY0rH0PiwZOFAVYhcoeJJmhnQyQhYDhiXQPiA8lQVKz3bkKRpER5UxRH_kvMj3OLzaIoROiV4Le56ePcWRFHEb00xpaJl61mh_lhmrbOtGldXuVuRo7Zfy4d0VLsRXQxS7z3xeWnfILufWTszEuUiH5ZesATFCOXMSfuLgIn7UIX_O7HMqSp5MVMs9vh1DDxv0OhFFieR9wRqXKV5U6tAHCyCe7CIvR8lSpR5Eeyd57VHJnEm2bltlQ",
 						"type": "default"
 					}
 				],
 				"url": {
-					"raw": "https://mah1.dev.pladevs.com/integration/batch/00000000000017/bat0017",
+					"raw": "https://mah1.dev.pladevs.com/integration/batch/00000000011204/batch2",
 					"protocol": "https",
 					"host": [
 						"mah1",
@@ -67,8 +68,8 @@
 					"path": [
 						"integration",
 						"batch",
-						"00000000000017",
-						"bat0017"
+						"00000000011204",
+						"batch2"
 					]
 				}
 			},
