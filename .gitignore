@@ -37,3 +37,5 @@ delayv-auth-feat-ssapp/
 reporting-service/
 truemedhemo-auth-feat-ssapp/
 opendsu-sdk/
+
+.htpassword.secret
