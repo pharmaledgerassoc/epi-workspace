@@ -84,8 +84,12 @@ export class ProductsService {
 
     async retrieveProductPayload(productCode) {
         let productPayload;
+        let checkResult = await this.checkProductStatus(productCode, true);
 
-        await this.checkProductStatus(productCode, true);
+        if (checkResult.status === "invalid") {
+            webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);
+            return
+        }
 
         try {
             productPayload = await $$.promisify(webSkel.client.getProductMetadata)(productCode);
@@ -155,20 +159,33 @@ export class ProductsService {
 
     async checkProductStatus(gtin, preventMyObjectWarning) {
         let productStatus;
+        let response = {status: "valid"}
         try {
             productStatus = await $$.promisify(webSkel.client.objectStatus)(gtin);
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${gtin}. <br> Please check your network connection and configuration and try again.`), e);
-            return;
+            response = {
+                status: "invalid",
+                err: e,
+                message: webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for product code: ${gtin}. <br> Please check your network connection and configuration and try again.`)
+            };
+            return response;
         }
+
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
             if (!preventMyObjectWarning) {
-                webSkel.notificationHandler.reportUserRelevantWarning("The product code already exists and is being updated!!!");
+                response = {
+                    status: "invalid",
+                    message: "The product code already exists and cannot be updated!!!"
+                }
+                return response;
             }
         }
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
-            webSkel.notificationHandler.reportUserRelevantError('Product code validation failed. Provided product code is already used.');
-            return;
+            response = {
+                status: "invalid",
+                message: 'Product code validation failed. Provided product code is already used.'
+            }
+            return response;
         }
 
         if (productStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
@@ -187,8 +204,11 @@ export class ProductsService {
                     });
                     await $$.promisify(webSkel.client.recover)(gtin);
                 } catch (err) {
-                    webSkel.notificationHandler.reportUserRelevantError('Product recovery process failed.');
-                    return;
+                    response = {
+                        status: "invalid",
+                        message: 'Product recovery process failed.'
+                    }
+                    return response;
                 }
                 if (modal) {
                     await webSkel.closeModal(modal);
@@ -196,6 +216,7 @@ export class ProductsService {
                 webSkel.notificationHandler.reportUserRelevantWarning("Product recovery success.");
             }
         }
+        return response;
     }
 
     async saveProduct(productData, updatedPhoto, isUpdate, skipMetadataUpdate = false) {
@@ -205,7 +226,13 @@ export class ProductsService {
             message: "Saving Product..."
         });
 
-        await this.checkProductStatus(productData.productCode, isUpdate);
+        let checkResult = await this.checkProductStatus(productData.productCode, isUpdate);
+
+        if (checkResult.status === "invalid") {
+            await webSkel.closeModal(modal);
+            webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);
+            return
+        }
 
         if (!skipMetadataUpdate) {
             try {

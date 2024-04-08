@@ -319,7 +319,13 @@ export class BatchesService {
     }
 
     async loadEditData(gtin, batchId) {
-        await this.checkBatchStatus(gtin, batchId, true);
+
+        let checkResult = await this.checkBatchStatus(gtin, batchId, true);
+
+        if (checkResult.status === "invalid") {
+            webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);
+            return
+        }
 
         const batch = await $$.promisify(webSkel.client.getBatchMetadata)(gtin, batchId);
         const product = await $$.promisify(webSkel.client.getProductMetadata)(gtin);
@@ -328,20 +334,32 @@ export class BatchesService {
 
     async checkBatchStatus(gtin, batchNumber, preventMyObjectWarning) {
         let batchStatus;
+        let response = {status: "valid"}
         try {
             batchStatus = await $$.promisify(webSkel.client.objectStatus)(gtin, batchNumber);
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for batch code: ${batchNumber}. <br> Please check your network connection and configuration and try again.`), e);
-            return;
+            response = {
+                status: "invalid",
+                err: e,
+                message: webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't get status for batch code: ${batchNumber}. <br> Please check your network connection and configuration and try again.`)
+            };
+            return response;
         }
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.MY_OBJECT) {
             if (!preventMyObjectWarning) {
-                webSkel.notificationHandler.reportUserRelevantWarning("The batch code already exists and is being updated!!!");
+                response = {
+                    status: "invalid",
+                    message: "The batch code already exists and cannot be updated!!!"
+                }
+                return response;
             }
         }
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.EXTERNAL_OBJECT) {
-            webSkel.notificationHandler.reportUserRelevantError('Batch code validation failed. Provided batch code is already used.');
-            return;
+            response = {
+                status: "invalid",
+                message: 'Batch code validation failed. Provided batch code is already used.'
+            }
+            return response;
         }
 
         if (batchStatus === constants.OBJECT_AVAILABILITY_STATUS.RECOVERY_REQUIRED) {
@@ -360,8 +378,11 @@ export class BatchesService {
                     });
                     await $$.promisify(webSkel.client.recover)(gtin, batchNumber);
                 } catch (err) {
-                    webSkel.notificationHandler.reportUserRelevantError('Batch recovery process failed.');
-                    return;
+                    response = {
+                        status: "invalid",
+                        message: 'Batch recovery process failed.'
+                    }
+                    return response;
                 }
                 if (modal) {
                     await webSkel.closeModal(modal);
@@ -369,6 +390,7 @@ export class BatchesService {
                 webSkel.notificationHandler.reportUserRelevantWarning("Batch recovery success.");
             }
         }
+        return response;
     }
 
 
@@ -379,7 +401,13 @@ export class BatchesService {
             message: "Saving Batch..."
         });
 
-        await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
+        let checkResult = await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
+
+        if (checkResult.status === "invalid") {
+            await webSkel.closeModal(modal);
+            webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);
+            return
+        }
 
         const batchValidationResult = await this.validateBatch(batchData);
         if (batchValidationResult.valid) {
