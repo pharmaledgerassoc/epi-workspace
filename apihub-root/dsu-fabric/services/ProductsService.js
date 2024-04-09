@@ -175,7 +175,7 @@ export class ProductsService {
             if (!preventMyObjectWarning) {
                 response = {
                     status: "invalid",
-                    message: "The product code already exists and cannot be updated!!!"
+                    message: "Product Code (GTIN) is already in use. In case an update is needed, please edit the existing product using that Product Code (GTIN)."
                 }
                 return response;
             }

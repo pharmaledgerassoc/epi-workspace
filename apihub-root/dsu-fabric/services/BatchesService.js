@@ -349,7 +349,7 @@ export class BatchesService {
             if (!preventMyObjectWarning) {
                 response = {
                     status: "invalid",
-                    message: "The batch code already exists and cannot be updated!!!"
+                    message: "Batch Number for this Product Code (GTIN) is already in use. In case an update is needed, please edit the existing batch using that Batch Number."
                 }
                 return response;
             }
