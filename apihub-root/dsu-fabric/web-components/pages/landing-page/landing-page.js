@@ -1,4 +1,4 @@
-import {getUserDetails, loadPage, getSSOId, generateRandom} from "../../../utils/utils.js";
+import {getUserDetails, loadPage, getSSOId} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
 const openDSU = require("opendsu");
@@ -8,7 +8,6 @@ const scAPI = openDSU.loadAPI("sc");
 const w3cDID = openDSU.loadAPI("w3cdid");
 const resolver = openDSU.loadAPI("resolver");
 const systemAPI = openDSU.loadAPI("system");
-const enclaveAPI = openDSU.loadAPI("enclave");
 const DEFAULT_PIN = "1qaz";
 
 export class LandingPage {

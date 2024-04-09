@@ -1,6 +1,5 @@
 import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
-import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -152,7 +151,7 @@ export class ManageProductPage extends CommonPresenterClass {
         this.productData[inputName] = event.target.value;
     }
 
-    validateProductCode(input, event) {
+    validateProductCode(input) {
         let gtin = this.element.querySelector(".gtin-validity");
         let inputContainer = this.element.querySelector(".product-code");
         this.gtinValidationResult = gtinResolver.validationUtils.validateGTIN(input.value);
@@ -170,7 +169,7 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
 
-    async showPhoto(controller, photoInput, event) {
+    async showPhoto(controller, photoInput) {
         let photoContainer = this.element.querySelector(".product-photo");
         let encodedPhoto = await webSkel.imageUpload(photoInput.files[0]);
         this.fileListPhoto = photoInput.files;

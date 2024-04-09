@@ -78,10 +78,10 @@ export class UtilsService {
         let changedProperty = epiDiffObj.newValue ? `${newValueLanguage}  ${epiDiffObj.newValue.type}` : `${oldValueLanguage}  ${epiDiffObj.oldValue.type}`
         return {
             "changedProperty": changedProperty,
-            "oldValue": {"value": epiDiffObj.oldValue || "-", "directDisplay": !!!epiDiffObj.oldValue},
+            "oldValue": {"value": epiDiffObj.oldValue || "-", "directDisplay": !epiDiffObj.oldValue},
             "newValue": {
                 "value": epiDiffObj.newValue && epiDiffObj.newValue.action !== "delete" ? epiDiffObj.newValue : "-",
-                "directDisplay": !!!epiDiffObj.newValue || epiDiffObj.newValue.action === "delete"
+                "directDisplay": !epiDiffObj.newValue || epiDiffObj.newValue.action === "delete"
             },
             "dataType": "epi"
         }

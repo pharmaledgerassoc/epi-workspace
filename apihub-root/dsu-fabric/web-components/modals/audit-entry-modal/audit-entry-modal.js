@@ -83,7 +83,7 @@ export class AuditEntryModal {
             downloadLink.click();
             downloadLink.remove();
         } catch (err) {
-            let toastContent = webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve following EPI's for product code: ${productCode}. <br> Please check your network connection and configuration and try again.`, webSkel.appServices.generateMissingToastList(err.message));
+            let toastContent = webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve following EPI's for product code: ${this.entry.itemCode}. <br> Please check your network connection and configuration and try again.`, webSkel.appServices.generateMissingToastList(err.message));
             webSkel.notificationHandler.reportUserRelevantWarning(toastContent, err);
         }
     }

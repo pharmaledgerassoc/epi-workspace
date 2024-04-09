@@ -60,7 +60,7 @@ export class MarketsManagementModal extends CommonPresenterClass{
             this.element.style.marginLeft = "240px";
         }
     }
-    hasCodeOrHTML(element, formData){
+    hasCodeOrHTML(element){
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
     async addMarketplace(_target){

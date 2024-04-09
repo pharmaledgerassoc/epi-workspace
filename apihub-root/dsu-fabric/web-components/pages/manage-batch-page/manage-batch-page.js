@@ -250,12 +250,12 @@ export class ManageBatchPage extends CommonPresenterClass {
         await this.addOrUpdateEpi(EPIData);
     }
 
-    productCodeCondition(element, formData) {
+    productCodeCondition(element) {
         let inputContainer = webSkel.getClosestParentElement(element, "#productCode");
         return inputContainer.value !== "no-selection"
     }
 
-    otherFieldsCondition(element, formData) {
+    otherFieldsCondition(element) {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
 
@@ -265,7 +265,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             errors.push('No selection for Product Code.');
         }
 
-        if (!/^[a-zA-Z0-9\/\-]{1,20}$/.test(data.batchNumber)) {
+        if (!/^[a-zA-Z0-9/-]{1,20}$/.test(data.batchNumber)) {
             errors.push('Batch number is a mandatory field and can contain only alphanumeric characters and a maximum length of 20');
         }
 

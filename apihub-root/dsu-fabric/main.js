@@ -18,7 +18,6 @@ webSkel.notificationHandler = openDSU.loadAPI("error");
     webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
     await setupGlobalErrorHandlers();
     window.gtinResolver = require("gtin-resolver");
-    let domain = "default";
     const {epiDomain, epiSubdomain} = env;
     webSkel.client = gtinResolver.getEPISorClient(epiDomain, epiSubdomain);
 

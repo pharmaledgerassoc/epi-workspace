@@ -38,7 +38,7 @@ export class AddEpiModal {
         }
     }
 
-    displaySelectedFiles(input, event) {
+    displaySelectedFiles(input) {
         let epiError = this.element.querySelector(".epi-error");
         let inputContainer = this.element.querySelector(".input-file-container");
         inputContainer.style.background = "none";
@@ -59,7 +59,6 @@ export class AddEpiModal {
         } else {
             container.textContent = 'This browser does not support selecting directories.';
         }
-        let button = this.element.querySelector("#accept-button");
         this.acceptButton.disabled = false;
     }
 
@@ -87,7 +86,7 @@ export class AddEpiModal {
         this.acceptButton.disabled = inputFile.files.length === 0;
     }
 
-    filesValidation(element, formData) {
+    filesValidation(element) {
         let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
         let filesArray = Array.from(element.files);
         if (!filesArray.some(file => file.type === "text/xml")) {

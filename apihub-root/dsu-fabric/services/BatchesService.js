@@ -330,7 +330,7 @@ export class BatchesService {
         const batch = await $$.promisify(webSkel.client.getBatchMetadata)(gtin, batchId);
         const product = await $$.promisify(webSkel.client.getProductMetadata)(gtin);
         return {batch, product};
-    };
+    }
 
     async checkBatchStatus(gtin, batchNumber, preventMyObjectWarning) {
         let batchStatus;
@@ -454,7 +454,7 @@ export class BatchesService {
             return {valid: false, message: 'Batch number is a mandatory field'};
         }
 
-        if (!/^[a-zA-Z0-9\/\-]{1,20}$/.test(batchObj.batchNumber)) {
+        if (!/^[a-zA-Z0-9/-]{1,20}$/.test(batchObj.batchNumber)) {
             return {
                 valid: false,
                 message: 'Batch number can contain only alphanumeric characters and a maximum length of 20'
@@ -514,14 +514,7 @@ export class BatchesService {
             if (!batch || !product) {
                 throw new Error(`Couldn't get data for batchNumber: ${batchNumber}  and productCode: ${productCode} `)
             }
-            const formatBatchForDiffProcess = (batch) => {
-                Object.keys(batch).forEach(batchKey => {
-                    if (batchKey.startsWith("__")) {
-                        delete batch[batchKey];
-                    }
-                });
-                delete batch["pk"];
-            }
+
             webSkel.appServices.cleanMessage(batch);
             webSkel.appServices.cleanMessage(product);
             let leafletEPIs = await webSkel.appServices.retrieveEPIs(productCode, batchNumber, constants.API_MESSAGE_TYPES.EPI.LEAFLET);

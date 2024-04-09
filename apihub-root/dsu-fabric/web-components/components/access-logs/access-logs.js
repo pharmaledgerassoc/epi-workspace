@@ -67,7 +67,7 @@ export class AccessLogs {
         }
     }
 
-    toggleSearchIcons(xMark, event) {
+    toggleSearchIcons(xMark) {
         if (this.searchInput.value === "") {
             xMark.style.display = "none";
         } else {
@@ -103,7 +103,7 @@ export class AccessLogs {
         }
     }
 
-    async deleteInput(xMark) {
+    async deleteInput() {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";

@@ -100,7 +100,7 @@ export class ActionLogs {
         }
     }
 
-    async deleteInput(xMark) {
+    async deleteInput() {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";

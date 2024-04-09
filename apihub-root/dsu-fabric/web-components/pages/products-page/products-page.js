@@ -98,7 +98,7 @@ export class ProductsPage extends CommonPresenterClass {
         await webSkel.changeToDynamicPage("manage-product-page", `manage-product-page?product-code=${productCode}`);
     }
 
-    async searchProducts(event) {
+    async searchProducts() {
         let formData = await webSkel.extractFormInformation(this.searchInput);
         if (formData.isValid) {
             this.inputValue = formData.data.productCode;
@@ -117,7 +117,7 @@ export class ProductsPage extends CommonPresenterClass {
 
     }
 
-    async deleteInput(xMark) {
+    async deleteInput() {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";

@@ -121,7 +121,7 @@ export class BatchesPage extends CommonPresenterClass {
         }
     }
 
-    async searchBatches(event) {
+    async searchBatches() {
         let formData = await webSkel.extractFormInformation(this.searchInput);
         if (formData.isValid) {
             this.inputValue = formData.data.productCode;
@@ -147,7 +147,7 @@ export class BatchesPage extends CommonPresenterClass {
         }
     }
 
-    async deleteInput(xMark) {
+    async deleteInput() {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";

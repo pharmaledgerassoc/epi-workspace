@@ -54,7 +54,7 @@ export class SearchInput extends CommonPresenterClass {
             this.focusInput = false;
         }
     }
-    toggleSearchIcons(xMark, event) {
+    toggleSearchIcons(xMark) {
         if (this.searchInput.value === "") {
             xMark.style.display = "none";
         } else {
@@ -68,13 +68,13 @@ export class SearchInput extends CommonPresenterClass {
         }
     }
 
-    showXMark(xMark, event) {
+    showXMark(xMark) {
         if (this.searchInput.value !== "") {
             xMark.style.display = "block";
         }
     }
 
-    hideXMark(xMark, event) {
+    hideXMark(xMark) {
         if (document.activeElement !== this.searchInput) {
             xMark.style.display = "none";
         }

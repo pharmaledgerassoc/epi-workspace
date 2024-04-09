@@ -68,7 +68,7 @@ class PermissionsWatcher {
 
                 return;
             }
-        }).catch(async err => {
+        }).catch(async () => {
             //at this point this check if fails may not be that important....
         });
     }
@@ -200,4 +200,4 @@ class PermissionsWatcher {
 
 export function getPermissionsWatcher(did, isAuthorizedHandler) {
     return new PermissionsWatcher(did, isAuthorizedHandler);
-};
+}

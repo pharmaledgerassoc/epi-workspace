@@ -16,7 +16,7 @@ export class AuditService {
         }
         /*  let details = {logInfo: itemCopy};
           arr.push(JSON.stringify(details));*/
-        return arr;
+        return [];
     }
 
     convertToCSV(items, type) {

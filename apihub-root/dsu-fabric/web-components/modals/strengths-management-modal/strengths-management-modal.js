@@ -45,7 +45,7 @@ export class StrengthsManagementModal {
         }
     }
 
-    hasCodeOrHTML(element, formData) {
+    hasCodeOrHTML(element) {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
 
