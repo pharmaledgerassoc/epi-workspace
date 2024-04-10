@@ -276,10 +276,10 @@ export class ProductsService {
         let changedProperty = marketDiffObj.newValue ? `${newValueCountry}  Market` : `${oldValueCountry}  Market`
         return {
             "changedProperty": changedProperty,
-            "oldValue": {"value": marketDiffObj.oldValue || "-", "directDisplay": !!!marketDiffObj.oldValue},
+            "oldValue": {"value": marketDiffObj.oldValue || "-", "directDisplay": !marketDiffObj.oldValue},
             "newValue": {
                 "value": marketDiffObj.newValue && marketDiffObj.newValue.action !== "delete" ? marketDiffObj.newValue : "-",
-                "directDisplay": !!!marketDiffObj.newValue || marketDiffObj.newValue.action === "delete"
+                "directDisplay": !marketDiffObj.newValue || marketDiffObj.newValue.action === "delete"
             },
             "dataType": "market"
         }
@@ -290,10 +290,10 @@ export class ProductsService {
         delete strengthDiffsObj.newValue.id
         return {
             "changedProperty": strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance} Strength` : `${strengthDiffsObj.oldValue.substance} `,
-            "oldValue": {"value": strengthDiffsObj.oldValue || "-", "directDisplay": !!!strengthDiffsObj.oldValue},
+            "oldValue": {"value": strengthDiffsObj.oldValue || "-", "directDisplay": !strengthDiffsObj.oldValue},
             "newValue": {
                 "value": strengthDiffsObj.newValue && strengthDiffsObj.newValue.action !== "delete" ? strengthDiffsObj.newValue : "-",
-                "directDisplay": !!!strengthDiffsObj.newValue || strengthDiffsObj.newValue.action === "delete"
+                "directDisplay": !strengthDiffsObj.newValue || strengthDiffsObj.newValue.action === "delete"
             },
             "dataType": "strength"
         }
