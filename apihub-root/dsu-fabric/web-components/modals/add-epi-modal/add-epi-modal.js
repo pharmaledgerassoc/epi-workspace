@@ -103,6 +103,7 @@ export class AddEpiModal {
     async addEPI(_target) {
         //  const filesErrorMessage = "Attention: uploaded files format is not supported. To proceed successfully verify that you have an XML file and your XML file adheres to the prescribed format and structure. To obtain the correct XML specifications we recommend consulting our documentation. Thank you!  "
         //  const conditions = {"filesValidation": {fn: this.filesValidation, errorMessage: filesErrorMessage}};
+        await webSkel.showLoading();
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
         let validEPIContent = await webSkel.appServices.validateEPIFilesContent(formData.data.epiFiles);
         if (formData.isValid && validEPIContent.isValid) {
@@ -139,5 +140,6 @@ export class AddEpiModal {
             epiError.style.visibility = "visible";
             this.acceptButton.disabled = true;
         }
+        webSkel.hideLoading();
     }
 }
