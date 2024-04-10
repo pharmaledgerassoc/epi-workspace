@@ -310,9 +310,9 @@ export class ProductsService {
                 ...updatedProductData
             } = updatedProduct;
             let diffs = webSkel.appServices.getDiffsForAudit(initialProductData, updatedProductData);
-            let epiDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.epiUnits, updatedProduct.epiUnits);
-            let marketDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.marketUnits, updatedProduct.marketUnits);
-            let strengthDiffs = webSkel.appServices.getDiffsForAudit(initialProduct.strengthUnits, updatedProduct.strengthUnits);
+            let epiDiffs = webSkel.appServices.getDiffsForAudit(epiUnits, updatedLeafletUnits);
+            let marketDiffs = webSkel.appServices.getDiffsForAudit(marketUnits, updatedMarketUnits);
+            let strengthDiffs = webSkel.appServices.getDiffsForAudit(strengthUnits, updatedStrengthUnits);
             if (Object.keys(diffs).length > 0 || Object.keys(marketDiffs).length > 0 || Object.keys(strengthDiffs).length > 0) {
                 result.needsMetadataUpdate = true;
             }
