@@ -9,6 +9,11 @@ const w3cDID = openDSU.loadAPI("w3cdid");
 const resolver = openDSU.loadAPI("resolver");
 const systemAPI = openDSU.loadAPI("system");
 const DEFAULT_PIN = "1qaz";
+const MIGRATION_STATUS = {
+    NOT_STARTED: "not_started",
+    IN_PROGRESS: "in_progress",
+    COMPLETED: "completed"
+}
 
 export class LandingPage {
     constructor(element, invalidate) {
@@ -16,7 +21,8 @@ export class LandingPage {
         this.invalidate = invalidate;
         this.sourcePage = this.element.getAttribute("data-source-page");
         this.invalidate(async () => {
-            if(await this.checkIfMigrationIsNeeded()){
+            const migrationStatus = await this.getMigrationStatus();
+            if(migrationStatus === MIGRATION_STATUS.NOT_STARTED){
                 alert("Migration is needed. Please access the Demiurge Wallet or ask your administrator to access it then refresh this page.");
                 return;
             }
@@ -64,13 +70,13 @@ export class LandingPage {
         });
     }
 
-    checkIfMigrationIsNeeded = async () => {
-        let response = await fetch(`${window.location.origin}/checkIfMigrationIsNeeded`);
+    getMigrationStatus = async () => {
+        let response = await fetch(`${window.location.origin}/getMigrationStatus`);
         if(response.status !== 200){
             throw new Error(`Failed to check if migration is needed. Status: ${response.status}`);
         }
-        let migrationNeeded = await response.text();
-        return migrationNeeded === "true";
+        let migrationStatus = await response.text();
+        return migrationStatus;
     }
     deriveEncryptionKey = (key) => {
         return crypto.deriveEncryptionKey(key);
