@@ -1,4 +1,4 @@
-import {createObservableObject, navigateToPage} from "../../../utils/utils.js";
+import {changeSidebarFromURL, createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
 export class ManageProductPage extends CommonPresenterClass {
@@ -78,7 +78,14 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     afterRender() {
-
+        changeSidebarFromURL();
+        document.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter' && event.currentTarget.activeElement.tagName.toLowerCase() === "input") {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                event.currentTarget.activeElement.blur();
+            }
+        });
         let productCode = this.element.querySelector("#productCode");
         for (const key of webSkel.appServices.productInputFieldNames()) {
             let input = this.element.querySelector(`#${key}`)

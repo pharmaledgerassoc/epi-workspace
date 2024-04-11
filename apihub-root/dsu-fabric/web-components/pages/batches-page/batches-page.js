@@ -1,5 +1,6 @@
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
+import {changeSidebarFromURL} from "../../../utils/utils.js";
 
 export class BatchesPage extends CommonPresenterClass {
     constructor(element, invalidate) {
@@ -86,6 +87,7 @@ export class BatchesPage extends CommonPresenterClass {
     }
 
     afterRender() {
+        changeSidebarFromURL();
         let pageBody = this.element.querySelector(".page-body");
         let batches = this.element.querySelector(".batches-section");
         if (this.batches.length === 0) {

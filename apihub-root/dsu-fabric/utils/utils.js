@@ -172,6 +172,10 @@ function getTextDirection(lang) {
 function changeSidebarFromURL() {
     let currentPage = window.location.hash;
     let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
+    let subCategoriesMap = {
+        "manage-product-page": "product",
+        "manage-batch-page": "batch"
+    };
     let sidebarItems = document.querySelectorAll(".menu-item");
     let oldSelection = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("id") === "active-menu-item");
     if (oldSelection) {
@@ -187,6 +191,12 @@ function changeSidebarFromURL() {
     for (let category of categories) {
         if (currentPage.includes(category)) {
             elements[category].id = "active-menu-item";
+            return;
+        }
+    }
+    for (let subCategory of Object.keys(subCategoriesMap)) {
+        if (currentPage.includes(subCategory)) {
+            elements[subCategoriesMap[subCategory]].id = "active-menu-item";
             return;
         }
     }

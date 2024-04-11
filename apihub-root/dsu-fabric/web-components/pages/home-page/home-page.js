@@ -1,3 +1,5 @@
+import {changeSidebarFromURL, navigateToPage} from "../../../utils/utils.js";
+
 export class HomePage {
     constructor(element, invalidate) {
         this.invalidate = invalidate;
@@ -8,22 +10,20 @@ export class HomePage {
 
     }
 
+    afterRender() {
+        changeSidebarFromURL();
+    }
+
     async navigateToProductsPage() {
-        let menuItem = document.querySelector(".left-sidebar-menu-item a[data-id='products-page']");
-        menuItem.click();
-        //  await webSkel.changeToDynamicPage("products-page", "products-page");
+        await navigateToPage("products-page");
     }
 
     async navigateToBatchesPage() {
-        let menuItem = document.querySelector(".left-sidebar-menu-item a[data-id='batches-page']");
-        menuItem.click();
-        // await webSkel.changeToDynamicPage("batches-page", "batches-page");
+        await navigateToPage("batches-page");
     }
 
     async navigateToMyAccountPage() {
-        let menuItem = document.querySelector(".left-sidebar-menu-item a[data-id='my-account-page']");
-        menuItem.click();
-        // await webSkel.changeToDynamicPage("my-account-page", "my-account-page");
+        await navigateToPage("my-account-page");
     }
 
     async showEpiModal() {

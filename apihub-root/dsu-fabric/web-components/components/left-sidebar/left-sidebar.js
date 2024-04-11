@@ -1,4 +1,4 @@
-import {changeSidebarFromURL, getUserDetails} from "../../../utils/utils.js";
+import {changeSidebarFromURL, getUserDetails, navigateToPage} from "../../../utils/utils.js";
 
 export class LeftSidebar {
     constructor(element, invalidate) {
@@ -13,17 +13,18 @@ export class LeftSidebar {
     }
 
     afterRender() {
-        if (this.selectedSidebarItem) {
+        changeSidebarFromURL();
+        /*if (this.selectedSidebarItem) {
             const desiredSidebarSelection = this.element.querySelector(`[data-id="${this.selectedSidebarItem}"]`);
             if (desiredSidebarSelection) {
                 this.activateSidebarSelection(desiredSidebarSelection);
             }
         } else {
             changeSidebarFromURL();
-        }
+        }*/
     }
 
-    activateSidebarSelection(clickTargetElement) {
+    /*activateSidebarSelection(clickTargetElement) {
         const oldSidebarSelection = this.element.querySelector('#active-menu-item');
         if (oldSidebarSelection) {
             oldSidebarSelection.removeAttribute('id');
@@ -31,7 +32,7 @@ export class LeftSidebar {
         const newSidebarSelection = clickTargetElement;
         newSidebarSelection.id = "active-menu-item";
         return newSidebarSelection.getAttribute('data-id');
-    }
+    }*/
 
     logout() {
         sessionStorage.setItem("initialURL", window.location.href);
@@ -39,7 +40,9 @@ export class LeftSidebar {
     }
 
     async navigateToPage(clickTargetElement) {
-        const webComponentPage = this.activateSidebarSelection(clickTargetElement);
-        await webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);
+        let page = clickTargetElement.getAttribute('data-id');
+        navigateToPage(page);
+        /* const webComponentPage = this.activateSidebarSelection(clickTargetElement);
+         await webSkel.changeToDynamicPage(`${webComponentPage}`, `${webComponentPage}`);*/
     }
 }

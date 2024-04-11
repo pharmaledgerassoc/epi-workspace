@@ -1,4 +1,5 @@
 import {
+    changeSidebarFromURL,
     createObservableObject,
 } from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
@@ -147,6 +148,14 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     afterRender() {
+        changeSidebarFromURL();
+        document.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter' && event.currentTarget.activeElement.tagName.toLowerCase() === "input") {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                event.currentTarget.activeElement.blur();
+            }
+        });
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
         /*TODO replace webSkel.appServices.createDateInput with date web component if necessary */
 

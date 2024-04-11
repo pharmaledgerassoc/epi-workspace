@@ -1,11 +1,12 @@
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
+import {changeSidebarFromURL} from "../../../utils/utils.js";
 
 export class ProductsPage extends CommonPresenterClass {
     constructor(element, invalidate) {
         super(element, invalidate);
         this.editModeLabel = this.userRights === constants.USER_RIGHTS.READ ? "View" : "View/Edit";
-        this.setPaginationDefaultValues = ()=>{
+        this.setPaginationDefaultValues = () => {
             this.productsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
@@ -56,6 +57,7 @@ export class ProductsPage extends CommonPresenterClass {
     }
 
     afterRender() {
+        changeSidebarFromURL();
         let pageBody = this.element.querySelector(".page-body");
         let products = this.element.querySelector(".products-section");
         if (this.products.length === 0) {
@@ -81,8 +83,8 @@ export class ProductsPage extends CommonPresenterClass {
             nextBtn.classList.add("disabled");
         }
         this.searchInput = this.element.querySelector("search-input");
-        if(this.searchInput){
-            if(this.boundSearchProducts){
+        if (this.searchInput) {
+            if (this.boundSearchProducts) {
                 this.searchInput.removeEventListener("search", this.boundSearchProducts);
             }
             this.boundSearchProducts = this.searchProducts.bind(this);

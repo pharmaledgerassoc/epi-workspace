@@ -1,3 +1,5 @@
+import {changeSidebarFromURL} from "../../../utils/utils.js";
+
 export class AuditPage {
     constructor(element,invalidate){
         this.element=element;
@@ -10,6 +12,7 @@ export class AuditPage {
         }
     }
     afterRender(){
+        changeSidebarFromURL();
         let actions = this.element.querySelector("#action-logs");
         let access = this.element.querySelector("#access-logs");
         if(this.selected === "access-logs"){

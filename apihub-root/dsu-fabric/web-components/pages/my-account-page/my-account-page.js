@@ -1,5 +1,5 @@
 import constants from "../../../constants.js";
-import {copyToClipboard} from "../../../utils/utils.js";
+import {changeSidebarFromURL, copyToClipboard} from "../../../utils/utils.js";
 
 const openDSU = require("opendsu");
 const config = openDSU.loadAPI("config");
@@ -18,6 +18,7 @@ export class MyAccountPage {
   }
 
   afterRender() {
+    changeSidebarFromURL();
     this.renderCredentialContainer(this.credential && this.readableCredential);
     this.renderSettingsContainer();
   }
