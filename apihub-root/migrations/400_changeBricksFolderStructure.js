@@ -62,13 +62,40 @@ const checkIfMigrationIsNeeded = async () => {
 
     return true;
 }
+
+async function countItems(dir) {
+    let count = { directories: 0, files: 0 };
+
+    try {
+        const items = await fs.readdir(dir, { withFileTypes: true });
+        for (let item of items) {
+            if (item.isDirectory()) {
+                count.directories++;
+                const subDir = path.join(dir, item.name);
+                const subCount = await countItems(subDir);
+                count.directories += subCount.directories;
+                count.files += subCount.files;
+            } else if (item.isFile()) {
+                count.files++;
+            }
+        }
+    } catch (err) {
+        console.error(`Error reading directory: ${dir}`, err);
+    }
+
+    return count;
+}
+
 const moveBricks = async () => {
+    const secretsServiceInstance = await apihubModule.getSecretsServiceInstanceAsync(apihubRootFolder);
+    const domainsPath = path.join(apihubRootFolder, "external-volume", "domains");
     if (!await checkIfMigrationIsNeeded()) {
         console.log("Migration is not needed");
         return;
     }
-    const secretsServiceInstance = await apihubModule.getSecretsServiceInstanceAsync(apihubRootFolder);
-    const domainsPath = path.join(apihubRootFolder, "external-volume", "domains");
+
+    const numberOfFoldersAndFilesBeforeMigration = await countItems(domainsPath);
+    console.info(0x222,"Number of folders before migration:", numberOfFoldersAndFilesBeforeMigration.directories, "Number of files before migration:", numberOfFoldersAndFilesBeforeMigration.files);
     try {
         await fs.access(domainsPath);
     } catch (e) {
@@ -85,6 +112,8 @@ const moveBricks = async () => {
     await secretsServiceInstance.putSecretInDefaultContainerAsync(MIGRATION_SECRET_NAME, process.env.EPI_VERSION);
 
     console.log("Brick storage migration finished");
+    const numberOfFoldersAndFilesAfterMigration = await countItems(domainsPath);
+    console.info(0x222, "Number of folders after migration:", numberOfFoldersAndFilesAfterMigration.directories, "Number of files after migration:", numberOfFoldersAndFilesAfterMigration.files);
 }
 
 module.exports = moveBricks;
