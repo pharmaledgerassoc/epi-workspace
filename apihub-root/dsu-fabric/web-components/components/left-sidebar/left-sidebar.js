@@ -23,7 +23,6 @@ export class LeftSidebar {
         }
     }
 
-
     activateSidebarSelection(clickTargetElement) {
         const oldSidebarSelection = this.element.querySelector('#active-menu-item');
         if (oldSidebarSelection) {
