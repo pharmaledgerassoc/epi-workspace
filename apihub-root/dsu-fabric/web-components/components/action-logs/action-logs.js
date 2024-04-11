@@ -35,7 +35,7 @@ export class ActionLogs {
         let string = "";
         for (let item of this.logs) {
             string += `
-                        <div>${item.itemCode}</div>
+                        <div>${item.itemCode || "-"}</div>
                         <div>${item.batchNumber || "-"}</div>
                         <div>${item.reason}</div>
                         <div>${item.username}</div>
