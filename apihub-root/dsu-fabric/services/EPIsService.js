@@ -215,11 +215,11 @@ export class EPIsService {
         return EPIs
     }
 
-    async retrieveEPI(productCode, batchNumber, epiLanguage, epiType) {
+    async retrieveEPI(productCode, batchNumber, epiLanguage, epiType, version) {
         if (batchNumber) {
-            return await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguage, epiType);
+            return await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguage, epiType, version);
         } else {
-            return await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguage, epiType);
+            return await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguage, epiType, version);
         }
 
     }
