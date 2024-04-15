@@ -26,8 +26,8 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "006cb4caae7567f600beeb878c80443aed32d753",
-                    "tag": "v2.0.6"
+                    "commit": "0797522bd70da457b6518e795f6970a43c2b1fb6",
+                    "tag": "v2.0.7"
                 },
                 {
                     "type": "execute",
@@ -58,8 +58,8 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "090dacac206f9030dc6d34ddf3d76406fc75c307",
-                    "tag": "v1.2.5"
+                    "commit": "89f5d00306de6dea74b86e459747e32e9c97d7b0",
+                    "tag": "v1.2.6"
                 },
                 {
                     "type": "execute",
@@ -83,8 +83,8 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "090dacac206f9030dc6d34ddf3d76406fc75c307",
-                    "tag": "v1.2.5"
+                    "commit": "89f5d00306de6dea74b86e459747e32e9c97d7b0",
+                    "tag": "v1.2.6"
                 },
                 {
                     "type": "execute",
@@ -172,8 +172,8 @@
             "actions": [
                 {
                     "type": "smartClone",
-                    "commit": "e0aead97a1ff4be4ef73d70d5591f09facf0ba03",
-                    "tag": "v1.0",
+                    "commit": "aa9ce7f8ad8f13cb5ddb2866cec09412e7527294",
+                    "tag": "v1.0.1",
                     "target": "./apihub-root/dsu-fabric",
                     "collectLog": false
                 }
