@@ -171,10 +171,10 @@ function getTextDirection(lang) {
 
 function changeSidebarFromURL() {
     let currentPage = window.location.hash;
-    let categories = ["home", "my-account", "product", "batch", "audit", "logout"];
+    let categories = ["home", "my-account-page", "products-page", "batches-page", "audit-page", "logout"];
     let subCategoriesMap = {
-        "manage-product-page": "product",
-        "manage-batch-page": "batch"
+        "manage-product-page": "products-page",
+        "manage-batch-page": "batches-page"
     };
     let sidebarItems = document.querySelectorAll(".menu-item");
     let oldSelection = Array.from(sidebarItems).find(sidebarItem => sidebarItem.getAttribute("id") === "active-menu-item");
