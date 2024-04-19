@@ -10,6 +10,8 @@
     "epi-mapping-engine-results",
     "get-gtin-owner",
     "leaflet-web-api",
+    "integration-api",
+    "versionlessDSU",
     "mq",
     "secrets",
     "lightDBEnclave",
@@ -32,6 +34,17 @@
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
     },
+    "integration-api": {
+      "module": "./../../gtin-resolver",
+      "function": "getIntegrationAPIs",
+      "requestLimiterConfig": {
+        "metadataCapacity": 5,
+        "epiCapacity": 5
+      }
+    },
+    "versionlessDSU": {
+      "module": "./components/versionlessDSU"
+    },
     "staticServer": {
       "excludedFiles": [
         ".*.secret"
@@ -47,14 +60,14 @@
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
   "enableOAuth": ${enable_oauth},
+  "enableAPIKeyAuth": ${enable_oauth},
+  "enableClientCredentialsOauth": ${enable_oauth},
   "oauthJWKSEndpoint": "${oauth_jwks_endpoint}",
   "enableLocalhostAuthorization": false,
   "skipOAuth": [
     "/assets",
     "/bdns",
     "/bundles",
-    "/getAuthorization",
-    "/external-volume/config/oauthConfig.js",
     "/gtinOwner/",
     "/leaflets/"
   ],
