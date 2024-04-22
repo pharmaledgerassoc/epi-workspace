@@ -10,6 +10,8 @@
     "epi-mapping-engine-results",
     "get-gtin-owner",
     "leaflet-web-api",
+    "integration-api",
+    "versionlessDSU",
     "mq",
     "secrets",
     "lightDBEnclave",
@@ -32,6 +34,17 @@
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
     },
+    "integration-api": {
+      "module": "./../../gtin-resolver",
+      "function": "getIntegrationAPIs",
+      "requestLimiterConfig": {
+        "metadataCapacity": 5,
+        "epiCapacity": 5
+      }
+    },
+    "versionlessDSU": {
+      "module": "./components/versionlessDSU"
+    },
     "staticServer": {
       "excludedFiles": [
         ".*.secret"
@@ -46,36 +59,36 @@
   },
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
-  "enableOAuth": false,
-  "oauthJWKSEndpoint": "${var.oauth_jwks_endpoint}",
+  "enableOAuth": ${enable_oauth},
+  "enableAPIKeyAuth": ${enable_oauth},
+  "enableClientCredentialsOauth": ${enable_oauth},
+  "oauthJWKSEndpoint": "${oauth_jwks_endpoint}",
   "enableLocalhostAuthorization": false,
   "skipOAuth": [
     "/assets",
     "/bdns",
     "/bundles",
-    "/getAuthorization",
-    "/external-volume/config/oauthConfig.js",
     "/gtinOwner/",
     "/leaflets/"
   ],
   "oauthConfig": {
     "issuer": {
-      "issuer": "${var.issuer}",
-      "authorizationEndpoint": "${var.authorization_endpoint}",
-      "tokenEndpoint": "${var.token_endpoint}",
+      "issuer": "${issuer}",
+      "authorizationEndpoint": "${authorization_endpoint}",
+      "tokenEndpoint": "${token_endpoint}",
       "userInfoEndpoint": "https://graph.microsoft.com/oidc/userinfo"
     },
     "client": {
-      "clientId": "${var.client_id}",
-      "scope": "email user.read offline_access openid api://${var.client_id}/access_as_user",
-      "redirectPath": "http://${var.dns_name}/?root=true",
-      "clientSecret": "${var.client_secret}",
-      "logoutUrl": "${var.logout_url}",
-      "postLogoutRedirectUrl": "http://${var.dns_name}/?logout=true"
+      "clientId": "${client_id}",
+      "scope": "email user.read offline_access openid api://${client_id}/access_as_user",
+      "redirectPath": "https://${dns_name}/?root=true",
+      "clientSecret": "${client_secret}",
+      "logoutUrl": "${logout_url}",
+      "postLogoutRedirectUrl": "https://${dns_name}/?logout=true"
     },
-    "sessionTimeout": 60000,
-    "keyTTL": 120000,
+    "sessionTimeout": 1800000,
+    "keyTTL": 3600000,
     "debugLogEnabled": false
   },
-  "serverAuthentication": false
+  "serverAuthentication": ${server_authentication}
 }
