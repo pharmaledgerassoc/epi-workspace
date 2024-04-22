@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: qn-0
+    meta.helm.sh/release-namespace: default
+    service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true,deletion_protection.enabled=false
+    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-046388a3ac2b4bb8c
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-healthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-unhealthy-threshold: "2"
+    service.beta.kubernetes.io/aws-load-balancer-ip-address-type: ipv4
+    service.beta.kubernetes.io/aws-load-balancer-name: qa-mah1-qa-quorum-node-qn-0
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-09446c1dfa441d420
+    service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: preserve_client_ip.enabled=true,deregistration_delay.timeout_seconds=120,deregistration_delay.connection_termination.enabled=true,stickiness.enabled=true,stickiness.type=source_ip
+    service.beta.kubernetes.io/aws-load-balancer-type: external
+  creationTimestamp: "2023-03-28T18:56:56Z"
+  finalizers:
+  - service.kubernetes.io/load-balancer-cleanup
+  - service.k8s.aws/resources
+  labels:
+    app.kubernetes.io/instance: qn-0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: quorum
+    app.kubernetes.io/version: 23.4.0
+    helm.sh/chart: quorum-node-0.6.7
+  name: quorum-p2p
+  namespace: default
+  resourceVersion: "64897900"
+  uid: cfdcede7-e0e7-488e-ac81-be44c6a1a7ea
+spec:
+  allocateLoadBalancerNodePorts: true
+  clusterIP: 172.20.175.131
+  clusterIPs:
+  - 172.20.175.131
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: p2p-listener
+    nodePort: 30766
+    port: 30303
+    protocol: TCP
+    targetPort: 30303
+  selector:
+    app.kubernetes.io/instance: qn-0
+    app.kubernetes.io/name: quorum
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - hostname: qa-mah1-qa-quorum-node-qn-0-bf23a5e46f8d2e49.elb.eu-west-1.amazonaws.com
