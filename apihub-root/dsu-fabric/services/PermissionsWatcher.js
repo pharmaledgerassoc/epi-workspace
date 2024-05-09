@@ -130,6 +130,21 @@ class PermissionsWatcher {
             }
         }
 
+        let response;
+        try{
+            response = await fetch(`${window.location.origin}/getEpiGroup`);
+        }catch (e) {
+            throw e;
+        }
+
+        if(response.status === 404){
+            return false;
+        }
+
+        if(response.status !== 200){
+            throw new Error(`Failed to get group: ${response.status}`);
+        }
+
         try {
             let creds = await this.handler.checkIfUserIsAuthorized(this.did);
             if (creds) {

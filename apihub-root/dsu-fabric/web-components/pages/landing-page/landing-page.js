@@ -1,6 +1,7 @@
 import {getUserDetails, loadPage, getSSOId} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
+
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
 const crypto = openDSU.loadAPI("crypto");
@@ -22,7 +23,7 @@ export class LandingPage {
         this.sourcePage = this.element.getAttribute("data-source-page");
         this.invalidate(async () => {
             const migrationStatus = await this.getMigrationStatus();
-            if(migrationStatus === MIGRATION_STATUS.NOT_STARTED){
+            if (migrationStatus === MIGRATION_STATUS.NOT_STARTED) {
                 alert("Migration is needed. Please access the Demiurge Wallet or ask your administrator to access it then refresh this page.");
                 return;
             }
@@ -72,7 +73,7 @@ export class LandingPage {
 
     getMigrationStatus = async () => {
         let response = await fetch(`${window.location.origin}/getMigrationStatus`);
-        if(response.status !== 200){
+        if (response.status !== 200) {
             throw new Error(`Failed to check if migration is needed. Status: ${response.status}`);
         }
         let migrationStatus = await response.text();
@@ -101,7 +102,7 @@ export class LandingPage {
                 },
                 body: JSON.stringify(putData)
             });
-        }catch (e) {
+        } catch (e) {
             console.log(e);
         }
         return putData.secret;
@@ -153,58 +154,33 @@ export class LandingPage {
         const config = openDSU.loadAPI("config");
         let appName = await $$.promisify(config.getEnv)("appName");
         let userId = `${appName}/${userDetails}`;
-        let did;
-        let i = 1;
-        do {
+        let didDocument;
+        let shouldPersist = false;
+        const mainDID = await scAPI.getMainDIDAsync();
+        if(mainDID) {
             try {
-                did = await $$.promisify(w3cDID.resolveDID)(`did:ssi:name:${vaultDomain}:${userId}`);
+                didDocument = await $$.promisify(w3cDID.resolveDID)(mainDID);
+                // try to sign with the DID to check if it's valid
+                await $$.promisify(didDocument.sign)("test");
             } catch (e) {
-                did = null;
-            }
-            if (did) {
-                userId = userId + i++;
-            }
-        } while (did)
-
-        did = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
-        return did.getIdentifier();
-    }
-
-    getWalletAccess = async () => {
-        await webSkel.showLoading();
-        try {
-            let mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
-            let did;
-            try {
-                did = await scAPI.getMainDIDAsync();
-            } catch (e) {
-                // TODO check error type to differentiate between business and technical error
-                // this.notificationHandler.reportDevRelevantInfo("DID not yet created", e);
-            }
-            let shouldPersist = false;
-            if (!did) {
-                did = await this.createDID();
+                let response = await fetch(`${window.location.origin}/resetDID/${encodeURIComponent(mainDID)}`, {method: "DELETE"});
+                if (response.status !== 200) {
+                    throw new Error(`Failed to reset DID. Status: ${response.status}`);
+                }
+                didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
                 shouldPersist = true;
             }
-
-
-            if (this.sourcePage === "#landing-page" || this.sourcePage === "#generate-did-page") {
-                this.sourcePage = "#home-page";
-            }
-
-            getPermissionsWatcher(did, async () => {
-                await webSkel.appServices.addAccessLog(did);
-                await loadPage(this.sourcePage);
-            });
-
-            if (!shouldPersist) {
-                return;
-            }
-
+        }else{
+            didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
+            shouldPersist = true;
+        }
+        if(shouldPersist){
             let batchId;
+            let mainEnclave;
             try {
+                mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
                 batchId = await mainEnclave.startOrAttachBatchAsync();
-                await scAPI.setMainDIDAsync(did);
+                await scAPI.setMainDIDAsync(didDocument.getIdentifier());
                 await mainEnclave.commitBatchAsync(batchId);
             } catch (e) {
                 const writeKeyError = createOpenDSUErrorWrapper(`Failed to write key`, e);
@@ -215,6 +191,23 @@ export class LandingPage {
                 }
                 throw writeKeyError;
             }
+        }
+        return didDocument.getIdentifier();
+    }
+
+    getWalletAccess = async () => {
+        await webSkel.showLoading();
+        try {
+            let did = await this.createDID();
+
+            if (this.sourcePage === "#landing-page" || this.sourcePage === "#generate-did-page") {
+                this.sourcePage = "#home-page";
+            }
+
+            getPermissionsWatcher(did, async () => {
+                await webSkel.appServices.addAccessLog(did);
+                await loadPage(this.sourcePage);
+            });
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to initialize wallet", err);
             setTimeout(() => {
