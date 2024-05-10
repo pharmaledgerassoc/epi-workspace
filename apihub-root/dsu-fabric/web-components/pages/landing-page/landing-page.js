@@ -1,4 +1,4 @@
-import {getUserDetails, loadPage, getSSOId} from "../../../utils/utils.js";
+import {getUserDetails, loadPage, getSSOId, setHealthyAuthorizationInfo} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
 
@@ -157,24 +157,34 @@ export class LandingPage {
         let didDocument;
         let shouldPersist = false;
         const mainDID = await scAPI.getMainDIDAsync();
-        if(mainDID) {
+        if (mainDID) {
             try {
                 didDocument = await $$.promisify(w3cDID.resolveDID)(mainDID);
                 // try to sign with the DID to check if it's valid
                 await $$.promisify(didDocument.sign)("test");
             } catch (e) {
-                let response = await fetch(`${window.location.origin}/resetDID/${encodeURIComponent(mainDID)}`, {method: "DELETE"});
+                console.log(`Failed to resolve DID. Error: ${e.message}`)
+                let response = await fetch(`${window.location.origin}/resetUserDID/${vaultDomain}`, {method: "DELETE"});
+                debugger
                 if (response.status !== 200) {
-                    throw new Error(`Failed to reset DID. Status: ${response.status}`);
+                    console.log(`Failed to reset DID. Status: ${response.status}`);
                 }
+                try {
+                    didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
+                    shouldPersist = true;
+                } catch (e) {
+                    throw new Error(`Failed to create DID. Error: ${e.message}`);
+                }
+            }
+        } else {
+            try {
                 didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
                 shouldPersist = true;
+            } catch (e) {
+                throw new Error(`Failed to create DID. Error: ${e.message}`);
             }
-        }else{
-            didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
-            shouldPersist = true;
         }
-        if(shouldPersist){
+        if (shouldPersist) {
             let batchId;
             let mainEnclave;
             try {
@@ -204,10 +214,11 @@ export class LandingPage {
                 this.sourcePage = "#home-page";
             }
 
+            const credential = await setHealthyAuthorizationInfo();
             getPermissionsWatcher(did, async () => {
                 await webSkel.appServices.addAccessLog(did);
                 await loadPage(this.sourcePage);
-            });
+            }, credential);
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to initialize wallet", err);
             setTimeout(() => {
