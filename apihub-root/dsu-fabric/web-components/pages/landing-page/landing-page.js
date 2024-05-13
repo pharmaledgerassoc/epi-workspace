@@ -165,7 +165,6 @@ export class LandingPage {
             } catch (e) {
                 console.log(`Failed to resolve DID. Error: ${e.message}`)
                 let response = await fetch(`${window.location.origin}/resetUserDID/${vaultDomain}`, {method: "DELETE"});
-                debugger
                 if (response.status !== 200) {
                     console.log(`Failed to reset DID. Status: ${response.status}`);
                 }
