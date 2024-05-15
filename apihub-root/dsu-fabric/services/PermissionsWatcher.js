@@ -1,5 +1,5 @@
 import constants from "./../constants.js";
-import {navigateToPage, getCurrentPageTag} from "./../utils/utils.js";
+import {navigateToPage, getCurrentPageTag, setHealthyAuthorizationInfo} from "./../utils/utils.js";
 
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
@@ -9,12 +9,12 @@ const defaultHandler = function () {
 
 
 class PermissionsWatcher {
-    constructor(did, isAuthorizedHandler) {
+    constructor(did, isAuthorizedHandler, healthyCredential) {
         //  utils.showTextLoader();
         this.did = did;
         this.notificationHandler = openDSU.loadAPI("error");
         this.isAuthorizedHandler = isAuthorizedHandler || defaultHandler;
-
+        this.healthCredential = healthyCredential;
         this.checkAccessAndAct().catch(err => {
             console.debug('Caught an error during booting of the PermissionsWatcher...', err);
         });
@@ -37,7 +37,7 @@ class PermissionsWatcher {
 
     async checkAccessAndAct() {
         this.checkAccess().then(async (hasAccess) => {
-        //    webSkel.hideLoading();
+            //    webSkel.hideLoading();
             let unAuthorizedPages = ["generate-did-page", "landing-page"];
             if (hasAccess) {
                 webSkel.userRights = await this.getUserRights();
@@ -68,13 +68,20 @@ class PermissionsWatcher {
 
                 return;
             }
-        }).catch(async () => {
+        }).catch(async (err) => {
             //at this point this check if fails may not be that important....
+            // get group from endpoint
+            console.log("Error in checkAccessAndAct", err);
+            await setHealthyAuthorizationInfo();
+            return $$.forceTabRefresh();
         });
     }
 
     async saveCredentials(credentials) {
         let enclave = credentials.enclave;
+        if(typeof enclave === "undefined"){
+            return;
+        }
         if (window.lastCredentials && enclave.enclaveKeySSI === window.lastCredentials.enclaveKeySSI) {
             // there is no need to trigger the credentials save...
             return;
@@ -130,6 +137,21 @@ class PermissionsWatcher {
             }
         }
 
+        let response;
+        try {
+            response = await fetch(`${window.location.origin}/getEpiGroup`);
+        } catch (e) {
+            throw e;
+        }
+
+        if (response.status === 404) {
+            return false;
+        }
+
+        if (response.status !== 200) {
+            throw new Error(`Failed to get group: ${response.status}`);
+        }
+
         try {
             let creds = await this.handler.checkIfUserIsAuthorized(this.did);
             if (creds) {
@@ -151,7 +173,7 @@ class PermissionsWatcher {
             if (window.lastGroupDID) {
                 this.notificationHandler.reportUserRelevantInfo("Your credentials have changed!");
                 this.notificationHandler.reportUserRelevantInfo("Application will refresh soon...");
-                window.lastGroupDID = "";
+                return $$.forceTabRefresh();
             }
             if (knownStatusCodes.indexOf(err.code) === -1) {
                 throw err;
@@ -175,29 +197,10 @@ class PermissionsWatcher {
     }
 
     async getUserRights() {
-        let userRights;
-        const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
-        let credential = await $$.promisify(mainEnclave.readKey)(constants.CREDENTIAL_KEY);
-
-        if (typeof credential === "object" && credential.allPossibleGroups) {
-            for (let group of credential.allPossibleGroups) {
-                if (await this.isInGroup(group.did, this.did)) {
-                    switch (group.accessMode) {
-                        case "read":
-                            userRights = constants.USER_RIGHTS.READ;
-                            break;
-                        case "write":
-                            userRights = constants.USER_RIGHTS.WRITE;
-                            break;
-                    }
-                    break;
-                }
-            }
-        }
-        return userRights;
+        return this.healthCredential.userRights;
     }
 }
 
-export function getPermissionsWatcher(did, isAuthorizedHandler) {
-    return new PermissionsWatcher(did, isAuthorizedHandler);
+export function getPermissionsWatcher(did, isAuthorizedHandler, healthyCredential) {
+    return new PermissionsWatcher(did, isAuthorizedHandler, healthyCredential);
 }

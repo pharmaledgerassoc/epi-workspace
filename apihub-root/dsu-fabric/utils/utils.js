@@ -202,6 +202,54 @@ function changeSidebarFromURL() {
     }
 }
 
+const setHealthyAuthorizationInfo = async () => {
+    const openDSU = require("opendsu");
+    const scAPI = openDSU.loadAPI("sc");
+    const w3cdid = openDSU.loadAPI("w3cdid");
+    let SecretsHandler = w3cdid.SecretsHandler;
+    let did = await scAPI.getMainDIDAsync();
+    let handler = await SecretsHandler.getInstance(did);
+
+    let response;
+    try {
+        response = await fetch(`${window.location.origin}/getEpiGroup`);
+    } catch (e) {
+        console.log("Clearing did secret: ", e);
+        await handler.clearDIDSecret(did);
+        return;
+    }
+    if (response.status !== 200) {
+        // delete credential associated with did
+        console.log("Clearing did secret: ", response.status);
+        await handler.clearDIDSecret(did);
+    }
+
+    let epiGroup = await response.text();
+    // epiGroup == "write" or "read"
+    const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
+    let userRights;
+    let groupDID;
+    if(epiGroup === "write") {
+        groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_WRITE_GROUP}`;
+        userRights = constants.USER_RIGHTS.WRITE;
+    } else {
+        groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_READ_GROUP}`;
+        userRights = constants.USER_RIGHTS.READ;
+    }
+    const credential = {
+        groupDID,
+        groupCredential: {
+            groupDID
+        },
+        credentialType: "WALLET_AUTHORIZATION",
+        userRights
+    }
+    let didDocument = await $$.promisify(w3cdid.resolveDID)(did);
+    let encryptedSecret = await $$.promisify(didDocument.encryptMessage)(didDocument, JSON.stringify(credential))
+    await handler.storeDIDSecret(did, encryptedSecret);
+    return credential;
+}
+
 export {
     createObservableObject,
     loadPage,
@@ -215,5 +263,6 @@ export {
     isCopyToClipboardSupported,
     getTextDirection,
     changeSidebarFromURL,
-    generateRandom
+    generateRandom,
+    setHealthyAuthorizationInfo
 }

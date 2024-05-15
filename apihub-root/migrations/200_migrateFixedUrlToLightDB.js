@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const apihubRootFolder = apihubModule.getServerConfig().storage;
 const FIXED_URLS_PATH = path.join(apihubRootFolder, "external-volume/fixed-urls/FixedUrls.db");
+const FIXED_URLS_MIGRATED_PATH = FIXED_URLS_PATH + ".migrated";
 const LIGHT_DB_URLS_PATH = path.join(apihubRootFolder, "/external-volume/lightDB/FixedUrls.db/database");
 
 const migrateTableFromLokiToLightDB = async (lokiEnclaveFacadeInstance, tableName, lightDB) => {
@@ -64,8 +65,15 @@ const migrateFixedUrlToLightDB = async () => {
         }
     }
     const lightDB = LokiEnclaveFacade.createLokiEnclaveFacadeInstance(LIGHT_DB_URLS_PATH, undefined, adapters.STRUCTURED);
-    let stats
+    try {
+        fs.accessSync(FIXED_URLS_MIGRATED_PATH);
+        console.log("FixedURL FS adapter already migrated");
+        return;
+    } catch (e) {
+        // continue with migration
+    }
 
+    let stats
     try {
         stats = fs.statSync(FIXED_URLS_PATH);
     } catch (e) {
@@ -77,7 +85,7 @@ const migrateFixedUrlToLightDB = async () => {
         try {
             console.log("Trying to migrate FixedURL structured FS adapter");
             await migrateStructuredFSAdapterToLightDB(lightDB);
-            fs.renameSync(FIXED_URLS_PATH, FIXED_URLS_PATH + ".migrated");
+            fs.renameSync(FIXED_URLS_PATH, FIXED_URLS_MIGRATED_PATH);
         } catch (e) {
             console.error("Failed to migrate FixedURL structured FS adapter", e);
         }
@@ -88,7 +96,7 @@ const migrateFixedUrlToLightDB = async () => {
     console.log("Trying to migrate fixedURL FS adapter")
     try {
         await migrateFSAdapterToLightDB(lightDB);
-        fs.renameSync(FIXED_URLS_PATH, FIXED_URLS_PATH + ".migrated");
+        fs.renameSync(FIXED_URLS_PATH, FIXED_URLS_MIGRATED_PATH);
         console.log("FixedURL FS adapter migrated successfully");
     } catch (e) {
         console.error("Failed to migrate FS adapter", e);
