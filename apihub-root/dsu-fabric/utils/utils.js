@@ -229,12 +229,14 @@ const setHealthyAuthorizationInfo = async () => {
     const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
     let userRights;
     let groupDID;
-    if(epiGroup === "write") {
+    if (epiGroup === "write") {
         groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_WRITE_GROUP}`;
         userRights = constants.USER_RIGHTS.WRITE;
-    } else {
+    } else if (epiGroup === "read") {
         groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_READ_GROUP}`;
         userRights = constants.USER_RIGHTS.READ;
+    } else {
+        userRights = undefined;
     }
     const credential = {
         groupDID,
