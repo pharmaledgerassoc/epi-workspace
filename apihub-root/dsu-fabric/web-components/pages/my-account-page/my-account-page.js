@@ -80,7 +80,11 @@ export class MyAccountPage {
 
   renderCredentialContainer(validCredential) {
     if (!validCredential) {
-      document.querySelector('.invalid-credential').toggle("hidden");
+      try{
+        document.querySelector('.invalid-credential').classList.toggle("hidden");
+      }catch(err){
+        console.log(err);
+      }
       return
     }
     const readableContainer = document.querySelector('#readableContainer');
