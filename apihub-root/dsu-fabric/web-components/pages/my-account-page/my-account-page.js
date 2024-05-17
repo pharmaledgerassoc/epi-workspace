@@ -1,14 +1,17 @@
-import constants from "../../../constants.js";
 import {changeSidebarFromURL, copyToClipboard} from "../../../utils/utils.js";
 
 const openDSU = require("opendsu");
 const config = openDSU.loadAPI("config");
-const credentialsAPI = openDSU.loadAPI("credentials");
 const scAPI = openDSU.loadAPI("sc");
 
 export class MyAccountPage {
   constructor(element, invalidate) {
     this.invalidate = invalidate;
+
+    this.did = "";
+    this.envData = {"in-progress": "Environment data is being read..."};
+    this.appVersion = "version data is loading...";
+
     this.invalidate(async () => {
       await this.fetchAccountData();
     });
@@ -19,7 +22,6 @@ export class MyAccountPage {
 
   afterRender() {
     changeSidebarFromURL();
-    this.renderCredentialContainer(this.credential && this.readableCredential);
     this.renderSettingsContainer();
   }
 
@@ -78,28 +80,6 @@ export class MyAccountPage {
     return version;
   }
 
-  renderCredentialContainer(validCredential) {
-    if (!validCredential) {
-      try{
-        document.querySelector('.invalid-credential').classList.toggle("hidden");
-      }catch(err){
-        console.log(err);
-      }
-      return
-    }
-    const readableContainer = document.querySelector('#readableContainer');
-    let readableCredentialElement = readableContainer.querySelector('#readableCredential');
-    if (readableCredentialElement) {
-      readableCredentialElement.remove();
-    }
-
-    readableCredentialElement = document.createElement('div');
-    readableCredentialElement.id = "readableCredential";
-    readableCredentialElement.language = "json";
-    readableCredentialElement.innerHTML = `<pre><code> ${this.readableCredential} </code></pre>`;
-    readableContainer.appendChild(readableCredentialElement);
-  }
-
   renderSettingsContainer() {
     const environmentContainer = document.querySelector('#environmentContainer');
     let environmentDataElement = environmentContainer.querySelector('#environmentData');
@@ -116,19 +96,8 @@ export class MyAccountPage {
 
   async fetchAccountData() {
     try {
-      let mainEnclave = await scAPI.getMainEnclave();
       let did = await scAPI.getMainDIDAsync();
       this.did = did;
-      this.credential = await $$.promisify(mainEnclave.readKey)(constants.CREDENTIAL_KEY);
-      if (this.credential) {
-        try {
-          let jwtContent = await $$.promisify(credentialsAPI.parseJWTSegments)(this.credential.token)
-          const {jwtHeader, jwtPayload} = jwtContent;
-          this.readableCredential = JSON.stringify({jwtHeader, jwtPayload}, null, 4);
-        } catch (e) {
-          this.readableCredential = null;
-        }
-      }
 
       let envFile = await $$.promisify(config.readEnvFile)();
       //hide keySSI properties from display in ui
@@ -140,11 +109,9 @@ export class MyAccountPage {
       const response = await fetch(environmentJsPath);
       const appEnvContent = await response.text();
       this.envData = envFile;
-      this.appVersion = this.getAppBuildVersion(appEnvContent)
+      this.appVersion = this.getAppBuildVersion(appEnvContent);
     } catch (err) {
       webSkel.notificationHandler.reportUserRelevantError("Failed to get wallet data", err);
     }
-
-
   }
 }
