@@ -157,9 +157,9 @@ export class LandingPage {
         let didDocument;
         let shouldPersist = false;
         const mainDID = await scAPI.getMainDIDAsync();
-        if (mainDID) {
+        const healDID = async (didIdentifier)=>{
             try {
-                didDocument = await $$.promisify(w3cDID.resolveDID)(mainDID);
+                didDocument = await $$.promisify(w3cDID.resolveDID)(didIdentifier);
                 // try to sign with the DID to check if it's valid
                 await $$.promisify(didDocument.sign)("test");
             } catch (e) {
@@ -175,13 +175,13 @@ export class LandingPage {
                     throw new Error(`Failed to create DID. Error: ${e.message}`);
                 }
             }
+        }
+        if (mainDID) {
+            await healDID(mainDID);
         } else {
-            try {
-                didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
-                shouldPersist = true;
-            } catch (e) {
-                throw new Error(`Failed to create DID. Error: ${e.message}`);
-            }
+            const didIdentifier = `did:ssi:name:${vaultDomain}:${userId}`;
+            await healDID(didIdentifier);
+            shouldPersist = true;
         }
         if (shouldPersist) {
             let batchId;
