@@ -27,6 +27,12 @@ export class LandingPage {
                 alert("Migration is needed. Please access the Demiurge Wallet or ask your administrator to access it then refresh this page.");
                 return;
             }
+
+            if(migrationStatus === MIGRATION_STATUS.IN_PROGRESS){
+                alert("Migration is in progress. Please wait for the process to complete.");
+                return;
+            }
+
             try {
                 this.encryptedSSOSecret = await this.getSSOSecret();
             } catch (e) {
