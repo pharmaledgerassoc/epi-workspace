@@ -1,4 +1,4 @@
-{
+{ 
     "workDir": ".",
     "dependencies": [
         {
@@ -26,8 +26,8 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "e4d54ab64a8af71cb0d8d4cd34d7b97a47165cdf",
-                    "tag": "v2.0.8"
+                    "commit": "960acc476a43dc2e8fc6b2f552a5f22de9c9474f",
+                    "tag": "v2.0.13"
                 },
                 {
                     "type": "execute",
