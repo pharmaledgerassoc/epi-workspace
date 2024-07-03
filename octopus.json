@@ -32,21 +32,6 @@
         ]
       },
       {
-        "name": "demiurge",
-        "src": "https://github.com/${GITHUB_ORGANIZATION}/demiurge.git",
-        "actions": [
-          {
-            "type": "smartClone",
-            "target": "./apihub-root",
-            "collectLog": false
-          },
-          {
-            "type": "execute",
-            "cmd": "cd demiurge && npm install"
-          }
-        ]
-      },
-      {
         "name": "apihub-root/demiurge-wallet/loader",
         "src": "http://github.com/opendsu/trust-loader.git",
         "actions": [
