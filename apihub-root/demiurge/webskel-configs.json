@@ -1,0 +1,11 @@
+{
+    "components": [
+    ],
+    "services": [
+
+    ],
+    "webComponentsRootDir": "web-components",
+    "defaultPage": "landing-page",
+    "storageServices": []
+}
+

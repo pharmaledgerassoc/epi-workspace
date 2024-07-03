@@ -1,0 +1,4 @@
+delete /
+addfolder code
+addfile ../opendsu-sdk/builds/output/iframeBoot.js scripts/bundles/iframeBoot.js
+mount ../webcardinal/seed /webcardinal

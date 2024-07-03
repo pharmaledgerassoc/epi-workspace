@@ -1,0 +1,60 @@
+
+/* Classes */
+
+.dw-container {
+    display: grid;
+    margin: 45px 0 0 28px;
+}
+
+.not-implemented {
+    font-size: 40px;
+    margin-top: 80px;
+}
+
+.dw-dialog {
+    --body-spacing: 0;
+}
+
+.dw-dialog > header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: var(--sl-spacing-large) var(--sl-spacing-large) var(--sl-spacing-x-small) var(--sl-spacing-large);
+    column-gap: var(--sl-spacing-large);
+}
+
+.dw-dialog > header > h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--sl-spacing-small);
+    margin: 0;
+}
+
+.dw-dialog > header > sl-icon-button[close]::part(base) {
+    padding: 0;
+}
+
+.dw-data-grid {
+    padding: var(--sl-spacing-small);
+    border: var(--border);
+    background: var(--background);
+}
+
+.dw-data-grid .no-data {
+    padding: var(--sl-spacing-small);
+    text-align: center;
+}
+
+.dw-manage-organization-container {
+    margin: 0 -1.5rem;
+}
+
+@media screen and (max-width: 420px) {
+    .dw-container {
+        padding: 0 1em;
+    }
+
+    .dw-data-grid {
+        padding: 0;
+    }
+}
