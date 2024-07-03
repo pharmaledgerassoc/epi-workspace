@@ -1,0 +1,7 @@
+left-sidebar{
+    display: block;
+    height: 100%;
+    width: 155px;
+    padding: 45px 0;
+    background-color: var(--dw-app-color);
+}
