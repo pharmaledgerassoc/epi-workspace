@@ -37,7 +37,7 @@
         "actions": [
           {
             "type": "smartClone",
-            "target": ".",
+            "target": "./apihub-root",
             "collectLog": false
           },
           {
