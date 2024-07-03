@@ -10,12 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
 
-    <script src="scripts/bundles/iframeBoot.js"></script>
-
-    <!-- WebCardinal dist -->
-    <script type="module" src="webcardinal/webcardinal.js"></script>
-    <link rel="stylesheet" href="webcardinal/webcardinal.css"/>
-
+    <script src="./bundles/versionLessBoot.js"></script>
     <link rel="stylesheet" href="assets/themes/light.css"/>
 
     <!-- local assets -->
@@ -38,8 +33,7 @@
     </script>
 </head>
 <body>
-<webc-app-root preload="scripts/config.js"></webc-app-root>
 <div class="toast-container"></div>
 </body>
-<script src="scripts/globalHandlers.js"></script>
+<script src="main.js" type="module"></script>
 </html>

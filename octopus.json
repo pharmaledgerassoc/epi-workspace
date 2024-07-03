@@ -341,6 +341,27 @@
         ]
       },
       {
+        "name": "demiurge-build",
+        "actions": [
+          {
+            "type": "copy",
+            "src": "./opendsu-sdk/builds/output/versionLessBoot.js",
+            "target": "./apihub-root/demiurge/bundles/versionLessBoot.js",
+            "options": {
+              "overwrite": true
+            }
+          },
+          {
+            "type": "copy",
+            "src": "./gtin-resolver/build/bundles/gtinResolver.js",
+            "target": "./apihub-root/demiurge/bundles/gtinResolver.js",
+            "options": {
+              "overwrite": true
+            }
+          }
+        ]
+      },
+      {
         "name": "epi-ssapps-and-wallets-build",
         "actions": [
           {
