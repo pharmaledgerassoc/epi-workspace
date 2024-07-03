@@ -153,6 +153,21 @@
         ]
       },
       {
+        "name": "demiurge",
+        "src": "https://github.com/${GITHUB_ORGANIZATION}/demiurge.git",
+        "actions": [
+          {
+            "type": "smartClone",
+            "target": ".",
+            "collectLog": false
+          },
+          {
+            "type": "execute",
+            "cmd": "cd demiurge && npm install"
+          }
+        ]
+      },
+      {
         "name": "WebSkel",
         "src": "https://github.com/OutfinityResearch/WebSkel.git",
         "actions": [
