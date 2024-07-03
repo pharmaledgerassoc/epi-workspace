@@ -166,6 +166,17 @@
             "collectLog": false
           }
         ]
+      },
+      {
+        "name": "WebSkel",
+        "src": "https://github.com/OutfinityResearch/WebSkel.git",
+        "actions": [
+          {
+            "type": "smartClone",
+            "target": "./apihub-root/demiurge",
+            "collectLog": false
+          }
+        ]
       }
     ],
     "patch": [
