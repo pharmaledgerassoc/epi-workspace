@@ -15,6 +15,18 @@
             "type": "pages",
             "presenterClassName": "IntegrationPage"
         }
+        ,{
+            "name": "audit-page",
+            "type": "pages",
+            "presenterClassName": "AuditPage"
+
+        },
+        {
+            "name": "search-input",
+            "type": "components",
+            "presenterClassName": "SearchInput"
+
+        }
     ],
     "services": [
 
