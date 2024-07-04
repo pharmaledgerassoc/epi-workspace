@@ -7,4 +7,7 @@ export class LeftSidebar{
     beforeRender(){
 
     }
+    async changePage(_target, page){
+        await webSkel.changeToDynamicPage(page, `/demiurge/${page}`);
+    }
 }
