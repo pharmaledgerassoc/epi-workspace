@@ -44,6 +44,11 @@
             "type": "pages",
             "presenterClassName": "ComponentDetailsPage"
 
+        },
+        {
+            "name": "group-member",
+            "type": "components",
+            "presenterClassName": "GroupMember"
         }
     ],
     "services": [

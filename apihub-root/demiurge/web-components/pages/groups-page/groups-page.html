@@ -1,0 +1,35 @@
+<div id="groups-page-container">
+    <div id="groups-page-header">
+        <h1 id="groups-page-title">Groups</h1>
+    </div>
+    <div id="groups-navigation-tabs">
+        <div class="tab-header" id="Administration" data-local-action="changeTab Administration">
+            <span class="tab-header-label">ePI Administration Group</span>
+        </div>
+        <div class="tab-header" id="Write" data-local-action="changeTab Write">
+            <span class="tab-header-label" >ePI Write Group</span>
+        </div>
+        <div class="tab-header" id="Read" data-local-action="changeTab Read">
+            <span class="tab-header-label">ePI Read Group</span>
+        </div>
+    </div>
+    <div id="groups-page-body">
+        <p>Manage members of $$groupName group</p>
+        <div id="add-member-container">
+            <p>Member DID</p>
+            <div id="member-did-container">
+                <div id="member-did-input">
+                    <input type="text" id="member-did-text" placeholder="did:ssi:domain:<username>">
+                    <div id="paste-button" data-local-action="paste" >Paste</div>
+                </div>
+                <button id="add-member-button" disabled>
+                    <span>+</span>
+                    <span>Add Member</span>
+                </button>
+            </div>
+        </div>
+        <div id="group-members-container">
+            $$groupMembersMarkup
+        </div>
+    </div>
+</div>
