@@ -14,6 +14,11 @@
             "name": "integration-page",
             "type": "pages",
             "presenterClassName": "IntegrationPage"
+        },
+        {
+            "name": "group-member",
+            "type": "components",
+            "presenterClassName": "GroupMember"
         }
     ],
     "services": [
