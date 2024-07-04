@@ -1,4 +1,8 @@
 integration-page{
     display: block;
     height: 100%;
+    padding: 40px 28px;
+}
+.integration-form{
+    margin-top: 15px;
 }
