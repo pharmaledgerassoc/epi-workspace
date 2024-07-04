@@ -2,6 +2,7 @@ import WebSkel from "./WebSkel/webSkel.js";
 const openDSU = require("opendsu");
 (async ()=>{
     window.webSkel = await WebSkel.initialise("./webskel-configs.json");
+    webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
     let pageContent = document.querySelector("#page-content");
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`)
     webSkel.setDomElementForPages(pageContent);

@@ -9,7 +9,7 @@ export class ComponentDetailsPage{
             this.component = {
                 name: "Component Name",
                 status: "success",
-                logs:"Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here.Logs will be displayed here."
+                logs:"Logs will be displayed here."
             }
         });
     }
