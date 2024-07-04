@@ -1,0 +1,60 @@
+run-results-page{
+    display: block;
+    height: 100%;
+    overflow-y: scroll;
+}
+.page-header{
+    padding: 40px 28px 10px 28px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--very-light-grey);
+}
+.back-button{
+    width: 50px;
+    transform: rotate(180deg);
+    cursor: pointer;
+}
+.page-body{
+    padding: 20px 28px;
+}
+.table {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    color: var(--grey-text);
+}
+.table div {
+    padding: 0.75rem;
+}
+.data-item{
+    border-bottom: 0.25px solid var(--very-light-grey);
+}
+.column-header {
+    padding: 0.75rem;
+    background: var(--table-header-grey);
+    border-bottom: 1px solid var(--grey-white-border);
+    border-top: 1px solid var(--grey-white-border);
+}
+.first-column{
+    border-left: 1px solid var(--grey-white-border);
+}
+.last-column{
+    border-right: 1px solid var(--grey-white-border);
+    display: flex;
+    justify-content: center;
+}
+.view-details {
+    color: var(--dw-app-color);
+    font-weight: bold;
+    transition: color 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.view-details:hover {
+    text-decoration: underline;
+    color: var(--highlight-green);
+}
+.no-data{
+    padding-left: 28px;
+}

@@ -35,8 +35,14 @@
 
     --sl-z-index-dialog: 1000 !important;
     --sl-z-index-toast: 1001 !important;
-
+    --tab-color: #9ACFBD;
+    --table-header: #92D3BD61;
+    --table-header-grey: #D6D6D661;
+    --grey-text: #565759;
+    --very-light-grey: #dee2e6;
+    --highlight-green: #28a745;
     --dw-app-color: #328569;
+    --grey-white-border: #F4F4F4;
     --webc-primary-background: var(--dw-app-color);
     --dw-app-disabled-color: #AAAFAE;
     --dw-active-item-color: #FFFFFF;
@@ -60,7 +66,6 @@
 html {
     overflow: hidden;
     height: 100%;
-
 }
 
 body {
@@ -92,7 +97,7 @@ body {
     font-size: 14px;
 }
 .form-label{
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 .default-button{
     font-size: 17px;
@@ -108,7 +113,9 @@ body {
     height: 100%;
     width: 100%;
 }
-
+.hidden{
+    display: none;
+}
 
 .dw-data-grid {
     --border-color: rgb(var(--sl-color-gray-200));
