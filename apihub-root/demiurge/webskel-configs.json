@@ -4,6 +4,11 @@
             "name": "left-sidebar",
             "type": "components",
             "presenterClassName": "LeftSidebar"
+        },
+        {
+            "name": "groups-page",
+            "type": "pages",
+            "presenterClassName": "GroupsPage"
         }
     ],
     "services": [
