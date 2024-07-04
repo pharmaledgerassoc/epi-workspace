@@ -1,9 +1,9 @@
 {
     "components": [
         {
-            "name": "left-sidebar",
+            "name": "sidebar-menu",
             "type": "components",
-            "presenterClassName": "LeftSidebar"
+            "presenterClassName": "SidebarMenu"
         },
         {
             "name": "groups-page",

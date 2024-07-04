@@ -3,7 +3,7 @@ const openDSU = require("opendsu");
 (async ()=>{
     window.webSkel = await WebSkel.initialise("./webskel-configs.json");
     let pageContent = document.querySelector("#page-content");
-    pageContent.insertAdjacentHTML("beforebegin", `<left-sidebar data-presenter="left-sidebar"></left-sidebar>`)
+    pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`)
     webSkel.setDomElementForPages(pageContent);
     let currentPage = window.location.hash.slice(1);
     if(currentPage === ""){

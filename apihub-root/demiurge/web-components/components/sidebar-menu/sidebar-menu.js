@@ -1,4 +1,4 @@
-export class LeftSidebar{
+export class SidebarMenu {
     constructor(element,invalidate) {
         this.element = element;
         this.invalidate = invalidate;
