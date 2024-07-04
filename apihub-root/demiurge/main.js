@@ -6,10 +6,12 @@ const openDSU = require("opendsu");
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`)
     webSkel.setDomElementForPages(pageContent);
     let currentPage = window.location.hash.slice(1);
+    let presenterName = currentPage.split("/")[0];
     if(currentPage === ""){
         currentPage = "groups-page";
+        presenterName = "groups-page";
     }
     webSkel.notificationHandler = openDSU.loadAPI("error");
-    await webSkel.changeToDynamicPage(currentPage, currentPage);
+    await webSkel.changeToDynamicPage(presenterName, currentPage);
 })();
 

@@ -18,6 +18,9 @@ export class SidebarMenu {
         if(element){
             element.removeAttribute("id");
         }
-        this.element.querySelector(`.${page}`).setAttribute("id", "active");
+        page = page.split("/")[0];
+        let currentElement = this.element.querySelector(`.${page}`);
+        currentElement.setAttribute("id", "active");
+        currentElement.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
     }
 }

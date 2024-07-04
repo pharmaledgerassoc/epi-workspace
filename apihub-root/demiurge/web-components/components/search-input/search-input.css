@@ -7,6 +7,10 @@ search-input input {
     min-width: 300px;
     height: 36px;
 }
+search-input {
+    display: inline-block;
+    height: 27px;
+}
 .input-container{
     display: inline-block;
     position: relative;

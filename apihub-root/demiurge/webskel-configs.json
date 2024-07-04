@@ -14,8 +14,8 @@
             "name": "integration-page",
             "type": "pages",
             "presenterClassName": "IntegrationPage"
-        }
-        ,{
+        },
+        {
             "name": "audit-page",
             "type": "pages",
             "presenterClassName": "AuditPage"
@@ -25,6 +25,24 @@
             "name": "search-input",
             "type": "components",
             "presenterClassName": "SearchInput"
+
+        },
+        {
+            "name": "health-check-page",
+            "type": "pages",
+            "presenterClassName": "HealthCheckPage"
+
+        },
+        {
+            "name": "run-results-page",
+            "type": "pages",
+            "presenterClassName": "RunResultsPage"
+
+        },
+        {
+            "name": "component-details-page",
+            "type": "pages",
+            "presenterClassName": "ComponentDetailsPage"
 
         }
     ],
