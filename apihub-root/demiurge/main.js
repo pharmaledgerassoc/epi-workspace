@@ -1,4 +1,5 @@
 import WebSkel from "./WebSkel/webSkel.js";
+const openDSU = require("opendsu");
 (async ()=>{
     window.webSkel = await WebSkel.initialise("./webskel-configs.json");
     let pageContent = document.querySelector("#page-content");
@@ -8,6 +9,7 @@ import WebSkel from "./WebSkel/webSkel.js";
     if(currentPage === ""){
         currentPage = "groups-page";
     }
+    webSkel.notificationHandler = openDSU.loadAPI("error");
     await webSkel.changeToDynamicPage(currentPage, currentPage);
 })();
 
