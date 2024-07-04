@@ -1,4 +1,4 @@
-export class LeftSidebar{
+export class IntegrationPage{
     constructor(element,invalidate) {
         this.element = element;
         this.invalidate = invalidate;
@@ -7,7 +7,5 @@ export class LeftSidebar{
     beforeRender(){
 
     }
-    async changePage(_target, page){
-        await webSkel.changeToDynamicPage(page, `${page}`);
-    }
+
 }

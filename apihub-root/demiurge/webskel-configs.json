@@ -9,6 +9,11 @@
             "name": "groups-page",
             "type": "pages",
             "presenterClassName": "GroupsPage"
+        },
+        {
+            "name": "integration-page",
+            "type": "pages",
+            "presenterClassName": "IntegrationPage"
         }
     ],
     "services": [
