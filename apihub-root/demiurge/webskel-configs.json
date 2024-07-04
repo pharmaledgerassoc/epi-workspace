@@ -52,7 +52,10 @@
         }
     ],
     "services": [
-
+        {
+            "name": "AuditService",
+            "path": "../services/AuditService.js"
+        }
     ],
     "webComponentsRootDir": "web-components",
     "defaultPage": "landing-page",
