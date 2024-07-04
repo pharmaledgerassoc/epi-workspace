@@ -88,7 +88,7 @@ export class AuditPage {
             this.inputValue = formData.data.userId;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
+            //let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
             if (logs.length > 0) {
                 this.logs = logs;
                 this.userIdFilter = `username == ${this.inputValue}`;
@@ -100,9 +100,9 @@ export class AuditPage {
                 }
                 this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                 this.firstElementTimestamp = this.logs[0].__timestamp;
-                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
+                this.searchResultIcon = "<img class='result-icon' src='./assets/images/icons/check.svg' alt='check'>";
             } else {
-                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/images/icons/ban.svg' alt='ban'>";
             }
             this.focusInput = true;
             this.invalidate();
