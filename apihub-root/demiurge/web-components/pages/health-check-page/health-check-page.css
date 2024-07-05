@@ -20,7 +20,8 @@ health-check-page{
 .table {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    color: var(--grey-text);
+    border: 1px solid var(--very-light-grey);
+    border-radius: 5px;
 }
 .table div {
     padding: 0.75rem;
@@ -30,15 +31,14 @@ health-check-page{
 }
 .column-header {
     padding: 0.75rem;
-    background: var(--table-header);
-    border-bottom: 1px solid var(--grey-white-border);
-    border-top: 1px solid var(--grey-white-border);
+    font-weight: bold;
+    background: var(--tab-color);
 }
 .first-column{
-    border-left: 1px solid var(--grey-white-border);
+    border-top-left-radius: 5px;
 }
 .last-column{
-    border-right: 1px solid var(--grey-white-border);
+    border-top-right-radius: 5px;
     display: flex;
     justify-content: center;
 }

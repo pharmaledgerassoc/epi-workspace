@@ -59,7 +59,7 @@
     --dw-custom-warning-color-015: rgba(198, 155, 24, 0.15);
 
     /* New Variables */
-    --common-main-radius: 5px;
+    --default-border-radius: 5px;
 }
 *{
     box-sizing: border-box;

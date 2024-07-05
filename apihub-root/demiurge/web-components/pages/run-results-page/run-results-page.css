@@ -23,11 +23,9 @@ run-results-page{
     color: var(--grey-text);
 }
 .table div {
-    padding: 0.75rem;
+    padding: 0.50rem;
 }
-.data-item{
-    border-bottom: 0.25px solid var(--very-light-grey);
-}
+
 .column-header {
     padding: 0.75rem;
     background: var(--table-header-grey);

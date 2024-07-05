@@ -16,7 +16,7 @@ audit-page {
     margin: 15px 0;
 }
 .data-item{
-    border-bottom: 0.25px solid var(--dw-app-color);
+    border-bottom: 0.25px solid var(--very-light-grey);
 }
 .input-container-container {
     display: flex;
