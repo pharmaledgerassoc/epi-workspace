@@ -406,7 +406,6 @@ export class GroupsPage {
 
     beforeRender() {
         const renderAdministrationGroup = () => {
-            this.selectedTab = "Administration";
         }
         const renderWriteGroup = () => {
         }
@@ -423,6 +422,8 @@ export class GroupsPage {
                 renderReadGroup()
                 break;
             default:
+                this.selectedTab = "Administration";
+
                 renderAdministrationGroup()
         }
         this.groupName = `"` + groupNames[this.selectedTab] + `"`;
@@ -475,5 +476,8 @@ export class GroupsPage {
         } catch (err) {
             console.error('Failed to read clipboard contents: ', err);
         }
+    }
+    async addMember(_target){
+
     }
 }
