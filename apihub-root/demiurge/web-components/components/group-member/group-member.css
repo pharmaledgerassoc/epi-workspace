@@ -6,6 +6,7 @@
     border: 1px solid var(--member-border);
     margin-bottom:10px;
     padding: 5px 15px;
+    cursor:pointer;
 }
 .member-data{
     display:flex;
@@ -29,7 +30,6 @@
 }
 .remove-member-button:hover{
     background: var(--dw-app-color);
-    cursor:pointer;
     color:white;
 }
 .remove-member-button:hover .remove-member-button-icon{

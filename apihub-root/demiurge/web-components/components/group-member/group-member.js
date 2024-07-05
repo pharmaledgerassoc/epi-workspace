@@ -18,8 +18,8 @@ export class GroupMember {
 
     afterRender() {
     }
-    openMemberPage(_target){
-
+    async openMemberPage(_target){
+        await webSkel.changeToDynamicPage('member-page','member-page');
     }
 
 

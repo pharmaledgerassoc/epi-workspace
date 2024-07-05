@@ -11,6 +11,11 @@
             "presenterClassName": "GroupsPage"
         },
         {
+            "name": "member-page",
+            "type": "pages",
+            "presenterClassName": "MemberPage"
+        },
+        {
             "name": "integration-page",
             "type": "pages",
             "presenterClassName": "IntegrationPage"
