@@ -15,13 +15,18 @@ import mockData from "./MockData.js";
         presenterName = "groups-page";
     }
     webSkel.notificationHandler = openDSU.loadAPI("error");
-    webSkel.client = getInstance();
+    webSkel.client = getInstance("default");
+    let promises = []
     for(let item of mockData.devUserLogs){
-        await $$.promisify(webSkel.client.addAuditLog)(item);
+        promises.push($$.promisify(webSkel.client.addAuditLog)(item));
     }
     for(let item of mockData.userLogs){
-        await $$.promisify(webSkel.client.addAuditLog)(item);
+        promises.push($$.promisify(webSkel.client.addAuditLog)(item));
     }
+    for(let item of mockData.healthChecks){
+        promises.push($$.promisify(webSkel.client.addHealthCheck)(item));
+    }
+    await Promise.all(promises);
     await webSkel.changeToDynamicPage(presenterName, currentPage);
 })();
 
