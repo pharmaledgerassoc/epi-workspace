@@ -4,18 +4,14 @@ export class ComponentDetailsPage{
         this.invalidate = invalidate;
         let splitUrl = window.location.hash.split("/");
         this.id = splitUrl[1];
-        this.runId = splitUrl[2];
+        this.componentName = splitUrl[2];
         this.invalidate(async ()=>{
-            this.component = {
-                name: "Component Name",
-                status: "success",
-                logs:"Logs will be displayed here."
-            }
+            let run = await $$.promisify(webSkel.client.getHealthCheckPayload)(this.id);
+            this.component = run.components.find((component)=>component.name === this.componentName);
         });
     }
     beforeRender(){
-        this.componentName = this.component.name;
-        if(this.component.status === "success"){
+        if(this.component.status === "Success"){
             this.status = "Successful";
             this.statusColor = "success";
             this.statusMessage = "This check has passed."
@@ -30,6 +26,6 @@ export class ComponentDetailsPage{
     afterRender(){
     }
     async navigateToRunResultsPage(_target){
-        await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${this.runId}`);
+        await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${this.id}`);
     }
 }

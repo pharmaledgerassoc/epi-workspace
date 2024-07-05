@@ -15,7 +15,8 @@ const getEnclaveInstance = (domain) => {
 
 function MockEPISORClient(domain) {
     const TABLES = {
-        HEALTH_CHECK: "health_check",
+        HEALTH_CHECK_HEADERS: "health_check_headers",
+        HEALTH_CHECK_PAYLOADS: "health_check_payloads",
         AUDIT_LOGS: "audit_logs"
     }
 
@@ -27,9 +28,25 @@ function MockEPISORClient(domain) {
     this.addHealthCheck = (healthCheckDetails, callback) => {
         const pk = this.uint8ArrayToHexString(cryptoAPI.generateRandom(32));
         const enclaveInstance = getEnclaveInstance(domain);
-        enclaveInstance.insertRecord(undefined, TABLES.HEALTH_CHECK, pk, healthCheckDetails.payload, callback);
+        enclaveInstance.insertRecord(undefined, TABLES.HEALTH_CHECK_HEADERS, pk, healthCheckDetails, (err) => {
+            if (err) {
+                return callback(err);
+            }
+            callback(undefined, pk);
+            enclaveInstance.insertRecord(undefined, TABLES.HEALTH_CHECK_PAYLOADS, pk, healthCheckDetails.payload, callback);
+        });
     }
-    this.filterHealthChecks = (start, number, sort, query, callback) => {
+    this.getHealthCheckPayload = (pk, callback) => {
+        const enclaveInstance = getEnclaveInstance(domain);
+        enclaveInstance.getRecord(undefined, TABLES.HEALTH_CHECK_PAYLOADS, pk, (err, payload) => {
+            if (err) {
+                return callback(err);
+            }
+            callback(undefined, payload);
+        });
+
+    }
+    this.filterHealthChecksMetadata = (start, number, sort, query, callback) => {
         if (typeof number === "function") {
             callback = number
             query = start
@@ -51,7 +68,7 @@ function MockEPISORClient(domain) {
             number = undefined;
         }
         const enclaveInstance = getEnclaveInstance(domain);
-        enclaveInstance.filter(undefined, TABLES.HEALTH_CHECK, query, sort, number, callback);
+        enclaveInstance.filter(undefined, TABLES.HEALTH_CHECK_HEADERS, query, sort, number, callback);
     }
     this.addAuditLog = (logDetails, callback) => {
         const pk = this.uint8ArrayToHexString(cryptoAPI.generateRandom(32));
