@@ -208,10 +208,17 @@ export class GroupsPage {
 
     beforeRender() {
         const renderAdministrationGroup = () => {
+            this.dataRecoveryButton="";
         }
         const renderWriteGroup = () => {
+           this.dataRecoveryButton=`
+            <button class="add-member-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal">
+                <span class="member-button-label">Data Recovery Key</span>
+            </button>
+        `
         }
         const renderReadGroup = () => {
+            this.dataRecoveryButton="";
         }
         switch (this.selectedTab) {
             case "Administration":
@@ -287,5 +294,8 @@ export class GroupsPage {
         const memberToRemove=webSkel.reverseQuerySelector(_target,'group-member');
         memberToRemove.remove();
         //this.invalidate();
+    }
+    async openDataRecoveryKeyModal(_target){
+        const modal= await webSkel.showModal("data-recovery-key-modal");
     }
 }

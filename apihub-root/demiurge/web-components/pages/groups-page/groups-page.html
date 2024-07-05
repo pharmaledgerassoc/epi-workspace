@@ -14,8 +14,13 @@
         </div>
     </div>
     <div id="groups-page-body">
-        <p>
-        <h3 class="remove-bold"> Manage members of $$groupName group</h3></p>
+        <div id="groups-page-body-header">
+            <h3 class="remove-bold"> Manage members of $$groupName group</h3>
+            $$dataRecoveryButton
+            <button class="add-member-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal" style="display:none">
+                <span class="member-button-label">Data Recovery Key</span>
+            </button>
+        </div>
         <div id="add-member-container">
             <p><h4 class="remove-bold">Member DID</h4></p>
             <div id="member-did-container">
@@ -23,11 +28,11 @@
                     <input type="text" id="member-did-text" placeholder="did:ssi:domain:<username>">
                     <div id="paste-button" data-local-action="paste">Paste</div>
                 </div>
-                <button id="add-member-button" disabled data-local-action="addMember">
+                <button class="add-member-button" disabled data-local-action="addMember">
                     <div id="add-member-icon">
 
                     </div>
-                    <span id="add-member-label">Add Member</span>
+                    <span class="member-button-label">Add Member</span>
                 </button>
             </div>
         </div>

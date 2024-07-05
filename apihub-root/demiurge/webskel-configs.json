@@ -54,6 +54,11 @@
             "name": "group-member",
             "type": "components",
             "presenterClassName": "GroupMember"
+        },
+        {
+            "name": "data-recovery-key-modal",
+            "type": "modals",
+            "presenterClassName": "DataRecoveryKeyModal"
         }
     ],
     "services": [
