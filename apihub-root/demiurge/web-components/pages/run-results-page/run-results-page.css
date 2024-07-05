@@ -21,6 +21,7 @@ run-results-page{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     color: var(--grey-text);
+    border-radius: var(--default-border-radius);
 }
 .table div {
     padding: 0.50rem;
@@ -34,9 +35,11 @@ run-results-page{
 }
 .first-column{
     border-left: 1px solid var(--grey-white-border);
+    border-top-left-radius: var(--default-border-radius);
 }
 .last-column{
     border-right: 1px solid var(--grey-white-border);
+    border-top-right-radius: var(--default-border-radius);
     display: flex;
     justify-content: center;
 }

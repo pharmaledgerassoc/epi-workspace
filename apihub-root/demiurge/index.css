@@ -96,7 +96,7 @@ body {
     width: 450px;
     border: 1px solid var(--dw-app-color);
     padding: 10px;
-    border-radius: 8px;
+    border-radius: var(--default-border-radius);
     font-size: 14px;
 }
 .form-label{
@@ -105,11 +105,15 @@ body {
 .default-button{
     font-size: 17px;
     background-color: var(--dw-app-color);
-    border: 1px solid var(--dw-app-color);
+    border: none;
     color: white;
     padding: 10px 16px;
-    border-radius: 5px;
+    border-radius: var(--default-border-radius);
     cursor: pointer;
+}
+.default-button.disabled {
+    cursor: initial;
+    background-color: var(--very-light-grey);
 }
 #page-content {
     --background: #FFFFFF;

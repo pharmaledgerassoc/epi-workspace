@@ -30,7 +30,7 @@ component-details-page{
 .logs{
     font-family: 'courier new', monospace;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: var(--default-border-radius);
     border: 1px solid var(--very-light-grey);
     width: 100%;
     height: calc(100vh - 265px);

@@ -12,18 +12,7 @@ export class AuditPage {
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                //this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
-                this.logs = [];
-                for(let i = 0; i < 20; i++){
-                    this.logs.push({
-                        username: i,
-                        userDID: "did:demo:123",
-                        userGroup: "Admin",
-                        action: "Access Wallet",
-                        __timestamp: Date.now()
-                    });
-                }
-
+                this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.logsNumber, "dsc", query);
                 if (this.logs && this.logs.length > 0) {
                     if (this.logs.length === this.logsNumber) {
                         this.logs.pop();
@@ -41,10 +30,11 @@ export class AuditPage {
     beforeRender(){
         let string = "";
         for (let item of this.logs) {
-            string += ` <div class="data-item">${item.username}</div>
-                        <div class="data-item">${item.action}</div>
-                        <div class="data-item">${item.userDID}</div>
-                        <div class="data-item">${item.userGroup}</div>
+            let payload = item.payload;
+            string += ` <div class="data-item">${payload.username}</div>
+                        <div class="data-item">${payload.action}</div>
+                        <div class="data-item">${payload.userDID}</div>
+                        <div class="data-item">${payload.userGroup}</div>
                         <div class="data-item">${new Date(item.__timestamp).toISOString()}</div>`;
         }
         this.items = string;
