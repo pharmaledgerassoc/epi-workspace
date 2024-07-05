@@ -384,13 +384,13 @@ export class GroupsPage {
 
     getGroupData(groupId) {
         const getAdministrationGroupMembers = () => {
-            return mockData["administrationGroup"]
+            return mockData["administrationGroup"]||[]
         }
         const getWriteGroupMembers = () => {
-            return mockData["writeGroup"]
+            return mockData["writeGroup"]||[]
         }
         const getReadGroupMembers = () => {
-            return mockData["readGroup"]
+            return mockData["readGroup"]||[]
         }
         switch (groupId) {
             case "Administration":
@@ -423,13 +423,12 @@ export class GroupsPage {
                 break;
             default:
                 this.selectedTab = "Administration";
-
                 renderAdministrationGroup()
         }
         this.groupName = `"` + groupNames[this.selectedTab] + `"`;
         if (this.groupMembers.length > 0) {
             this.groupMembersMarkup = this.groupMembers
-                .map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-group="${member.group}" data-userDID="${member.DID} data-groupDID="${member.groupDID}"></group-member>`)
+                .map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-group="${member.group}" data-userDID="${member.DID}" data-groupDID="${member.groupDID}"></group-member>`)
                 .join("");
         } else {
             this.groupMembersMarkup = `<div class="empty-group-container">There are no members in this group!</div>`;
@@ -479,5 +478,12 @@ export class GroupsPage {
     }
     async addMember(_target){
 
+
+    }
+
+    async removeMember(_target){
+        const memberToRemove=webSkel.reverseQuerySelector(_target,'group-member');
+        memberToRemove.remove();
+        //this.invalidate();
     }
 }

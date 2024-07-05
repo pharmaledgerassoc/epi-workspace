@@ -7,23 +7,26 @@
             <span class="tab-header-label">ePI Administration Group</span>
         </div>
         <div class="tab-header" id="Write" data-local-action="changeTab Write">
-            <span class="tab-header-label" >ePI Write Group</span>
+            <span class="tab-header-label">ePI Write Group</span>
         </div>
         <div class="tab-header" id="Read" data-local-action="changeTab Read">
             <span class="tab-header-label">ePI Read Group</span>
         </div>
     </div>
     <div id="groups-page-body">
-        <p>Manage members of $$groupName group</p>
+        <p>
+        <h3 class="remove-bold"> Manage members of $$groupName group</h3></p>
         <div id="add-member-container">
-            <p>Member DID</p>
+            <p><h4 class="remove-bold">Member DID</h4></p>
             <div id="member-did-container">
                 <div id="member-did-input">
                     <input type="text" id="member-did-text" placeholder="did:ssi:domain:<username>">
-                    <div id="paste-button" data-local-action="paste" >Paste</div>
+                    <div id="paste-button" data-local-action="paste">Paste</div>
                 </div>
                 <button id="add-member-button" disabled data-local-action="addMember">
-                    <span id="add-member-icon">+</span>
+                    <div id="add-member-icon">
+
+                    </div>
                     <span id="add-member-label">Add Member</span>
                 </button>
             </div>

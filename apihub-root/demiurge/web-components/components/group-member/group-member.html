@@ -1,4 +1,9 @@
-<div>username: $$username</div>
-<div>userDID: $$userDID</div>
-<div>group: $$group</div>
-<div>groupDID: $$groupDID</div>
+<div class="member-container">
+    <div class="member-data" data-local-action="openMemberPage">
+        <div class="member-username"><strong>$$username</strong></div>
+        <div class="member-did"><code>$$userDID</code></div>
+    </div>
+    <button class="remove-member-button" data-local-action="removeMember">
+        <div class="remove-member-button-icon"></div>
+    </button>
+</div>

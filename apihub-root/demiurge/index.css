@@ -60,6 +60,9 @@
 
     /* New Variables */
     --common-main-radius: 5px;
+    --members-background: rgb(244,244,245);
+    --member-border: rgb(228,228,231);
+    --enabled-button-highlight:rgb(3,150,101);
 }
 *{
     box-sizing: border-box;
@@ -173,7 +176,7 @@ dialog[class="spinner"] {
 }
 
 .dw-data-grid {
-    --border-color: rgb(var(--sl-color-gray-200));
+    --border-color: rgb(228,228,231);
     --border: 1px solid var(--border-color);
     --background: rgb(var(--sl-input-background-color));
     --check-background: rgb(var(--sl-color-gray-300));
@@ -467,5 +470,8 @@ select:-moz-focusring {
     justify-content: center;
     padding-right: 1.25rem;
     pointer-events: all;
+}
+.remove-bold{
+    font-weight: normal;
 }
 

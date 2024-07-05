@@ -18,4 +18,9 @@ export class GroupMember {
 
     afterRender() {
     }
+    openMemberPage(_target){
+
+    }
+
+
 }
