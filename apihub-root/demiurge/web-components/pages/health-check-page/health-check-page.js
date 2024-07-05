@@ -12,7 +12,7 @@ export class HealthCheckPage {
         this.setPaginationDefaultValues();
         this.loadRuns = (query) => {
             this.invalidate(async () => {
-                this.healthChecks = await $$.promisify(webSkel.client.filterHealthChecks)(undefined, this.itemsNumber, "dsc", query);
+                this.healthChecks = await $$.promisify(webSkel.client.filterHealthChecksMetadata)(undefined, this.itemsNumber, "dsc", query);
                 if (this.healthChecks && this.healthChecks.length > 0) {
                     if (this.healthChecks.length === this.itemsNumber) {
                         this.healthChecks.pop();
@@ -33,7 +33,7 @@ export class HealthCheckPage {
         for (let item of this.healthChecks) {
             string += ` <div class="data-item">${item.date}</div>
                         <div class="data-item">${item.status}</div>
-                        <div class="data-item view-details" data-local-action="navigateToHealthCheckRun ${item.id}">View Details</div>`;
+                        <div class="data-item view-details" data-local-action="navigateToHealthCheckRun ${item.pk}">View Details</div>`;
         }
         this.items = string;
     }
@@ -73,7 +73,7 @@ export class HealthCheckPage {
             this.loadRuns(query);
         }
     }
-    async navigateToHealthCheckRun(_target, id){
-        await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${id}`);
+    async navigateToHealthCheckRun(_target, pk){
+        await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
     }
 }

@@ -14,7 +14,7 @@ const devUserAuditLog = {
 
 };
 const userAuditLog = {
-    "payload":{
+    "payload": {
         "userId": "user",
         "username": "user",
         "action": "Wallet Access",
@@ -23,17 +23,32 @@ const userAuditLog = {
     }
 };
 const healthCheckRun = {
-    "payload":{
-        "date": "2020-02-20T14:00:00",
-        "status": "Success",
-        "id": "1234",
-        "healthCheck": "Health Check"
+    "date": "2020-02-20T14:00:00",
+    "status": "Success",
+    "id": "1234",
+    "healthCheck": "Health Check",
+    "payload": {
+        components: [{
+            "name": "Component_1",
+            "status": "Success",
+            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        },
+        {
+            "name": "Component_2",
+            "status": "Success",
+            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        },
+        {
+            "name": "Component_3",
+            "status": "Success",
+            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        }]
     }
 }
 let devUserLogs = [];
 let userLogs = [];
 let healthChecks = [];
-for(let i = 0; i < 17; i++){
+for (let i = 0; i < 17; i++) {
     let newDevUserAuditLog = JSON.parse(JSON.stringify(devUserAuditLog));
     newDevUserAuditLog.payload.action = actions[Math.floor(Math.random() * actions.length)];
     newDevUserAuditLog.payload.userDID = i;

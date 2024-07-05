@@ -2,24 +2,17 @@ export class RunResultsPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.id = window.location.hash.split("/")[1];
+        this.pk = window.location.hash.split("/")[1];
         this.invalidate(async () => {
-            this.items = [];
-            for (let i = 0; i < 6; i++) {
-                this.items.push({
-                    id: i,
-                    subcomponent: "Security check",
-                    status: "Success",
-                });
-            }
+            this.check = await $$.promisify(webSkel.client.getHealthCheckPayload)(this.pk);
         });
     }
     beforeRender() {
         let string = "";
-        for (let item of this.items) {
-            string += ` <div class="data-item">${item.subcomponent}</div>
+        for (let item of this.check.components) {
+            string += ` <div class="data-item">${item.name}</div>
                         <div class="data-item">${item.status}</div>
-                        <div class="data-item view-details" data-local-action="navigateToComponentDetailsPage ${item.id}">View Details</div>`;
+                        <div class="data-item view-details" data-local-action="navigateToComponentDetailsPage ${item.name}">View Details</div>`;
         }
         this.items = string;
     }
@@ -31,8 +24,8 @@ export class RunResultsPage {
             this.element.insertAdjacentHTML("beforeend", noData)
         }
     }
-    async navigateToComponentDetailsPage(_target, id){
-        await webSkel.changeToDynamicPage("component-details-page", `component-details-page/${this.id}/${id}`);
+    async navigateToComponentDetailsPage(_target, name){
+        await webSkel.changeToDynamicPage("component-details-page", `component-details-page/${this.pk}/${name}`);
     }
     async navigateToHealthCheckPage(){
         await webSkel.changeToDynamicPage("health-check-page", "health-check-page");
