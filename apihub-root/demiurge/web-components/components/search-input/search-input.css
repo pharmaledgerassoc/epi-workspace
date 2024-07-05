@@ -1,5 +1,5 @@
 search-input input {
-    border-radius: 4px;
+    border-radius: var(--default-border-radius);
     padding: 4px 4px 4px 8px;
     border: 1px solid var(--dw-app-color);
     font-size: 0.8rem;

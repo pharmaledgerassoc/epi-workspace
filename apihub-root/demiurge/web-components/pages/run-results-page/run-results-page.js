@@ -5,11 +5,11 @@ export class RunResultsPage {
         this.id = window.location.hash.split("/")[1];
         this.invalidate(async () => {
             this.items = [];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 6; i++) {
                 this.items.push({
                     id: i,
-                    subcomponent: i,
-                    status: "did:demo:123",
+                    subcomponent: "Security check",
+                    status: "Success",
                 });
             }
         });

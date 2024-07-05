@@ -12,11 +12,11 @@ audit-page {
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
-    border-radius: 7px;
+    border-radius: var(--default-border-radius);
     margin: 15px 0;
 }
 .data-item{
-    border-bottom: 0.25px solid var(--dw-app-color);
+    border-bottom: 0.25px solid var(--very-light-grey);
 }
 .input-container-container {
     display: flex;
@@ -28,7 +28,7 @@ audit-page {
 }
 
 .table {
-    border-radius: 7px;
+    border-radius: var(--default-border-radius);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     border: 1px solid var(--very-light-grey);
@@ -46,11 +46,11 @@ audit-page {
 }
 
 .first-column {
-    border-top-left-radius: 7px;
+    border-top-left-radius: var(--default-border-radius);
 }
 
 .last-column {
-    border-top-right-radius: 7px;
+    border-top-right-radius: var(--default-border-radius);
 }
 .result-icon {
     height: 10px;
@@ -68,12 +68,7 @@ audit-page {
 }
 
 .pagination-btn {
-    cursor: pointer;
-    background-color: var(--dw-app-color);
-    border: none;
-    color: white;
     padding: 8px 16px;
-    border-radius: 5px;
     font-size: 0.75rem;
     font-weight: bolder;
 }

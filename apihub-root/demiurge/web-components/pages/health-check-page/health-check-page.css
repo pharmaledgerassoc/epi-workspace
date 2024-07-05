@@ -20,7 +20,8 @@ health-check-page{
 .table {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    color: var(--grey-text);
+    border: 1px solid var(--very-light-grey);
+    border-radius: var(--default-border-radius);
 }
 .table div {
     padding: 0.75rem;
@@ -30,15 +31,14 @@ health-check-page{
 }
 .column-header {
     padding: 0.75rem;
-    background: var(--table-header);
-    border-bottom: 1px solid var(--grey-white-border);
-    border-top: 1px solid var(--grey-white-border);
+    font-weight: bold;
+    background: var(--tab-color);
 }
 .first-column{
-    border-left: 1px solid var(--grey-white-border);
+    border-top-left-radius: var(--default-border-radius);
 }
 .last-column{
-    border-right: 1px solid var(--grey-white-border);
+    border-top-right-radius: var(--default-border-radius);
     display: flex;
     justify-content: center;
 }
@@ -57,4 +57,20 @@ health-check-page{
 }
 .no-data{
     padding-left: 28px;
+}
+
+.table-pagination {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-btn {
+    font-size: 0.75rem;
+    font-weight: bolder;
+    padding: 8px 16px;
+}
+
+.margin-right {
+    margin-right: 16px;
 }
