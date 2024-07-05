@@ -19,7 +19,7 @@ export class GroupMember {
     afterRender() {
     }
     async openMemberPage(_target){
-        await webSkel.changeToDynamicPage('member-page','member-page');
+        await webSkel.changeToDynamicPage('member-page',`member-page?userDID=${this.userDID}`,{userDID: this.userDID});
     }
 
 

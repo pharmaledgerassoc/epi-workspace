@@ -88,6 +88,12 @@ body {
 *::-webkit-scrollbar {
     display: none;
 }
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;  /* Chrome, Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* Internet Explorer/Edge */
+}
 /*forms*/
 .form-item{
     display: flex;

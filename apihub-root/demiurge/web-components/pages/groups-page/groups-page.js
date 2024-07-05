@@ -180,7 +180,7 @@ export class GroupsPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
-            this.groupMembers = await this.getGroupData("Administration");
+            this.groupMembers = await this.getGroupData("Administration"); //replace with API call
         });
     }
 
