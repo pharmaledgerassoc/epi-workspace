@@ -57,6 +57,9 @@
     --dw-custom-danger-color-015: rgba(210, 13, 13, 0.15);
     --dw-custom-warning-color-100: rgba(198, 155, 24, 1);
     --dw-custom-warning-color-015: rgba(198, 155, 24, 0.15);
+
+    /* New Variables */
+    --common-main-radius: 5px;
 }
 *{
     box-sizing: border-box;
