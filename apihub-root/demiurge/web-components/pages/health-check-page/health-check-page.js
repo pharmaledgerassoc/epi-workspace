@@ -3,7 +3,7 @@ export class HealthCheckPage {
         this.element = element;
         this.invalidate = invalidate;
         this.setPaginationDefaultValues = ()=>{
-            this.logsNumber = 16;
+            this.itemsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
             this.lastElementTimestamp = undefined;
@@ -12,23 +12,12 @@ export class HealthCheckPage {
         this.setPaginationDefaultValues();
         this.loadRuns = (query) => {
             this.invalidate(async () => {
-                //this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
-                this.healthChecks = [];
-                for(let i = 0; i < 16; i++){
-                    this.healthChecks.push({
-                        username: i,
-                        userDID: "did:demo:123",
-                        userGroup: "Admin",
-                        action: "Access Wallet",
-                        __timestamp: Date.now()
-                    });
-                }
-
+                this.healthChecks = await $$.promisify(webSkel.client.filterHealthChecks)(undefined, this.itemsNumber, "dsc", query);
                 if (this.healthChecks && this.healthChecks.length > 0) {
-                    if (this.healthChecks.length === this.logsNumber) {
+                    if (this.healthChecks.length === this.itemsNumber) {
                         this.healthChecks.pop();
                         this.disableNextBtn = false;
-                    } else if (this.healthChecks.length < this.logsNumber) {
+                    } else if (this.healthChecks.length < this.itemsNumber) {
                         this.disableNextBtn = true;
                     }
                     this.lastElementTimestamp = this.healthChecks[this.healthChecks.length - 1].__timestamp;
@@ -68,7 +57,8 @@ export class HealthCheckPage {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            //TODO to <= after changing storage strategy
+            let query = [`__timestamp >= ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
     }
@@ -78,7 +68,8 @@ export class HealthCheckPage {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            //TODO to < after changing storage strategy
+            let query = [`__timestamp > ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
     }

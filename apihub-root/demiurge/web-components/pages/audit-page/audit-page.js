@@ -3,7 +3,7 @@ export class AuditPage {
         this.element = element;
         this.invalidate = invalidate;
         this.setPaginationDefaultValues = ()=>{
-            this.logsNumber = 16;
+            this.itemsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
             this.lastElementTimestamp = undefined;
@@ -12,12 +12,13 @@ export class AuditPage {
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.logsNumber, "dsc", query);
+                //always returns ascending order using memoryStorageStrategy
+                this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.itemsNumber, "dsc", query);
                 if (this.logs && this.logs.length > 0) {
-                    if (this.logs.length === this.logsNumber) {
+                    if (this.logs.length === this.itemsNumber) {
                         this.logs.pop();
                         this.disableNextBtn = false;
-                    } else if (this.logs.length < this.logsNumber) {
+                    } else if (this.logs.length < this.itemsNumber) {
                         this.disableNextBtn = true;
                     }
                     this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
@@ -30,11 +31,10 @@ export class AuditPage {
     beforeRender(){
         let string = "";
         for (let item of this.logs) {
-            let payload = item.payload;
-            string += ` <div class="data-item">${payload.username}</div>
-                        <div class="data-item">${payload.action}</div>
-                        <div class="data-item">${payload.userDID}</div>
-                        <div class="data-item">${payload.userGroup}</div>
+            string += ` <div class="data-item">${item.userId}</div>
+                        <div class="data-item">${item.action}</div>
+                        <div class="data-item">${item.userDID}</div>
+                        <div class="data-item">${item.userGroup}</div>
                         <div class="data-item">${new Date(item.__timestamp).toISOString()}</div>`;
         }
         this.items = string;
@@ -78,14 +78,14 @@ export class AuditPage {
             this.inputValue = formData.data.userId;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            //let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.itemsNumber, "dsc", ["__timestamp > 0", `userId == ${this.inputValue}`]);
             if (logs.length > 0) {
                 this.logs = logs;
-                this.userIdFilter = `username == ${this.inputValue}`;
-                if (this.logs.length === this.logsNumber) {
+                this.userIdFilter = `userId == ${this.inputValue}`;
+                if (this.logs.length === this.itemsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;
-                } else if (this.logs.length < this.logsNumber) {
+                } else if (this.logs.length < this.itemsNumber) {
                     this.disableNextBtn = true;
                 }
                 this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
@@ -103,6 +103,7 @@ export class AuditPage {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";
+        this.userIdFilter = "";
         this.loadLogs(["__timestamp > 0"]);
     }
 
@@ -121,7 +122,8 @@ export class AuditPage {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            //TODO to <= after changing storage strategy
+            let query = [`__timestamp >= ${this.firstElementTimestamp}`];
             if(this.userIdFilter){
                 query.push(this.userIdFilter);
             }
@@ -134,7 +136,8 @@ export class AuditPage {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            //TODO to < after changing storage strategy
+            let query = [`__timestamp > ${this.firstElementTimestamp}`];
             if(this.userIdFilter){
                 query.push(this.userIdFilter);
             }
