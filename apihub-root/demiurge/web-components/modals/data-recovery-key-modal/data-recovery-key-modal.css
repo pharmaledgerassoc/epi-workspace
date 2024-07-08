@@ -86,7 +86,14 @@ dialog {
     width: max-content;
     white-space: nowrap;
 }
-
+#modal-exit{
+    display:flex;
+    align-items:center;
+}
+#close-modal-icon{
+    width:24px;
+    height:24px;
+}
 .modal-action-button:disabled {
     background-color: #AAAFAE;
 }

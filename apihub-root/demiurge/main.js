@@ -5,7 +5,12 @@ import {getInstance} from "./MockClient.js";
 import mockData from "./MockData.js";
 
 function registerGlobalActions() {
-    async function pasteToField(_target,fieldId) {
+    async function closeModal(_target) {
+        let modal = webSkel.reverseQuerySelector(_target, "dialog");
+        modal.close();
+        modal.remove();
+    }
+    async function pasteToField(_target, fieldId) {
         window.focus();
 
         const pasteInputLocation = document.getElementById(fieldId);
@@ -21,7 +26,7 @@ function registerGlobalActions() {
         pasteInputLocation.dispatchEvent(new Event('input'));
     }
 
-    function copyFieldValue(_target,fieldId) {
+    function copyFieldValue(_target, fieldId) {
         const element = document.getElementById(fieldId);
         if (!element) {
             throw new Error(`Element with id ${fieldId} not found`);
@@ -37,6 +42,7 @@ function registerGlobalActions() {
 
     webSkel.registerAction("pasteToField", pasteToField);
     webSkel.registerAction("copyFieldValue", copyFieldValue);
+    webSkel.registerAction("closeModal", closeModal);
 }
 
 (async () => {
@@ -69,7 +75,7 @@ function registerGlobalActions() {
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 })();
 
-function renderToast(message, type, timeoutValue = 15000){
+function renderToast(message, type, timeoutValue = 15000) {
     let toastContainer = document.querySelector(".toast-container");
     toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
 }
