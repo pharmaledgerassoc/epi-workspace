@@ -44,6 +44,7 @@ booting-identity-page{
     justify-content: flex-end;
 }
 .create-identity-button{
+    justify-content: center;
     color: white;
     display: flex;
     align-items: center;
@@ -63,4 +64,10 @@ booting-identity-page{
     -webkit-mask-size: contain;
     mask-image: url("../../../demiurge/assets/images/icons/shield-fill-plus.svg");
     margin-right: 10px;
+}
+.remove::before{
+    content: none !important;
+}
+.disabled-btn{
+    background-color: var(--dw-app-disabled-color);
 }
