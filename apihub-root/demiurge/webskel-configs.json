@@ -65,10 +65,16 @@
             "type": "modals",
             "presenterClassName": "CreateIdentityModal"
         },
+
         {
             "name": "break-glass-recovery-code-modal",
             "type": "modals",
             "presenterClassName": "BreakGlassRecoveryCodeModal"
+        },
+        {
+            "name": "waiting-access-modal",
+            "type": "modals",
+            "presenterClassName": "WaitingAccessModal"
         },
         {
             "name": "my-identities-page",

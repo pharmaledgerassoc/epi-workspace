@@ -18,6 +18,11 @@ export class BootingIdentityPage {
             initialiseIdentityModal.close();
             initialiseIdentityModal.remove();
             const createdIdentityModal = await webSkel.showModal("break-glass-recovery-code-modal");
+            setTimeout(async()=>{
+                createdIdentityModal.close();
+                createdIdentityModal.remove();
+                const waitingAccessModal = await webSkel.showModal("waiting-access-modal");
+            },3000)
         }, 4000); //artificial delay for UI testing
 
     }
