@@ -5,9 +5,15 @@ export class SidebarMenu {
         this.invalidate();
     }
     beforeRender(){
+        if(window.location.hash.slice(1).split("/")[0] === "booting-identity-page"){
+            this.element.classList.add("no-identity");
+            this.hasIdentity = false;
+        }
     }
     afterRender(){
-        this.highlightCurrentSelection(window.location.hash.slice(1));
+        if(this.hasIdentity){
+            this.highlightCurrentSelection(window.location.hash.slice(1));
+        }
     }
     async changePage(_target, page){
         await webSkel.changeToDynamicPage(page, `${page}`);

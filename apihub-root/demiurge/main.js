@@ -28,7 +28,10 @@ function registerGlobalActions() {
         }
         window.focus();
         navigator.clipboard.writeText(element.value)
-            .then(() => console.log('Text copied to clipboard'))
+            .then(() => {
+                console.log('Text copied to clipboard')
+                webSkel.renderToast("Copied to clipboard!", "info", 5000);
+            })
             .catch(err => console.error('Error copying text: ', err));
     }
 
@@ -41,7 +44,6 @@ function registerGlobalActions() {
     registerGlobalActions();
     webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
     let pageContent = document.querySelector("#page-content");
-    pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`)
     webSkel.setDomElementForPages(pageContent);
     let currentPage = window.location.hash.slice(1);
     let presenterName = currentPage.split("/")[0];
@@ -61,7 +63,13 @@ function registerGlobalActions() {
     for (let item of mockData.healthChecks) {
         promises.push($$.promisify(webSkel.client.addHealthCheck)(item));
     }
+    webSkel.renderToast = renderToast;
     await Promise.all(promises);
     await webSkel.changeToDynamicPage(presenterName, currentPage);
+    pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 })();
 
+function renderToast(message, type, timeoutValue = 15000){
+    let toastContainer = document.querySelector(".toast-container");
+    toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
+}

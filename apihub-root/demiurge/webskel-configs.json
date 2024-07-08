@@ -59,6 +59,21 @@
             "name": "data-recovery-key-modal",
             "type": "modals",
             "presenterClassName": "DataRecoveryKeyModal"
+        },
+        {
+            "name": "my-identities-page",
+            "type": "pages",
+            "presenterClassName": "MyIdentitiesPage"
+        },
+        {
+            "name": "message-toast",
+            "type": "components",
+            "presenterClassName": "MessageToast"
+        },
+        {
+            "name": "booting-identity-page",
+            "type": "pages",
+            "presenterClassName": "BootingIdentityPage"
         }
     ],
     "services": [
