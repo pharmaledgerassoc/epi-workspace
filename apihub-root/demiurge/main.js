@@ -32,13 +32,6 @@ function registerGlobalActions() {
         if (!element) {
             throw new Error(`Element with id ${fieldId} not found`);
         }
-
-
-        const validInputTypes = ['text', 'textarea'];
-        if (!validInputTypes.includes(element.type)) {
-            throw new Error(`Element with id ${fieldId} is not a valid input type`);
-        }
-
         window.focus();
         navigator.clipboard.writeText(element.value)
             .then(() => console.log('Text copied to clipboard'))
