@@ -63,6 +63,10 @@
     --member-border: rgb(228,228,231);
     --enabled-button-highlight:rgb(3,150,101);
     --default-border-radius: 5px;
+    --disabled-background: rgb(142 153 149);
+    --disabled-border: rgb(214 214 214);
+    --disabled-text: rgb(24 24 27);
+    --white: rgb(255,255,255);
 }
 *{
     box-sizing: border-box;

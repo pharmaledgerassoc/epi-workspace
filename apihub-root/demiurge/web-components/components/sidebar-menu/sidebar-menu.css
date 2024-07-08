@@ -66,3 +66,6 @@ sidebar-menu{
 #active span{
     color: var(--dw-active-item-color);
 }
+.no-identity .sidebar-item{
+    display: none;
+}

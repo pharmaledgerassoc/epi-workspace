@@ -69,6 +69,11 @@
             "name": "message-toast",
             "type": "components",
             "presenterClassName": "MessageToast"
+        },
+        {
+            "name": "booting-identity-page",
+            "type": "pages",
+            "presenterClassName": "BootingIdentityPage"
         }
     ],
     "services": [
