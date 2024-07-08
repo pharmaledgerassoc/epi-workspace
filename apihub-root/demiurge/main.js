@@ -16,12 +16,6 @@ function registerGlobalActions() {
         if (pasteInputLocation.readOnly) {
             throw new Error(`Element with id ${fieldId} is readonly.`);
         }
-
-        const validInputTypes = ['text', 'textarea'];
-        if (!validInputTypes.includes(pasteInputLocation.type)) {
-            throw new Error(`Element with id ${fieldId} is not a valid input type.`);
-        }
-
         const text = await navigator.clipboard.readText();
         pasteInputLocation.value = text;
         pasteInputLocation.dispatchEvent(new Event('input'));
