@@ -24,18 +24,4 @@ export class MemberPage{
 
     afterRender(){
     }
-
-    copyFieldValue(target, elementId) {
-        const element = this.element.querySelector(`#${elementId}`);
-        if (element) {
-            window.focus();
-            navigator.clipboard.writeText(element.value)
-                .then(() => console.log('Text copied to clipboard'))
-                .catch(err => console.error('Error copying text: ', err));
-        } else {
-            console.error(`Element with id ${elementId} not found`);
-        }
-    }
-
-
 }

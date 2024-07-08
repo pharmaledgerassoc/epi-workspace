@@ -89,7 +89,7 @@
     appearance: none;
 }
 
-.add-member-button {
+.groups-page-button {
     display:flex;
     background-color: var(--dw-app-color);
     gap:8px;
@@ -102,10 +102,10 @@
     white-space: nowrap;
 }
 
-.add-member-button:disabled {
+.groups-page-button:disabled {
     background-color: #AAAFAE;
 }
-.add-member-button:enabled:hover{
+.groups-page-button:enabled:hover{
         background-color: var(--enabled-button-highlight);
 }
 

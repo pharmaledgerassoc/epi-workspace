@@ -212,7 +212,7 @@ export class GroupsPage {
         }
         const renderWriteGroup = () => {
            this.dataRecoveryButton=`
-            <button class="add-member-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal">
+            <button class="groups-page-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal">
                 <span class="member-button-label">Data Recovery Key</span>
             </button>
         `
@@ -273,18 +273,7 @@ export class GroupsPage {
         const selectedTab = this.element.querySelector(`#${groupId}`);
         selectedTab?.classList.add('selected');
     }
-    async paste(_target){
-        window.focus();
-        try {
-            const input = document.getElementById('member-did-text');
-            const text = await navigator.clipboard.readText();
-            const pasteLocation=this.element.querySelector('#member-did-text');
-            pasteLocation.value=text;
-            input.dispatchEvent(new Event('input'));
-        } catch (err) {
-            console.error('Failed to read clipboard contents: ', err);
-        }
-    }
+
     async addMember(_target){
 
 
