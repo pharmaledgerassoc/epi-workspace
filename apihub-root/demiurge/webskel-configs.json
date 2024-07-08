@@ -61,6 +61,16 @@
             "presenterClassName": "DataRecoveryKeyModal"
         },
         {
+            "name": "create-identity-modal",
+            "type": "modals",
+            "presenterClassName": "CreateIdentityModal"
+        },
+        {
+            "name": "break-glass-recovery-code-modal",
+            "type": "modals",
+            "presenterClassName": "BreakGlassRecoveryCodeModal"
+        },
+        {
             "name": "my-identities-page",
             "type": "pages",
             "presenterClassName": "MyIdentitiesPage"
