@@ -3,6 +3,7 @@ import WebSkel from "./WebSkel/webSkel.js";
 const openDSU = require("opendsu");
 import {getInstance} from "./MockClient.js";
 import mockData from "./MockData.js";
+import constants from "./constants.js";
 
 function registerGlobalActions() {
     async function closeModal(_target) {
@@ -58,6 +59,7 @@ function registerGlobalActions() {
         presenterName = "groups-page";
     }
     webSkel.notificationHandler = openDSU.loadAPI("error");
+    await setupGlobalErrorHandlers();
     webSkel.client = getInstance("default");
     let promises = []
     for (let item of mockData.devUserLogs) {
@@ -75,6 +77,24 @@ function registerGlobalActions() {
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 })();
 
+async function setupGlobalErrorHandlers() {
+    webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.WARN, (notification) => {
+        renderToast(notification.message, "warning");
+    });
+
+    webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.INFO, (notification) => {
+        renderToast(notification.message, "info")
+    });
+
+    webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.ERROR, (notification) => {
+        let errMsg = "";
+        if (notification.err && notification.err.message) {
+            errMsg = notification.err.message;
+        }
+        let toastMsg = `${notification.message} ${errMsg}`
+        renderToast(toastMsg, "error")
+    });
+}
 function renderToast(message, type, timeoutValue = 15000) {
     let toastContainer = document.querySelector(".toast-container");
     toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
