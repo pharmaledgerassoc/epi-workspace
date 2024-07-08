@@ -458,4 +458,7 @@ select:-moz-focusring {
 .remove-bold{
     font-weight: normal;
 }
+.pointer{
+    cursor: pointer;
+}
 
