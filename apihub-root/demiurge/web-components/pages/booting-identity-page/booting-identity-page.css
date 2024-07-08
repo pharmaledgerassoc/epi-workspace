@@ -21,14 +21,23 @@ booting-identity-page{
 }
 .did-container{
     display: flex;
+    margin-bottom: 10px;
+}
+.vault{
+    width: calc(100% - 427px);
 }
 .disabled-input{
+    font-size: 16px;
+    pointer-events: none;
     background-color: var(--disabled-background);
     border: 1px solid var(--disabled-border);
     border-radius: var(--default-border-radius);
     opacity: 0.5;
-    padding: 15px;
+    padding: 10px;
     color: var(--disabled-text) !important;
+}
+.did{
+    width: 45px;
 }
 .page-body{
     display: flex;
