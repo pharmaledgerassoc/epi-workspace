@@ -27,7 +27,7 @@
 .data-row-field-value{
     display:flex;
     align-items:center;
-    border-radius: 8px;
+    border-radius: 5px;
     border: 1px solid var(--dw-app-color);
     background: #FFF;
     font-size: 1rem;
