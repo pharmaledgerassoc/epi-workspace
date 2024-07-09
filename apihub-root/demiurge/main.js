@@ -85,9 +85,6 @@ function registerGlobalActions() {
     for (let item of mockData.userLogs) {
         promises.push($$.promisify(webSkel.client.addAuditLog)(item));
     }
-    for (let item of mockData.healthChecks) {
-        promises.push($$.promisify(webSkel.client.addHealthCheck)(item));
-    }
     webSkel.renderToast = renderToast;
     //todo: [code-review] what happens if any of the promises fails??
     await Promise.all(promises);

@@ -1,8 +1,6 @@
 const actions = ["Access Wallet", "Add User", "Remove User"]
 const userGroups = ["Write", "Read"];
 const userIds = ["q34trt0-0sdfg", "faer634764h5", "60670-1gtsg"];
-const checkStatuses = ["Success", "Failure"];
-const checkDates = ["2021-03-20T16:00:00", "2022-04-21T15:00:00", "2024-07-22T15:00:00"]
 const devUserAuditLog = {
     "payload": {
         "userId": "devuser",
@@ -22,32 +20,9 @@ const userAuditLog = {
         "userGroup": "Write"
     }
 };
-const healthCheckRun = {
-    "date": "2020-02-20T14:00:00",
-    "status": "Success",
-    "id": "1234",
-    "healthCheck": "Health Check",
-    "payload": {
-        components: [{
-            "name": "Component_1",
-            "status": "Success",
-            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-        },
-        {
-            "name": "Component_2",
-            "status": "Success",
-            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-        },
-        {
-            "name": "Component_3",
-            "status": "Success",
-            "logs": "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-        }]
-    }
-}
 let devUserLogs = [];
 let userLogs = [];
-let healthChecks = [];
+
 for (let i = 0; i < 17; i++) {
     let newDevUserAuditLog = JSON.parse(JSON.stringify(devUserAuditLog));
     newDevUserAuditLog.payload.action = actions[Math.floor(Math.random() * actions.length)];
@@ -59,14 +34,8 @@ for (let i = 0; i < 17; i++) {
     newUserAuditLog.payload.userId = userIds[Math.floor(Math.random() * userIds.length)];
     newDevUserAuditLog.payload.userDID = i;
     userLogs.push(newUserAuditLog);
-
-    let newHealthCheckRun = JSON.parse(JSON.stringify(healthCheckRun));
-    newHealthCheckRun.payload.status = checkStatuses[Math.floor(Math.random() * checkStatuses.length)];
-    newHealthCheckRun.payload.date = checkDates[Math.floor(Math.random() * checkDates.length)];
-    healthChecks.push(newHealthCheckRun);
 }
 export default {
     devUserLogs,
-    userLogs,
-    healthChecks
+    userLogs
 }

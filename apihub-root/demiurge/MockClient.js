@@ -20,22 +20,12 @@ function MockEPISORClient(domain) {
         AUDIT_LOGS: "audit_logs"
     }
 
-    this.uint8ArrayToHexString = (uint8Array) =>  {
+    this.uint8ArrayToHexString = (uint8Array) => {
         return Array.from(uint8Array)
             .map(byte => byte.toString(16).padStart(2, '0'))
             .join('');
     }
-    this.addHealthCheck = (healthCheckDetails, callback) => {
-        const pk = this.uint8ArrayToHexString(cryptoAPI.generateRandom(32));
-        const enclaveInstance = getEnclaveInstance(domain);
-        enclaveInstance.insertRecord(undefined, TABLES.HEALTH_CHECK_HEADERS, pk, healthCheckDetails, (err) => {
-            if (err) {
-                return callback(err);
-            }
-            callback(undefined, pk);
-            enclaveInstance.insertRecord(undefined, TABLES.HEALTH_CHECK_PAYLOADS, pk, healthCheckDetails.payload, callback);
-        });
-    }
+
     this.getHealthCheckPayload = (pk, callback) => {
         const enclaveInstance = getEnclaveInstance(domain);
         enclaveInstance.getRecord(undefined, TABLES.HEALTH_CHECK_PAYLOADS, pk, (err, payload) => {
@@ -100,6 +90,31 @@ function MockEPISORClient(domain) {
         const enclaveInstance = getEnclaveInstance(domain);
         enclaveInstance.filter(undefined, TABLES.AUDIT_LOGS, query, sort, number, callback);
     };
+    this.addHealthCheck = (callback) => {
+        fetch(`/healthCheck/addIteration`, {
+            method: "POST",
+            body: JSON.stringify({}),
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
+            }
+            response.text().then(text => {
+                callback(text);
+            });
+        });
+    }
+    this.checkSecrets = (taskId, callback) => {
+        fetch(`/maintenance/checkSecrets`, {
+            method: "GET",
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
+            }
+            response.text().then(text => {
+                callback(text);
+            });
+        });
+    }
 }
 
 const instances = {};
@@ -111,6 +126,6 @@ const getInstance = (domain) => {
     return instances[domain];
 }
 
-export{
+export {
     getInstance
 }
