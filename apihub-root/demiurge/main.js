@@ -58,13 +58,11 @@ function registerGlobalActions() {
 
 (async () => {
     window.webSkel = await WebSkel.initialise("./webskel-configs.json");
-    registerGlobalActions();
-
-    //todo: [code-review] why do we register the global actions before showing the spinner to the user?!
-    //if possible change the order, to provide user feedback as quick as possible that something is happening
+    webSkel.notificationHandler = openDSU.loadAPI("error");
     webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
     let pageContent = document.querySelector("#page-content");
     webSkel.setDomElementForPages(pageContent);
+    registerGlobalActions();
 
     //todo: [code-review] why to we have hidden here the page detection logic and not into a specific method that maybe can be used in other cases?!
     let currentPage = window.location.hash.slice(1);
@@ -73,9 +71,7 @@ function registerGlobalActions() {
         currentPage = "groups-page";
         presenterName = "groups-page";
     }
-    //todo: [code-review] why do we register the error handlers at this point and not above? after the webskel initialization?
-    //what happens with the errors that can occur until this point?
-    webSkel.notificationHandler = openDSU.loadAPI("error");
+
     await setupGlobalErrorHandlers();
     webSkel.client = getInstance("default");
     let promises = []
@@ -86,8 +82,11 @@ function registerGlobalActions() {
         promises.push($$.promisify(webSkel.client.addAuditLog)(item));
     }
     webSkel.renderToast = renderToast;
-    //todo: [code-review] what happens if any of the promises fails??
-    await Promise.all(promises);
+    try {
+        await Promise.all(promises);
+    } catch (e) {
+        webSkel.notificationHandler.reportUserRelevantError("Failed to add audit logs", e);
+    }
     await webSkel.changeToDynamicPage(presenterName, currentPage);
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 })();

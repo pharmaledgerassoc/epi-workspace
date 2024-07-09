@@ -1,9 +1,0 @@
-*::part(header) {
-    display: none;
-}
-
-main {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}

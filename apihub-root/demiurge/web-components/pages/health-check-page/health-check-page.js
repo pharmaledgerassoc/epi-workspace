@@ -81,5 +81,6 @@ export class HealthCheckPage {
         let runPromises = [];
         runPromises.push($$.promisify(webSkel.client.checkSecrets)(taskPK));
         await Promise.all(runPromises);
+        this.loadRuns(["__timestamp > 0"]);
     }
 }
