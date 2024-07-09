@@ -31,7 +31,7 @@ export class HealthCheckPage {
     beforeRender() {
         let string = "";
         for (let item of this.healthChecks) {
-            string += ` <div class="data-item">${item.date}</div>
+            string += ` <div class="data-item">${new Date(item.date).toISOString()}</div>
                         <div class="data-item">${item.status}</div>
                         <div class="data-item view-details" data-local-action="navigateToHealthCheckRun ${item.pk}">View Details</div>`;
         }

@@ -39,6 +39,18 @@ function MockEPISORClient(domain) {
     this.filterHealthChecksMetadata = (start, number, sort, query, callback) => {
         processParametersAndSendRequest(`/maintenance`, "getIterationsMetadata", start, number, query, sort, callback);
     }
+    this.getHealthCheckPayload = (taskId, callback) => {
+        fetch(`/maintenance/getIterationResults?healthCheckRunId=${taskId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
+            }
+            response.json().then((data) => {
+                return callback("",data);
+            });
+        });
+    }
     this.addAuditLog = (logDetails, callback) => {
         const pk = this.uint8ArrayToHexString(cryptoAPI.generateRandom(32));
         const enclaveInstance = getEnclaveInstance(domain);
@@ -83,11 +95,8 @@ function MockEPISORClient(domain) {
         });
     }
     this.checkSecrets = (taskId, callback) => {
-        fetch(`/maintenance/checkSecrets`, {
-            method: "GET",
-            headers:{
-                healthCheckRunId: taskId
-            }
+        fetch(`/maintenance/checkSecrets?healthCheckRunId=${taskId}`, {
+            method: "GET"
         }).then(response => {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);

@@ -9,7 +9,7 @@ export class RunResultsPage {
     }
     beforeRender() {
         let string = "";
-        for (let item of this.check.components) {
+        for (let item of this.check) {
             string += ` <div class="data-item">${item.name}</div>
                         <div class="data-item">${item.status}</div>
                         <div class="data-item view-details" data-local-action="navigateToComponentDetailsPage ${item.name}">View Details</div>`;
