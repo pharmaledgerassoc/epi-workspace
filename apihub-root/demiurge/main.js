@@ -4,7 +4,7 @@ const openDSU = require("opendsu");
 import {getInstance} from "./MockClient.js";
 import mockData from "./MockData.js";
 import constants from "./constants.js";
-
+import utils from "./utils.js";
 function registerGlobalActions() {
     async function closeModal(_target) {
         let modal = webSkel.reverseQuerySelector(_target, "dialog");
@@ -64,13 +64,7 @@ function registerGlobalActions() {
     webSkel.setDomElementForPages(pageContent);
     registerGlobalActions();
 
-    //todo: [code-review] why to we have hidden here the page detection logic and not into a specific method that maybe can be used in other cases?!
-    let currentPage = window.location.hash.slice(1);
-    let presenterName = currentPage.split("/")[0];
-    if (currentPage === "") {
-        currentPage = "groups-page";
-        presenterName = "groups-page";
-    }
+    const {currentPage, presenterName} = utils.detectCurrentPage();
 
     await setupGlobalErrorHandlers();
     webSkel.client = getInstance("default");

@@ -15,7 +15,17 @@ const getSharedEnclaveKey = async (key) => {
     }
     return record;
 }
+const detectCurrentPage = () =>{
+    let currentPage = window.location.hash.slice(1);
+    let presenterName = currentPage.split("/")[0];
+    if (currentPage === "") {
+        currentPage = "groups-page";
+        presenterName = "groups-page";
+    }
+    return {currentPage, presenterName};
+}
 export default {
     getSorUserId,
-    getSharedEnclaveKey
+    getSharedEnclaveKey,
+    detectCurrentPage
 }
