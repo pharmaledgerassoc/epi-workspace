@@ -18,4 +18,7 @@ export class DataRecoveryKeyModal{
             }
         });
     }
+    async submitDataRecoveryKey(_target){
+        await webSkel.closeModal(_target);
+    }
 }
