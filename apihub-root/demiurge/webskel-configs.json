@@ -1,9 +1,9 @@
 {
     "components": [
         {
-            "name": "left-sidebar",
+            "name": "sidebar-menu",
             "type": "components",
-            "presenterClassName": "LeftSidebar"
+            "presenterClassName": "SidebarMenu"
         },
         {
             "name": "groups-page",
@@ -11,13 +11,92 @@
             "presenterClassName": "GroupsPage"
         },
         {
+            "name": "member-page",
+            "type": "pages",
+            "presenterClassName": "MemberPage"
+        },
+        {
             "name": "integration-page",
             "type": "pages",
             "presenterClassName": "IntegrationPage"
+        },
+        {
+            "name": "audit-page",
+            "type": "pages",
+            "presenterClassName": "AuditPage"
+
+        },
+        {
+            "name": "search-input",
+            "type": "components",
+            "presenterClassName": "SearchInput"
+
+        },
+        {
+            "name": "health-check-page",
+            "type": "pages",
+            "presenterClassName": "HealthCheckPage"
+
+        },
+        {
+            "name": "run-results-page",
+            "type": "pages",
+            "presenterClassName": "RunResultsPage"
+
+        },
+        {
+            "name": "component-details-page",
+            "type": "pages",
+            "presenterClassName": "ComponentDetailsPage"
+
+        },
+        {
+            "name": "group-member",
+            "type": "components",
+            "presenterClassName": "GroupMember"
+        },
+        {
+            "name": "data-recovery-key-modal",
+            "type": "modals",
+            "presenterClassName": "DataRecoveryKeyModal"
+        },
+        {
+            "name": "create-identity-modal",
+            "type": "modals",
+            "presenterClassName": "CreateIdentityModal"
+        },
+
+        {
+            "name": "break-glass-recovery-code-modal",
+            "type": "modals",
+            "presenterClassName": "BreakGlassRecoveryCodeModal"
+        },
+        {
+            "name": "waiting-access-modal",
+            "type": "modals",
+            "presenterClassName": "WaitingAccessModal"
+        },
+        {
+            "name": "my-identities-page",
+            "type": "pages",
+            "presenterClassName": "MyIdentitiesPage"
+        },
+        {
+            "name": "message-toast",
+            "type": "components",
+            "presenterClassName": "MessageToast"
+        },
+        {
+            "name": "booting-identity-page",
+            "type": "pages",
+            "presenterClassName": "BootingIdentityPage"
         }
     ],
     "services": [
-
+        {
+            "name": "AuditService",
+            "path": "../services/AuditService.js"
+        }
     ],
     "webComponentsRootDir": "web-components",
     "defaultPage": "landing-page",

@@ -1,0 +1,40 @@
+<div id="groups-page-container">
+    <div id="groups-page-header">
+        <h1 id="groups-page-title">Groups</h1>
+    </div>
+    <div id="groups-navigation-tabs">
+        <div class="tab-header" id="Administration" data-local-action="changeTab Administration">
+            <span class="tab-header-label no-select">ePI Administration Group</span>
+        </div>
+        <div class="tab-header" id="Write" data-local-action="changeTab Write">
+            <span class="tab-header-label no-select">ePI Write Group</span>
+        </div>
+        <div class="tab-header" id="Read" data-local-action="changeTab Read">
+            <span class="tab-header-label no-select">ePI Read Group</span>
+        </div>
+    </div>
+    <div id="groups-page-body">
+        <div id="groups-page-body-header">
+            <h3 class="remove-bold"> Manage members of $$groupName group</h3>
+            $$dataRecoveryButton
+        </div>
+        <div id="add-member-container">
+            <p><h4 class="remove-bold">Member DID</h4></p>
+            <div id="member-did-container">
+                <div id="member-did-input">
+                    <input type="text" id="member-did-text" placeholder="did:ssi:domain:<username>">
+                    <div id="paste-button" class="no-select" data-action="pasteToField member-did-text">Paste</div>
+                </div>
+                <button class="groups-page-button" id="add-member-button" disabled data-local-action="addMember">
+                    <div id="add-member-icon">
+
+                    </div>
+                    <span class="member-button-label">Add Member</span>
+                </button>
+            </div>
+        </div>
+        <div id="group-members-container">
+            $$groupMembersMarkup
+        </div>
+    </div>
+</div>

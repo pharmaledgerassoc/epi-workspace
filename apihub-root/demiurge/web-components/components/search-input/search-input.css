@@ -1,0 +1,26 @@
+search-input input {
+    border-radius: var(--default-border-radius);
+    padding: 4px 4px 4px 8px;
+    border: 1px solid var(--dw-app-color);
+    font-size: 0.8rem;
+    width: 16%;
+    min-width: 300px;
+    height: 36px;
+}
+search-input {
+    display: inline-block;
+    height: 27px;
+}
+.input-container{
+    display: inline-block;
+    position: relative;
+    min-width: 300px;
+}
+.x-mark {
+    cursor: pointer;
+    font-weight: bold;
+    position: absolute;
+    left: 93%;
+    bottom: 7.5px;
+    display: none;
+}

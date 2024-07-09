@@ -1,0 +1,151 @@
+#groups-page-container {
+    height:100%;
+    padding-top: 35px;
+    overflow-y:auto;
+}
+
+#groups-page-title {
+    display: inline-block;
+    margin: 0 0 15px 28px;
+    padding: 0;
+}
+
+#groups-page-body {
+    padding: 0 28px;
+}
+#groups-page-body-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+#groups-navigation-tabs {
+    display: flex;
+    background-color: var(--dw-app-color);
+}
+
+.tab-header {
+    display: inline-flex;
+    background: transparent;
+    margin: 5px 5px 0px;
+    padding: 10px;
+    color: #8CCFB9;
+    font-weight: 600;
+    font-size: 1.2em;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.tab-header.selected {
+    border-radius: 10px 10px 0px 0px;
+    color: var(--dw-app-color);
+    background: url("../../demiurge/assets/images/selected-tab-backround.svg") no-repeat;
+    background-size: 100% 100%;
+}
+
+.tab-header .tab-header-label {
+    padding: 0 25px;
+}
+#add-member-container{
+    margin-top:30px;
+}
+#member-did-container {
+    display: inline-flex;
+    width: 100%;
+    gap: 15px;
+    transition: 150ms color, 150ms border, 150ms box-shadow;
+    cursor: text;
+}
+
+#member-did-input {
+    border-radius: 8px;
+    border: 1px solid #328569;
+    background: #FFF;
+    font-size: 1rem;
+    height: 2.5rem;
+    flex: 1 1 auto;
+    display: inline-flex;
+    justify-content: start;
+    position: relative;
+    width: 100%;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: 150ms color, 150ms border, 150ms box-shadow;
+    cursor: text;
+}
+
+#member-did-text {
+    height: calc(2.5rem - 1px * 2);
+    margin: 0 1rem;
+    flex: 1 1 auto;
+    font-size: inherit;
+    font-weight: inherit;
+    min-width: 0;
+    color: #328569;
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    cursor: inherit;
+    appearance: none;
+}
+
+.groups-page-button {
+    display:flex;
+    background-color: var(--dw-app-color);
+    gap:8px;
+    box-shadow: none;
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: var(--default-border-radius);
+    width: max-content;
+    white-space: nowrap;
+}
+
+.groups-page-button:disabled {
+    background-color: #AAAFAE;
+}
+.groups-page-button:enabled:hover{
+        background-color: var(--enabled-button-highlight);
+}
+
+#add-member-icon, .member-button-label {
+    font-size: 1.1rem;
+    flex-grow: 1;
+    height: 20px;
+    line-height: 1.3rem;
+}
+#add-member-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: url("./assets/images/icons/plus-lg.svg") no-repeat center center;
+    filter:invert(1);
+    height:20px;
+    width:20px;
+}
+#paste-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #328569;
+    font-style: normal;
+    font-weight: 700;
+    margin-right: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.empty-group-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.75rem;
+    background-color: var(--members-background);
+    padding: 1.25rem;
+    align-items: center;
+    width: 100%;
+}
+#group-members-container{
+    margin-top:30px;
+}
