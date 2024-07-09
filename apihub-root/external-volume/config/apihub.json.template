@@ -43,6 +43,10 @@
         "epiCapacity": 5
       }
     },
+    "health-check-api": {
+          "module": "./../../gtin-resolver",
+          "function": "getHealthCheckAPIs"
+    },
     "versionlessDSU": {
       "module": "./components/versionlessDSU"
     },
