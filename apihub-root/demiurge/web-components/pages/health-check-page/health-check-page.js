@@ -38,9 +38,9 @@ export class HealthCheckPage {
         this.items = string;
     }
     afterRender() {
-        let table = this.element.querySelector(".table");
+        let pageBody = this.element.querySelector(".page-body");
         if(this.healthChecks.length === 0){
-            table.style.display = "none";
+            pageBody.style.display = "none";
             let noData = `<div class="no-data">No Data ...</div>`;
             this.element.insertAdjacentHTML("beforeend", noData)
         }
@@ -75,5 +75,11 @@ export class HealthCheckPage {
     }
     async navigateToHealthCheckRun(_target, pk){
         await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
+    }
+    async runHealthCheck(_target){
+        let taskPK = await $$.promisify(webSkel.client.addHealthCheck)();
+        let runPromises = [];
+        runPromises.push($$.promisify(webSkel.client.checkSecrets)(taskPK));
+        await Promise.all(runPromises);
     }
 }

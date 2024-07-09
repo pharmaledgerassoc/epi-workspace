@@ -56,6 +56,7 @@ health-check-page{
     color: var(--highlight-green);
 }
 .no-data{
+    margin-top: 10px;
     padding-left: 28px;
 }
 
