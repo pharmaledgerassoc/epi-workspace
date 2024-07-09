@@ -9,7 +9,8 @@ export class IntegrationPage {
     }
 
     beforeRender() {
-
+        this.did = "did:123:demo";
+        this.groupName = "defaultGroup";
     }
     hideForm(_target) {
         let formElement = _target.closest("form");
@@ -20,7 +21,7 @@ export class IntegrationPage {
     async authorizeRequest(_target) {
         let formData = await webSkel.extractFormInformation(_target);
         if (!formData.isValid) {
-            webSkel.renderToast("All inputs are required!!!", "error", 5000);
+            webSkel.notificationHandler.reportUserRelevantError("All inputs are required!!!");
         }
         let sorUserId = await utils.getSorUserId();
         if (sorUserId && sorUserId !== "") {
@@ -75,7 +76,6 @@ export class IntegrationPage {
             return;
         }
         await utils.addLogMessage(this.did, constants.OPERATIONS.AUTHORIZE, this.groupName);
-
     }
 
     async revokeAuthorization(_target) {
