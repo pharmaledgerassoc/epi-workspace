@@ -236,6 +236,18 @@ function MockEPISORClient(domain) {
                 return callback("Unknown component name");
         }
     }
+    this.markIterationCompletion = (healthCheckRunId, status, callback) => {
+        fetch(`/maintenance/markIterationCompletion?healthCheckRunId=${healthCheckRunId}&status=${status}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
     function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort, callback) {
         if (typeof start === 'function') {
             callback = start;

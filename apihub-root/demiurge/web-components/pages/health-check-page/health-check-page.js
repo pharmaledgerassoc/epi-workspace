@@ -58,7 +58,7 @@ export class HealthCheckPage {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             //TODO to <= after changing storage strategy
-            let query = [`__timestamp >= ${this.firstElementTimestamp}`];
+            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
     }
@@ -69,7 +69,7 @@ export class HealthCheckPage {
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
             //TODO to < after changing storage strategy
-            let query = [`__timestamp > ${this.firstElementTimestamp}`];
+            let query = [`__timestamp < ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
     }
@@ -84,13 +84,19 @@ export class HealthCheckPage {
         runPromises.push($$.promisify(webSkel.client.checkSystemHealth)(taskPK));
         runPromises.push($$.promisify(webSkel.client.checkConfigsInfo)(taskPK));
         runPromises.push($$.promisify(webSkel.client.checkWallets)(taskPK));
-
+        let results;
         try {
-            await Promise.all(runPromises);
+           results = await Promise.all(runPromises);
         }catch (e) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to run health check", e);
         }
-
+        let checkStatus = "success";
+        for(let result of results){
+            if(result.status === "failed"){
+                checkStatus = "failed";
+            }
+        }
+        await $$.promisify(webSkel.client.markIterationCompletion)(taskPK, checkStatus);
         this.loadRuns(["__timestamp > 0"]);
     }
 }
