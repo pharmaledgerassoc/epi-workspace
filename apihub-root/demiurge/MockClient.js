@@ -236,8 +236,8 @@ function MockEPISORClient(domain) {
                 return callback("Unknown component name");
         }
     }
-    this.markIterationCompletion = (healthCheckRunId, status, callback) => {
-        fetch(`/maintenance/markIterationCompletion?healthCheckRunId=${healthCheckRunId}&status=${status}`, {
+    this.markIterationCompletion = (healthCheckRunId, status, failedChecksNr, callback) => {
+        fetch(`/maintenance/markIterationCompletion?healthCheckRunId=${healthCheckRunId}&status=${status}&failedChecksNr=${failedChecksNr}`, {
             method: "GET"
         }).then(response => {
             if (!response.ok) {
