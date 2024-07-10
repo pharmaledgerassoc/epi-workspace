@@ -133,6 +133,8 @@ export default {
     HEALTH_CHECK_COMPONENTS:{
         "secrets": "Secrets",
         "systemHealth": "System Health",
-        "installInfo": "Install Info"
+        "installInfo": "Install Info",
+        "configsInfo": "Configs Info",
+        "wallets": "Wallets"
     }
 };

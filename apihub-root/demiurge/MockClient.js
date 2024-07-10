@@ -112,8 +112,8 @@ function MockEPISORClient(domain) {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
             }
-            response.text().then(text => {
-                callback("",text);
+            response.json().then(data => {
+                callback("",data);
             });
         });
     }
@@ -124,13 +124,49 @@ function MockEPISORClient(domain) {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}`);
             }
-            response.text().then(text => {
-                callback("",text);
+            response.json().then(data => {
+                callback("",data);
             });
         });
     }
     this.checkSystemHealth = (healthCheckRunId, callback) => {
         fetch(`/maintenance/systemHealth?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.json().then(data => {
+                callback("",data);
+            });
+        });
+    }
+    this.checkConfigsInfo = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/configsInfo?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.json().then(data => {
+                callback("",data);
+            });
+        });
+    }
+    this.checkWallets = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/checkWallets?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.json().then(data => {
+                callback("",data);
+            });
+        });
+    }
+    this.fixWallet = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/fixWallet?healthCheckRunId=${healthCheckRunId}`, {
             method: "GET"
         }).then(response => {
             if (!response.ok) {
@@ -153,11 +189,50 @@ function MockEPISORClient(domain) {
             });
         });
     }
+    this.removeWrongBrick = (callback) => {
+        fetch(`/maintenance/removeWrongBrick`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
+    this.fixLocalAnchor = (callback) => {
+        fetch(`/maintenance/fixLocalAnchor`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
+    this.fixDID = (callback) => {
+        fetch(`/maintenance/fixDID`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
     this.fixComponent = (healthCheckRunId, componentName, callback) => {
         switch (componentName) {
-            case "Secrets":
+            case "secrets":
                 return this.fixSecrets(healthCheckRunId, callback);
+            case "wallets":
+                return this.fixWallet(healthCheckRunId, callback);
             default:
+                webSkel.reportUserRelevantError("Unknown component name");
                 return callback("Unknown component name");
         }
     }

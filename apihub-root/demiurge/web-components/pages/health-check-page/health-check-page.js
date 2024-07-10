@@ -82,6 +82,8 @@ export class HealthCheckPage {
         runPromises.push($$.promisify(webSkel.client.checkSecrets)(taskPK));
         runPromises.push($$.promisify(webSkel.client.checkInstallInfo)(taskPK));
         runPromises.push($$.promisify(webSkel.client.checkSystemHealth)(taskPK));
+        runPromises.push($$.promisify(webSkel.client.checkConfigsInfo)(taskPK));
+        runPromises.push($$.promisify(webSkel.client.checkWallets)(taskPK));
 
         try {
             await Promise.all(runPromises);
