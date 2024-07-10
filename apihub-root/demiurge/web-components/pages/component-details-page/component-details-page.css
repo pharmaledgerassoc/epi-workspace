@@ -33,7 +33,8 @@ component-details-page{
     border-radius: var(--default-border-radius);
     border: 1px solid var(--very-light-grey);
     width: 100%;
-    height: calc(100vh - 265px);
+    height: calc(92vh - 265px);
+    max-height: calc(92vh - 265px);
     margin-top: 10px;
     overflow-y: scroll;
 }

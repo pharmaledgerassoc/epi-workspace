@@ -129,5 +129,10 @@ export default {
         IN_PROGRESS: "in_progress",
         COMPLETED: "completed",
         FAILED: "failed"
+    },
+    HEALTH_CHECK_COMPONENTS:{
+        "secrets": "Secrets",
+        "systemHealth": "System Health",
+        "installInfo": "Install Info"
     }
 };

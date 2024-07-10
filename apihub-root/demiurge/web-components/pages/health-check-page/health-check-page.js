@@ -80,7 +80,15 @@ export class HealthCheckPage {
         let taskPK = await $$.promisify(webSkel.client.addHealthCheck)();
         let runPromises = [];
         runPromises.push($$.promisify(webSkel.client.checkSecrets)(taskPK));
-        await Promise.all(runPromises);
+        runPromises.push($$.promisify(webSkel.client.checkInstallInfo)(taskPK));
+        runPromises.push($$.promisify(webSkel.client.checkSystemHealth)(taskPK));
+
+        try {
+            await Promise.all(runPromises);
+        }catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError("Failed to run health check", e);
+        }
+
         this.loadRuns(["__timestamp > 0"]);
     }
 }

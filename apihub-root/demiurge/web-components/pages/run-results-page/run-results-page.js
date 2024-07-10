@@ -1,3 +1,5 @@
+import constants from "../../../constants.js";
+
 export class RunResultsPage {
     constructor(element, invalidate) {
         this.element = element;
@@ -10,7 +12,7 @@ export class RunResultsPage {
     beforeRender() {
         let string = "";
         for (let item of this.check) {
-            string += ` <div class="data-item">${item.name}</div>
+            string += ` <div class="data-item">${constants.HEALTH_CHECK_COMPONENTS[item.name]}</div>
                         <div class="data-item">${item.status}</div>
                         <div class="data-item view-details" data-local-action="navigateToComponentDetailsPage ${item.name}">View Details</div>`;
         }

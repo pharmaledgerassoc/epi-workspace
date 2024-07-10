@@ -83,8 +83,7 @@ function MockEPISORClient(domain) {
     };
     this.addHealthCheck = (callback) => {
         fetch(`/maintenance/addIteration`, {
-            method: "POST",
-            body: JSON.stringify({}),
+            method: "POST"
         }).then(response => {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
@@ -94,8 +93,20 @@ function MockEPISORClient(domain) {
             });
         });
     }
-    this.checkSecrets = (taskId, callback) => {
-        fetch(`/maintenance/checkSecrets?healthCheckRunId=${taskId}`, {
+    this.getHealthCheckComponent = (healthCheckRunId, componentName, callback) => {
+        fetch(`/maintenance/getIterationComponent?healthCheckRunId=${healthCheckRunId}&componentName=${componentName}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
+            }
+            response.json().then((data) => {
+                return callback("",data);
+            });
+        });
+    }
+    this.checkSecrets = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/checkSecrets?healthCheckRunId=${healthCheckRunId}`, {
             method: "GET"
         }).then(response => {
             if (!response.ok) {
@@ -105,6 +116,50 @@ function MockEPISORClient(domain) {
                 callback("",text);
             });
         });
+    }
+    this.checkInstallInfo = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/installInfo?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
+    this.checkSystemHealth = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/systemHealth?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
+    this.fixSecrets = (healthCheckRunId, callback) => {
+        fetch(`/maintenance/fixSecrets?healthCheckRunId=${healthCheckRunId}`, {
+            method: "GET"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}`);
+            }
+            response.text().then(text => {
+                callback("",text);
+            });
+        });
+    }
+    this.fixComponent = (healthCheckRunId, componentName, callback) => {
+        switch (componentName) {
+            case "Secrets":
+                return this.fixSecrets(healthCheckRunId, callback);
+            default:
+                return callback("Unknown component name");
+        }
     }
     function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort, callback) {
         if (typeof start === 'function') {
