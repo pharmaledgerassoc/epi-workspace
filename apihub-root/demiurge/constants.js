@@ -135,7 +135,12 @@ export default {
         "systemHealth": "System Health",
         "installInfo": "Install Info",
         "configsInfo": "Configs Info",
-        "wallets": "Wallets"
+        "wallets": "Wallets",
+        "checkAnchoring":"Anchoring",
+        "checkBricking":"Bricking",
+        "checkDatabases":"Databases",
+        "checkProducts":"Products",
+        "checkBatches":"Batches"
     },
     HEALTH_CHECK_STATUSES:{
         IN_PROGRESS: "in_progress",
