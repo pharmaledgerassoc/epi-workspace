@@ -136,5 +136,16 @@ export default {
         "installInfo": "Install Info",
         "configsInfo": "Configs Info",
         "wallets": "Wallets"
+    },
+    HEALTH_CHECK_STATUSES:{
+        IN_PROGRESS: "in_progress",
+        SUCCESS: "success",
+        FAILED: "failed",
+        REPAIRED: "repaired",
+        FAILED_REPAIR: "failed_repair"
+    },
+    HEALTH_CHECK_ACTIONS:{
+        START: "start",
+        STATUS: "status",
     }
 };

@@ -1,3 +1,5 @@
+import constants from "../../../constants.js";
+
 export class HealthCheckPage {
     constructor(element, invalidate) {
         this.element = element;
@@ -57,7 +59,6 @@ export class HealthCheckPage {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            //TODO to <= after changing storage strategy
             let query = [`__timestamp <= ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
@@ -68,7 +69,6 @@ export class HealthCheckPage {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            //TODO to < after changing storage strategy
             let query = [`__timestamp < ${this.firstElementTimestamp}`];
             this.loadRuns(query);
         }
@@ -77,7 +77,7 @@ export class HealthCheckPage {
         await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
     }
     async runHealthCheck(_target){
-        let taskPK = await $$.promisify(webSkel.client.healthCheck)("start");
+        let taskPK = await $$.promisify(webSkel.client.healthCheck)(constants.HEALTH_CHECK_ACTIONS.START);
         this.loadRuns(["__timestamp > 0"]);
     }
 }
