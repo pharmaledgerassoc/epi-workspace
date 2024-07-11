@@ -82,7 +82,7 @@ function MockEPISORClient(domain) {
         enclaveInstance.filter(undefined, TABLES.AUDIT_LOGS, query, sort, number, callback);
     };
 
-    this.healthCheck = (callback, action) => {
+    this.healthCheck = (action, callback) => {
         fetch(`/maintenance/healthCheck/${action}`, {
             method: "POST"
         }).then(response => {
