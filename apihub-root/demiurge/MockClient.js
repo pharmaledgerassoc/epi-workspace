@@ -86,7 +86,7 @@ function MockEPISORClient(domain) {
         let url = `/maintenance/healthCheck/${action}`;
         if(action === "status"){
             url += `?healthCheckPK=${healthCheckPK}`;
-        } else if(action === "run" && typeof healthCheckPK === "function"){
+        } else if(action === "start" && typeof healthCheckPK === "function"){
             callback = healthCheckPK;
         }
         fetch(url, {
