@@ -301,6 +301,19 @@ function MockEPISORClient(domain) {
             });
         });
     }
+
+    /* Asynchronous APIs */
+    this.runHealthCheck = async ()=>{
+        fetch("/maintenance/runHealthCheck", {
+            method:"POST"
+        }).then(response)
+    };
+    this.checkAnchoring = async ()=>{};
+    this.checkBricking = async ()=>{};
+    this.checkDatabases = async ()=>{};
+    this.checkProducts = async ()=>{};
+    this.checkBatches = async ()=>{};
+
 }
 
 const instances = {};
