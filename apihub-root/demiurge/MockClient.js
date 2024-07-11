@@ -81,9 +81,22 @@ function MockEPISORClient(domain) {
         const enclaveInstance = getEnclaveInstance(domain);
         enclaveInstance.filter(undefined, TABLES.AUDIT_LOGS, query, sort, number, callback);
     };
+
     this.addHealthCheck = (callback) => {
-        fetch(`/maintenance/addIteration`, {
+        fetch(`/maintenance/healthCheck/run`, {
             method: "POST"
+        }).then(response => {
+            if (!response.ok) {
+                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
+            }
+            response.text().then((text) => {
+                return callback("",text);
+            });
+        });
+    }
+    this.healthCheckStatus = (id, callback) => {
+        fetch(`/maintenance/healthCheck/status?id=${id}`, {
+            method: "GET"
         }).then(response => {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
@@ -105,66 +118,7 @@ function MockEPISORClient(domain) {
             });
         });
     }
-    this.checkSecrets = (healthCheckRunId, callback) => {
-        fetch(`/maintenance/checkSecrets?healthCheckRunId=${healthCheckRunId}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
-            }
-            response.json().then(data => {
-                callback("",data);
-            });
-        });
-    }
-    this.checkInstallInfo = (healthCheckRunId, callback) => {
-        fetch(`/maintenance/installInfo?healthCheckRunId=${healthCheckRunId}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}`);
-            }
-            response.json().then(data => {
-                callback("",data);
-            });
-        });
-    }
-    this.checkSystemHealth = (healthCheckRunId, callback) => {
-        fetch(`/maintenance/systemHealth?healthCheckRunId=${healthCheckRunId}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}`);
-            }
-            response.json().then(data => {
-                callback("",data);
-            });
-        });
-    }
-    this.checkConfigsInfo = (healthCheckRunId, callback) => {
-        fetch(`/maintenance/configsInfo?healthCheckRunId=${healthCheckRunId}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}`);
-            }
-            response.json().then(data => {
-                callback("",data);
-            });
-        });
-    }
-    this.checkWallets = (healthCheckRunId, callback) => {
-        fetch(`/maintenance/checkWallets?healthCheckRunId=${healthCheckRunId}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}`);
-            }
-            response.json().then(data => {
-                callback("",data);
-            });
-        });
-    }
+
     this.fixWallet = (healthCheckRunId, callback) => {
         fetch(`/maintenance/fixWallet?healthCheckRunId=${healthCheckRunId}`, {
             method: "GET"
@@ -303,16 +257,6 @@ function MockEPISORClient(domain) {
     }
 
     /* Asynchronous APIs */
-    this.runHealthCheck = async ()=>{
-        fetch("/maintenance/runHealthCheck", {
-            method:"POST"
-        }).then(response)
-    };
-    this.checkAnchoring = async ()=>{};
-    this.checkBricking = async ()=>{};
-    this.checkDatabases = async ()=>{};
-    this.checkProducts = async ()=>{};
-    this.checkBatches = async ()=>{};
 
 }
 

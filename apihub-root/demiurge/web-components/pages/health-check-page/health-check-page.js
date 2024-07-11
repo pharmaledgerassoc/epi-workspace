@@ -78,26 +78,6 @@ export class HealthCheckPage {
     }
     async runHealthCheck(_target){
         let taskPK = await $$.promisify(webSkel.client.addHealthCheck)();
-        let runPromises = [];
-        runPromises.push($$.promisify(webSkel.client.checkSecrets)(taskPK));
-        runPromises.push($$.promisify(webSkel.client.checkInstallInfo)(taskPK));
-        runPromises.push($$.promisify(webSkel.client.checkSystemHealth)(taskPK));
-        runPromises.push($$.promisify(webSkel.client.checkConfigsInfo)(taskPK));
-        runPromises.push($$.promisify(webSkel.client.checkWallets)(taskPK));
-        let results;
-        try {
-           results = await Promise.all(runPromises);
-        }catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError("Failed to run health check", e);
-        }
-        let failedChecks = 0;
-        for(let result of results){
-            if(result.status === "failed"){
-                failedChecks++;
-            }
-        }
-        let checkStatus = failedChecks === 0 ? "success" : "failed";
-        await $$.promisify(webSkel.client.markIterationCompletion)(taskPK, checkStatus, failedChecks);
         this.loadRuns(["__timestamp > 0"]);
     }
 }
