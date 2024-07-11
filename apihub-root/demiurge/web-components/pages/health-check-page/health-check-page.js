@@ -90,13 +90,14 @@ export class HealthCheckPage {
         }catch (e) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to run health check", e);
         }
-        let checkStatus = "success";
+        let failedChecks = 0;
         for(let result of results){
             if(result.status === "failed"){
-                checkStatus = "failed";
+                failedChecks++;
             }
         }
-        await $$.promisify(webSkel.client.markIterationCompletion)(taskPK, checkStatus);
+        let checkStatus = failedChecks === 0 ? "success" : "failed";
+        await $$.promisify(webSkel.client.markIterationCompletion)(taskPK, checkStatus, failedChecks);
         this.loadRuns(["__timestamp > 0"]);
     }
 }
