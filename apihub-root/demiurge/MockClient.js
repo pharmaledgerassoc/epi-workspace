@@ -82,8 +82,14 @@ function MockEPISORClient(domain) {
         enclaveInstance.filter(undefined, TABLES.AUDIT_LOGS, query, sort, number, callback);
     };
 
-    this.healthCheck = (action, callback) => {
-        fetch(`/maintenance/healthCheck/${action}`, {
+    this.healthCheck = (action, healthCheckPK, callback) => {
+        let url = `/maintenance/healthCheck/${action}`;
+        if(action === "status"){
+            url += `?healthCheckPK=${healthCheckPK}`;
+        } else if(action === "run" && typeof healthCheckPK === "function"){
+            callback = healthCheckPK;
+        }
+        fetch(url, {
             method: "POST"
         }).then(response => {
             if (!response.ok) {
