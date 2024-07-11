@@ -75,3 +75,8 @@ health-check-page{
 .margin-right {
     margin-right: 16px;
 }
+.disabled{
+    background-color: var(--very-light-grey);
+    pointer-events: none;
+    cursor: not-allowed;
+}

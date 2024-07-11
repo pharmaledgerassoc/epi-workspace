@@ -38,6 +38,12 @@ export class HealthCheckPage {
                         <div class="data-item view-details" data-local-action="navigateToHealthCheckRun ${item.pk}">View Details</div>`;
         }
         this.items = string;
+        if(this.healthCheckPK){
+            let currentCheck = this.healthChecks.find(check => check.pk === this.healthCheckPK);
+            if(currentCheck.status === constants.HEALTH_CHECK_STATUSES.IN_PROGRESS){
+                this.disabledClass = "disabled";
+            }
+        }
     }
     afterRender() {
         let pageBody = this.element.querySelector(".page-body");
@@ -77,7 +83,7 @@ export class HealthCheckPage {
         await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
     }
     async runHealthCheck(_target){
-        let taskPK = await $$.promisify(webSkel.client.healthCheck)(constants.HEALTH_CHECK_ACTIONS.START);
+        this.healthCheckPK = await $$.promisify(webSkel.client.healthCheck)(constants.HEALTH_CHECK_ACTIONS.START);
         this.loadRuns(["__timestamp > 0"]);
     }
 }
