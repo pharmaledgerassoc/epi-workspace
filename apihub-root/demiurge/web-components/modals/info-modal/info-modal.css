@@ -1,0 +1,13 @@
+info-modal{
+    display: block;
+    width: 350px;
+    background-color: var(--white);
+}
+.modal-header{
+    padding: 10px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--very-light-grey);
+}
+.modal-body{
+    padding: 10px;
+}

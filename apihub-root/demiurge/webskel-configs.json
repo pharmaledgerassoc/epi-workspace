@@ -90,6 +90,10 @@
             "name": "booting-identity-page",
             "type": "pages",
             "presenterClassName": "BootingIdentityPage"
+        },
+        {
+            "name": "info-modal",
+            "type": "modals"
         }
     ],
     "services": [

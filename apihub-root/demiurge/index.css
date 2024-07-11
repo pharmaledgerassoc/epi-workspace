@@ -153,6 +153,7 @@ dialog {
     padding: 0;
     outline: none !important;
     position: relative;
+    border: none;
 }
 dialog[class="spinner"] {
     border: none;

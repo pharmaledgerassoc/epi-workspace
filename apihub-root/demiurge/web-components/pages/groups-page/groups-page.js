@@ -1,3 +1,6 @@
+import constants from "../../../constants.js";
+import utils from "../../../utils.js";
+
 const mockData = {
     administrationGroup: [
         {
@@ -181,6 +184,12 @@ export class GroupsPage {
         this.invalidate = invalidate;
         this.invalidate(async () => {
             this.groupMembers = await this.getGroupData("Administration"); //replace with API call
+            this.selectedGroup = {
+                name: 'ePI Administration Group',
+                did: 'did:ssi:group:vault:ePI_Administration_Group'
+            }
+            this.members = await this.fetchMembers();
+            this.areMembersLoaded = true;
         });
     }
 
@@ -274,14 +283,106 @@ export class GroupsPage {
         selectedTab?.classList.add('selected');
     }
 
-    async addMember(_target){
+    async addMember(buttonElement){
+        let inputElement = this.element.querySelector("#member-did-text");
+        const newMemberDid = inputElement.value;
+        inputElement.value = "";
+        const event = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+        inputElement.dispatchEvent(event);
 
+        let modal = await webSkel.showModal("info-modal", {
+            title: "Adding member",
+            content: newMemberDid
+        })
 
+        try {
+            let groups = await utils.fetchGroups();
+            let selectedGroup = constants.EPI_GROUP_TAGS.find(group => group.name === this.selectedTab);
+            if (!selectedGroup) {
+                selectedGroup = groups.find(group => group.name === this.selectedGroup.name);
+            }
+            selectedGroup.did = this.selectedGroup.did;
+
+            let hasGroupTag = selectedGroup.tags.split(',').findIndex(tag => newMemberDid.toLowerCase().includes(tag.trim().toLowerCase())) !== -1;
+            if (!hasGroupTag) {
+                webSkel.reportUserRelevantError("User can not be added to selected group. Please check user group.")
+            }
+
+            this.changeButtonState("loading");
+
+            let allMembers = [];
+            for (let i = 0; i < groups.length; i++) {
+                let groupMembers = await this.fetchMembers(groups[i]);
+                allMembers = [...allMembers, ...groupMembers]
+            }
+            let alreadyExists = allMembers.find(arrMember => arrMember.did === newMemberDid)
+            if (alreadyExists) {
+                this.changeButtonState();
+                webSkel.reportUserRelevantError("Member already registered in a group!");
+            }
+
+            const member = await this.addMember(selectedGroup, {did: newMemberDid});
+            this.members.push(member);
+
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError("Could not add user to the group because: ", e)
+        }
+        webSkel.closeModal(modal);
+        this.invalidate();
+    }
+    changeButtonState(mode) {
+        const addMemberButton = this.element.getElementById('add-member-button');
+        if (mode === "loading") {
+            addMemberButton.classList.add("disabled");
+            addMemberButton.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
+        } else {
+            addMemberButton.classList.remove("disabled");
+            addMemberButton.innerHTML = `<div id="add-member-icon"></div>
+                    <span class="member-button-label">Add Member</span>`;
+        }
+    }
+    async fetchMembers(group) {
+        if (!group) {
+            group = this.selectedGroup;
+        }
+        return new Promise((resolve, reject) => {
+            const w3cDID = require("opendsu").loadAPI("w3cdid");
+            w3cDID.resolveDID(group.did, (err, groupDIDDocument) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                groupDIDDocument.listMembersInfo((err, members) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    let result = members.map((member) => {
+                        member["enable_deactivate_group_member_feature"] = this.enable_deactivate_group_member_feature;
+                        return member;
+                    })
+                    return resolve(result);
+                });
+            });
+        });
     }
 
     async removeMember(_target){
         const memberToRemove=webSkel.reverseQuerySelector(_target,'group-member');
         memberToRemove.remove();
+
+        // target.disabled = true;
+        // let targetContent = target.innerHTML;
+        // target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
+        // if (model.did !== this.did) {
+        //     await removeGroupMember(model.did, constants.OPERATIONS.REMOVE)
+        // } else {
+        //     webSkel.notificationHandler.reportUserRelevantError("You tried to delete your account. This operation is not allowed.");
+        // }
+        // target.innerHTML = targetContent;
+        // target.disabled = false;
         //this.invalidate();
     }
     async openDataRecoveryKeyModal(_target){

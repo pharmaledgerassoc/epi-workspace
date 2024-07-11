@@ -24,8 +24,19 @@ const detectCurrentPage = () =>{
     }
     return {currentPage, presenterName};
 }
+async function fetchGroups() {
+    const enclaveDB = await $$.promisify(scAPI.getSharedEnclave)();
+    let groups;
+    try {
+        groups = await $$.promisify(enclaveDB.filter)(constants.TABLES.GROUPS);
+    } catch (e) {
+        return console.log(e);
+    }
+    return groups;
+}
 export default {
     getSorUserId,
     getSharedEnclaveKey,
-    detectCurrentPage
+    detectCurrentPage,
+    fetchGroups
 }
