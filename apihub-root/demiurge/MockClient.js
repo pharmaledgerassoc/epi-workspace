@@ -82,21 +82,9 @@ function MockEPISORClient(domain) {
         enclaveInstance.filter(undefined, TABLES.AUDIT_LOGS, query, sort, number, callback);
     };
 
-    this.addHealthCheck = (callback) => {
-        fetch(`/maintenance/healthCheck/run`, {
+    this.healthCheck = (callback, action) => {
+        fetch(`/maintenance/healthCheck/${action}`, {
             method: "POST"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
-            }
-            response.text().then((text) => {
-                return callback("",text);
-            });
-        });
-    }
-    this.healthCheckStatus = (id, callback) => {
-        fetch(`/maintenance/healthCheck/status?id=${id}`, {
-            method: "GET"
         }).then(response => {
             if (!response.ok) {
                 return callback(`HTTP error! status: ${response.status}, message: ${response.message}`);
@@ -189,18 +177,6 @@ function MockEPISORClient(domain) {
                 webSkel.reportUserRelevantError("Unknown component name");
                 return callback("Unknown component name");
         }
-    }
-    this.markIterationCompletion = (healthCheckRunId, status, failedChecksNr, callback) => {
-        fetch(`/maintenance/markIterationCompletion?healthCheckRunId=${healthCheckRunId}&status=${status}&failedChecksNr=${failedChecksNr}`, {
-            method: "GET"
-        }).then(response => {
-            if (!response.ok) {
-                return callback(`HTTP error! status: ${response.status}`);
-            }
-            response.text().then(text => {
-                callback("",text);
-            });
-        });
     }
     function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort, callback) {
         if (typeof start === 'function') {

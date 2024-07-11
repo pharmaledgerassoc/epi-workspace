@@ -77,7 +77,7 @@ export class HealthCheckPage {
         await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
     }
     async runHealthCheck(_target){
-        let taskPK = await $$.promisify(webSkel.client.addHealthCheck)();
+        let taskPK = await $$.promisify(webSkel.client.healthCheck)("run");
         this.loadRuns(["__timestamp > 0"]);
     }
 }
