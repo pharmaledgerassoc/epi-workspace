@@ -1,5 +1,5 @@
 import constants from "./constants.js";
-import Message from "../../demiurge/code/scripts/utils/Message";
+import Message from "./models/Message.js";
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
 const w3cdid = openDSU.loadAPI("w3cdid");

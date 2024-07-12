@@ -17,15 +17,11 @@ function registerGlobalActions() {
 
         const pasteInputLocation = document.getElementById(fieldId);
         if (!pasteInputLocation) {
-            //todo: [code-review] this throw error may cause strange behaviour if is not handled where this method will be called!!!
-            // a better way is to generate some UI feedback to be caught as soon as possible the wrong method call!
-            throw new Error(`Element with id ${fieldId} not found.`);
+            webSkel.notificationHandler.reportUserRelevantError("Element not found");
         }
 
         if (pasteInputLocation.readOnly) {
-            //todo: [code-review] this throw error may cause strange behaviour if is not handled where this method will be called!!!
-            // a better way is to generate some UI feedback to be caught as soon as possible the wrong method call!
-            throw new Error(`Element with id ${fieldId} is readonly.`);
+            webSkel.notificationHandler.reportUserRelevantError("Element is readonly");
         }
         const text = await navigator.clipboard.readText();
         pasteInputLocation.value = text;
@@ -35,20 +31,16 @@ function registerGlobalActions() {
     function copyFieldValue(_target, fieldId) {
         const element = document.getElementById(fieldId);
         if (!element) {
-            //todo: [code-review] this throw error may cause strange behaviour if is not handled where this method will be called!!!
-            // a better way is to generate some UI feedback to be caught as soon as possible the wrong method call!
-            throw new Error(`Element with id ${fieldId} not found`);
+            webSkel.notificationHandler.reportUserRelevantError(`Element with id ${fieldId} not found`);
         }
         window.focus();
         navigator.clipboard.writeText(element.value)
             .then(() => {
-                //todo: [code-review] Remove any unnecessary console.log messages. It is more important to give feedback to the user that his action completed with success or not
-                console.log('Text copied to clipboard')
-                //todo: [code-review] replace the renderToast call with proper webSkel.notificationHandler.observeUserRelevantMessages handler
-                webSkel.renderToast("Copied to clipboard!", "info", 5000);
+                webSkel.notificationHandler.reportUserRelevantInfo("Copied to clipboard!");
             })
-            //todo: [code-review] replace the console.error with proper dialog or toast to inform user about his action result
-            .catch(err => console.error('Error copying text: ', err));
+            .catch((err) => {
+                webSkel.notificationHandler.reportUserRelevantError(`Error copying text: ${err}`);
+            });
     }
 
     webSkel.registerAction("pasteToField", pasteToField);
