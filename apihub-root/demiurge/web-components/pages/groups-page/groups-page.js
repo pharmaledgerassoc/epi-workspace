@@ -331,7 +331,6 @@ export class GroupsPage {
             webSkel.notificationHandler.reportUserRelevantError("Could not add user to the group because: ", e)
         }
         webSkel.closeModal(modal);
-        this.invalidate();
     }
     changeButtonState(mode) {
         const addMemberButton = this.element.getElementById('add-member-button');
@@ -369,23 +368,49 @@ export class GroupsPage {
         });
     }
 
-    async removeMember(_target){
+    async removeMember(buttonElement){
         const memberToRemove=webSkel.reverseQuerySelector(_target,'group-member');
         memberToRemove.remove();
 
-        // target.disabled = true;
-        // let targetContent = target.innerHTML;
-        // target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
-        // if (model.did !== this.did) {
-        //     await removeGroupMember(model.did, constants.OPERATIONS.REMOVE)
-        // } else {
-        //     webSkel.notificationHandler.reportUserRelevantError("You tried to delete your account. This operation is not allowed.");
-        // }
-        // target.innerHTML = targetContent;
-        // target.disabled = false;
-        //this.invalidate();
+        buttonElement.classList.add("disabled");
+        let targetContent = buttonElement.innerHTML;
+        buttonElement.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
+        if (this.model.did !== this.did) {
+            await this.removeGroupMember(model.did, constants.OPERATIONS.REMOVE)
+        } else {
+            webSkel.renderToast("You tried to delete your account. This operation is not allowed.", constants.NOTIFICATION_TYPES.ERROR);
+        }
+        buttonElement.innerHTML = targetContent;
+        buttonElement.classList.remove("disabled");
+        this.invalidate();
+    }
+    async removeGroupMember (did, operation){
+        let modal = await webSkel.showModal("info-modal", {
+            title: constants.OPERATIONS.REMOVE ? "Deleting" : "Deactivating",
+            content: did
+        })
+
+        let undeleted = await webSkel.appServices.deleteMembers(this.selectedGroup, did, operation);
+
+        await webSkel.closeModal(modal);
+        if (undeleted.length > 0) {
+            await webSkel.renderToast("Member could not be deleted", constants.NOTIFICATION_TYPES.ERROR);
+            return;
+        }
+        this.members = this.members.filter((member) => member.did !== did);
     }
     async openDataRecoveryKeyModal(_target){
         const modal= await webSkel.showModal("data-recovery-key-modal");
+    }
+    async notifyMember(group, member) {
+        await utils.sendUserMessage(
+            this.identity.did,
+            group,
+            member,
+            "",
+            constants.CONTENT_TYPE.GROUP_MEMBER,
+            constants.RECIPIENT_TYPES.GROUP_RECIPIENT,
+            constants.OPERATIONS.ADD
+        );
     }
 }

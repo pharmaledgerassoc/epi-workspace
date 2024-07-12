@@ -1,7 +1,8 @@
 import constants from "./constants.js";
+import Message from "../../demiurge/code/scripts/utils/Message";
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
-
+const w3cdid = openDSU.loadAPI("w3cdid");
 const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
@@ -33,6 +34,19 @@ async function fetchGroups() {
         return console.log(e);
     }
     return groups;
+}
+async function sendUserMessage(sender, group, member, content, contentType, recipientType, operation) {
+    let didDocument = await $$.promisify(w3cdid.resolveDID)(sender);
+    const receiverDIDDocument = await $$.promisify(w3cdid.resolveDID)(member.did);
+    const message = new Message();
+    message.setSender(sender);
+    message.setContent(content);
+    message.setContentType(contentType);
+    message.setRecipientType(recipientType);
+    message.setGroupDID(group.did);
+    message.setOperation(operation);
+
+    await $$.promisify(didDocument.sendMessage)(message, receiverDIDDocument);
 }
 export default {
     getSorUserId,

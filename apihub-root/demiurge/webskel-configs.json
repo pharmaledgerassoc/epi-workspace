@@ -100,7 +100,16 @@
         {
             "name": "AuditService",
             "path": "../services/AuditService.js"
+        },
+        {
+            "name": "MembersService",
+            "path": "../services/MembersService.js"
+        },
+        {
+            "name": "MessagesService",
+            "path": "../services/MessagesService.js"
         }
+
     ],
     "webComponentsRootDir": "web-components",
     "defaultPage": "landing-page",
