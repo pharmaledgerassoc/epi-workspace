@@ -5,6 +5,7 @@ import {getInstance} from "./MockClient.js";
 import mockData from "./MockData.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
+
 function registerGlobalActions() {
     async function closeModal(_target) {
         let modal = webSkel.reverseQuerySelector(_target, "dialog");
@@ -92,7 +93,7 @@ async function setupGlobalErrorHandlers() {
             errMsg = notification.err.message;
         }
         let toastMsg = `${notification.message} ${errMsg}`
-        renderToast(toastMsg, "error")
+        alert(toastMsg)
     });
 }
 

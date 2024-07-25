@@ -5,8 +5,10 @@ function getPKFromContent(stringContent) {
     return crypto.sha256(stringContent);
 }
 
-class GroupsManager{
-    constructor(){}
+class GroupsManager {
+    constructor() {
+    }
+
     async createGroup(groupData) {
         const openDSU = require("opendsu");
         const w3cdid = openDSU.loadAPI("w3cdid");
@@ -71,12 +73,34 @@ class GroupsManager{
         }
     }
 
-    async addMember(groupName, newMember){
+    async addMember(groupName, newMember) {
 
     }
 
-    async removeMember(groupName, member){
+    async removeMember(groupName, member) {
 
+    }
+
+    async getMembers(groupDID) {
+        if (!groupDID) {
+            throw new Error(`Missing mandatory group info`);
+        }
+
+        return new Promise((resolve, reject) => {
+            const w3cDID = require("opendsu").loadAPI("w3cdid");
+            w3cDID.resolveDID(groupDID, (err, groupDIDDocument) => {
+                if (err) {
+                    return reject(err);
+                }
+
+                groupDIDDocument.listMembersInfo((err, members) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(members);
+                });
+            });
+        });
     }
 
     async deactivateMember(groupName, member) {
@@ -95,8 +119,9 @@ class GroupsManager{
 }
 
 let instance;
-export function getInstance(){
-    if(!instance){
+
+export function getInstance() {
+    if (!instance) {
         instance = new GroupsManager();
     }
     return instance;
