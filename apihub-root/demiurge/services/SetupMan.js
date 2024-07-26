@@ -1,4 +1,6 @@
 import GroupsManager from "./GroupsManager.js";
+import constants from "../constants";
+import utils from "../utils";
 
 //recovery arg is used to determine if the enclave is created for the first time or a recovery is performed
 async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
@@ -85,12 +87,13 @@ async function createEnclave(enclaveData) {
     await initSharedEnclave(keySSI, enclaveData);
 }
 
-class FoundationBuilder {
-    checkStatus(){
+class SetupMan {
+
+    async needsSetup(){
 
     }
 
-    async createFoundation(){
+    async doSetup(){
         return new Promise(async function(resolve, reject){
             let fetchResponse = await fetch("./../config/enclaves.json");
             let enclaves;
@@ -107,6 +110,7 @@ class FoundationBuilder {
                     return reject(`Failed to create Enclave: ${enclave.enclaveName}.`, err);
                 }
             }
+            webSkel.notificationHandler.reportUserRelevantInfo("Created enclaves");
 
             let groupFetchResponse = await fetch("./../config/groups.json");
             let groups;
@@ -124,13 +128,44 @@ class FoundationBuilder {
                     return reject(`Failed to create Group: ${group.groupName}.`, err);
                 }
             }
+            webSkel.notificationHandler.reportUserRelevantInfo("Created groups");
         });
     }
+
+    async isFirstAdmin() {
+        const scAPI = require("opendsu").loadApi("sc");
+        const w3cDID = require("opendsu").loadApi("w3c");
+        const didDomain = await $$.promisify(scAPI.getDIDDomain)();
+        try {
+            await $$.promisify(w3cDID.resolveDID)(`did:${constants.SSI_NAME_DID_TYPE}:${didDomain}:${constants.INITIAL_IDENTITY_PUBLIC_NAME}`);
+        } catch (e) {
+            return true;
+        }
+
+        return false;
+    }
+
+    async createInitialDID() {
+        const _createDID = async () => {
+            const didDomain = await this.getDIDDomain();
+            try {
+                await $$.promisify(w3cDID.createIdentity)(constants.SSI_NAME_DID_TYPE, didDomain, constants.INITIAL_IDENTITY_PUBLIC_NAME);
+            } catch (e) {
+                webSkel.notificationHandler.reportUserRelevantWarning(`Failed to create DID. Retrying ...`);
+                throw e;
+            }
+        }
+
+        await utils.retryAsyncFunction(_createDID, 3, 100);
+    }
+
 }
 let instance;
-export function getInstance(){
+function getInstance(){
     if(!instance){
-        instance = new FoundationBuilder();
+        instance = new SetupMan();
     }
     return instance;
 }
+
+export default {getInstance};
