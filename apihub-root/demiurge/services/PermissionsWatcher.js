@@ -10,7 +10,8 @@ class PermissionsWatcher {
   constructor(did, isAuthorizedHandler) {
     this.notificationHandler = openDSU.loadAPI("error");
     this.isAuthorizedHandler = isAuthorizedHandler || defaultHandler;
-    utils.showTextLoader();
+    //TODO: Replace with a proper ui status for user to know what is happening
+    // utils.showTextLoader();
     this.checkAccessAndAct().then(()=>{
       utils.hideTextLoader();
     }).catch(err=>{

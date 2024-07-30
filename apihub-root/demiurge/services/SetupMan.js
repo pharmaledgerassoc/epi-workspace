@@ -1,6 +1,11 @@
 import GroupsManager from "./GroupsManager.js";
-import constants from "../constants";
-import utils from "../utils";
+import constants from "../constants.js";
+import utils from "../utils.js";
+
+const openDSU = require("opendsu");
+const scAPI = openDSU.loadAPI("sc");
+const resolver = openDSU.loadAPI("resolver");
+const enclaveAPI = openDSU.loadAPI("enclave");
 
 //recovery arg is used to determine if the enclave is created for the first time or a recovery is performed
 async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
@@ -36,7 +41,7 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
     try {
         bID = await enclave.startOrAttachBatchAsync();
     } catch (e) {
-        return notificationHandler.reportUserRelevantWarning('Failed to begin batch on enclave: ', e)
+        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to begin batch on enclave: ', e)
     }
     for (let dbTableName of tables) {
         for (let indexField of enclaveConfig.enclaveIndexesMap[dbTableName]) {
@@ -47,9 +52,9 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
                 try {
                     await enclave.cancelBatchAsync(bID);
                 } catch (error) {
-                    return notificationHandler.reportUserRelevantWarning('Failed to cancel batch on enclave: ', error, addIndexError)
+                    return webSkel.notificationHandler.reportUserRelevantWarning('Failed to cancel batch on enclave: ', error, addIndexError)
                 }
-                return notificationHandler.reportUserRelevantWarning('Failed to add index on enclave: ', addIndexError);
+                return webSkel.notificationHandler.reportUserRelevantWarning('Failed to add index on enclave: ', addIndexError);
             }
         }
     }
@@ -57,34 +62,45 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
     try {
         await enclave.commitBatchAsync(bID);
     } catch (e) {
-        return notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
+        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
+    }
+
+    if(enclaveConfig.enclaveName.indexOf("demiurge")!== -1){
+        await $$.promisify(scAPI.setSharedEnclave)(enclave);
     }
 
     const enclaveRecord = {
         enclaveType: enclaveConfig.enclaveType,
         enclaveDID,
         enclaveKeySSI,
-        enclaveName: enclaveConfig.enclaveName,
+        enclaveName: enclaveConfig.enclaveName
     };
 
-    /* todo: this part will be done on the client side....
-           let batchId = await enclaveDB.startOrAttachBatchAsync();
-            await enclaveDB.writeKeyAsync(enclaveConfig.enclaveName, enclaveRecord);
-            await enclaveDB.insertRecordAsync(constants.TABLES.GROUP_ENCLAVES, enclaveRecord.enclaveDID, enclaveRecord);
-            await enclaveDB.commitBatchAsync(batchId);*/
+
+    let batchId = await enclaveDB.startOrAttachBatchAsync();
+    await enclaveDB.writeKeyAsync(enclaveConfig.enclaveName, enclaveRecord);
+    await enclaveDB.insertRecordAsync(constants.TABLES.GROUP_ENCLAVES, enclaveRecord.enclaveDID, enclaveRecord);
+    await enclaveDB.commitBatchAsync(batchId);
     return enclaveRecord;
 }
 
 async function createEnclave(enclaveData) {
-    const openDSU = require("opendsu");
-    const scAPI = openDSU.loadAPI("sc");
-    const resolver = openDSU.loadAPI("resolver");
 
     const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
     const dsu = await $$.promisify(resolver.createSeedDSU)(vaultDomain);
     const keySSI = await $$.promisify(dsu.getKeySSIAsString)();
 
     await initSharedEnclave(keySSI, enclaveData);
+}
+
+let didDomain;
+async function getDIDDomain() {
+    const scAPI = require("opendsu").loadApi("sc");
+    if (!didDomain) {
+        didDomain = await $$.promisify(scAPI.getDIDDomain)();
+    }
+
+    return didDomain;
 }
 
 class SetupMan {
@@ -95,7 +111,8 @@ class SetupMan {
 
     async doSetup(){
         return new Promise(async function(resolve, reject){
-            let fetchResponse = await fetch("./../config/enclaves.json");
+            webSkel.notificationHandler.reportUserRelevantInfo("Initial setup process has started.");
+            let fetchResponse = await fetch("./config/enclaves.json");
             let enclaves;
             try{
                 enclaves = await fetchResponse.json();
@@ -112,7 +129,7 @@ class SetupMan {
             }
             webSkel.notificationHandler.reportUserRelevantInfo("Created enclaves");
 
-            let groupFetchResponse = await fetch("./../config/groups.json");
+            let groupFetchResponse = await fetch("./config/groups.json");
             let groups;
             try{
                 groups = await groupFetchResponse.json();
@@ -129,12 +146,14 @@ class SetupMan {
                 }
             }
             webSkel.notificationHandler.reportUserRelevantInfo("Created groups");
+            webSkel.notificationHandler.reportUserRelevantInfo("Initial setup process done.");
+            resolve();
         });
     }
 
     async isFirstAdmin() {
         const scAPI = require("opendsu").loadApi("sc");
-        const w3cDID = require("opendsu").loadApi("w3c");
+        const w3cDID = require("opendsu").loadApi("w3cdid");
         const didDomain = await $$.promisify(scAPI.getDIDDomain)();
         try {
             await $$.promisify(w3cDID.resolveDID)(`did:${constants.SSI_NAME_DID_TYPE}:${didDomain}:${constants.INITIAL_IDENTITY_PUBLIC_NAME}`);
@@ -146,8 +165,9 @@ class SetupMan {
     }
 
     async createInitialDID() {
+        const w3cDID = require("opendsu").loadApi("w3cdid");
         const _createDID = async () => {
-            const didDomain = await this.getDIDDomain();
+            const didDomain = await getDIDDomain();
             try {
                 await $$.promisify(w3cDID.createIdentity)(constants.SSI_NAME_DID_TYPE, didDomain, constants.INITIAL_IDENTITY_PUBLIC_NAME);
             } catch (e) {

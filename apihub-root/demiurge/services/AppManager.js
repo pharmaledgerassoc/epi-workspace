@@ -1,11 +1,9 @@
 import env from "./../environment.js";
 import {getPermissionsWatcher} from "./PermissionsWatcher.js";
-import {getUserDetails} from "./getUserDetails.js";
 import SetupMan from "./SetupMan.js";
 import GroupsManager from "./GroupsManager.js";
 import constants from "../constants.js";
 import utils from "../utils.js";
-import {getGroupCredential} from "../../../demiurge/code/scripts/mappings/utils";
 
 const openDSU = require("opendsu");
 const dbAPI = openDSU.loadAPI("db");
@@ -13,6 +11,10 @@ const scAPI = openDSU.loadAPI("sc");
 const w3cDID = openDSU.loadAPI("w3cdid");
 const keySSISpace = openDSU.loadAPI("keyssi");
 const resolver = openDSU.loadAPI("resolver");
+const systemAPI = openDSU.loadApi("system");
+const crypto = openDSU.loadAPI("crypto");
+
+const DEFAULT_PIN = "1qaz";
 
 /**
  * @param {string} did - identifier of DIDDocument
@@ -106,16 +108,9 @@ async function setSharedEnclaveKeySSI(recoveryCode) {
 }
 
 async function storeDID(did) {
-    await setStoredDID(did, this.model.username);
+    await setStoredDID(did);
 }
 
-async function getDIDDomain() {
-    if (!this.didDomain) {
-        this.didDomain = await $$.promisify(scAPI.getDIDDomain)();
-    }
-
-    return this.didDomain;
-}
 
 async function getMainEnclave() {
     if (!this.mainEnclave) {
@@ -130,17 +125,18 @@ async function getMainEnclave() {
     return this.mainEnclave;
 }
 
+let sharedEnclave;
 async function getSharedEnclave() {
-    if (!this.sharedEnclave) {
+    if (!sharedEnclave) {
         try {
-            this.sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+            sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantWarning(`Failed to get shared enclave: ${e.message}. Retrying ...`);
-            return await this.getSharedEnclave();
+            return await getSharedEnclave();
         }
     }
 
-    return this.sharedEnclave;
+    return sharedEnclave;
 }
 
 async function getSharedEnclaveDataFromEnv() {
@@ -166,6 +162,28 @@ async function getMigrationStatus() {
 
 function deriveEncryptionKey(key) {
     return crypto.deriveEncryptionKey(key);
+}
+
+function getCookie(cookieName) {
+    const name = cookieName + "=";
+    let res;
+    try {
+        const cookiesArr = decodeURIComponent(document.cookie).split('; ');
+        cookiesArr.forEach(val => {
+            if (val.indexOf(name) === 0) res = val.substring(name.length);
+        })
+    } catch (e) {
+        console.log("error on get cookie ", e);
+    }
+    return res;
+}
+
+function getSSOId(ssoIdFieldName) {
+    let ssoDetectedId = localStorage.getItem(ssoIdFieldName);
+    if (!ssoDetectedId) {
+        ssoDetectedId = getCookie(ssoIdFieldName);
+    }
+    return ssoDetectedId;
 }
 
 function getSSODetectedId() {
@@ -240,7 +258,7 @@ async function autoAuthorization() {
     let handler = await SecretsHandler.getInstance(did);
     let domain = await $$.promisify(scAPI.getVaultDomain)();
     const enclaveData = await getSharedEnclaveDataFromEnv();
-    let groupCredential = await getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
+    let groupCredential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
     await handler.authorizeUser(did, groupCredential, enclaveData);
 }
 
@@ -299,7 +317,8 @@ async function firstOrRecoveryAdminToAdministrationGroup(did, userDetails, logAc
     let groupsManager = GroupsManager.getInstance();
     let adminGroup = await groupsManager.getAdminGroup(sharedEnclave);
     groupsManager.addMember(adminGroup.did, did);
-    await utils.addLogMessage(did, logAction, utils.getGroupName(adminGroup), userDetails.userName || "-");
+    //TODO: add the audit log
+    // await utils.addLogMessage(did, logAction, utils.getGroupName(adminGroup), userDetails.userName || "-");
 }
 
 class AppManager {
@@ -329,15 +348,16 @@ class AppManager {
         } catch (e) {
             // No previous version wallet found
         }
+
         let mainDSU;
-        let walletJustCreated = false;
+        //let walletJustCreated = false;
         try {
             mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
         } catch (error) {
             try {
                 mainDSU = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
                 await $$.promisify(mainDSU.writeFile)('environment.json', JSON.stringify(env));
-                walletJustCreated = true;
+                this.walletJustCreated = true;
             } catch (e) {
                 webSkel.notificationHandler.reportUserRelevantWarning("Failed to create the wallet", e);
                 return;
@@ -345,24 +365,35 @@ class AppManager {
         }
 
         scAPI.setMainDSU(mainDSU);
-        if(!walletJustCreated){
+
+        return new Promise(async (resolve, reject) => {
             const sc = scAPI.getSecurityContext();
-            if (sc.isInitialised()) {
-                return await this.getWalletAccess();
+
+            let finish = async ()=>{
+                if (!this.walletJustCreated) {
+                    await this.getWalletAccess();
+                    resolve();
+                    return;
+                }
+                resolve(this.walletJustCreated);
             }
 
-            sc.on("initialised", async () => {
-                return await this.getWalletAccess();
-            });
-        }
-        await this.oneTimeSetup(walletJustCreated);
-        return walletJustCreated;
+            if (sc.isInitialised()) {
+                await finish();
+            }
+
+            sc.on("initialised", finish);
+        });
+        //await this.oneTimeSetup(walletJustCreated);
+        //return this.walletJustCreated;
+
     }
 
-    //second phase... setup of the necessary enclaves and groups
+//second phase... setup of the necessary enclaves and groups
     async oneTimeSetup(walletJustCreated) {
         let setupMan = SetupMan.getInstance();
-        if (setupMan.isFirstAdmin() && walletJustCreated) {
+        let firstAdmin = await setupMan.isFirstAdmin();
+        if (firstAdmin && walletJustCreated) {
             //we are the first admin
             try {
                 await setupMan.createInitialDID();
@@ -374,15 +405,16 @@ class AppManager {
         }
     }
 
-    //third phase... create or recover Identity
+//third phase... create or recover Identity
     async createIdentity(userDetails) {
         const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
         const config = openDSU.loadAPI("config");
         let appName = await $$.promisify(config.getEnv)("appName");
-        let userId = `${appName}/${userDetails.username}`;
+        let userId = `${appName}/${userDetails.userName}`;
         let didDocument;
         let shouldPersist = false;
         const mainDID = await scAPI.getMainDIDAsync();
+
         const healDID = async (didIdentifier) => {
             try {
                 didDocument = await $$.promisify(w3cDID.resolveDID)(didIdentifier);
@@ -395,6 +427,9 @@ class AppManager {
                     console.log(`Failed to reset DID. Status: ${response.status}`);
                 }
                 try {
+                    let mainEnc = await $$.promisify(scAPI.getMainEnclave)();
+                    let keyS = await $$.promisify(mainEnc.getKeySSI)();
+                    console.log(keyS.getIdentifier());
                     didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
                     shouldPersist = true;
                 } catch (e) {
@@ -410,25 +445,11 @@ class AppManager {
             shouldPersist = true;
         }
         if (shouldPersist) {
-            let batchId;
-            let mainEnclave;
-            try {
-                mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
-                batchId = await mainEnclave.startOrAttachBatchAsync();
-                await scAPI.setMainDIDAsync(didDocument.getIdentifier());
-                await mainEnclave.commitBatchAsync(batchId);
-            } catch (e) {
-                const writeKeyError = createOpenDSUErrorWrapper(`Failed to write key`, e);
-                try {
-                    await mainEnclave.cancelBatchAsync(batchId);
-                } catch (error) {
-                    throw createOpenDSUErrorWrapper(`Failed to cancel batch`, error, writeKeyError);
-                }
-                throw writeKeyError;
-            }
+            await storeDID(didDocument.getIdentifier());
         }
 
-        if(this.firstTimeAndFirstAdmin){
+        await this.oneTimeSetup(this.walletJustCreated);
+        if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
             await firstOrRecoveryAdminToAdministrationGroup(didDocument, userDetails);
             await autoAuthorization(didDocument);
@@ -437,7 +458,7 @@ class AppManager {
         return didDocument.getIdentifier();
     }
 
-    //fourth phase... get access
+//fourth phase... get access
     getWalletAccess = async (sourcePage) => {
         await webSkel.showLoading();
         try {
@@ -480,9 +501,12 @@ class AppManager {
 
 let instance;
 
-export function getInstance() {
+function getInstance() {
     if (!instance) {
         instance = new AppManager();
     }
     return instance;
 }
+
+export default {getInstance};
+

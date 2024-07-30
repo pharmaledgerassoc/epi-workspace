@@ -2,7 +2,7 @@ import WebSkel from "./WebSkel/webSkel.js";
 
 const openDSU = require("opendsu");
 import {getInstance} from "./MockClient.js";
-import mockData from "./MockData.js";
+import AppManager from "./services/AppManager.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
 
@@ -57,23 +57,25 @@ function registerGlobalActions() {
     webSkel.setDomElementForPages(pageContent);
     registerGlobalActions();
 
-    const {currentPage, presenterName} = utils.detectCurrentPage();
+    let {currentPage, presenterName} = utils.detectCurrentPage();
 
     await setupGlobalErrorHandlers();
     webSkel.client = getInstance("default");
-    let promises = []
-    for (let item of mockData.devUserLogs) {
-        promises.push($$.promisify(webSkel.client.addAuditLog)(item));
-    }
-    for (let item of mockData.userLogs) {
-        promises.push($$.promisify(webSkel.client.addAuditLog)(item));
-    }
+
     webSkel.renderToast = renderToast;
-    try {
-        await Promise.all(promises);
-    } catch (e) {
-        webSkel.notificationHandler.reportUserRelevantError("Failed to add audit logs", e);
+
+    let justCreated;
+    try{
+        justCreated = await AppManager.getInstance().walletInitialization();
+    }catch(err){
+        webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
+
+    if(justCreated){
+        presenterName = "booting-identity-page";
+        currentPage = presenterName;
+    }
+
     await webSkel.changeToDynamicPage(presenterName, currentPage);
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 })();

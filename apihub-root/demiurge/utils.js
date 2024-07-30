@@ -51,18 +51,43 @@ async function sendUserMessage(sender, group, member, content, contentType, reci
 
 async function getUserDetails() {
     if(!window.userDetails){
-        const response = await fetch("./api-standard/user-details");
-        let jsonResult = await response.json();
-        let returnResult = jsonResult.username.replace(/@/gm, '/');
+        let username = localStorage.getItem("SSODetectedId");
+
         const openDSU = require("opendsu");
         const config = openDSU.loadAPI("config");
         let appName = await $$.promisify(config.getEnv)("appName");
         window.userDetails = {
-            userAppDetails: `${appName || "-"}/${returnResult}`,
-            userName: jsonResult.username
+            userAppDetails: `${appName || "-"}/${username}`,
+            userName: username
         }
     }
     return window.userDetails;
+}
+
+function retryAsyncFunction(asyncFunction, maxTries, timeBetweenRetries, ...args) {
+    return new Promise(async (resolve) => {
+        let attempt = 0;
+        while (attempt < maxTries) {
+            try {
+                const result = await asyncFunction(...args);
+                resolve(result); // Successful execution, resolve the promise with the result
+                return; // Exit the function
+            } catch (error) {
+                attempt++;
+                if (attempt >= maxTries) {
+                    $$.forceTabRefresh();
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, timeBetweenRetries)); // Wait before the next retry
+                }
+            }
+        }
+    });
+}
+
+function getGroupName(group) {
+    const segments = group.did.split(":");
+    let groupName = segments.pop();
+    return groupName;
 }
 
 export default {
@@ -70,5 +95,7 @@ export default {
     getSharedEnclaveKey,
     detectCurrentPage,
     fetchGroups,
-    getUserDetails
+    getUserDetails,
+    retryAsyncFunction,
+    getGroupName
 }

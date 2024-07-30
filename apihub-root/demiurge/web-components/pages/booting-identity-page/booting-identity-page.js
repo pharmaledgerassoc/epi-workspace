@@ -1,14 +1,17 @@
-import {getUserDetails} from "./../../../utils.js";
+import utils from "./../../../utils.js";
 import AppManager from "./../../../services/AppManager.js";
 
 export class BootingIdentityPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.invalidate(async ()=>{
-            this.userDetails = await getUserDetails();
+        this.invalidate(async () => {
+            this.userDetails = await utils.getUserDetails();
             this.username = userDetails.userName;
         });
+    }
+
+    beforeRender() {
     }
 
     async createIdentity(_target) {
@@ -16,21 +19,26 @@ export class BootingIdentityPage {
         _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
         _target.classList.add("remove");
         const initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
+        let appManager = await AppManager.getInstance();
 
-        try{
-            await AppManager.getInstance().createIdentity(this.userDetails);
-        }catch(err){
-
+        try {
+            await appManager.createIdentity(this.userDetails);
+        } catch (err) {
+            webSkel.notificationHandler.reportUserRelevantError("Failed to create identity", err);
         }
         initialiseIdentityModal.close();
         initialiseIdentityModal.remove();
-        const createdIdentityModal = await webSkel.showModal("break-glass-recovery-code-modal");
+        if(appManager.firstTimeAndFirstAdmin){
+            await webSkel.showModal("break-glass-recovery-code-modal", true);
+            await webSkel.changeToDynamicPage("groups-page");
+        }else{
+            appManager.getWalletAccess("groups-page");
+        }
 
-            setTimeout(async()=>{
-                createdIdentityModal.close();
-                createdIdentityModal.remove();
-                const waitingAccessModal = await webSkel.showModal("waiting-access-modal");
-            },3000)
-
+        /*setTimeout(async () => {
+            createdIdentityModal.close();
+            createdIdentityModal.remove();
+            const waitingAccessModal = await webSkel.showModal("waiting-access-modal");
+        }, 3000);*/
     }
 }

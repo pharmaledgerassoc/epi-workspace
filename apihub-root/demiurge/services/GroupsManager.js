@@ -1,5 +1,5 @@
 import {getCredentialService} from "./JWTCredentialService.js";
-import constants from "../../../demiurge/code/scripts/constants";
+import constants from "../constants.js";
 
 function getPKFromContent(stringContent) {
     const crypto = require("opendsu").loadAPI("crypto");
@@ -50,7 +50,6 @@ class GroupsManager {
 
     async createGroup(groupData) {
         const openDSU = require("opendsu");
-        const w3cdid = openDSU.loadAPI("w3cdid");
         const scAPI = openDSU.loadAPI("sc");
         const enclaveDB = await $$.promisify(scAPI.getMainEnclave)();
         const didDomain = await $$.promisify(scAPI.getDIDDomain)();
@@ -64,23 +63,23 @@ class GroupsManager {
             group.enclaveName = enclaveName;
             group.accessMode = accessMode;
         }
-
+        const sharedEnclaveDB = await $$.promisify(scAPI.getSharedEnclave)();
         let groupName = groupData.groupName.replaceAll(" ", "_");
         let groupDIDDocument;
         try {
-            groupDIDDocument = await $$.promisify(w3cdid.resolveDID)(`did:ssi:group:${didDomain}:${groupName}`);
+            groupDIDDocument = await $$.promisify(sharedEnclaveDB.resolveDID)(`did:ssi:group:${didDomain}:${groupName}`);
         } catch (e) {
         }
         if (typeof groupDIDDocument === "undefined") {
-            groupDIDDocument = await promisify(w3cdid.createIdentity)("ssi:group", didDomain, groupName);
+            groupDIDDocument = await $$.promisify(sharedEnclaveDB.createIdentity)("ssi:group", didDomain, groupName);
             group.did = groupDIDDocument.getIdentifier();
 
-            const sharedEnclaveDB = await $$.promisify(scAPI.getSharedEnclave)();
             let batchId = await sharedEnclaveDB.startOrAttachBatchAsync();
             try {
                 await sharedEnclaveDB.insertRecordAsync(constants.TABLES.GROUPS, group.did, group);
 
                 const adminDID = await enclaveDB.readKeyAsync(constants.IDENTITY);
+
                 const credentialService = getCredentialService();
                 const groupCredential = await credentialService.createVerifiableCredential(adminDID.did, group.did);
                 await sharedEnclaveDB.insertRecordAsync(constants.TABLES.GROUPS_CREDENTIALS, getPKFromContent(groupCredential), {
@@ -125,9 +124,10 @@ class GroupsManager {
             throw new Error(`Missing mandatory group info`);
         }
 
-        return new Promise((resolve, reject) => {
-            const w3cDID = require("opendsu").loadAPI("w3cdid");
-            w3cDID.resolveDID(groupDID, (err, groupDIDDocument) => {
+        return new Promise(async (resolve, reject) => {
+            const scAPI = require("opendsu").loadAPI("sc");
+            const sharedEnclaveDB = await $$.promisify(scAPI.getSharedEnclave)();
+            sharedEnclaveDB.resolveDID(groupDID, (err, groupDIDDocument) => {
                 if (err) {
                     return reject(err);
                 }
@@ -166,6 +166,15 @@ class GroupsManager {
 
     async getReadGroup(sharedEnclave) {
         return getGroupByType(sharedEnclave, constants.READ_ONLY_ACCESS_MODE, constants.EPI_READ_GROUP);
+    }
+
+    async getGroupCredential(groupDID){
+        const openDSU = require("opendsu");
+        const scAPI = openDSU.loadAPI("sc");
+        const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+        const credentials = await sharedEnclave.filterAsync(constants.TABLES.GROUPS_CREDENTIALS, `groupDID == ${groupDID}`);
+        let groupCredential = credentials.find(el => el.credentialType === constants.CREDENTIAL_TYPES.WALLET_AUTHORIZATION);
+        return groupCredential;
     }
 }
 
