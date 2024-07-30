@@ -1,3 +1,86 @@
+const _sendRequest = async (endpoint, method, data, callback) => {
+    if (typeof data === 'function') {
+        callback = data;
+        data = undefined;
+    }
+
+    const http = require('opendsu').loadAPI('http');
+    if (method === 'GET') {
+        let response;
+        try{
+            response = await http.fetch(endpoint, {method});
+            let reason;
+            if (response.status >= 400) {
+                reason = await response.text();
+                return callback({code: response.status, reason});
+            }
+            response = await response.json();
+        }catch(err){
+            return callback(err);
+        }
+        callback(undefined, response);
+    } else {
+        let body;
+        if (method !== 'DELETE' && data) {
+            body = data ? JSON.stringify(data) : undefined;
+        }
+        let response;
+        try{
+            response = await http.fetch(endpoint, {method, body});
+            if (response.status >= 400) {
+                let reason = await response.text();
+                return callback({code: response.status, reason});
+            }
+            response = await response.text();
+        }catch(err){
+            return callback(err);
+        }
+        callback(undefined, response);
+    }
+};
+
+function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort, callback) {
+    if (typeof start === 'function') {
+        callback = start;
+        start = undefined;
+        number = undefined;
+        sort = undefined;
+        query = undefined;
+    }
+
+    if (typeof number === 'function') {
+        callback = number;
+        number = undefined;
+        sort = undefined;
+        query = undefined;
+    }
+
+    if (typeof query === 'function') {
+        callback = query;
+        query = undefined;
+    }
+
+    if (typeof sort === 'function') {
+        callback = sort;
+        sort = undefined;
+    }
+
+    if (!query) {
+        query = "__timestamp > 0";
+    }
+    let url = `${baseURL}/${endpoint}?query=${query}`;
+    if (typeof start !== 'undefined') {
+        url += `&start=${start}`;
+    }
+    if (typeof number !== 'undefined') {
+        url += `&number=${number}`;
+    }
+    if (typeof sort !== 'undefined') {
+        url += `&sort=${sort}`;
+    }
+    _sendRequest(url, 'GET', callback);
+}
+
 export class AuditService{
     convertToCSV(items, type) {
         let headers;
@@ -27,5 +110,13 @@ export class AuditService{
         /*  let details = {logInfo: itemCopy};
           arr.push(JSON.stringify(details));*/
         return [];
+    }
+
+    addAuditLog (logType, auditMessage, callback) {
+        _sendRequest(`${getBaseURL()}/audit/${logType}`, 'POST', auditMessage, callback);
+    }
+
+    filterAuditLogs (logType, start, number, query, sort, callback) {
+        processParametersAndSendRequest(getBaseURL(), `audit/${logType}`, start, number, query, sort, callback);
     }
 }

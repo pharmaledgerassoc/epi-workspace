@@ -285,6 +285,9 @@ const setHealthyAuthorizationInfo = async () => {
     // epiGroup == "write" or "read"
     const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
     let userRights;
+
+    //TODO:refactor the group part of the authorization
+    //
     let groupDID;
     if (epiGroup === "write") {
         groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_WRITE_GROUP}`;
@@ -480,6 +483,14 @@ class AppManager {
                 window.location.reload()
             }, 2000);
         }
+    }
+
+    async getBreakGlassCode(){
+        return await getSharedEnclave().getIdentifier();
+    }
+
+    async useBreakGlassCode(code){
+        //todo: save the shared enclave info and authorize the user...
     }
 
     async didWasCreated() {

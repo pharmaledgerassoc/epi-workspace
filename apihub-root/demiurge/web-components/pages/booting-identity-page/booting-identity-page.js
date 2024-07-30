@@ -19,7 +19,7 @@ export class BootingIdentityPage {
         _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
         _target.classList.add("remove");
         const initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
-        let appManager = await AppManager.getInstance();
+        let appManager = AppManager.getInstance();
 
         try {
             await appManager.createIdentity(this.userDetails);
