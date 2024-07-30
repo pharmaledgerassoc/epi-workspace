@@ -1,3 +1,8 @@
+const getBaseURL = () => {
+    const systemAPI = require('opendsu').loadAPI("system");
+    return `${systemAPI.getBaseURL()}/integration`;
+}
+
 const _sendRequest = async (endpoint, method, data, callback) => {
     if (typeof data === 'function') {
         callback = data;
