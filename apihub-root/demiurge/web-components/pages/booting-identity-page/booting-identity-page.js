@@ -6,6 +6,11 @@ export class BootingIdentityPage {
         this.element = element;
         this.invalidate = invalidate;
         this.invalidate(async () => {
+            let appManager = AppManager.getInstance();
+            if(await appManager.didWasCreated()){
+                await webSkel.changeToDynamicPage("groups-page", "groups-page");
+                return;
+            }
             this.userDetails = await utils.getUserDetails();
             this.username = userDetails.userName;
         });

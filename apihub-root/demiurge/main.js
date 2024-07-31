@@ -72,7 +72,7 @@ function registerGlobalActions() {
         webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
 
-    if(justCreated || appManager.didWasCreated()){
+    if(justCreated || ! await appManager.didWasCreated()){
         presenterName = "booting-identity-page";
         currentPage = presenterName;
     }
