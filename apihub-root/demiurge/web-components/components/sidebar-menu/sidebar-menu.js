@@ -5,6 +5,9 @@ export class SidebarMenu {
         this.invalidate();
     }
 
+    beforeRender() {
+    }
+
     afterRender() {
         this.highlightCurrentSelection(window.location.hash.slice(1));
     }
