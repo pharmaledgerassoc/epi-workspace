@@ -112,7 +112,7 @@
 
     ],
     "webComponentsRootDir": "web-components",
-    "defaultPage": "landing-page",
+    "defaultPage": "groups-page",
     "storageServices": []
 }
 
