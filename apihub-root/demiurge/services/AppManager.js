@@ -401,7 +401,7 @@ class AppManager {
         if (shouldPersist) {
             await storeDID(didDocument.getIdentifier());
         }
-debugger;
+
         await this.oneTimeSetup(this.walletJustCreated);
         if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
@@ -415,9 +415,13 @@ debugger;
 //fourth phase... get access
     getWalletAccess = async (sourcePage) => {
         await webSkel.showLoading();
-        try {
-            let did = await getStoredDID();
+        let did = await getStoredDID();
+        if(!did){
+            webSkel.notificationHandler.reportUserRelevantInfo(`Identity was not created yet. Let's go and create one.`);
+            return await webSkel.changeToDynamicPage("booting-identity-page", "booting-identity-page");
+        }
 
+        try {
             /*if (this.sourcePage === "#landing-page" || this.sourcePage === "#generate-did-page") {
                 this.sourcePage = "#home-page";
             }*/

@@ -65,13 +65,14 @@ function registerGlobalActions() {
     webSkel.renderToast = renderToast;
 
     let justCreated;
+    let appManager = AppManager.getInstance();
     try{
-        justCreated = await AppManager.getInstance().walletInitialization();
+        justCreated = await appManager.walletInitialization();
     }catch(err){
         webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
 
-    if(justCreated){
+    if(justCreated || appManager.didWasCreated()){
         presenterName = "booting-identity-page";
         currentPage = presenterName;
     }
