@@ -1,17 +1,46 @@
 import constants from "./../constants.js";
 import utils from "../utils.js";
-//import {getGroupCredential} from "../mappings/utils.js";
+import GroupsManager from "./GroupsManager.js";
 
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
 const defaultHandler = function(){console.log("User is authorized")};
 
+async function setWalletStatus(walletStatus) {
+  const walletStorage = await $$.promisify(scAPI.getMainEnclave)();
+  let batchId = await walletStorage.startOrAttachBatchAsync();
+
+  try {
+    await walletStorage.writeKeyAsync(constants.WALLET_STATUS, walletStatus);
+    await walletStorage.commitBatchAsync(batchId);
+  } catch (err) {
+    try {
+      await walletStorage.cancelBatchAsync(batchId);
+    } catch (e) {
+      return console.log(e, err);
+    }
+    throw new Error("Failed to ensure wallet state.");
+  }
+}
+
+async function getWalletStatus() {
+  let walletStorage = await $$.promisify(scAPI.getMainEnclave)();
+  let record;
+
+  try {
+    record = await walletStorage.readKeyAsync(constants.WALLET_STATUS);
+  } catch (err) {
+    //ignorable at this point in time
+  }
+
+  return record;
+}
+
 class PermissionsWatcher {
   constructor(did, isAuthorizedHandler) {
     this.notificationHandler = openDSU.loadAPI("error");
     this.isAuthorizedHandler = isAuthorizedHandler || defaultHandler;
-    //TODO: Replace with a proper ui status for user to know what is happening
-    // utils.showTextLoader();
+    //utils.showTextLoader();
     this.checkAccessAndAct().then(()=>{
       utils.hideTextLoader();
     }).catch(err=>{
@@ -76,7 +105,7 @@ class PermissionsWatcher {
       env[openDSU.constants.SHARED_ENCLAVE.KEY_SSI] = enclave.enclaveKeySSI;
       await $$.promisify(scAPI.configEnvironment)(env);
 
-      await utils.setWalletStatus(constants.ACCOUNT_STATUS.CREATED);
+      await setWalletStatus(constants.ACCOUNT_STATUS.CREATED);
 
     } catch (e) {
       this.notificationHandler.reportUserRelevantError(`Failed to save info about the shared enclave`, e);
@@ -84,7 +113,7 @@ class PermissionsWatcher {
   }
 
   async resettingCredentials() {
-    await utils.setWalletStatus(constants.ACCOUNT_STATUS);
+    await setWalletStatus(constants.ACCOUNT_STATUS);
     await $$.promisify(scAPI.deleteSharedEnclave)();
   }
 
@@ -145,7 +174,8 @@ class PermissionsWatcher {
     }else{
       let groupCredential;
       try{
-        groupCredential = await getGroupCredential(groupDID);
+        groupCredential = await GroupsManager.getInstance().getGroupCredential(groupDID);
+        //groupCredential = await getGroupCredential(groupDID);
         if(includeAllPossible){
           let allPossibleGroups = [
             {"name":"ePI Write Group","tags":"DSU_Fabric","enclaveName":"epiEnclave","accessMode":"write","did":`did:ssi:group:${domain}:ePI_Write_Group`},

@@ -262,56 +262,6 @@ async function autoAuthorization() {
     await handler.authorizeUser(did, groupCredential, enclaveData);
 }
 
-const setHealthyAuthorizationInfo = async () => {
-    let SecretsHandler = w3cDID.SecretsHandler;
-    let did = await scAPI.getMainDIDAsync();
-    let handler = await SecretsHandler.getInstance(did);
-
-    let response;
-    try {
-        response = await fetch(`${window.location.origin}/getEpiGroup`);
-    } catch (e) {
-        console.log("Clearing did secret: ", e);
-        await handler.clearDIDSecret(did);
-        return;
-    }
-    if (response.status !== 200) {
-        // delete credential associated with did
-        console.log("Clearing did secret: ", response.status);
-        await handler.clearDIDSecret(did);
-    }
-
-    let epiGroup = await response.text();
-    // epiGroup == "write" or "read"
-    const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
-    let userRights;
-
-    //TODO:refactor the group part of the authorization
-    //
-    let groupDID;
-    if (epiGroup === "write") {
-        groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_WRITE_GROUP}`;
-        userRights = constants.USER_RIGHTS.WRITE;
-    } else if (epiGroup === "read") {
-        groupDID = `did:ssi:group:${vaultDomain}:${constants.EPI_READ_GROUP}`;
-        userRights = constants.USER_RIGHTS.READ;
-    } else {
-        userRights = undefined;
-    }
-    const credential = {
-        groupDID,
-        groupCredential: {
-            groupDID
-        },
-        credentialType: "WALLET_AUTHORIZATION",
-        userRights
-    }
-    let didDocument = await $$.promisify(w3cDID.resolveDID)(did);
-    let encryptedSecret = await $$.promisify(didDocument.encryptMessage)(didDocument, JSON.stringify(credential))
-    await handler.storeDIDSecret(did, encryptedSecret);
-    return credential;
-}
-
 async function firstOrRecoveryAdminToAdministrationGroup(did, userDetails, logAction = constants.OPERATIONS.SHARED_ENCLAVE_CREATE) {
     if (typeof did !== "string") {
         did = did.getIdentifier();
@@ -471,7 +421,8 @@ class AppManager {
                 this.sourcePage = "#home-page";
             }*/
 
-            const credential = await setHealthyAuthorizationInfo();
+            let domain = await $$.promisify(scAPI.getVaultDomain)();
+            const credential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
             getPermissionsWatcher(did, async () => {
                 await webSkel.appServices.addAccessLog(did);
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
@@ -492,7 +443,7 @@ class AppManager {
     }
 
     async useBreakGlassCode(code){
-        //todo: save the shared enclave info and authorize the user...
+        //todo: save the shared enclave info and authorize the new admin user...
     }
 
     async didWasCreated() {
