@@ -49,38 +49,6 @@ function registerGlobalActions() {
     webSkel.registerAction("closeModal", closeModal);
 }
 
-(async () => {
-    window.webSkel = await WebSkel.initialise("./webskel-configs.json");
-    webSkel.notificationHandler = openDSU.loadAPI("error");
-    webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
-    let pageContent = document.querySelector("#page-content");
-    webSkel.setDomElementForPages(pageContent);
-    registerGlobalActions();
-
-    let {currentPage, presenterName} = utils.detectCurrentPage();
-
-    await setupGlobalErrorHandlers();
-    webSkel.client = getInstance("default");
-
-    webSkel.renderToast = renderToast;
-
-    let justCreated;
-    let appManager = AppManager.getInstance();
-    try{
-        justCreated = await appManager.walletInitialization();
-    }catch(err){
-        webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
-    }
-
-    if(justCreated || ! await appManager.didWasCreated()){
-        presenterName = "booting-identity-page";
-        currentPage = presenterName;
-    }
-
-    await webSkel.changeToDynamicPage(presenterName, currentPage);
-    pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
-})();
-
 async function setupGlobalErrorHandlers() {
     webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.WARN, (notification) => {
         renderToast(notification.message, "warning");
@@ -104,3 +72,34 @@ function renderToast(message, type, timeoutValue = 15000) {
     let toastContainer = document.querySelector(".toast-container");
     toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
 }
+
+(async () => {
+    window.webSkel = await WebSkel.initialise("./webskel-configs.json");
+    webSkel.notificationHandler = openDSU.loadAPI("error");
+    webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
+    let pageContent = document.querySelector("#page-content");
+    webSkel.setDomElementForPages(pageContent);
+    registerGlobalActions();
+
+    let {currentPage, presenterName} = utils.detectCurrentPage();
+
+    await setupGlobalErrorHandlers();
+    webSkel.client = getInstance("default");
+
+    webSkel.renderToast = renderToast;
+
+    let justCreated;
+    let appManager = AppManager.getInstance();
+    try {
+        justCreated = await appManager.walletInitialization();
+    } catch (err) {
+        webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
+    }
+
+    if(justCreated || ! await appManager.didWasCreated()){
+        presenterName = "booting-identity-page";
+        currentPage = presenterName;
+    }
+
+    await webSkel.changeToDynamicPage(presenterName, currentPage);
+})();

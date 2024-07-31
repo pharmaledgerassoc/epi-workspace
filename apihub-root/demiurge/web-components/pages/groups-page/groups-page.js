@@ -168,8 +168,7 @@ const mockData = {
             groupDID: 'did:ssi:group:vault:ePI_Write_Group'
         },
     ],
-    readGroup: [
-    ]
+    readGroup: []
 };
 
 const groupNames = {
@@ -195,13 +194,13 @@ export class GroupsPage {
 
     getGroupData(groupId) {
         const getAdministrationGroupMembers = () => {
-            return mockData["administrationGroup"]||[]
+            return mockData["administrationGroup"] || []
         }
         const getWriteGroupMembers = () => {
-            return mockData["writeGroup"]||[]
+            return mockData["writeGroup"] || []
         }
         const getReadGroupMembers = () => {
-            return mockData["readGroup"]||[]
+            return mockData["readGroup"] || []
         }
         switch (groupId) {
             case "Administration":
@@ -215,19 +214,29 @@ export class GroupsPage {
         }
     }
 
+    initLeftSideMenu() {
+        let pageContent = document.querySelector("#page-content");
+        pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
+
+    }
+
     beforeRender() {
+        if (!document.querySelector("sidebar-menu")) {
+            this.initLeftSideMenu();
+        }
+
         const renderAdministrationGroup = () => {
-            this.dataRecoveryButton="";
+            this.dataRecoveryButton = "";
         }
         const renderWriteGroup = () => {
-           this.dataRecoveryButton=`
+            this.dataRecoveryButton = `
             <button class="groups-page-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal">
                 <span class="member-button-label">Data Recovery Key</span>
             </button>
         `
         }
         const renderReadGroup = () => {
-            this.dataRecoveryButton="";
+            this.dataRecoveryButton = "";
         }
         switch (this.selectedTab) {
             case "Administration":
@@ -256,15 +265,15 @@ export class GroupsPage {
 
     afterRender() {
         this.selectTab(this.selectedTab);
-            const input = document.getElementById('member-did-text');
-            const addMemberButton=document.getElementById('add-member-button');
-            input.addEventListener('input', () => {
-                if (input.value.trim() !== "") {
-                    addMemberButton.disabled = false;
-                } else {
-                    addMemberButton.disabled = true;
-                }
-            });
+        const input = document.getElementById('member-did-text');
+        const addMemberButton = document.getElementById('add-member-button');
+        input.addEventListener('input', () => {
+            if (input.value.trim() !== "") {
+                addMemberButton.disabled = false;
+            } else {
+                addMemberButton.disabled = true;
+            }
+        });
     }
 
     changeTab(_target, groupId) {
@@ -283,7 +292,7 @@ export class GroupsPage {
         selectedTab?.classList.add('selected');
     }
 
-    async addMember(buttonElement){
+    async addMember(buttonElement) {
         let inputElement = this.element.querySelector("#member-did-text");
         const newMemberDid = inputElement.value;
         inputElement.value = "";
@@ -332,6 +341,7 @@ export class GroupsPage {
         }
         webSkel.closeModal(modal);
     }
+
     changeButtonState(mode) {
         const addMemberButton = this.element.getElementById('add-member-button');
         if (mode === "loading") {
@@ -343,6 +353,7 @@ export class GroupsPage {
                     <span class="member-button-label">Add Member</span>`;
         }
     }
+
     async fetchMembers(group) {
         if (!group) {
             group = this.selectedGroup;
@@ -368,8 +379,8 @@ export class GroupsPage {
         });
     }
 
-    async removeMember(buttonElement){
-        const memberToRemove=webSkel.reverseQuerySelector(_target,'group-member');
+    async removeMember(buttonElement) {
+        const memberToRemove = webSkel.reverseQuerySelector(_target, 'group-member');
         memberToRemove.remove();
 
         buttonElement.classList.add("disabled");
@@ -384,7 +395,8 @@ export class GroupsPage {
         buttonElement.classList.remove("disabled");
         this.invalidate();
     }
-    async removeGroupMember (did, operation){
+
+    async removeGroupMember(did, operation) {
         let modal = await webSkel.showModal("info-modal", {
             title: constants.OPERATIONS.REMOVE ? "Deleting" : "Deactivating",
             content: did
@@ -399,9 +411,11 @@ export class GroupsPage {
         }
         this.members = this.members.filter((member) => member.did !== did);
     }
-    async openDataRecoveryKeyModal(_target){
-        const modal= await webSkel.showModal("data-recovery-key-modal");
+
+    async openDataRecoveryKeyModal(_target) {
+        const modal = await webSkel.showModal("data-recovery-key-modal");
     }
+
     async notifyMember(group, member) {
         await utils.sendUserMessage(
             this.identity.did,
