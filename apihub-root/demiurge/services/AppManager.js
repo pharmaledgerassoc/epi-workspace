@@ -486,7 +486,9 @@ class AppManager {
     }
 
     async getBreakGlassCode(){
-        return await getSharedEnclave().getIdentifier();
+        let enclave = await getSharedEnclave();
+        let keySSI = await $$.promisify(enclave.getKeySSI)();
+        return keySSI.getIdentifier();
     }
 
     async useBreakGlassCode(code){
