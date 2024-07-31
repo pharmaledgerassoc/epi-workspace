@@ -385,6 +385,7 @@ class AppManager {
                     console.log(keyS.getIdentifier());
                     didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
                     shouldPersist = true;
+                    this.walletJustCreated = true;
                 } catch (e) {
                     throw new Error(`Failed to create DID. Error: ${e.message}`);
                 }
@@ -400,7 +401,7 @@ class AppManager {
         if (shouldPersist) {
             await storeDID(didDocument.getIdentifier());
         }
-
+debugger;
         await this.oneTimeSetup(this.walletJustCreated);
         if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
@@ -422,7 +423,12 @@ class AppManager {
             }*/
 
             let domain = await $$.promisify(scAPI.getVaultDomain)();
-            const credential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
+            let credential;
+            try{
+                credential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
+            }catch(err){
+                //ignore for now...
+            }
             getPermissionsWatcher(did, async () => {
                 await webSkel.appServices.addAccessLog(did);
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
