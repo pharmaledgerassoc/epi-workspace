@@ -15,6 +15,7 @@ export class BootingIdentityPage {
                 return;
             }
 
+            //if the wallet was not created yet we should ensure that the user id is email format to prevent SSO misconfiguration
             let emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             if(!emailValidation.test(this.username)){
                 this.validationFailed = true;
