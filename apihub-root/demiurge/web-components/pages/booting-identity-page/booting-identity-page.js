@@ -14,6 +14,12 @@ export class BootingIdentityPage {
                 await this.checkPermissionAndNavigate();
                 return;
             }
+
+            let emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if(!emailValidation.test(this.username)){
+                this.validationFailed = true;
+                return webSkel.notificationHandler.reportUserRelevantError("Detected User Id is not a valid email address format! Contact the SSO admin in order to make corrections.");
+            }
         });
     }
 
@@ -23,8 +29,9 @@ export class BootingIdentityPage {
     afterRender(){
         let appManager = AppManager.getInstance();
         appManager.didWasCreated().then(wasCreated=>{
-            if(wasCreated){
+            if(wasCreated || this.validationFailed){
                 document.querySelector(".create-identity-button").setAttribute("disabled", "disabled");
+                document.querySelector(".create-identity-button").classList.add("disabled");
             }
         });
     }
@@ -40,6 +47,10 @@ export class BootingIdentityPage {
     }
 
     async createIdentity(_target) {
+        if(this.validationFailed){
+            //if user id validation we should not allow the DID creation
+            return;
+        }
         _target.classList.add("disabled-btn");
         _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
         _target.classList.add("remove");
