@@ -454,6 +454,13 @@ class AppManager {
 
     async useBreakGlassCode(code){
         //todo: save the shared enclave info and authorize the new admin user...
+        await setSharedEnclaveKeySSI(code);
+        let domain = await $$.promisify(scAPI.getVaultDomain)();
+        let groupCredential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
+        let did =  await getStoredDID();
+        let SecretsHandler = w3cDID.SecretsHandler;
+        let handler = await SecretsHandler.getInstance(did);
+        await handler.authorizeUser(did, groupCredential, await getSharedEnclaveDataFromEnv());
     }
 
     async didWasCreated() {
@@ -470,6 +477,10 @@ class AppManager {
         }
 
         return true;
+    }
+
+    async getDID(){
+        return await getStoredDID();
     }
 }
 

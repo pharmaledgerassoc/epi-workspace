@@ -1,5 +1,6 @@
 import utils from "./../../../utils.js";
 import AppManager from "./../../../services/AppManager.js";
+import {getPermissionsWatcher} from "./../../../services/PermissionsWatcher.js";
 
 export class BootingIdentityPage {
     constructor(element, invalidate) {
@@ -7,16 +8,36 @@ export class BootingIdentityPage {
         this.invalidate = invalidate;
         this.invalidate(async () => {
             let appManager = AppManager.getInstance();
-            if(await appManager.didWasCreated()){
-                await webSkel.changeToDynamicPage("groups-page", "groups-page");
-                return;
-            }
             this.userDetails = await utils.getUserDetails();
             this.username = userDetails.userName;
+            if(await appManager.didWasCreated()){
+                await this.checkPermissionAndNavigate();
+                return;
+            }
         });
     }
 
     beforeRender() {
+    }
+
+    afterRender(){
+        let appManager = AppManager.getInstance();
+        appManager.didWasCreated().then(wasCreated=>{
+            if(wasCreated){
+                document.querySelector(".create-identity-button").setAttribute("disabled", "disabled");
+            }
+        });
+    }
+
+    async checkPermissionAndNavigate(){
+        let appManager = AppManager.getInstance();
+        let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
+        if(await permissionWatcher.checkAccess()){
+            debugger;
+            appManager.getWalletAccess("groups-page");
+        }else{
+            const waitingAccessModal = await webSkel.showModal("waiting-access-modal");
+        }
     }
 
     async createIdentity(_target) {
@@ -26,8 +47,9 @@ export class BootingIdentityPage {
         const initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
         let appManager = AppManager.getInstance();
 
+        let identity;
         try {
-            await appManager.createIdentity(this.userDetails);
+            identity = await appManager.createIdentity(this.userDetails);
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to create identity", err);
         }
@@ -37,13 +59,7 @@ export class BootingIdentityPage {
             await webSkel.showModal("break-glass-recovery-code-modal", true);
             await webSkel.changeToDynamicPage("groups-page");
         }else{
-            appManager.getWalletAccess("groups-page");
+            this.checkPermissionAndNavigate();
         }
-
-        /*setTimeout(async () => {
-            createdIdentityModal.close();
-            createdIdentityModal.remove();
-            const waitingAccessModal = await webSkel.showModal("waiting-access-modal");
-        }, 3000);*/
     }
 }

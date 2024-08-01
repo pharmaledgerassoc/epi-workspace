@@ -12,9 +12,10 @@
                     <strong>Copy this DID and give it to the right administrator</strong>
                 </div>
                 <div class="modal-input-field-value">
-                    <input class="input-value" type="password" id="data-recovery-key-copy" value="$$dataRecoveryKey"
+                    <input class="input-value" type="text" id="data-recovery-key-copy" value="$$dataRecoveryKey"
                            readonly>
-                    <div class="pointer no-select" data-action="copyFieldValue data-recovery-key-copy"><strong>Copy</strong></div>
+                    <div class="pointer no-select" data-action="copyFieldValue data-recovery-key-copy">
+                        <strong>Copy</strong></div>
                 </div>
             </div>
 
@@ -29,13 +30,17 @@
                     <strong>Paste and submit your recovery code here to gain access</strong>
                 </div>
                 <div class="modal-input-field-value-container">
-                    <div class="modal-input-field-value">
-                        <input class="input-value" type="password" id="data-recovery-key" placeholder="Recovery Code">
-                        <div class="pointer no-select" data-action="pasteToField data-recovery-key"><strong>Paste</strong></div>
-                    </div>
-                    <button class="modal-action-button n" id="submitDataRecoveryKey"
-                            data-local-action="submitDataRecoveryKey"><strong>Submit</strong>
-                    </button>
+                    <form class="recovery-code">
+                        <div class="modal-input-field-value form-item">
+                            <input class="form-input" type="password" id="recoveryKey" name="recoveryKey"
+                                   placeholder="Recovery Code" required>
+                            <div class="pointer no-select" data-action="pasteToField data-recovery-key">
+                                <strong>Paste</strong></div>
+                        </div>
+                        <button class="modal-action-button n" id="submitDataRecoveryKey"
+                                data-local-action="submitDataRecoveryKey"><strong>Submit</strong>
+                        </button>
+                    </form>
                 </div>
 
             </div>

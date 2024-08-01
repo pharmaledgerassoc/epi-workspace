@@ -42,7 +42,7 @@ class PermissionsWatcher {
     this.isAuthorizedHandler = isAuthorizedHandler || defaultHandler;
     //utils.showTextLoader();
     this.checkAccessAndAct().then(()=>{
-      utils.hideTextLoader();
+      //utils.hideTextLoader();
     }).catch(err=>{
       console.debug('Caught an error during booting of the PermissionsWatcher...', err);
     });
@@ -63,15 +63,16 @@ class PermissionsWatcher {
 
   async checkAccessAndAct(){
     this.checkAccess().then( async (hasAccess)=>{
-      let unAuthorizedPages = ["booting-identity", "landing-page"];
+      let unAuthorizedPages = ["booting-identity-page", "landing-page"];
+      let currentPage = window.location.hash.replace("#", "");
       if(hasAccess){
-        if(unAuthorizedPages.indexOf(WebCardinal.state.page.tag) !== -1) {
+        if(unAuthorizedPages.indexOf(currentPage) !== -1) {
           //if we are on a booting page then we need to redirect...
           this.isAuthorizedHandler();
         }
       }else{
-        if(unAuthorizedPages.indexOf(WebCardinal.state.page.tag) !== -1) {
-          //if we are on a booting page then we do nothing..,
+        if(unAuthorizedPages.indexOf(currentPage) !== -1) {
+          //if we are on a booting page then we do nothing...
           return;
         }
 
@@ -80,6 +81,8 @@ class PermissionsWatcher {
 
         this.notificationHandler.reportUserRelevantInfo("Your credentials was removed.");
         this.notificationHandler.reportUserRelevantInfo("Application will refresh soon...");
+        //we need to reset the current page when loosing creds
+        window.location.hash = "";
         $$.forceTabRefresh();
         return;
       }
