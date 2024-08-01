@@ -33,7 +33,6 @@ export class BootingIdentityPage {
         let appManager = AppManager.getInstance();
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
         if(await permissionWatcher.checkAccess()){
-            debugger;
             appManager.getWalletAccess("groups-page");
         }else{
             const waitingAccessModal = await webSkel.showModal("waiting-access-modal");

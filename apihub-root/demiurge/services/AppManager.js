@@ -434,7 +434,8 @@ class AppManager {
                 //ignore for now...
             }
             getPermissionsWatcher(did, async () => {
-                await webSkel.appServices.addAccessLog(did);
+                //TODO: add proper accessLog audit!
+                //await webSkel.appServices.addAccessLog(did);
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
             }, credential);
         } catch (err) {
