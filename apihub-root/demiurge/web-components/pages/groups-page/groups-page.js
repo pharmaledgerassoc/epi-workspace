@@ -21,7 +21,7 @@ export class GroupsPage {
         this.selectedGroup = this.groups.find(group => group.id === groupId);
         this.groupMembers = await this.groupsManager.getMembers(this.selectedGroup.did);
         if (this.groupMembers && this.groupMembers.length > 0) {
-            this.groupMembersMarkup = this.groupMembers.map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-group="${member.group}" data-userDID="${member.did}" data-groupDID="${member.groupDID}"></group-member>`)
+            this.groupMembersMarkup = this.groupMembers.map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-groupName="${this.selectedGroup.name}" data-userDID="${member.did}" data-groupDID="${this.selectedGroup.did}"></group-member>`)
                 .join("");
         } else {
             this.groupMembersMarkup = `<div class="empty-group-container">There are no members in this group!</div>`;

@@ -8,7 +8,7 @@ export class GroupMember {
     setGroupMemberData() {
         this.username = this.element.getAttribute('data-username');
         this.userDID = this.element.getAttribute('data-userDID');
-        this.group = this.element.getAttribute('data-group');
+        this.groupName = this.element.getAttribute('data-groupName');
         this.groupDID = this.element.getAttribute('data-groupDID')
     }
 
@@ -18,7 +18,14 @@ export class GroupMember {
 
     afterRender() {
     }
-    async openMemberPage(_target){
-        await webSkel.changeToDynamicPage('member-page',`member-page/`+encodeURIComponent(this.userDID),{userDID: this.userDID});
+
+    async openMemberPage(_target) {
+        await webSkel.changeToDynamicPage('member-page', `member-page/` + encodeURIComponent(this.userDID), {
+            username: this.username,
+            userDID: this.userDID,
+            groupName: this.groupName,
+            groupDID: this.groupDID
+
+        });
     }
 }
