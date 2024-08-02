@@ -1,6 +1,7 @@
 import {getCredentialService} from "./JWTCredentialService.js";
 import constants from "../constants.js";
 import utils from "../utils.js";
+import AppManager from "./AppManager.js";
 
 function getPKFromContent(stringContent) {
     const crypto = require("opendsu").loadAPI("crypto");
@@ -114,7 +115,7 @@ class GroupsManager {
         }
     }
 
-    async addMember(groupId, memberDid) {
+    async addMember(groupId, memberDID) {
         const openDSU = require("opendsu");
         const w3cdid = openDSU.loadAPI("w3cdid");
         const scAPI = openDSU.loadAPI("sc");
@@ -122,16 +123,16 @@ class GroupsManager {
         const apiKeyAPI = openDSU.loadAPI("apiKey");
         const allMembers = await this.getAllMembers();
 
-        let alreadyExists = allMembers.find(arrMember => arrMember.did === memberDid)
+        let alreadyExists = allMembers.find(arrMember => arrMember.did === memberDID)
         if (alreadyExists) {
             throw new Error("Member already registered in a group!");
         }
         let groupData = await this.getGroup(groupId);
-        if (!memberDid.toLowerCase().includes(groupData.tags.toLowerCase())) {
+        if (!memberDID.toLowerCase().includes(groupData.tags.toLowerCase())) {
             throw new Error("User can not be added to selected group. Please check user group.");
         }
-        const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDid);
-        let newMember = {did: memberDid, username: memberDIDDocument.getName()}
+        const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
+        let newMember = {did: memberDID, username: memberDIDDocument.getName()}
         const apiKeyClient = apiKeyAPI.getAPIKeysClient();
         const mainDSU = await $$.promisify(scAPI.getMainDSU)();
         await $$.promisify(mainDSU.refresh)();
@@ -192,14 +193,37 @@ class GroupsManager {
             }
             await apiKeyClient.associateAPIKey(constants.APPS.DSU_FABRIC, constants.API_KEY_NAME, utils.getUserIdFromUsername(newMember.username), JSON.stringify(apiKey));
         }
-        await $$.promisify(groupDIDDocument.addMember)(memberDid, newMember);
+        await $$.promisify(groupDIDDocument.addMember)(memberDID, newMember);
         let SecretsHandler = w3cdid.SecretsHandler;
         let secretsHandler = await SecretsHandler.getInstance(adminDID);
-        await secretsHandler.authorizeUser(memberDid, groupCredential, enclave);
+        await secretsHandler.authorizeUser(memberDID, groupCredential, enclave);
     }
 
-    async removeMember(groupId, member) {
+    async removeMember(groupId, memberDID) {
+        const userDID = await AppManager.getInstance().getDID();
+        if (userDID === memberDID) {
+            throw new Error("You tried to delete your account. This operation is not allowed.")
+        }
+        const openDSU = require("opendsu");
+        const w3cdid = openDSU.loadAPI("w3cdid");
+        const scAPI = openDSU.loadAPI("sc");
+        const apiKeyAPIs = openDSU.loadAPI("apiKey");
+        const apiKeyClient = apiKeyAPIs.getAPIKeysClient();
+        const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
+        let adminDID = await mainEnclave.readKeyAsync(constants.IDENTITY);
+        let groupData = await this.getGroup(groupId);
+        const groupDIDDocument = await $$.promisify(w3cdid.resolveDID)(groupData.did);
+        const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
+        if (groupData.accessMode === constants.ADMIN_ACCESS_MODE) {
+            await apiKeyClient.deleteAdmin(utils.getUserIdFromUsername(memberDIDDocument.getName()));
+        } else {
+            await apiKeyClient.deleteAPIKey(constants.APPS.DSU_FABRIC, constants.API_KEY_NAME, utils.getUserIdFromUsername(memberDIDDocument.getName()));
+        }
 
+        await $$.promisify(groupDIDDocument.removeMembers)([memberDID]);
+        let SecretsHandler = w3cdid.SecretsHandler;
+        let secretsHandler = await SecretsHandler.getInstance(adminDID);
+        await secretsHandler.unAuthorizeUser(memberDID);
     }
 
     async getMembers(groupDID) {

@@ -105,7 +105,7 @@ export class GroupsPage {
             });
             this.changeButtonState("initial");
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError(e.message)
+            webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
         webSkel.closeModal(modal);
     }
@@ -122,37 +122,28 @@ export class GroupsPage {
         }
     }
 
-    async removeMember(buttonElement) {
-        const memberToRemove = webSkel.reverseQuerySelector(_target, 'group-member');
-        memberToRemove.remove();
+    async removeMember(_target, memberDID) {
 
-        buttonElement.classList.add("disabled");
-        let targetContent = buttonElement.innerHTML;
-        buttonElement.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
-        if (this.model.did !== this.did) {
-            await this.removeGroupMember(model.did, constants.OPERATIONS.REMOVE)
-        } else {
-            webSkel.renderToast("You tried to delete your account. This operation is not allowed.", constants.NOTIFICATION_TYPES.ERROR);
-        }
-        buttonElement.innerHTML = targetContent;
-        buttonElement.classList.remove("disabled");
-        this.invalidate();
-    }
-
-    async removeGroupMember(did, operation) {
         let modal = await webSkel.showModal("info-modal", {
-            title: constants.OPERATIONS.REMOVE ? "Deleting" : "Deactivating",
-            content: did
+            title: "Deleting",
+            content: memberDID
         })
 
-        let undeleted = await webSkel.appServices.deleteMembers(this.selectedGroup, did, operation);
+        _target.classList.add("disabled");
+        let targetContent = _target.innerHTML;
+        _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
 
-        await webSkel.closeModal(modal);
-        if (undeleted.length > 0) {
-            await webSkel.renderToast("Member could not be deleted", constants.NOTIFICATION_TYPES.ERROR);
-            return;
+        try {
+            await this.groupsManager.removeMember(this.selectedGroup.id, memberDID);
+            this.invalidate(async () => {
+                await this.getGroupData(this.selectedGroup.id)
+            });
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
-        this.members = this.members.filter((member) => member.did !== did);
+        _target.innerHTML = targetContent;
+        _target.classList.remove("disabled");
+        await webSkel.closeModal(modal);
     }
 
     async openDataRecoveryKeyModal(_target) {
