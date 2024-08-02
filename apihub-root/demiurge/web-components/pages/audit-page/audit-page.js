@@ -1,7 +1,10 @@
+import {AuditService} from "../../../services/AuditService.js";
+
 export class AuditPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.auditService = new AuditService()
         this.setPaginationDefaultValues = ()=>{
             this.itemsNumber = 16;
             this.disableNextBtn = true;
@@ -13,7 +16,7 @@ export class AuditPage {
         this.loadLogs = (query) => {
             this.invalidate(async () => {
                 //always returns ascending order using memoryStorageStrategy
-                this.logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.itemsNumber, "dsc", query);
+                this.logs = await $$.promisify(this.auditService.filterAuditLogs)(undefined, this.itemsNumber, "dsc", query);
                 if (this.logs && this.logs.length > 0) {
                     if (this.logs.length === this.itemsNumber) {
                         this.logs.pop();

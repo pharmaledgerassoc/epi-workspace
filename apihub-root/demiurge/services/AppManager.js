@@ -126,6 +126,7 @@ async function getMainEnclave() {
 }
 
 let sharedEnclave;
+
 async function getSharedEnclave() {
     if (!sharedEnclave) {
         try {
@@ -269,7 +270,7 @@ async function firstOrRecoveryAdminToAdministrationGroup(did, userDetails, logAc
     const sharedEnclave = await getSharedEnclave();
     let groupsManager = GroupsManager.getInstance();
     let adminGroup = await groupsManager.getAdminGroup(sharedEnclave);
-    groupsManager.addMember(adminGroup.did, did);
+    groupsManager.addMember(adminGroup.id, did);
     //TODO: add the audit log
     // await utils.addLogMessage(did, logAction, utils.getGroupName(adminGroup), userDetails.userName || "-");
 }
@@ -322,7 +323,7 @@ class AppManager {
         return new Promise(async (resolve, reject) => {
             const sc = scAPI.getSecurityContext();
 
-            let finish = async ()=>{
+            let finish = async () => {
                 if (!this.walletJustCreated) {
                     await this.getWalletAccess();
                     resolve();
@@ -363,7 +364,7 @@ class AppManager {
         const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
         const config = openDSU.loadAPI("config");
         let appName = await $$.promisify(config.getEnv)("appName");
-        let userId = `${appName}/${userDetails.userName}`;
+        let userId = `${appName}/${userDetails.username}`;
         let didDocument;
         let shouldPersist = false;
         const mainDID = await scAPI.getMainDIDAsync();
@@ -416,7 +417,7 @@ class AppManager {
     getWalletAccess = async (sourcePage) => {
         await webSkel.showLoading();
         let did = await getStoredDID();
-        if(!did){
+        if (!did) {
             webSkel.notificationHandler.reportUserRelevantInfo(`Identity was not created yet. Let's go and create one.`);
             return await webSkel.changeToDynamicPage("booting-identity-page", "booting-identity-page");
         }
@@ -428,9 +429,9 @@ class AppManager {
 
             let domain = await $$.promisify(scAPI.getVaultDomain)();
             let credential;
-            try{
+            try {
                 credential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
-            }catch(err){
+            } catch (err) {
                 //ignore for now...
             }
             getPermissionsWatcher(did, async () => {
@@ -447,18 +448,18 @@ class AppManager {
         }
     }
 
-    async getBreakGlassCode(){
+    async getBreakGlassCode() {
         let enclave = await getSharedEnclave();
         let keySSI = await $$.promisify(enclave.getKeySSI)();
         return keySSI.getIdentifier();
     }
 
-    async useBreakGlassCode(code){
+    async useBreakGlassCode(code) {
         //todo: save the shared enclave info and authorize the new admin user...
         await setSharedEnclaveKeySSI(code);
         let domain = await $$.promisify(scAPI.getVaultDomain)();
         let groupCredential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
-        let did =  await getStoredDID();
+        let did = await getStoredDID();
         let SecretsHandler = w3cDID.SecretsHandler;
         let handler = await SecretsHandler.getInstance(did);
         await handler.authorizeUser(did, groupCredential, await getSharedEnclaveDataFromEnv());
@@ -480,7 +481,7 @@ class AppManager {
         return true;
     }
 
-    async getDID(){
+    async getDID() {
         return await getStoredDID();
     }
 }

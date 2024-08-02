@@ -48,17 +48,18 @@ export default {
     READ_ONLY_ACCESS_MODE: "read",
     // Backward compatibility for ePI
     EPI_GROUP_TAGS: [{
-        name: "ePI Administration Group",
+        groupName: "ePI Administration Group",
+        groupId: "ePI_Administration_Group",
         tags: "Demiurge",
         enclaveName: "demiurgeSharedEnclave",
         accessMode: "admin"
     }, {
-        name: "ePI Read Group",
+        groupName: "ePI Read Group",
         tags: "DSU_Fabric",
         enclaveName: "epiEnclave",
         accessMode: "read"
     }, {
-        name: "ePI Write Group",
+        groupName: "ePI Write Group",
         tags: "DSU_Fabric",
         enclaveName: "epiEnclave",
         accessMode: "write"

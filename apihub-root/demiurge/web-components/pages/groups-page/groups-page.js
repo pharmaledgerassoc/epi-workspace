@@ -1,217 +1,33 @@
 import constants from "../../../constants.js";
 import utils from "../../../utils.js";
-
-const mockData = {
-    administrationGroup: [
-        {
-            username: 'DSU_Fabric/AdminWarrior',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminWarrior',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminMage',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminMage',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminRogue',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminRogue',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminPaladin',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminPaladin',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminCleric',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminCleric',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminBard',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminBard',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminDruid',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminDruid',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminSorcerer',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminSorcerer',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminNecromancer',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminNecromancer',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminMonk',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminMonk',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminRanger',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminRanger',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminKnight',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminKnight',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminBarbarian',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminBarbarian',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminAssassin',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminAssassin',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminWizard',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminWizard',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminWarlock',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminWarlock',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminBerserker',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminBerserker',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminTemplar',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminTemplar',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminCrusader',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminCrusader',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        },
-        {
-            username: 'DSU_Fabric/AdminWitch',
-            DID: 'did:ssi:name:vault:DSU_Fabric/AdminWitch',
-            group: 'ePI Administration Group',
-            groupDID: 'did:ssi:group:vault:ePI_Administration_Group'
-        }
-    ],
-    writeGroup: [
-        {
-            username: 'DSU_Fabric/WriteWarrior',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteWarrior',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WriteMage',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteMage',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WriteRogue',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteRogue',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WritePaladin',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WritePaladin',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WriteCleric',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteCleric',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WriteBard',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteBard',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-        {
-            username: 'DSU_Fabric/WriteDruid',
-            DID: 'did:ssi:name:vault:DSU_Fabric/WriteDruid',
-            group: 'ePI Write Group',
-            groupDID: 'did:ssi:group:vault:ePI_Write_Group'
-        },
-    ],
-    readGroup: []
-};
-
-const groupNames = {
-    Administration: "ePI Administration Group",
-    Write: "ePI Write Group",
-    Read: "ePI Read Group"
-}
+import GroupsManager from "../../../services/GroupsManager.js";
+import AppManager from "../../../services/AppManager.js";
 
 export class GroupsPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.groupsManager = GroupsManager.getInstance();
+        this.appManager = AppManager.getInstance();
         this.invalidate(async () => {
-            this.groupMembers = await this.getGroupData("Administration"); //replace with API call
-            this.selectedGroup = {
-                name: 'ePI Administration Group',
-                did: 'did:ssi:group:vault:ePI_Administration_Group'
-            }
-            this.members = await this.fetchMembers();
-            this.areMembersLoaded = true;
+            this.groups = await this.groupsManager.getGroups();
+            await this.getGroupData(constants.EPI_ADMIN_GROUP)
         });
     }
 
-    getGroupData(groupId) {
-        const getAdministrationGroupMembers = () => {
-            return mockData["administrationGroup"] || []
+    async getGroupData(groupId) {
+        this.areMembersLoaded = false;
+        this.selectedTab = groupId;
+        this.selectedGroup = this.groups.find(group => group.id === groupId);
+        this.groupMembers = await this.groupsManager.getMembers(this.selectedGroup.did);
+        if (this.groupMembers && this.groupMembers.length > 0) {
+            this.groupMembersMarkup = this.groupMembers.map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-group="${member.group}" data-userDID="${member.did}" data-groupDID="${member.groupDID}"></group-member>`)
+                .join("");
+        } else {
+            this.groupMembersMarkup = `<div class="empty-group-container">There are no members in this group!</div>`;
         }
-        const getWriteGroupMembers = () => {
-            return mockData["writeGroup"] || []
-        }
-        const getReadGroupMembers = () => {
-            return mockData["readGroup"] || []
-        }
-        switch (groupId) {
-            case "Administration":
-                return getAdministrationGroupMembers();
-            case "Write":
-                return getWriteGroupMembers();
-            case "Read":
-                return getReadGroupMembers();
-            default:
-                return getAdministrationGroupMembers();
-        }
+        this.groupName = `"` + this.selectedGroup.name + `"`;
+        this.areMembersLoaded = true;
     }
 
     initLeftSideMenu() {
@@ -224,46 +40,21 @@ export class GroupsPage {
         if (!document.querySelector("sidebar-menu")) {
             this.initLeftSideMenu();
         }
-
-        const renderAdministrationGroup = () => {
-            this.dataRecoveryButton = "";
-        }
-        const renderWriteGroup = () => {
+        this.dataRecoveryButton = "";
+        if (this.selectedTab === constants.EPI_WRITE_GROUP) {
             this.dataRecoveryButton = `
             <button class="groups-page-button" id="data-recovery-button" data-local-action="openDataRecoveryKeyModal">
                 <span class="member-button-label">Data Recovery Key</span>
             </button>
         `
         }
-        const renderReadGroup = () => {
-            this.dataRecoveryButton = "";
-        }
-        switch (this.selectedTab) {
-            case "Administration":
-                renderAdministrationGroup()
-                break;
-            case "Write":
-                renderWriteGroup()
-                break;
-            case "Read":
-                renderReadGroup()
-                break;
-            default:
-                this.selectedTab = "Administration";
-                renderAdministrationGroup()
-        }
-        this.groupName = `"` + groupNames[this.selectedTab] + `"`;
-        if (this.groupMembers.length > 0) {
-            this.groupMembersMarkup = this.groupMembers
-                .map(member => `<group-member data-presenter="group-member" data-username="${member.username}" data-group="${member.group}" data-userDID="${member.DID}" data-groupDID="${member.groupDID}"></group-member>`)
-                .join("");
-        } else {
-            this.groupMembersMarkup = `<div class="empty-group-container">There are no members in this group!</div>`;
-        }
-
     }
 
     afterRender() {
+        for (let group of this.groups) {
+            this.element.querySelector(`#${group.id} .tab-header-label`).textContent = group.name
+        }
+
         this.selectTab(this.selectedTab);
         const input = document.getElementById('member-did-text');
         const addMemberButton = document.getElementById('add-member-button');
@@ -281,9 +72,8 @@ export class GroupsPage {
         if (currentSelectedTab) {
             currentSelectedTab.classList.remove('selected');
         }
-        this.selectedTab = groupId;
         this.invalidate(async () => {
-            this.groupMembers = await this.getGroupData(groupId)
+            await this.getGroupData(groupId)
         });
     }
 
@@ -308,36 +98,11 @@ export class GroupsPage {
         })
 
         try {
-            let groups = await utils.fetchGroups();
-            let selectedGroup = constants.EPI_GROUP_TAGS.find(group => group.name === this.selectedTab);
-            if (!selectedGroup) {
-                selectedGroup = groups.find(group => group.name === this.selectedGroup.name);
-            }
-            selectedGroup.did = this.selectedGroup.did;
-
-            let hasGroupTag = selectedGroup.tags.split(',').findIndex(tag => newMemberDid.toLowerCase().includes(tag.trim().toLowerCase())) !== -1;
-            if (!hasGroupTag) {
-                webSkel.reportUserRelevantError("User can not be added to selected group. Please check user group.")
-            }
-
             this.changeButtonState("loading");
-
-            let allMembers = [];
-            for (let i = 0; i < groups.length; i++) {
-                let groupMembers = await this.fetchMembers(groups[i]);
-                allMembers = [...allMembers, ...groupMembers]
-            }
-            let alreadyExists = allMembers.find(arrMember => arrMember.did === newMemberDid)
-            if (alreadyExists) {
-                this.changeButtonState();
-                webSkel.reportUserRelevantError("Member already registered in a group!");
-            }
-
-            const member = await this.addMember(selectedGroup, {did: newMemberDid});
-            this.members.push(member);
+            this.groupsManager.addMember(this.selectedGroup.id, newMemberDid);
 
         } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantError("Could not add user to the group because: ", e)
+            webSkel.notificationHandler.reportUserRelevantError(e.message)
         }
         webSkel.closeModal(modal);
     }

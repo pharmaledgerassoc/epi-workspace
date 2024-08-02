@@ -1,16 +1,19 @@
 [
   {
     "groupName": "ePI Administration Group",
+    "groupId": "ePI_Administration_Group",
     "groupTags": "Demiurge",
     "accessModes": "demiurgeSharedEnclave:admin"
   },
   {
     "groupName": "ePI Write Group",
+    "groupId": "ePI_Write_Group",
     "groupTags": "DSU_Fabric",
     "accessModes": "epiEnclave:write"
   },
   {
     "groupName": "ePI Read Group",
+    "groupId": "ePI_Read_Group",
     "groupTags": "DSU_Fabric",
     "accessModes": "epiEnclave:read"
   }

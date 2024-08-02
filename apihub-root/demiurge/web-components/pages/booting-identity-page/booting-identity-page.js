@@ -9,7 +9,7 @@ export class BootingIdentityPage {
         this.invalidate(async () => {
             let appManager = AppManager.getInstance();
             this.userDetails = await utils.getUserDetails();
-            this.username = userDetails.userName;
+            this.username = userDetails.username;
             if(await appManager.didWasCreated()){
                 await this.checkPermissionAndNavigate();
                 return;
