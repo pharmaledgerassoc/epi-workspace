@@ -46,6 +46,19 @@ async function getGroupByType(sharedEnclave, accessMode, groupId) {
     return await retryAsyncFunction(_getGroup, 3, 100);
 }
 
+async function getSharedEnclaveDataFromEnv() {
+    const openDSU = require("opendsu");
+    const scAPI = openDSU.loadAPI("sc");
+    const mainDSU = await $$.promisify(scAPI.getMainDSU)();
+    let env = await $$.promisify(mainDSU.readFile)("/environment.json");
+    env = JSON.parse(env.toString());
+    let data = {
+        "enclaveType": env[openDSU.constants.SHARED_ENCLAVE.TYPE],
+        "enclaveDID": env[openDSU.constants.SHARED_ENCLAVE.DID],
+        "enclaveKeySSI": env[openDSU.constants.SHARED_ENCLAVE.KEY_SSI]
+    }
+    return data;
+}
 
 class GroupsManager {
     constructor() {
@@ -142,12 +155,7 @@ class GroupsManager {
         const groupDIDDocument = await $$.promisify(w3cdid.resolveDID)(groupData.did);
         let adminDID = await mainEnclave.readKeyAsync(constants.IDENTITY);
         adminDID = adminDID.did;
-        let enclave = await mainEnclave.readKeyAsync(groupData.enclaveName);
-        const enclaveRecord = {
-            enclaveType: enclave.enclaveType,
-            enclaveDID: enclave.enclaveDID,
-            enclaveKeySSI: enclave.enclaveKeySSI
-        };
+        let enclave = await getSharedEnclaveDataFromEnv();
         let groupCredential = await this.getGroupCredential(groupData.did);
         if (!groupCredential) {
             const credentialService = getCredentialService();
