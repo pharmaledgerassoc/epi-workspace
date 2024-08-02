@@ -99,8 +99,11 @@ export class GroupsPage {
 
         try {
             this.changeButtonState("loading");
-            this.groupsManager.addMember(this.selectedGroup.id, newMemberDid);
-
+            await this.groupsManager.addMember(this.selectedGroup.id, newMemberDid);
+            this.invalidate(async () => {
+                await this.getGroupData(this.selectedGroup.id)
+            });
+            this.changeButtonState("initial");
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(e.message)
         }
@@ -108,7 +111,7 @@ export class GroupsPage {
     }
 
     changeButtonState(mode) {
-        const addMemberButton = this.element.getElementById('add-member-button');
+        const addMemberButton = this.element.querySelector('#add-member-button');
         if (mode === "loading") {
             addMemberButton.classList.add("disabled");
             addMemberButton.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
@@ -117,31 +120,6 @@ export class GroupsPage {
             addMemberButton.innerHTML = `<div id="add-member-icon"></div>
                     <span class="member-button-label">Add Member</span>`;
         }
-    }
-
-    async fetchMembers(group) {
-        if (!group) {
-            group = this.selectedGroup;
-        }
-        return new Promise((resolve, reject) => {
-            const w3cDID = require("opendsu").loadAPI("w3cdid");
-            w3cDID.resolveDID(group.did, (err, groupDIDDocument) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                groupDIDDocument.listMembersInfo((err, members) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    let result = members.map((member) => {
-                        member["enable_deactivate_group_member_feature"] = this.enable_deactivate_group_member_feature;
-                        return member;
-                    })
-                    return resolve(result);
-                });
-            });
-        });
     }
 
     async removeMember(buttonElement) {
