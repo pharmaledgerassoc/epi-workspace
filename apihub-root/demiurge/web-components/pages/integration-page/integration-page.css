@@ -1,14 +1,25 @@
-integration-page{
+integration-page {
     display: block;
     height: 100%;
     padding: 40px 28px;
 }
-.integration-form{
+
+.integration-form {
     margin-top: 15px;
 }
-.authorization-success-section{
+
+.integration-form.revoke-authorisation {
+    display: none;
+}
+
+.authorization-success-section {
     margin-top: 15px;
 }
-.bottom-margin{
+
+.authorization-success-section.authorize {
+    display: none;
+}
+
+.bottom-margin {
     margin-bottom: 15px;
 }

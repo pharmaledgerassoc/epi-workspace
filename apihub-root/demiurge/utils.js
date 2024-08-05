@@ -2,6 +2,7 @@ import constants from "./constants.js";
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
 const w3cdid = openDSU.loadAPI("w3cdid");
+
 const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
