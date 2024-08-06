@@ -1,4 +1,4 @@
-export class MemberPage {
+export class MemberInfoModal {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
@@ -13,6 +13,5 @@ export class MemberPage {
     }
 
     afterRender() {
-
     }
 }

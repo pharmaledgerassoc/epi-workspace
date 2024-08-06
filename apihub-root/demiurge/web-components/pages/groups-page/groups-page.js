@@ -30,16 +30,7 @@ export class GroupsPage {
         this.areMembersLoaded = true;
     }
 
-    initLeftSideMenu() {
-        let pageContent = document.querySelector("#page-content");
-        pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
-
-    }
-
     beforeRender() {
-        if (!document.querySelector("sidebar-menu")) {
-            this.initLeftSideMenu();
-        }
         this.dataRecoveryButton = "";
         if (this.selectedTab === constants.EPI_WRITE_GROUP) {
             this.dataRecoveryButton = `

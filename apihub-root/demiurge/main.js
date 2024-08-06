@@ -90,16 +90,20 @@ function renderToast(message, type, timeoutValue = 15000) {
 
     let justCreated;
     let appManager = AppManager.getInstance();
+
+
     try {
         justCreated = await appManager.walletInitialization();
     } catch (err) {
         webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
 
-    if(justCreated || ! await appManager.didWasCreated()){
+    if (justCreated || !await appManager.didWasCreated()) {
         presenterName = "booting-identity-page";
         currentPage = presenterName;
     }
+
+    pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 
     await webSkel.changeToDynamicPage(presenterName, currentPage);
 })();

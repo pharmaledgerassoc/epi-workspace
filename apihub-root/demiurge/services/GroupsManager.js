@@ -257,6 +257,20 @@ class GroupsManager {
         });
     }
 
+    async getMemberInfo(memberDID) {
+        let groups = await this.getGroups();
+        let result;
+        for (let i = 0; i < groups.length; i++) {
+            let groupMembers = await this.getMembers(groups[i].did);
+            let memberData = groupMembers.find(member => member.did === memberDID)
+            if (memberData) {
+                result = {member: memberData, group: groups[i]};
+                break;
+            }
+        }
+        return result;
+    }
+
     async getAllMembers() {
         let groups = await this.getGroups();
         let allMembers = [];

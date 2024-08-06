@@ -20,12 +20,13 @@ export class GroupMember {
     }
 
     async openMemberPage(_target) {
-        await webSkel.changeToDynamicPage('member-page', `member-page/` + encodeURIComponent(this.userDID), {
+        let modal = await webSkel.showModal("member-info-modal", {
+            title: "Member Info",
             username: this.username,
             userDID: this.userDID,
             groupName: this.groupName,
             groupDID: this.groupDID
 
-        });
+        })
     }
 }
