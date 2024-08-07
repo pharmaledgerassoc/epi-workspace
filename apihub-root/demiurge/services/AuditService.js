@@ -1,3 +1,7 @@
+import constants from "../constants.js";
+import AppManager from "./AppManager.js";
+
+
 const getBaseURL = () => {
     const systemAPI = require('opendsu').loadAPI("system");
     return `${systemAPI.getBaseURL()}/integration`;
@@ -12,7 +16,7 @@ const _sendRequest = async (endpoint, method, data, callback) => {
     const http = require('opendsu').loadAPI('http');
     if (method === 'GET') {
         let response;
-        try{
+        try {
             response = await http.fetch(endpoint, {method});
             let reason;
             if (response.status >= 400) {
@@ -20,7 +24,7 @@ const _sendRequest = async (endpoint, method, data, callback) => {
                 return callback({code: response.status, reason});
             }
             response = await response.json();
-        }catch(err){
+        } catch (err) {
             return callback(err);
         }
         callback(undefined, response);
@@ -30,14 +34,14 @@ const _sendRequest = async (endpoint, method, data, callback) => {
             body = data ? JSON.stringify(data) : undefined;
         }
         let response;
-        try{
+        try {
             response = await http.fetch(endpoint, {method, body});
             if (response.status >= 400) {
                 let reason = await response.text();
                 return callback({code: response.status, reason});
             }
             response = await response.text();
-        }catch(err){
+        } catch (err) {
             return callback(err);
         }
         callback(undefined, response);
@@ -86,42 +90,48 @@ function processParametersAndSendRequest(baseURL, endpoint, start, number, query
     _sendRequest(url, 'GET', callback);
 }
 
-export class AuditService{
-    convertToCSV(items, type) {
-        let headers;
-        if (type === "action") {
-            headers = ["Product Code", "Batch number", "Reason", "User", "Creation Time", "Data"];
-        }
-        if (type === "access") {
-            headers = ["User", "Action", "User DID", "User Group", "Creation Time"];
-        }
-        let columnTitles = headers.join(";") + "\n";
-        let rows = "";
-        for (let item of items) {
-            item = this.objectToArray(item, type).join(";");
-            rows += item + "\n";
-        }
-        return [columnTitles + rows];
-    }
-    objectToArray(item, type) {
-        if (type === "action") {
-            return [`'${item.itemCode}'`, item.batchNumber ? `'${item.batchNumber}'` : "-", item.reason, item.username ? `'${item.username}'` : "", new Date(item.__timestamp).toISOString(), JSON.stringify(item.details)];
-        }
-
-        if (type === "access") {
-            return [item.username ? `'${item.username}'` : "", "Access Wallet", item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
-
-        }
-        /*  let details = {logInfo: itemCopy};
-          arr.push(JSON.stringify(details));*/
-        return [];
+class AuditService {
+    constructor() {
     }
 
-    addAuditLog (logType, auditMessage, callback) {
+    addAuditLog(logType, auditMessage, callback) {
         _sendRequest(`${getBaseURL()}/audit/${logType}`, 'POST', auditMessage, callback);
     }
 
-    filterAuditLogs (logType, start, number, query, sort, callback) {
+    filterAuditLogs(logType, start, number, query, sort, callback) {
         processParametersAndSendRequest(getBaseURL(), `audit/${logType}`, start, number, query, sort, callback);
     }
+
+    async addAccessLog(did) {
+        try {
+            did = did || await AppManager.getInstance().getDID();
+
+            let auditDetails = {
+                payload: {
+                    userDID: did,
+                    userGroup: constants.EPI_ADMIN_GROUP
+                }
+            }
+            await $$.promisify(webSkel.sorClient.addAuditLog)(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails);
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantWarning(`Audit operation failed. <br> ${e.message}`);
+        }
+
+    }
+
+    async getAccessLogs(appName) {
+        this.logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
+
+    }
 }
+
+let instance;
+
+function getInstance() {
+    if (!instance) {
+        instance = new AuditService();
+    }
+    return instance;
+}
+
+export default {getInstance};

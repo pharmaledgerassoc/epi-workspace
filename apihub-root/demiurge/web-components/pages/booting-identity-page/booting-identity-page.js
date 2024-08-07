@@ -1,5 +1,6 @@
 import utils from "./../../../utils.js";
 import AppManager from "./../../../services/AppManager.js";
+import AuditService from "./../../../services/AuditService.js";
 import {getPermissionsWatcher} from "./../../../services/PermissionsWatcher.js";
 
 export class BootingIdentityPage {
@@ -10,14 +11,14 @@ export class BootingIdentityPage {
             let appManager = AppManager.getInstance();
             this.userDetails = await utils.getUserDetails();
             this.username = userDetails.username;
-            if(await appManager.didWasCreated()){
+            if (await appManager.didWasCreated()) {
                 await this.checkPermissionAndNavigate();
                 return;
             }
 
             //if the wallet was not created yet we should ensure that the user id is email format to prevent SSO misconfiguration
             let emailValidation = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if(!emailValidation.test(this.username)){
+            if (!emailValidation.test(this.username)) {
                 this.validationFailed = true;
                 return webSkel.notificationHandler.reportUserRelevantError("Detected User Id is not a valid email address format! Contact the SSO admin in order to make corrections.");
             }
@@ -25,31 +26,34 @@ export class BootingIdentityPage {
     }
 
     beforeRender() {
+        document.querySelector("sidebar-menu").style.display = "none";
     }
 
-    afterRender(){
+    afterRender() {
         let appManager = AppManager.getInstance();
-        appManager.didWasCreated().then(wasCreated=>{
-            if(wasCreated || this.validationFailed){
+        appManager.didWasCreated().then(wasCreated => {
+            if (wasCreated || this.validationFailed) {
                 document.querySelector(".create-identity-button").setAttribute("disabled", "disabled");
                 document.querySelector(".create-identity-button").classList.add("disabled");
             }
         });
     }
 
-    async checkPermissionAndNavigate(){
+    async checkPermissionAndNavigate() {
         let appManager = AppManager.getInstance();
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
-        if(await permissionWatcher.checkAccess()){
+        if (await permissionWatcher.checkAccess()) {
+            document.querySelector("sidebar-menu").style.display = "flex";
+            await AuditService.getInstance().addAccessLog();
             appManager.getWalletAccess("groups-page");
-        }else{
+        } else {
             const waitingAccessModal = await webSkel.showModal("waiting-access-modal", true);
-            this.checkPermissionAndNavigate();
+            await this.checkPermissionAndNavigate();
         }
     }
 
     async createIdentity(_target) {
-        if(this.validationFailed){
+        if (this.validationFailed) {
             //if user id validation we should not allow the DID creation
             return;
         }
@@ -67,11 +71,12 @@ export class BootingIdentityPage {
         }
         initialiseIdentityModal.close();
         initialiseIdentityModal.remove();
-        if(appManager.firstTimeAndFirstAdmin){
+        if (appManager.firstTimeAndFirstAdmin) {
+            await $$.promisify(webSkel.sorClient.doDemiurgeMigration)();
             await webSkel.showModal("break-glass-recovery-code-modal", true);
-            await webSkel.changeToDynamicPage("groups-page");
-        }else{
-            this.checkPermissionAndNavigate();
+            //  await webSkel.changeToDynamicPage("groups-page");
         }
+        await this.checkPermissionAndNavigate();
+
     }
 }

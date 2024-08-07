@@ -2,6 +2,7 @@ import env from "./../environment.js";
 import {getPermissionsWatcher} from "./PermissionsWatcher.js";
 import SetupMan from "./SetupMan.js";
 import GroupsManager from "./GroupsManager.js";
+import AuditService from "./AuditService.js";
 import constants from "../constants.js";
 import utils from "../utils.js";
 
@@ -435,8 +436,7 @@ class AppManager {
                 //ignore for now...
             }
             getPermissionsWatcher(did, async () => {
-                //TODO: add proper accessLog audit!
-                //await webSkel.appServices.addAccessLog(did);
+                await AuditService.getInstance().addAccessLog(did);
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
             }, credential);
         } catch (err) {
@@ -459,7 +459,7 @@ class AppManager {
         await setSharedEnclaveKeySSI(code);
         let did = await getStoredDID();
         let groupManager = GroupsManager.getInstance();
-        await groupManager.addMember("ePI_Administration_Group", did);
+        await groupManager.addMember(constants.EPI_ADMIN_GROUP, did);
         /*let domain = await $$.promisify(scAPI.getVaultDomain)();
         let groupCredential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
 

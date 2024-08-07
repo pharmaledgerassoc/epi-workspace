@@ -21,7 +21,7 @@ const detectCurrentPage = () => {
     let currentPage = window.location.hash.slice(1);
     let presenterName = currentPage.split("/")[0];
     if (currentPage === "") {
-        currentPage = "booting-identity-page";
+        currentPage = "groups-page";
         presenterName = currentPage;
     }
     return {currentPage, presenterName};

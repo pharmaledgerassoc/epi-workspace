@@ -5,6 +5,8 @@ import {getInstance} from "./MockClient.js";
 import AppManager from "./services/AppManager.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
+import env from "./environment.js";
+import AuditService from "./services/AuditService.js";
 
 function registerGlobalActions() {
     async function closeModal(_target) {
@@ -84,7 +86,10 @@ function renderToast(message, type, timeoutValue = 15000) {
     let {currentPage, presenterName} = utils.detectCurrentPage();
 
     await setupGlobalErrorHandlers();
+    let gtinResolver = require("gtin-resolver");
     webSkel.client = getInstance("default");
+    const {epiDomain, epiSubdomain} = env;
+    webSkel.sorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain, "Demiurge");
 
     webSkel.renderToast = renderToast;
 
@@ -101,6 +106,8 @@ function renderToast(message, type, timeoutValue = 15000) {
     if (justCreated || !await appManager.didWasCreated()) {
         presenterName = "booting-identity-page";
         currentPage = presenterName;
+    } else {
+        await AuditService.getInstance().addAccessLog();
     }
 
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);

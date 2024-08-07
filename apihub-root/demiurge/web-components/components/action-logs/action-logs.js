@@ -1,13 +1,11 @@
-import AuditService from "./../../../services/AuditService.js";
+import constants from "../../../constants.js";
 
-/*
-export class AuditPage {
+export class ActionLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.auditService = new AuditService()
-        this.setPaginationDefaultValues = ()=>{
-            this.itemsNumber = 16;
+        this.setPaginationDefaultValues = () => {
+            this.logsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
             this.lastElementTimestamp = undefined;
@@ -16,33 +14,38 @@ export class AuditPage {
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                //always returns ascending order using memoryStorageStrategy
-                this.logs = await $$.promisify(this.auditService.filterAuditLogs)(undefined, this.itemsNumber, "dsc", query);
+                this.logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, this.logsNumber, query, "desc");
                 if (this.logs && this.logs.length > 0) {
-                    if (this.logs.length === this.itemsNumber) {
+                    if (this.logs.length === this.logsNumber) {
                         this.logs.pop();
                         this.disableNextBtn = false;
-                    } else if (this.logs.length < this.itemsNumber) {
+                    } else if (this.logs.length < this.logsNumber) {
                         this.disableNextBtn = true;
                     }
                     this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                     this.firstElementTimestamp = this.logs[0].__timestamp;
                 }
+
             });
         };
         this.loadLogs(["__timestamp > 0"]);
     }
-    beforeRender(){
+
+    beforeRender() {
         let string = "";
         for (let item of this.logs) {
-            string += ` <div class="data-item">${item.userId}</div>
-                        <div class="data-item">${item.action}</div>
-                        <div class="data-item">${item.userDID}</div>
-                        <div class="data-item">${item.userGroup}</div>
-                        <div class="data-item">${new Date(item.__timestamp).toISOString()}</div>`;
+            string += `
+                        <div>${item.itemCode || "-"}</div>
+                        <div>${item.batchNumber || "-"}</div>
+                        <div>${item.reason}</div>
+                        <div>${item.username}</div>
+                        <div>${new Date(item.__timestamp).toISOString()}</div>
+                        <div class="view-details pointer" data-local-action="openAuditEntryModal ${item.pk}">View</div>`;
+
         }
         this.items = string;
     }
+
     afterRender() {
         let logs = this.element.querySelector(".logs-section");
         if (this.logs.length === 0) {
@@ -50,6 +53,7 @@ export class AuditPage {
             let noData = `<div class="no-data">No Data ...</div>`;
             this.element.insertAdjacentHTML("beforeend", noData)
         }
+
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
         if (this.previousPageFirstElements.length === 0 && previousBtn) {
@@ -59,19 +63,12 @@ export class AuditPage {
             nextBtn.classList.add("disabled");
         }
         this.searchInput = this.element.querySelector("search-input");
-        if(this.searchInput){
-            if(this.boundSearchLogs){
+        if (this.searchInput) {
+            if (this.boundSearchLogs) {
                 this.searchInput.removeEventListener("search", this.boundSearchLogs);
             }
             this.boundSearchLogs = this.searchLogs.bind(this);
             this.searchInput.addEventListener("search", this.boundSearchLogs);
-        }
-    }
-    toggleSearchIcons(xMark) {
-        if (this.searchInput.value === "") {
-            xMark.style.display = "none";
-        } else {
-            xMark.style.display = "block";
         }
     }
 
@@ -79,24 +76,24 @@ export class AuditPage {
         event.preventDefault();
         let formData = await webSkel.extractFormInformation(this.searchInput);
         if (formData.isValid) {
-            this.inputValue = formData.data.userId;
+            this.inputValue = formData.data.productCode;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.itemsNumber, "dsc", ["__timestamp > 0", `userId == ${this.inputValue}`]);
-            if (logs.length > 0) {
+     //       let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, this.logsNumber, ["__timestamp > 0", `itemCode == ${this.inputValue}`], "desc");
+            if (logs && logs.length > 0) {
                 this.logs = logs;
-                this.userIdFilter = `userId == ${this.inputValue}`;
-                if (this.logs.length === this.itemsNumber) {
+                this.gtinFilter = `itemCode == ${this.inputValue}`;
+                if (this.logs.length === this.logsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;
-                } else if (this.logs.length < this.itemsNumber) {
+                } else if (this.logs.length < this.logsNumber) {
                     this.disableNextBtn = true;
                 }
                 this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                 this.firstElementTimestamp = this.logs[0].__timestamp;
-                this.searchResultIcon = "<img class='result-icon' src='./assets/images/icons/check.svg' alt='check'>";
+                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
             } else {
-                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/images/icons/ban.svg' alt='ban'>";
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
             }
             this.focusInput = true;
             this.invalidate();
@@ -107,17 +104,22 @@ export class AuditPage {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";
-        this.userIdFilter = "";
+        delete this.gtinFilter;
         this.loadLogs(["__timestamp > 0"]);
     }
 
+    async openAuditEntryModal(_target, pk) {
+        let logEntry = this.logs.find(item => item.pk === pk)
+        await webSkel.showModal("audit-entry-modal", {"entry": encodeURIComponent(JSON.stringify(logEntry))});
+    }
+
     async downloadCSV() {
-        let csvData = webSkel.appServices.convertToCSV(this.logs, "access");
+        let csvData = webSkel.appServices.convertToCSV(this.logs, "action");
         let csvBlob = new Blob(csvData, {type: "text/csv"});
         let csvUrl = URL.createObjectURL(csvBlob);
         let link = document.createElement('a');
         link.href = csvUrl;
-        link.download = 'AccessLogs.csv';
+        link.download = 'ActionLogs.csv';
         link.click();
         link.remove();
     }
@@ -126,10 +128,9 @@ export class AuditPage {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            //TODO to <= after changing storage strategy
-            let query = [`__timestamp >= ${this.firstElementTimestamp}`];
-            if(this.userIdFilter){
-                query.push(this.userIdFilter);
+            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            if (this.gtinFilter) {
+                query.push(this.gtinFilter);
             }
             this.loadLogs(query);
         }
@@ -140,48 +141,11 @@ export class AuditPage {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            //TODO to < after changing storage strategy
-            let query = [`__timestamp > ${this.firstElementTimestamp}`];
-            if(this.userIdFilter){
-                query.push(this.userIdFilter);
+            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            if (this.gtinFilter) {
+                query.push(this.gtinFilter);
             }
             this.loadLogs(query);
         }
-    }
-}
-*/
-
-
-export class AuditPage {
-    constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
-        this.invalidate();
-    }
-
-    beforeRender() {
-        if (!this.selected) {
-            this.tab = `<access-logs data-presenter="access-logs"></access-logs>`;
-        }
-    }
-
-    afterRender() {
-        let actions = this.element.querySelector("#action-logs");
-        let access = this.element.querySelector("#access-logs");
-        if (this.selected === "access-logs") {
-            access.classList.remove("inactive");
-            access.classList.add("highlighted");
-        } else {
-            actions.classList.remove("inactive");
-            actions.classList.add("highlighted");
-        }
-    }
-
-    switchTab(_target) {
-        this.selected = _target.getAttribute("id");
-
-        let tabName = _target.getAttribute("id");
-        this.tab = `<${tabName} data-presenter="${tabName}"></${tabName}>`;
-        this.invalidate();
     }
 }

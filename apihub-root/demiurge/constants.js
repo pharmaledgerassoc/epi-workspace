@@ -1,5 +1,9 @@
 export default {
     DOMAIN: "default",
+    AUDIT_LOG_TYPES: {
+        USER_ACCESS: "userAccess",
+        USER_ACTION: "userAction"
+    },
     TABLES: {
         DIDS: "dids_table",
         GROUPS: "groups_table",

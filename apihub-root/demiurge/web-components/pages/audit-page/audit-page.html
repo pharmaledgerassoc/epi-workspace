@@ -1,22 +1,12 @@
-<div class="page-header">Audit</div>
-<div class="logs-section">
-    <form class="search-section">
-        <div class="input-container-container">
-            <search-input data-presenter="search-input" data-input="userId" data-result-icon="$$searchResultIcon"
-                          data-value="$$inputValue" data-focus="$$focusInput" data-placeholder="Search by user ID"></search-input>
-        </div>
-        <button class="default-button" data-local-action="downloadCSV">Export as CSV</button>
-    </form>
-    <div class="table">
-        <div class="column-header first-column">UserId</div>
-        <div class="column-header">Action</div>
-        <div class="column-header">User DID</div>
-        <div class="column-header">User Group</div>
-        <div class="column-header last-column">ISO Date</div>
-        $$items
+<div class="page-header">
+    <div class="page-title">
+        Audit
     </div>
-    <div class="table-pagination">
-        <button class="default-button pagination-btn margin-right" id="previous" data-local-action="previousTablePage"><<</button>
-        <button class="default-button pagination-btn" id="next" data-local-action="nextTablePage">>></button>
+</div>
+<div class="page-body">
+    <div class="tab-section pointer">
+        <div class="inactive" id="action-logs" data-local-action="switchTab">Action Logs</div>
+        <div class="inactive" id="access-logs" data-local-action="switchTab">Demiurge Access Logs</div>
     </div>
+    $$tab
 </div>

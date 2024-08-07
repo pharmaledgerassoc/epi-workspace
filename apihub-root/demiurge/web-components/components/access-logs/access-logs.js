@@ -1,13 +1,11 @@
-import AuditService from "./../../../services/AuditService.js";
+import constants from "../../../constants.js";
 
-/*
-export class AuditPage {
+export class AccessLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.auditService = new AuditService()
         this.setPaginationDefaultValues = ()=>{
-            this.itemsNumber = 16;
+            this.logsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
             this.lastElementTimestamp = undefined;
@@ -16,13 +14,13 @@ export class AuditPage {
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                //always returns ascending order using memoryStorageStrategy
-                this.logs = await $$.promisify(this.auditService.filterAuditLogs)(undefined, this.itemsNumber, "dsc", query);
+                debugger
+                this.logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
                 if (this.logs && this.logs.length > 0) {
-                    if (this.logs.length === this.itemsNumber) {
+                    if (this.logs.length === this.logsNumber) {
                         this.logs.pop();
                         this.disableNextBtn = false;
-                    } else if (this.logs.length < this.itemsNumber) {
+                    } else if (this.logs.length < this.logsNumber) {
                         this.disableNextBtn = true;
                     }
                     this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
@@ -32,17 +30,19 @@ export class AuditPage {
         };
         this.loadLogs(["__timestamp > 0"]);
     }
-    beforeRender(){
+
+    beforeRender() {
         let string = "";
         for (let item of this.logs) {
-            string += ` <div class="data-item">${item.userId}</div>
-                        <div class="data-item">${item.action}</div>
-                        <div class="data-item">${item.userDID}</div>
-                        <div class="data-item">${item.userGroup}</div>
-                        <div class="data-item">${new Date(item.__timestamp).toISOString()}</div>`;
+            string += ` <div>${item.username}</div>
+                        <div>Access Wallet</div>
+                        <div>${item.userDID}</div>
+                        <div>${item.userGroup}</div>
+                        <div>${new Date(item.__timestamp).toISOString()}</div>`;
         }
         this.items = string;
     }
+
     afterRender() {
         let logs = this.element.querySelector(".logs-section");
         if (this.logs.length === 0) {
@@ -67,6 +67,7 @@ export class AuditPage {
             this.searchInput.addEventListener("search", this.boundSearchLogs);
         }
     }
+
     toggleSearchIcons(xMark) {
         if (this.searchInput.value === "") {
             xMark.style.display = "none";
@@ -82,21 +83,21 @@ export class AuditPage {
             this.inputValue = formData.data.userId;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(undefined, this.itemsNumber, "dsc", ["__timestamp > 0", `userId == ${this.inputValue}`]);
+            let logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
             if (logs.length > 0) {
                 this.logs = logs;
-                this.userIdFilter = `userId == ${this.inputValue}`;
-                if (this.logs.length === this.itemsNumber) {
+                this.userIdFilter = `username == ${this.inputValue}`;
+                if (this.logs.length === this.logsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;
-                } else if (this.logs.length < this.itemsNumber) {
+                } else if (this.logs.length < this.logsNumber) {
                     this.disableNextBtn = true;
                 }
                 this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                 this.firstElementTimestamp = this.logs[0].__timestamp;
-                this.searchResultIcon = "<img class='result-icon' src='./assets/images/icons/check.svg' alt='check'>";
+                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
             } else {
-                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/images/icons/ban.svg' alt='ban'>";
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
             }
             this.focusInput = true;
             this.invalidate();
@@ -107,7 +108,6 @@ export class AuditPage {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";
-        this.userIdFilter = "";
         this.loadLogs(["__timestamp > 0"]);
     }
 
@@ -126,8 +126,7 @@ export class AuditPage {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            //TODO to <= after changing storage strategy
-            let query = [`__timestamp >= ${this.firstElementTimestamp}`];
+            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
             if(this.userIdFilter){
                 query.push(this.userIdFilter);
             }
@@ -140,48 +139,11 @@ export class AuditPage {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            //TODO to < after changing storage strategy
-            let query = [`__timestamp > ${this.firstElementTimestamp}`];
+            let query = [`__timestamp < ${this.firstElementTimestamp}`];
             if(this.userIdFilter){
                 query.push(this.userIdFilter);
             }
             this.loadLogs(query);
         }
-    }
-}
-*/
-
-
-export class AuditPage {
-    constructor(element, invalidate) {
-        this.element = element;
-        this.invalidate = invalidate;
-        this.invalidate();
-    }
-
-    beforeRender() {
-        if (!this.selected) {
-            this.tab = `<access-logs data-presenter="access-logs"></access-logs>`;
-        }
-    }
-
-    afterRender() {
-        let actions = this.element.querySelector("#action-logs");
-        let access = this.element.querySelector("#access-logs");
-        if (this.selected === "access-logs") {
-            access.classList.remove("inactive");
-            access.classList.add("highlighted");
-        } else {
-            actions.classList.remove("inactive");
-            actions.classList.add("highlighted");
-        }
-    }
-
-    switchTab(_target) {
-        this.selected = _target.getAttribute("id");
-
-        let tabName = _target.getAttribute("id");
-        this.tab = `<${tabName} data-presenter="${tabName}"></${tabName}>`;
-        this.invalidate();
     }
 }
