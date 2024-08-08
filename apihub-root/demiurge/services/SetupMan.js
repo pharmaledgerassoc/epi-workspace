@@ -65,7 +65,7 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
         return webSkel.notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
     }
 
-    if(enclaveConfig.enclaveName.indexOf("Demiurge")!== -1){
+    if(enclaveConfig.enclaveName.indexOf("demiurge")!== -1){
         await $$.promisify(scAPI.setSharedEnclave)(enclave);
     }
 
