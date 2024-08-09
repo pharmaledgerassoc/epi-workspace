@@ -2,6 +2,7 @@ import {getCredentialService} from "./JWTCredentialService.js";
 import constants from "../constants.js";
 import utils from "../utils.js";
 import AppManager from "./AppManager.js";
+import AuditService from "./AuditService.js";
 
 function getPKFromContent(stringContent) {
     const crypto = require("opendsu").loadAPI("crypto");
@@ -205,6 +206,8 @@ class GroupsManager {
         let SecretsHandler = w3cdid.SecretsHandler;
         let secretsHandler = await SecretsHandler.getInstance(adminDID);
         await secretsHandler.authorizeUser(memberDID, groupCredential, enclave);
+        await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.ADD, memberDID, groupId);
+
     }
 
     async removeMember(groupId, memberDID) {
@@ -232,6 +235,7 @@ class GroupsManager {
         let SecretsHandler = w3cdid.SecretsHandler;
         let secretsHandler = await SecretsHandler.getInstance(adminDID);
         await secretsHandler.unAuthorizeUser(memberDID);
+        await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.REMOVE, memberDID, groupId);
     }
 
     async getMembers(groupDID) {

@@ -44,7 +44,7 @@ export class BootingIdentityPage {
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
         if (await permissionWatcher.checkAccess()) {
             document.querySelector("sidebar-menu").style.display = "flex";
-            await AuditService.getInstance().addAccessLog();
+         //   await AuditService.getInstance().addAccessLog();
             appManager.getWalletAccess("groups-page");
         } else {
             const waitingAccessModal = await webSkel.showModal("waiting-access-modal", true);
@@ -72,7 +72,6 @@ export class BootingIdentityPage {
         initialiseIdentityModal.close();
         initialiseIdentityModal.remove();
         if (appManager.firstTimeAndFirstAdmin) {
-            await $$.promisify(webSkel.sorClient.doDemiurgeMigration)();
             await webSkel.showModal("break-glass-recovery-code-modal", true);
             //  await webSkel.changeToDynamicPage("groups-page");
         }

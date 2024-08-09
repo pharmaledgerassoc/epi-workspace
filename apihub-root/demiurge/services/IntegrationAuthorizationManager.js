@@ -1,5 +1,7 @@
 import utils from "../utils.js";
 import constants from "../constants.js";
+import AuditService from "./AuditService.js";
+import AppManager from "./AppManager.js";
 
 class IntegrationAuthorizationManager {
     async authorize(clientId, scope, clientSecret, tokenEndpoint) {
@@ -41,10 +43,8 @@ class IntegrationAuthorizationManager {
                 console.log(e)
                 throw new Error("Failed to authorize the application");
             }
-            /*
-            * TODO add audit log
-            * */
-            // await utils.addLogMessage(this.did, constants.OPERATIONS.AUTHORIZE, this.groupName);
+            let did = await AppManager.getInstance().getDID();
+            await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.AUTHORIZE, did, constants.EPI_ADMIN_GROUP)
         }
     }
 
@@ -61,7 +61,7 @@ class IntegrationAuthorizationManager {
         /*
             * TODO add audit log
             * */
-        // await utils.addLogMessage(this.did, constants.OPERATIONS.REVOKE, this.groupName);
+        // await utils.addLogMessage(this.did, constants.AUDIT_OPERATIONS.REVOKE, this.groupName);
 
     }
 

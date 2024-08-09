@@ -4,13 +4,13 @@ import utils from "../utils.js";
 export class MembersService{
     async deleteMembers(group, memberDID, operation) {
         let deleteMembersMsg = {
-            messageType: operation === constants.OPERATIONS.REMOVE ? constants.MESSAGE_TYPES.USER_REMOVED : "DeactivateMember",
+            messageType: operation === constants.AUDIT_OPERATIONS.REMOVE ? constants.MESSAGE_TYPES.USER_REMOVED : "DeactivateMember",
             groupDID: group.did,
             memberDID: memberDID,
             groupName: group.name,
             accessMode: group.accessMode,
             auditData: {
-                action: operation === constants.OPERATIONS.REMOVE ? constants.OPERATIONS.REMOVE : constants.OPERATIONS.DEACTIVATE,
+                action: operation === constants.AUDIT_OPERATIONS.REMOVE ? constants.AUDIT_OPERATIONS.REMOVE : constants.AUDIT_OPERATIONS.DEACTIVATE,
                 userGroup: utils.getGroupName(group),
                 userDID: memberDID
             }

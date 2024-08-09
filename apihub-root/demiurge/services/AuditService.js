@@ -94,8 +94,12 @@ class AuditService {
     constructor() {
     }
 
-    addAuditLog(logType, auditMessage, callback) {
-        _sendRequest(`${getBaseURL()}/audit/${logType}`, 'POST', auditMessage, callback);
+    async addAuditLog(logType, auditDetails) {
+        try {
+            await $$.promisify(webSkel.demiurgeSorClient.addAuditLog)(logType, auditDetails);
+        } catch (e) {
+            webSkel.notificationHandler.reportUserRelevantError(`Audit operation failed. ${e.message}`);
+        }
     }
 
     filterAuditLogs(logType, start, number, query, sort, callback) {
@@ -103,25 +107,49 @@ class AuditService {
     }
 
     async addAccessLog(did) {
-        try {
-            did = did || await AppManager.getInstance().getDID();
-
-            let auditDetails = {
-                payload: {
-                    userDID: did,
-                    userGroup: constants.EPI_ADMIN_GROUP
-                }
+        did = did || await AppManager.getInstance().getDID();
+        let auditDetails = {
+            payload: {
+                userDID: did,
+                userGroup: constants.EPI_ADMIN_GROUP,
             }
-            await $$.promisify(webSkel.sorClient.addAuditLog)(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails);
-        } catch (e) {
-            webSkel.notificationHandler.reportUserRelevantWarning(`Audit operation failed. <br> ${e.message}`);
         }
-
+        await this.addAuditLog(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails)
     }
 
-    async getAccessLogs(appName) {
-        this.logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
+    async addActionLog(action, userDID, group) {
+        let auditDetails = {
+            payload: {
+                userDID: userDID,
+                userGroup: group,
+                action: action
+            }
+        }
+        await this.addAuditLog(constants.AUDIT_LOG_TYPES.USER_ACTION, auditDetails)
+    }
 
+    async getLogs(logType, logsNumber, query, sorClient = "Demiurge") {
+        const client = sorClient === "Demiurge" ? webSkel.demiurgeSorClient : webSkel.dsuFabricSorClient;
+        const logs = await $$.promisify(client.filterAuditLogs)(logType, undefined, logsNumber, query, "desc");
+        return logs;
+    }
+
+
+    objectToArray(item) {
+        const action = item.action || 'Access Wallet';
+        return [item.username ? `'${item.username}'` : "", `${action}`, item.userDID, item.userGroup, new Date(item.__timestamp).toISOString()];
+    }
+
+    convertToCSV(items, type) {
+        let headers = ["User", "Action", "User DID", "User Group", "Creation Time"];
+
+        let columnTitles = headers.join(";") + "\n";
+        let rows = "";
+        for (let item of items) {
+            item = this.objectToArray(item, type).join(";");
+            rows += item + "\n";
+        }
+        return [columnTitles + rows];
     }
 }
 

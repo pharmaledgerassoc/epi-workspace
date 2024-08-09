@@ -71,9 +71,14 @@
       "presenterClassName": "MyIdentitiesPage"
     },
     {
-      "name": "access-logs",
+      "name": "demiurge-access-logs",
       "type": "components",
-      "presenterClassName": "AccessLogs"
+      "presenterClassName": "DemiurgeAccessLogs"
+    },
+    {
+      "name": "dsu-fabric-access-logs",
+      "type": "components",
+      "presenterClassName": "DsuFabricAccessLogs"
     },
     {
       "name": "action-logs",

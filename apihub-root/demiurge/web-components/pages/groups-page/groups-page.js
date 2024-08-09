@@ -149,7 +149,7 @@ export class GroupsPage {
             "",
             constants.CONTENT_TYPE.GROUP_MEMBER,
             constants.RECIPIENT_TYPES.GROUP_RECIPIENT,
-            constants.OPERATIONS.ADD
+            constants.AUDIT_OPERATIONS.ADD
         );
     }
 }

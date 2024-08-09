@@ -1,10 +1,13 @@
-/*
-import constants from "../../../constants.js";
+import AuditService from "../../services/AuditService.js";
 
-export class ActionLogs {
+export default class DemiurgeLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        this.sorClient = "";
+        this.logType = "";
+        this.searchField = "";
+        this.searchQueryAttribute = "";
         this.setPaginationDefaultValues = () => {
             this.logsNumber = 16;
             this.disableNextBtn = true;
@@ -12,10 +15,11 @@ export class ActionLogs {
             this.lastElementTimestamp = undefined;
             this.previousPageFirstElements = [];
         };
+        this.auditService = AuditService.getInstance();
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                this.logs = await $$.promisify(webSkel.demiurgeSorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, this.logsNumber, query, "desc");
+                this.logs = await this.auditService.getLogs(this.logType, this.logsNumber, query, this.sorClient)
                 if (this.logs && this.logs.length > 0) {
                     if (this.logs.length === this.logsNumber) {
                         this.logs.pop();
@@ -26,25 +30,12 @@ export class ActionLogs {
                     this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                     this.firstElementTimestamp = this.logs[0].__timestamp;
                 }
-
             });
         };
         this.loadLogs(["__timestamp > 0"]);
     }
 
     beforeRender() {
-        let string = "";
-        for (let item of this.logs) {
-            string += `
-                        <div>${item.itemCode || "-"}</div>
-                        <div>${item.batchNumber || "-"}</div>
-                        <div>${item.reason}</div>
-                        <div>${item.username}</div>
-                        <div>${new Date(item.__timestamp).toISOString()}</div>
-                        <div class="view-details pointer" data-local-action="openAuditEntryModal ${item.pk}">View</div>`;
-
-        }
-        this.items = string;
     }
 
     afterRender() {
@@ -54,7 +45,6 @@ export class ActionLogs {
             let noData = `<div class="no-data">No Data ...</div>`;
             this.element.insertAdjacentHTML("beforeend", noData)
         }
-
         let previousBtn = this.element.querySelector("#previous");
         let nextBtn = this.element.querySelector("#next");
         if (this.previousPageFirstElements.length === 0 && previousBtn) {
@@ -73,17 +63,25 @@ export class ActionLogs {
         }
     }
 
+    toggleSearchIcons(xMark) {
+        if (this.searchInput.value === "") {
+            xMark.style.display = "none";
+        } else {
+            xMark.style.display = "block";
+        }
+    }
+
     async searchLogs(event) {
         event.preventDefault();
-        let formData = await webSkel.extractFormInformation(this.searchInput);
+        let formData = await webSkel.extractFormInformation(this.searchField);
         if (formData.isValid) {
-            this.inputValue = formData.data.productCode;
+            this.inputValue = formData.data[this.searchField];
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-     //       let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, this.logsNumber, ["__timestamp > 0", `itemCode == ${this.inputValue}`], "desc");
-            if (logs && logs.length > 0) {
+            this.logs = await this.auditService.getLogs(this.logType, undefined, this.logsNumber, ["__timestamp > 0", `${this.searchQueryAttribute} == ${this.inputValue}`])
+            if (logs.length > 0) {
                 this.logs = logs;
-                this.gtinFilter = `itemCode == ${this.inputValue}`;
+                this.searchIdentifier = `${this.searchQueryAttribute} == ${this.inputValue}`;
                 if (this.logs.length === this.logsNumber) {
                     this.logs.pop();
                     this.disableNextBtn = false;
@@ -105,22 +103,16 @@ export class ActionLogs {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";
-        delete this.gtinFilter;
         this.loadLogs(["__timestamp > 0"]);
     }
 
-    async openAuditEntryModal(_target, pk) {
-        let logEntry = this.logs.find(item => item.pk === pk)
-        await webSkel.showModal("audit-entry-modal", {"entry": encodeURIComponent(JSON.stringify(logEntry))});
-    }
-
-    async downloadCSV() {
-        let csvData = webSkel.appServices.convertToCSV(this.logs, "action");
+    async downloadCSV(logType) {
+        let csvData = this.auditService.convertToCSV(this.logs);
         let csvBlob = new Blob(csvData, {type: "text/csv"});
         let csvUrl = URL.createObjectURL(csvBlob);
         let link = document.createElement('a');
         link.href = csvUrl;
-        link.download = 'ActionLogs.csv';
+        link.download = 'Logs.csv';
         link.click();
         link.remove();
     }
@@ -130,8 +122,8 @@ export class ActionLogs {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp <= ${this.firstElementTimestamp}`];
-            if (this.gtinFilter) {
-                query.push(this.gtinFilter);
+            if (this.searchIdentifier) {
+                query.push(this.searchIdentifier);
             }
             this.loadLogs(query);
         }
@@ -143,47 +135,10 @@ export class ActionLogs {
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
             let query = [`__timestamp < ${this.firstElementTimestamp}`];
-            if (this.gtinFilter) {
-                query.push(this.gtinFilter);
+            if (this.searchIdentifier) {
+                query.push(this.searchIdentifier);
             }
             this.loadLogs(query);
         }
     }
-}import DemiurgeLogs from "../DemiurgeLogs.js";
-import constants from "../../../constants";
-
-export class ActionLogs extends DemiurgeLogs {
-    constructor(element, invalidate) {
-        super(element, invalidate);
-        this.sorClient = "DSUFabric";
-        this.logType = constants.AUDIT_LOG_TYPES.USER_ACCESS
-    }
-}
-
-*/
-import DemiurgeLogs from "../DemiurgeLogs.js";
-import constants from "../../../constants.js";
-
-export class ActionLogs extends DemiurgeLogs {
-    constructor(element, invalidate) {
-        super(element, invalidate);
-        this.sorClient = "Demiurge";
-        this.logType = constants.AUDIT_LOG_TYPES.USER_ACTION;
-        this.searchField = "userDID";
-        this.searchQueryAttribute = "userDID"
-    }
-
-    beforeRender() {
-        let string = "";
-        for (let item of this.logs) {
-            string += `
-                        <div>${item.username || "-"}</div>
-                        <div>${item.action}</div>
-                        <div>${item.userDID || "-"}</div>
-                        <div>${item.userGroup}</div>
-                        <div>${new Date(item.__timestamp).toISOString()}</div>`;
-        }
-        this.items = string;
-    }
-
 }

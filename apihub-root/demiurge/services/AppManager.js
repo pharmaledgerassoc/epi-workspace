@@ -264,7 +264,7 @@ async function autoAuthorization() {
     await handler.authorizeUser(did, groupCredential, enclaveData);
 }
 
-async function firstOrRecoveryAdminToAdministrationGroup(did, userDetails, logAction = constants.OPERATIONS.SHARED_ENCLAVE_CREATE) {
+async function firstOrRecoveryAdminToAdministrationGroup(did, userDetails, logAction = constants.AUDIT_OPERATIONS.SHARED_ENCLAVE_CREATE) {
     if (typeof did !== "string") {
         did = did.getIdentifier();
     }
@@ -407,6 +407,7 @@ class AppManager {
         await this.oneTimeSetup(this.walletJustCreated);
         if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
+            await $$.promisify(webSkel.demiurgeSorClient.doDemiurgeMigration)();
             await firstOrRecoveryAdminToAdministrationGroup(didDocument, userDetails);
             await autoAuthorization(didDocument);
         }
@@ -460,6 +461,7 @@ class AppManager {
         let did = await getStoredDID();
         let groupManager = GroupsManager.getInstance();
         await groupManager.addMember(constants.EPI_ADMIN_GROUP, did);
+        await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.BREAK_GLASS_RECOVERY, did, constants.EPI_ADMIN_GROUP);
         /*let domain = await $$.promisify(scAPI.getVaultDomain)();
         let groupCredential = await GroupsManager.getInstance().getGroupCredential(`did:ssi:name:${domain}:${constants.EPI_ADMIN_GROUP}`);
 

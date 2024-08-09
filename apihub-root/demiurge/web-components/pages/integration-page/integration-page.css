@@ -8,7 +8,7 @@ integration-page {
     margin-top: 15px;
 }
 
-.integration-form.revoke-authorisation {
+.integration-form.authorize {
     display: none;
 }
 
@@ -16,7 +16,7 @@ integration-page {
     margin-top: 15px;
 }
 
-.authorization-success-section.authorize {
+.authorization-success-section.revoke-authorisation {
     display: none;
 }
 

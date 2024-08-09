@@ -4,20 +4,49 @@ audit-page {
     padding: 40px 28px;
     overflow-y: scroll;
 }
-.search-user{
-    width: 300px;
+
+action-logs,
+demiurge-access-logs,
+dsu-fabric-access-logs {
+    display: grid;
 }
+
+
+.tab-section {
+    display: flex;
+    gap: 1px;
+}
+
+.tab-section div {
+    color: white;
+    text-align: center;
+    line-height: 1.5;
+    width: 50%;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 16px;
+}
+
+.tab {
+    background-color: var(--tab-color);
+}
+
+.tab.selected {
+    background-color: var(--dw-app-color);
+}
+
+.data-item {
+    border-bottom: 0.25px solid var(--very-light-grey);
+}
+
 .search-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-radius: var(--default-border-radius);
-    margin: 15px 0;
+    padding: 20px 10px;
+    border-left: 1px solid var(--very-light-grey);
+    border-right: 1px solid var(--very-light-grey);
 }
-.data-item{
-    border-bottom: 0.25px solid var(--very-light-grey);
-}
+
 .input-container-container {
     display: flex;
     align-items: center;
@@ -28,9 +57,6 @@ audit-page {
 }
 
 .table {
-    border-radius: var(--default-border-radius);
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
     border: 1px solid var(--very-light-grey);
 }
 
@@ -45,13 +71,24 @@ audit-page {
     border-bottom: 1px solid var(--very-light-grey);
 }
 
-.first-column {
-    border-top-left-radius: var(--default-border-radius);
+
+.export-csv {
+    background-color: var(--dw-app-color);
+    border: 1px solid var(--dw-app-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 110%;
 }
 
-.last-column {
-    border-top-right-radius: var(--default-border-radius);
+.x-mark {
+    font-weight: bold;
+    position: absolute;
+    left: 93%;
+    bottom: 1.5px;
+    display: none;
 }
+
 .result-icon {
     height: 10px;
     margin-left: 5px;
@@ -68,7 +105,12 @@ audit-page {
 }
 
 .pagination-btn {
+    cursor: pointer;
+    background-color: var(--dw-app-color);
+    border: none;
+    color: white;
     padding: 8px 16px;
+    border-radius: 5px;
     font-size: 0.75rem;
     font-weight: bolder;
 }
@@ -77,4 +119,8 @@ audit-page {
     margin-right: 16px;
 }
 
+search-input {
+    display: inline-block;
+    height: 27px;
+}
 

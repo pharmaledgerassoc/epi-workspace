@@ -1,9 +1,5 @@
 export default {
     DOMAIN: "default",
-    AUDIT_LOG_TYPES: {
-        USER_ACCESS: "userAccess",
-        USER_ACTION: "userAction"
-    },
     TABLES: {
         DIDS: "dids_table",
         GROUPS: "groups_table",
@@ -36,7 +32,12 @@ export default {
         USER_RECIPIENT: "user",
         GROUP_RECIPIENT: "group"
     },
-    OPERATIONS: {
+    AUDIT_LOG_TYPES: {
+        DSU_FABRIC_USER_ACCESS: "userAccess",
+        USER_ACCESS: "demiurgeUserAccess",
+        USER_ACTION: "demiurgeUserAction"
+    },
+    AUDIT_OPERATIONS: {
         REMOVE: "Remove user",
         ADD: "Add user",
         DEACTIVATE: "Deactivate user",
@@ -135,26 +136,26 @@ export default {
         COMPLETED: "completed",
         FAILED: "failed"
     },
-    HEALTH_CHECK_COMPONENTS:{
+    HEALTH_CHECK_COMPONENTS: {
         "secrets": "Secrets",
         "systemHealth": "System Health",
         "installInfo": "Install Info",
         "configsInfo": "Configs Info",
         "wallets": "Wallets",
-        "checkAnchoring":"Anchoring",
-        "checkBricking":"Bricking",
-        "checkDatabases":"Databases",
-        "checkProducts":"Products",
-        "checkBatches":"Batches"
+        "checkAnchoring": "Anchoring",
+        "checkBricking": "Bricking",
+        "checkDatabases": "Databases",
+        "checkProducts": "Products",
+        "checkBatches": "Batches"
     },
-    HEALTH_CHECK_STATUSES:{
+    HEALTH_CHECK_STATUSES: {
         IN_PROGRESS: "in_progress",
         SUCCESS: "success",
         FAILED: "failed",
         REPAIRED: "repaired",
         FAILED_REPAIR: "failed_repair"
     },
-    HEALTH_CHECK_ACTIONS:{
+    HEALTH_CHECK_ACTIONS: {
         START: "start",
         STATUS: "status",
     }

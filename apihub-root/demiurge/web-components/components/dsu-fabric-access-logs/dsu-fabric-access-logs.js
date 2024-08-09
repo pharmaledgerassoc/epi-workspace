@@ -1,6 +1,7 @@
+/*
 import constants from "../../../constants.js";
 
-export class AccessLogs {
+export class DsuFabricAccessLogs {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
@@ -14,8 +15,8 @@ export class AccessLogs {
         this.setPaginationDefaultValues();
         this.loadLogs = (query) => {
             this.invalidate(async () => {
-                debugger
-                this.logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
+                this.logs = await $$.promisify(webSkel.demiurgeSorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, query, "desc");
+
                 if (this.logs && this.logs.length > 0) {
                     if (this.logs.length === this.logsNumber) {
                         this.logs.pop();
@@ -83,7 +84,7 @@ export class AccessLogs {
             this.inputValue = formData.data.userId;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.sorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
+            let logs = await $$.promisify(webSkel.demiurgeSorClient.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCESS, undefined, this.logsNumber, ["__timestamp > 0", `username == ${this.inputValue}`], "desc");
             if (logs.length > 0) {
                 this.logs = logs;
                 this.userIdFilter = `username == ${this.inputValue}`;
@@ -146,4 +147,30 @@ export class AccessLogs {
             this.loadLogs(query);
         }
     }
+}
+*/
+import DemiurgeLogs from "../DemiurgeLogs.js";
+import constants from "../../../constants.js";
+
+export class DsuFabricAccessLogs extends DemiurgeLogs {
+    constructor(element, invalidate) {
+        super(element, invalidate);
+        this.sorClient = "DSUFabric";
+        this.logType = constants.AUDIT_LOG_TYPES.DSU_FABRIC_USER_ACCESS;
+        this.searchField = "userId";
+        this.searchQueryAttribute = "username"
+    }
+
+    beforeRender() {
+        let string = "";
+        for (let item of this.logs) {
+            string += ` <div>${item.username}</div>
+                        <div>Access Wallet</div>
+                        <div>${item.userDID}</div>
+                        <div>${item.userGroup}</div>
+                        <div>${new Date(item.__timestamp).toISOString()}</div>`;
+        }
+        this.items = string;
+    }
+
 }

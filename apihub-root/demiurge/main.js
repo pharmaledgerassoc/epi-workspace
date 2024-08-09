@@ -89,13 +89,12 @@ function renderToast(message, type, timeoutValue = 15000) {
     let gtinResolver = require("gtin-resolver");
     webSkel.client = getInstance("default");
     const {epiDomain, epiSubdomain} = env;
-    webSkel.sorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain, "Demiurge");
-
+    webSkel.demiurgeSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain, "Demiurge");
+    webSkel.dsuFabricSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain);
     webSkel.renderToast = renderToast;
 
     let justCreated;
     let appManager = AppManager.getInstance();
-
 
     try {
         justCreated = await appManager.walletInitialization();
