@@ -1,7 +1,6 @@
 import WebSkel from "./WebSkel/webSkel.js";
 
 const openDSU = require("opendsu");
-import {getInstance} from "./MockClient.js";
 import AppManager from "./services/AppManager.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
@@ -86,9 +85,9 @@ function renderToast(message, type, timeoutValue = 15000) {
     let {currentPage, presenterName} = utils.detectCurrentPage();
 
     await setupGlobalErrorHandlers();
-    let gtinResolver = require("gtin-resolver");
-    webSkel.client = getInstance("default");
     const {epiDomain, epiSubdomain} = env;
+    let gtinResolver = require("gtin-resolver");
+    webSkel.healthCheckClient = gtinResolver.getHealthCheckClient();
     webSkel.demiurgeSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain, "Demiurge");
     webSkel.dsuFabricSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain);
     webSkel.renderToast = renderToast;

@@ -9,7 +9,7 @@ export class ComponentDetailsPage {
         this.componentName = splitUrl[2];
         this.name = constants.HEALTH_CHECK_COMPONENTS[this.componentName];
         this.loadComponent = async () => {
-            this.component = await $$.promisify(webSkel.client.getHealthCheckComponent)(this.id, this.componentName);
+            this.component = await webSkel.healthCheckClient.getCheckStatus(this.id, this.componentName);
         };
         this.invalidate(this.loadComponent);
     }
@@ -34,7 +34,7 @@ export class ComponentDetailsPage {
             this.statusColor = "fail";
             this.statusMessage = "This check has failed."
         }
-        this.logsContent = this.component.logs;
+        this.logsContent = JSON.stringify(this.component.report);
     }
 
     afterRender() {
@@ -45,7 +45,7 @@ export class ComponentDetailsPage {
     }
 
     async fixComponent(_target) {
-        await $$.promisify(webSkel.client.fixComponent)(this.id, this.componentName);
+        await $$.promisify(webSkel.healthCheckClient.fixComponent)(this.id, this.componentName);
         this.invalidate(this.loadComponent);
     }
 }

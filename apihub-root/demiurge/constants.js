@@ -142,8 +142,8 @@ export default {
         "installInfo": "Install Info",
         "configsInfo": "Configs Info",
         "wallets": "Wallets",
-        "checkAnchoring": "Anchoring",
-        "checkBricking": "Bricking",
+        "anchoring": "Anchoring",
+        "bricking": "Bricking",
         "checkDatabases": "Databases",
         "checkProducts": "Products",
         "checkBatches": "Batches"

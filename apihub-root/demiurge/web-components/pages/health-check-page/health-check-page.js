@@ -4,7 +4,7 @@ export class HealthCheckPage {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
-        this.setPaginationDefaultValues = ()=>{
+        this.setPaginationDefaultValues = () => {
             this.itemsNumber = 16;
             this.disableNextBtn = true;
             this.firstElementTimestamp = 0;
@@ -14,13 +14,23 @@ export class HealthCheckPage {
         this.setPaginationDefaultValues();
         this.loadRuns = (query) => {
             this.invalidate(async () => {
-                this.healthChecks = await $$.promisify(webSkel.client.filterHealthChecksMetadata)(undefined, this.itemsNumber, "dsc", query);
+                this.healthChecks = await webSkel.healthCheckClient.getIterationsMetadata(undefined, this.itemsNumber, "dsc", query);
                 if (this.healthChecks && this.healthChecks.length > 0) {
                     if (this.healthChecks.length === this.itemsNumber) {
                         this.healthChecks.pop();
                         this.disableNextBtn = false;
                     } else if (this.healthChecks.length < this.itemsNumber) {
                         this.disableNextBtn = true;
+                    }
+                    for (let healthRecord of this.healthChecks) {
+                        let statuses = await webSkel.healthCheckClient.getCheckStatus(healthRecord.pk);
+                        let statusKeys = Object.keys(statuses);
+                        for (let i = 0; i < statusKeys.length; i++) {
+                            healthRecord.status = statuses[statusKeys[i]].status;
+                            if (statuses[statusKeys[i]].status !== "success") {
+                                break;
+                            }
+                        }
                     }
                     this.lastElementTimestamp = this.healthChecks[this.healthChecks.length - 1].__timestamp;
                     this.firstElementTimestamp = this.healthChecks[0].__timestamp;
@@ -38,16 +48,17 @@ export class HealthCheckPage {
                         <div class="data-item view-details" data-local-action="navigateToHealthCheckRun ${item.pk}">View Details</div>`;
         }
         this.items = string;
-        if(this.healthCheckPK){
+        if (this.healthCheckPK) {
             let currentCheck = this.healthChecks.find(check => check.pk === this.healthCheckPK);
-            if(currentCheck.status === constants.HEALTH_CHECK_STATUSES.IN_PROGRESS){
+            if (currentCheck.status === constants.HEALTH_CHECK_STATUSES.IN_PROGRESS) {
                 this.disabledClass = "disabled";
             }
         }
     }
+
     afterRender() {
         let pageBody = this.element.querySelector(".page-body");
-        if(this.healthChecks.length === 0){
+        if (this.healthChecks.length === 0) {
             pageBody.style.display = "none";
             let noData = `<div class="no-data">No Data ...</div>`;
             this.element.insertAdjacentHTML("beforeend", noData)
@@ -61,6 +72,7 @@ export class HealthCheckPage {
             nextBtn.classList.add("disabled");
         }
     }
+
     previousTablePage(_target) {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
@@ -79,11 +91,13 @@ export class HealthCheckPage {
             this.loadRuns(query);
         }
     }
-    async navigateToHealthCheckRun(_target, pk){
+
+    async navigateToHealthCheckRun(_target, pk) {
         await webSkel.changeToDynamicPage("run-results-page", `run-results-page/${pk}`);
     }
-    async runHealthCheck(_target){
-        this.healthCheckPK = await $$.promisify(webSkel.client.healthCheck)(constants.HEALTH_CHECK_ACTIONS.START);
+
+    async runHealthCheck(_target) {
+        this.healthCheckPK = await webSkel.healthCheckClient.startHealthCheck();
         this.loadRuns(["__timestamp > 0"]);
     }
 }
