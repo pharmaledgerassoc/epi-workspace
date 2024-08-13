@@ -41,6 +41,11 @@ booting-identity-page {
     opacity: 0.5;
     padding: 10px;
     color: var(--disabled-text) !important;
+
+}
+
+.username {
+    width: -webkit-fill-available;
 }
 
 .did {

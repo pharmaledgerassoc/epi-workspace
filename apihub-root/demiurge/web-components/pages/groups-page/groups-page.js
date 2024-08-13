@@ -94,10 +94,11 @@ export class GroupsPage {
             this.invalidate(async () => {
                 await this.getGroupData(this.selectedGroup.id)
             });
-            this.changeButtonState("initial");
         } catch (e) {
+            debugger;
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
+        this.changeButtonState("initial");
         webSkel.closeModal(modal);
     }
 
