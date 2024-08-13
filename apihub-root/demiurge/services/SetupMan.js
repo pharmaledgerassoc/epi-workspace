@@ -65,7 +65,7 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
         return webSkel.notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
     }
 
-    if(enclaveConfig.enclaveName.indexOf("demiurge")!== -1){
+    if (enclaveConfig.enclaveName.indexOf("demiurge") !== -1) {
         await $$.promisify(scAPI.setSharedEnclave)(enclave);
     }
 
@@ -76,11 +76,19 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
         enclaveName: enclaveConfig.enclaveName
     };
 
-
+    debugger
     let batchId = await enclaveDB.startOrAttachBatchAsync();
     await enclaveDB.writeKeyAsync(enclaveConfig.enclaveName, enclaveRecord);
     await enclaveDB.insertRecordAsync(constants.TABLES.GROUP_ENCLAVES, enclaveRecord.enclaveDID, enclaveRecord);
     await enclaveDB.commitBatchAsync(batchId);
+
+    if (enclaveConfig.enclaveName.indexOf("epiEnclave") !== -1) {
+        const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+        const batchId = await sharedEnclave.startOrAttachBatchAsync();
+        await utils.setEpiEnclave(enclaveRecord);
+        await sharedEnclave.commitBatchAsync(batchId);
+    }
+
     return enclaveRecord;
 }
 
@@ -94,6 +102,7 @@ async function createEnclave(enclaveData) {
 }
 
 let didDomain;
+
 async function getDIDDomain() {
     const scAPI = require("opendsu").loadApi("sc");
     if (!didDomain) {
@@ -105,25 +114,25 @@ async function getDIDDomain() {
 
 class SetupMan {
 
-    async needsSetup(){
+    async needsSetup() {
 
     }
 
-    async doSetup(){
-        return new Promise(async function(resolve, reject){
+    async doSetup() {
+        return new Promise(async function (resolve, reject) {
             webSkel.notificationHandler.reportUserRelevantInfo("Initial setup process has started.");
             let fetchResponse = await fetch("./config/enclaves.json");
             let enclaves;
-            try{
+            try {
                 enclaves = await fetchResponse.json();
-            }catch(err){
+            } catch (err) {
                 return reject("Failed to read Enclave Configuration file.", err);
             }
 
-            for(let enclave of enclaves){
-                try{
+            for (let enclave of enclaves) {
+                try {
                     await createEnclave(enclave);
-                }catch(err){
+                } catch (err) {
                     return reject(`Failed to create Enclave: ${enclave.enclaveName}.`, err);
                 }
             }
@@ -131,17 +140,17 @@ class SetupMan {
 
             let groupFetchResponse = await fetch("./config/groups.json");
             let groups;
-            try{
+            try {
                 groups = await groupFetchResponse.json();
-            }catch(err){
+            } catch (err) {
                 return reject("Failed to read Groups Configuration file.", err);
             }
 
             let groupManager = GroupsManager.getInstance();
-            for(let group of groups){
-                try{
+            for (let group of groups) {
+                try {
                     await groupManager.createGroup(group);
-                }catch(err){
+                } catch (err) {
                     return reject(`Failed to create Group: ${group.groupName}.`, err);
                 }
             }
@@ -180,9 +189,11 @@ class SetupMan {
     }
 
 }
+
 let instance;
-function getInstance(){
-    if(!instance){
+
+function getInstance() {
+    if (!instance) {
         instance = new SetupMan();
     }
     return instance;

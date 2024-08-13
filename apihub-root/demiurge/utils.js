@@ -5,6 +5,7 @@ const scAPI = openDSU.loadAPI("sc");
 const w3cdid = openDSU.loadAPI("w3cdid");
 const notificationHandler = openDSU.loadAPI("error");
 const crypto = openDSU.loadAPI("crypto");
+const config = openDSU.loadAPI("config");
 const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
@@ -18,6 +19,12 @@ const getSharedEnclaveKey = async (key) => {
         // ignore
     }
     return record;
+}
+
+async function setEpiEnclave(enclaveRecord) {
+    const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+    await sharedEnclave.writeKeyAsync(constants.EPI_SHARED_ENCLAVE, enclaveRecord);
+    await $$.promisify(config.setEnv)(constants.EPI_SHARED_ENCLAVE, enclaveRecord.enclaveKeySSI);
 }
 
 const detectCurrentPage = () => {
@@ -134,151 +141,6 @@ function getPKFromContent(stringContent) {
     return crypto.sha256(stringContent);
 }
 
-async function migrateData(sharedEnclave) {
-    let adminGroup = await getAdminGroup(sharedEnclave);
-    const apiKeyClient = apiKeySpace.getAPIKeysClient();
-    try {
-        notificationHandler.reportUserRelevantInfo(`System Alert: Migration of Access Control Mechanisms is Currently Underway. Your Patience is Appreciated.`);
-        let did = await getStoredDID();
-        try {
-            const sysadminSecret = await getBreakGlassRecoveryCode();
-            const apiKey = crypto.sha256JOSE(crypto.generateRandom(32), "base64");
-            const body = {
-                secret: sysadminSecret,
-                apiKey
-            }
-            await apiKeyClient.becomeSysAdmin(JSON.stringify(body));
-            await setSysadminCreated(true);
-        } catch (e) {
-            console.log(e);
-            // already sysadmin
-        }
-        let groupDIDDocument = await $$.promisify(w3cdid.resolveDID)(adminGroup.did);
-        const members = await $$.promisify(groupDIDDocument.getMembers)();
-        for (let member in members) {
-            const memberObject = members[member];
-            if (member !== did) {
-                await apiKeyClient.makeSysAdmin(getUserIdFromUsername(memberObject.username), crypto.generateRandom(32).toString("base64"));
-            }
-        }
-        const epiEnclaveRecord = await $$.promisify(sharedEnclave.readKey)(constants.EPI_SHARED_ENCLAVE);
-        let enclaveKeySSI = epiEnclaveRecord.enclaveKeySSI;
-        let response
-        try {
-            response = await fetch(`${window.location.origin}/doMigration`, {
-                body: JSON.stringify({epiEnclaveKeySSI: enclaveKeySSI}),
-                method: "PUT",
-                headers: {"Content-Type": "application/json"}
-            });
-        } catch (e) {
-            notificationHandler.reportUserRelevantError(`Failed to migrate Access Control Mechanisms.`);
-            return;
-        }
-        if (response.status !== 200) {
-            console.log(response.statusText);
-            notificationHandler.reportUserRelevantError(`Failed to migrate Access Control Mechanisms.`);
-            return;
-        }
-    } catch (e) {
-        console.log(e);
-        notificationHandler.reportUserRelevantError(`Failed to migrate Access Control Mechanisms.`);
-        return;
-    }
-
-    async function assignAccessToGroups(sharedEnclave) {
-        await associateGroupAccess(sharedEnclave, constants.WRITE_ACCESS_MODE);
-        await associateGroupAccess(sharedEnclave, constants.READ_ONLY_ACCESS_MODE);
-    }
-
-    await assignAccessToGroups(sharedEnclave);
-}
-
-async function doMigration(sharedEnclave, force = false) {
-    function showMigrationDialog() {
-        // Check if the dialog already exists
-        let dialog = document.getElementById('migrationDialog');
-        if (!dialog) {
-            dialog = document.createElement('div');
-            dialog.id = 'migrationDialog';
-            dialog.style.position = 'fixed';
-            dialog.style.left = '0';
-            dialog.style.top = '0';
-            dialog.style.width = '100%';
-            dialog.style.height = '100%';
-            dialog.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-            dialog.style.zIndex = '1000';
-            dialog.style.display = 'flex';
-            dialog.style.justifyContent = 'center';
-            dialog.style.alignItems = 'center';
-            dialog.style.color = 'black';
-            dialog.innerHTML = '<div style="padding: 40px; background: #FFF;">Migration is in progress, please wait...</div>';
-            document.body.appendChild(dialog);
-        } else {
-            dialog.style.display = 'flex';
-        }
-    }
-
-    // Function to hide the migration dialog
-    function hideMigrationDialog() {
-        const dialog = document.getElementById('migrationDialog');
-        if (dialog) {
-            dialog.style.display = 'none';
-        }
-    }
-
-    if (!sharedEnclave) {
-        sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
-    }
-    if (force) {
-        await migrateData(sharedEnclave);
-    }
-    let response = await fetch(`${window.location.origin}/getMigrationStatus`);
-    if (response.status !== 200) {
-        throw new Error(`Failed to check migration status. HTTP status: ${response.status}`);
-    }
-
-    let migrationStatus = await response.text();
-
-    if (migrationStatus === constants.MIGRATION_STATUS.NOT_STARTED) {
-        await migrateData(sharedEnclave);
-    }
-
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    response = await fetch(`${window.location.origin}/getMigrationStatus`);
-    if (response.status !== 200) {
-        throw new Error(`Failed to check migration status. HTTP status: ${response.status}`);
-    }
-
-    migrationStatus = await response.text();
-
-    if (migrationStatus === constants.MIGRATION_STATUS.IN_PROGRESS) {
-        showMigrationDialog();
-    }
-
-    while (migrationStatus === constants.MIGRATION_STATUS.IN_PROGRESS) {
-        await delay(10000);
-
-        response = await fetch(`${window.location.origin}/getMigrationStatus`);
-        if (response.status !== 200) {
-            throw new Error(`Failed to recheck migration status. HTTP status: ${response.status}`);
-        }
-        migrationStatus = await response.text();
-
-        if (migrationStatus === constants.MIGRATION_STATUS.COMPLETED) {
-            hideMigrationDialog();
-            notificationHandler.reportUserRelevantInfo(`Migration of Access Control Mechanisms successfully executed !`);
-            return;
-        }
-
-        if (migrationStatus === constants.MIGRATION_STATUS.FAILED) {
-            hideMigrationDialog();
-            notificationHandler.reportUserRelevantError(`Failed to migrate Access Control Mechanisms.`);
-            return;
-        }
-    }
-}
-
 export default {
     getSorUserId,
     getSharedEnclaveKey,
@@ -291,5 +153,6 @@ export default {
     setSysadminCreated,
     getBreakGlassRecoveryCode,
     getPKFromContent,
-    getUserIdFromUsername
+    getUserIdFromUsername,
+    setEpiEnclave
 }
