@@ -7,7 +7,7 @@ export class AuditPage {
 
     beforeRender() {
         if (!this.tab) {
-            this.tab = `<demiurge-access-logs data-presenter="demiurge-access-logs"></demiurge-access-logs>`;
+            this.tab = `<action-logs data-presenter="demiurge-access-logs"></action-logs>`;
         }
     }
 

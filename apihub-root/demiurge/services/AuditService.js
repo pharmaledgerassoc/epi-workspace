@@ -112,6 +112,7 @@ class AuditService {
             payload: {
                 userDID: did,
                 userGroup: constants.EPI_ADMIN_GROUP,
+                action: constants.AUDIT_OPERATIONS.USER_ACCESS
             }
         }
         await this.addAuditLog(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails)

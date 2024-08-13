@@ -45,7 +45,8 @@ export default {
         SHARED_ENCLAVE_CREATE: "Create identity ",
         BREAK_GLASS_RECOVERY: "Wallet recovered with The Break Glass Recovery Code",
         AUTHORIZE: "Authorize integration user",
-        REVOKE: "Revoke integration user"
+        REVOKE: "Revoke integration user",
+        USER_ACCESS: "Wallet access"
     },
     SHARED_ENCLAVE: "demiurgeSharedEnclave",
     ADMIN_ACCESS_MODE: "admin",
