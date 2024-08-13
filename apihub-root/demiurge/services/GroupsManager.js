@@ -316,8 +316,14 @@ class GroupsManager {
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(`Failed to fetch groups`);
         }
+        if (groups.length > 0) {
+            groups.forEach(group => {
+                if (!group.id) {
+                    group.id = group.name.replaceAll(" ", "_");
+                }
+            });
+        }
         return groups;
-
     }
 
     async getGroup(groupId) {
