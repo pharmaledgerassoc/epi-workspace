@@ -3,10 +3,12 @@ import constants from "./constants.js";
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
 const w3cdid = openDSU.loadAPI("w3cdid");
-
+const notificationHandler = openDSU.loadAPI("error");
+const crypto = openDSU.loadAPI("crypto");
 const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
+
 const getSharedEnclaveKey = async (key) => {
     const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
     let record;
@@ -291,4 +293,3 @@ export default {
     getPKFromContent,
     getUserIdFromUsername
 }
-

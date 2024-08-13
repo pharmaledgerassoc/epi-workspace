@@ -14,6 +14,7 @@ const keySSISpace = openDSU.loadAPI("keyssi");
 const resolver = openDSU.loadAPI("resolver");
 const systemAPI = openDSU.loadApi("system");
 const crypto = openDSU.loadAPI("crypto");
+const notificationHandler = openDSU.loadAPI("error");
 
 const DEFAULT_PIN = "1qaz";
 
@@ -246,10 +247,10 @@ function getWalletSecretsArray(encryptedSSOSecret) {
     return [getSSODetectedId(), getSSOUserId(), ssoSecret, env.appName];
 }
 
-async function loadWallet() {
+async function loadWallet(encryptedSSOSecret) {
     let resolver = require("opendsu").loadApi("resolver");
     let keyssi = require("opendsu").loadApi("keyssi");
-    let walletSSI = keyssi.createTemplateWalletSSI(env.vaultDomain, getWalletSecretsArray(this.encryptedSSOSecret));
+    let walletSSI = keyssi.createTemplateWalletSSI(env.vaultDomain, getWalletSecretsArray(encryptedSSOSecret));
     const constDSU = await $$.promisify(resolver.loadDSU)(walletSSI);
     return constDSU.getWritableDSU();
 }
@@ -292,7 +293,7 @@ class AppManager {
 
         const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`, deriveEncryptionKey(this.encryptedSSOSecret));
         try {
-            const dsu = await loadWallet();
+            const dsu = await loadWallet(this.encryptedSSOSecret);
             let envJson = await dsu.readFileAsync("environment.json");
             envJson = JSON.parse(envJson);
             console.log(envJson);
@@ -300,8 +301,11 @@ class AppManager {
             env.enclaveKeySSI = envJson.enclaveKeySSI;
             env.enclaveType = envJson.enclaveType;
             env.enclaveDID = envJson.enclaveDID;
+            debugger
+            this.previousVersionWalletFound = true;
         } catch (e) {
             // No previous version wallet found
+            console.log(e);
         }
 
         let mainDSU;
@@ -371,10 +375,14 @@ class AppManager {
         const mainDID = await scAPI.getMainDIDAsync();
 
         const healDID = async (didIdentifier) => {
+            debugger
             try {
                 didDocument = await $$.promisify(w3cDID.resolveDID)(didIdentifier);
                 // try to sign with the DID to check if it's valid
                 await $$.promisify(didDocument.sign)("test");
+                if (this.previousVersionWalletFound) {
+                    shouldPersist = true;
+                }
             } catch (e) {
                 console.log(`Failed to resolve DID. Error: ${e.message}`)
                 let response = await fetch(`${window.location.origin}/resetUserDID/${vaultDomain}`, {method: "DELETE"});
@@ -385,7 +393,7 @@ class AppManager {
                     let mainEnc = await $$.promisify(scAPI.getMainEnclave)();
                     let keyS = await $$.promisify(mainEnc.getKeySSI)();
                     console.log(keyS.getIdentifier());
-                    didDocument = await $$.promisify(w3cDID.createIdentity)("ssi:name", vaultDomain, userId);
+                    didDocument = await $$.promisify(mainEnc.createIdentity)("ssi:name", vaultDomain, userId);
                     shouldPersist = true;
                     this.walletJustCreated = true;
                 } catch (e) {
@@ -407,7 +415,6 @@ class AppManager {
         await this.oneTimeSetup(this.walletJustCreated);
         if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
-            await $$.promisify(webSkel.demiurgeSorClient.doDemiurgeMigration)();
             await firstOrRecoveryAdminToAdministrationGroup(didDocument, userDetails);
             await autoAuthorization(didDocument);
         }
@@ -418,12 +425,18 @@ class AppManager {
 //fourth phase... get access
     getWalletAccess = async (sourcePage) => {
         await webSkel.showLoading();
-        let did = await getStoredDID();
-        if (!did) {
-            webSkel.notificationHandler.reportUserRelevantInfo(`Identity was not created yet. Let's go and create one.`);
-            return await webSkel.changeToDynamicPage("booting-identity-page", "booting-identity-page");
-        }
+        let did;
+        if (this.previousVersionWalletFound) {
+            const userDetails = await utils.getUserDetails();
+            did = await this.createIdentity(userDetails);
+        } else {
+            did = await getStoredDID();
 
+            if (!did) {
+                webSkel.notificationHandler.reportUserRelevantInfo(`Identity was not created yet. Let's go and create one.`);
+                return await webSkel.changeToDynamicPage("booting-identity-page", "booting-identity-page");
+            }
+        }
         try {
             /*if (this.sourcePage === "#landing-page" || this.sourcePage === "#generate-did-page") {
                 this.sourcePage = "#home-page";
@@ -437,6 +450,7 @@ class AppManager {
                 //ignore for now...
             }
             getPermissionsWatcher(did, async () => {
+                await this.doDemiurgeMigration();
                 await AuditService.getInstance().addAccessLog(did);
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
             }, credential);
@@ -488,6 +502,90 @@ class AppManager {
 
     async getDID() {
         return await getStoredDID();
+    }
+
+    async migrateData() {
+        const sharedEnclave = await getSharedEnclave();
+        const sharedEnclaveKeySSI = await $$.promisify(sharedEnclave.getKeySSI)();
+        await $$.promisify(webSkel.demiurgeSorClient.doDemiurgeMigration)(sharedEnclaveKeySSI);
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    showMigrationDialog() {
+        // Check if the dialog already exists
+        let dialog = document.getElementById('migrationDialog');
+        if (!dialog) {
+            dialog = document.createElement('div');
+            dialog.id = 'migrationDialog';
+            dialog.style.position = 'fixed';
+            dialog.style.left = '0';
+            dialog.style.top = '0';
+            dialog.style.width = '100%';
+            dialog.style.height = '100%';
+            dialog.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            dialog.style.zIndex = '1000';
+            dialog.style.display = 'flex';
+            dialog.style.justifyContent = 'center';
+            dialog.style.alignItems = 'center';
+            dialog.style.color = 'black';
+            dialog.innerHTML = '<div style="padding: 40px; background: #FFF;">Migration is in progress, please wait...</div>';
+            document.body.appendChild(dialog);
+        } else {
+            dialog.style.display = 'flex';
+        }
+    }
+
+    hideMigrationDialog() {
+        const dialog = document.getElementById('migrationDialog');
+        if (dialog) {
+            dialog.style.display = 'none';
+        }
+    }
+
+    async waitForMigration() {
+        let migrationStatus = await $$.promisify(webSkel.demiurgeSorClient.getDemiurgeMigrationStatus)();
+        while (migrationStatus === constants.MIGRATION_STATUS.IN_PROGRESS) {
+            await this.delay(10000);
+            migrationStatus = await $$.promisify(webSkel.demiurgeSorClient.getDemiurgeMigrationStatus)();
+
+            if (migrationStatus === constants.MIGRATION_STATUS.COMPLETED) {
+                this.hideMigrationDialog();
+                notificationHandler.reportUserRelevantInfo(`Migration of Access Control Mechanisms successfully executed !`);
+                return;
+            }
+
+            if (migrationStatus === constants.MIGRATION_STATUS.FAILED) {
+                this.hideMigrationDialog();
+                notificationHandler.reportUserRelevantError(`Failed to migrate Access Control Mechanisms.`);
+                return;
+            }
+        }
+    }
+
+    async doDemiurgeMigration() {
+        let migrationStatus = await $$.promisify(webSkel.demiurgeSorClient.getDemiurgeMigrationStatus)();
+
+        if (migrationStatus === constants.MIGRATION_STATUS.IN_PROGRESS) {
+            this.showMigrationDialog();
+            await this.waitForMigration();
+            return;
+        }
+
+        if (migrationStatus === constants.MIGRATION_STATUS.NOT_STARTED) {
+            await this.migrateData(sharedEnclave);
+        }
+
+
+        migrationStatus = await $$.promisify(webSkel.demiurgeSorClient.getDemiurgeMigrationStatus)();
+
+        if (migrationStatus === constants.MIGRATION_STATUS.IN_PROGRESS) {
+            this.showMigrationDialog();
+        }
+
+        await this.waitForMigration();
     }
 }
 
