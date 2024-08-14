@@ -732,6 +732,7 @@ class AppManager {
                 await doDemiurgeMigration();
                 await doDSUFabricMigration();
                 await AuditService.getInstance().addAccessLog(did);
+                document.querySelector("sidebar-menu").style.display = "flex";
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
             }, credential);
         } catch (err) {
