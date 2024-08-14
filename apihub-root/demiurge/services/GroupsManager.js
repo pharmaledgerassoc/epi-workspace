@@ -148,8 +148,6 @@ class GroupsManager {
         const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
         let newMember = {did: memberDID, username: memberDIDDocument.getName()}
         const apiKeyClient = apiKeyAPI.getAPIKeysClient();
-        const mainDSU = await $$.promisify(scAPI.getMainDSU)();
-        await $$.promisify(mainDSU.refresh)();
         const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
         const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
 
