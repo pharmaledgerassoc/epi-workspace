@@ -1,5 +1,0 @@
-{
-  "scripts": {
-    "build": "node ./../node_modules/octopus/scripts/buildDSU.js --bundles=./../opendsu-sdk/builds/output"
-  }
-}

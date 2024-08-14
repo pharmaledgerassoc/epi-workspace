@@ -1,120 +1,5 @@
 {
     "workDir": ".",
-    "epi-ssapps-and-wallets": [
-        {
-            "name": "webcardinal/bundle",
-            "src": "https://github.com/webcardinal/webcardinal-minimal-release",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd webcardinal && npm install"
-                }
-            ]
-        },
-        {
-            "name": "dsu-fabric-ssapp",
-            "src": "https://github.com/${GITHUB_ORGANIZATION}/dsu-fabric-ssapp.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd dsu-fabric-ssapp && npm install"
-                }
-            ]
-        },
-        {
-            "name": "demiurge",
-            "src": "https://github.com/${GITHUB_ORGANIZATION}/demiurge.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd demiurge && npm install"
-                }
-            ]
-        },
-        {
-            "name": "apihub-root/demiurge-wallet/loader",
-            "src": "http://github.com/opendsu/trust-loader.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd apihub-root/demiurge-wallet/loader && npm install"
-                },
-                {
-                    "type": "copy",
-                    "src": "apihub-root/demiurge-wallet/loader/loader-config.local.json-template",
-                    "target": "apihub-root/demiurge-wallet/loader/loader-config.local.json",
-                    "options": {
-                        "overwrite": true
-                    }
-                }
-            ]
-        },
-        {
-            "name": "apihub-root/dsu-fabric-wallet/loader",
-            "src": "http://github.com/opendsu/trust-loader.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd apihub-root/dsu-fabric-wallet/loader && npm install"
-                }
-            ]
-        },
-        {
-            "name": "trust-loader-config",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js patch\""
-                }
-            ]
-        },
-        {
-            "name": "copy-bundles",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "cd apihub-root/dsu-fabric-wallet/loader && npm install"
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd apihub-root/demiurge-wallet/loader && npm install"
-                },
-                {
-                    "type": "copy",
-                    "src": "./opendsu-sdk/builds/output/loaderBoot.js",
-                    "target": "./apihub-root/bundles/loaderBoot.js",
-                    "options": {
-                        "overwrite": true
-                    }
-                }
-            ]
-        }
-    ],
     "dependencies": [
         {
             "name": "opendsu-sdk",
@@ -286,6 +171,121 @@
                     "type": "copy",
                     "src": "./gtin-resolver/build/bundles/gtinResolver.js",
                     "target": "./apihub-root/demiurge/bundles/gtinResolver.js",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        }
+    ],
+    "epi-ssapps-and-wallets": [
+        {
+            "name": "webcardinal/bundle",
+            "src": "https://github.com/webcardinal/webcardinal-minimal-release",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd webcardinal && npm install"
+                }
+            ]
+        },
+        {
+            "name": "dsu-fabric-ssapp",
+            "src": "https://github.com/${GITHUB_ORGANIZATION}/dsu-fabric-ssapp.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd dsu-fabric-ssapp && npm install"
+                }
+            ]
+        },
+        {
+            "name": "demiurge",
+            "src": "https://github.com/${GITHUB_ORGANIZATION}/demiurge.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd demiurge && npm install"
+                }
+            ]
+        },
+        {
+            "name": "apihub-root/demiurge-wallet/loader",
+            "src": "http://github.com/opendsu/trust-loader.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd apihub-root/demiurge-wallet/loader && npm install"
+                },
+                {
+                    "type": "copy",
+                    "src": "apihub-root/demiurge-wallet/loader/loader-config.local.json-template",
+                    "target": "apihub-root/demiurge-wallet/loader/loader-config.local.json",
+                    "options": {
+                        "overwrite": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "apihub-root/dsu-fabric-wallet/loader",
+            "src": "http://github.com/opendsu/trust-loader.git",
+            "actions": [
+                {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd apihub-root/dsu-fabric-wallet/loader && npm install"
+                }
+            ]
+        },
+        {
+            "name": "trust-loader-config",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js patch\""
+                }
+            ]
+        },
+        {
+            "name": "copy-bundles",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd apihub-root/dsu-fabric-wallet/loader && npm install"
+                },
+                {
+                    "type": "execute",
+                    "cmd": "cd apihub-root/demiurge-wallet/loader && npm install"
+                },
+                {
+                    "type": "copy",
+                    "src": "./opendsu-sdk/builds/output/loaderBoot.js",
+                    "target": "./apihub-root/bundles/loaderBoot.js",
                     "options": {
                         "overwrite": true
                     }
