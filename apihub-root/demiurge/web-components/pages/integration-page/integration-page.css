@@ -1,0 +1,25 @@
+integration-page {
+    display: block;
+    height: 100%;
+    padding: 40px 28px;
+}
+
+.integration-form {
+    margin-top: 15px;
+}
+
+.integration-form.authorize {
+    display: none;
+}
+
+.authorization-success-section {
+    margin-top: 15px;
+}
+
+.authorization-success-section.revoke-authorisation {
+    display: none;
+}
+
+.bottom-margin {
+    margin-bottom: 15px;
+}

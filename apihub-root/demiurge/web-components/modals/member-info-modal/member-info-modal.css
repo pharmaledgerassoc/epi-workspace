@@ -1,0 +1,117 @@
+dialog {
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    width: fit-content;
+    min-width: 900px;
+    max-width: 80vw;
+    min-height: 300px;
+}
+
+#modal-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    padding: 0 20px 20px;
+}
+
+#modal-header {
+    display: flex;
+    font-size: 1.3rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#modal-body {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0;
+    gap: 1.5rem;
+}
+
+#modal-exit {
+    display: flex;
+    align-items: center;
+}
+
+#close-modal-icon {
+    width: 24px;
+    height: 24px;
+}
+
+#member-page-container {
+    display: flex;
+    flex-direction: column;
+    padding: 35px 28px 0 28px;
+}
+
+#member-page-body {
+    width: 100%;
+    display: flex;
+    margin-top: 20px;
+    flex-direction: column;
+    gap: 28px;
+}
+
+#member-label {
+    margin: 0
+}
+
+.member-page-data-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 28px;
+}
+
+.member-page-data-row-field {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.data-row-field-value {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    border: 1px solid var(--dw-app-color);
+    background: #FFF;
+    font-size: 1rem;
+    height: 2.5rem;
+    flex: 1 1 auto;
+    justify-content: start;
+    position: relative;
+    width: 100%;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: 150ms color, 150ms border, 150ms box-shadow;
+    cursor: text;
+    padding: 0 0 0 1rem;
+    color: black;
+}
+
+.value-highlight-field {
+    color: var(--dw-app-color);
+    display: flex;
+    justify-content: space-between;
+    padding-right: 1rem;
+}
+
+.copy-field-button {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.copy-field-button:hover {
+    cursor: pointer;
+}
+
+#groupDID, #userDID {
+    border: none;
+    background: none;
+    color: var(--dw-app-color);
+    width: 100%;
+}

@@ -1,0 +1,240 @@
+@import url('./assets/fonts/fontawesome/font-awesome.min.css');
+
+
+/* dm-sans-regular - latin-ext_latin */
+@font-face {
+    font-family: 'DM Sans regular';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+    url('./assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */ url('../assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* dm-sans-500 - latin-ext_latin */
+@font-face {
+    font-family: 'DM Sans medium';
+    font-style: normal;
+    font-weight: 500;
+    src: local(''),
+    url('./assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-500.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */ url('../assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+/* dm-sans-700 - latin-ext_latin */
+@font-face {
+    font-family: 'DM Sans bold';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''),
+    url('./assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-700.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */ url('../assets/fonts/DM_Sans/dm-sans-v11-latin-ext_latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+:root {
+    --webc-primary-color: rgb(var(--sl-color-neutral-0));
+    --default-font-family: 'DM Sans regular', sans-serif;
+    --dw-menu-width: 250px;
+    --dw-container-width: 1000px;
+
+    --sl-z-index-dialog: 1000 !important;
+    --sl-z-index-toast: 1001 !important;
+    --tab-color: #9ACFBD;
+    --table-header: #92D3BD61;
+    --table-header-grey: #D6D6D661;
+    --grey-text: #565759;
+    --very-light-grey: #dee2e6;
+    --highlight-green: #28a745;
+    --dw-app-color: #328569;
+    --grey-white-border: #F4F4F4;
+    --dw-app-disabled-color: #AAAFAE;
+    --dw-active-item-color: #FFFFFF;
+    --dw-inactive-item-color: #92D3BD;
+    --dw-custom-default-color-100: rgba(1, 1, 1, 1);
+    --dw-custom-default-color-015: rgba(1, 1, 1, 0.15);
+    --dw-custom-primary-color-100: rgba(47, 128, 237, 1);
+    --dw-custom-primary-color-015: rgba(47, 128, 237, 0.15);
+    --dw-custom-success-color-100: rgba(39, 174, 96, 1);
+    --dw-custom-success-color-015: rgba(39, 174, 96, 0.15);
+    --dw-custom-danger-color-100: rgba(210, 13, 13, 1);
+    --dw-custom-danger-color-015: rgba(210, 13, 13, 0.15);
+    --dw-custom-warning-color-100: rgba(198, 155, 24, 1);
+    --dw-custom-warning-color-015: rgba(198, 155, 24, 0.15);
+
+    /* New Variables */
+    --members-background: rgb(244,244,245);
+    --member-border: rgb(228,228,231);
+    --enabled-button-highlight:rgb(3,150,101);
+    --default-border-radius: 5px;
+    --disabled-background: rgb(142 153 149);
+    --disabled-border: rgb(214 214 214);
+    --disabled-text: rgb(0, 0, 0);
+    --white: rgb(255,255,255);
+}
+*{
+    box-sizing: border-box;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    font-family: var(--default-font-family);
+    margin: 0;
+    height: 100%;
+    display: flex;
+}
+.page-header{
+    color: var(--dw-custom-default-color-100);
+    font-size: 28px;
+    font-weight: 700;
+}
+*::-webkit-scrollbar {
+    display: none;
+}
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;  /* Chrome, Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* Internet Explorer/Edge */
+}
+/*forms*/
+.form-item{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+.form-input{
+    height: 41px;
+    width: 450px;
+    border: 1px solid var(--dw-app-color);
+    padding: 10px;
+    border-radius: var(--default-border-radius);
+    font-size: 14px;
+}
+.form-label{
+    margin-bottom: 8px;
+}
+.default-button{
+    font-size: 17px;
+    background-color: var(--dw-app-color);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: var(--default-border-radius);
+    cursor: pointer;
+}
+.default-button.disabled {
+    cursor: initial;
+    background-color: var(--very-light-grey);
+}
+#page-content {
+    --background: #FFFFFF;
+    height: 100%;
+    width: 100%;
+}
+.hidden{
+    display: none;
+}
+.toast-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 40%;
+    right: 0;
+    align-items: end;
+    padding: 10px;
+    background: none;
+    pointer-events: none;
+}
+dialog {
+    padding: 0;
+    outline: none !important;
+    position: relative;
+    border: none;
+}
+dialog[class="spinner"] {
+    border: none;
+    background: none;
+    overflow: hidden;
+    width: min-content;
+    height: min-content;
+}
+.spinner-container {
+    border-radius: 50%;
+    border: none;
+    padding: 5px;
+    background-color: white;
+}
+
+.spin {
+    width: 30px;
+    aspect-ratio: 1;
+    display: grid;
+    -webkit-mask-image: conic-gradient(from 15deg, #0000, #000);
+    animation: l26 1s infinite steps(12);
+}
+
+.spin,
+.spin:before,
+.spin:after {
+    background: radial-gradient(closest-side at 50% 12.5%,
+    #488ffe 96%, #0000) 50% 0/20% 80% repeat-y,
+    radial-gradient(closest-side at 12.5% 50%,
+            #488FFEFF 96%, #0000) 0 50%/80% 20% repeat-x;
+}
+
+.spin:before,
+.spin:after {
+    content: "";
+    grid-area: 1/1;
+    transform: rotate(30deg);
+}
+
+.spin:after {
+    transform: rotate(60deg);
+}
+
+@keyframes l26 {
+    100% {
+        transform: rotate(1turn)
+    }
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
+}
+*[disabled_feature] {
+    display: none !important;
+}
+
+input:focus {
+    outline: none;
+}
+
+.toast-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 40%;
+    right: 0;
+    align-items: end;
+    padding: 10px;
+    background: none;
+    pointer-events: none;
+}
+.remove-bold{
+    font-weight: normal;
+}
+.pointer{
+    cursor: pointer;
+}
+
