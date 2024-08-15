@@ -5,100 +5,13 @@ import utils from "../utils.js";
 const openDSU = require("opendsu");
 const scAPI = openDSU.loadAPI("sc");
 const resolver = openDSU.loadAPI("resolver");
-const enclaveAPI = openDSU.loadAPI("enclave");
-
-//recovery arg is used to determine if the enclave is created for the first time or a recovery is performed
-async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
-    const enclaveDB = await $$.promisify(scAPI.getMainEnclave)();
-    if (recovery) {
-        try {
-            await $$.promisify(resolver.loadDSU)(keySSI);
-        } catch (e) {
-            await $$.promisify(resolver.createDSUForExistingSSI)(keySSI);
-        }
-    }
-    let enclave;
-    try {
-        enclave = enclaveAPI.initialiseWalletDBEnclave(keySSI);
-
-        function waitForEnclaveInitialization() {
-            return new Promise((resolve) => {
-                enclave.on("initialised", resolve)
-            })
-        }
-
-        await waitForEnclaveInitialization();
-    } catch (e) {
-        throw e
-    }
-
-    const enclaveDID = await $$.promisify(enclave.getDID)();
-    let enclaveKeySSI = await $$.promisify(enclave.getKeySSI)();
-    enclaveKeySSI = enclaveKeySSI.getIdentifier();
-    let tables = Object.keys(enclaveConfig.enclaveIndexesMap);
-    let bID;
-
-    try {
-        bID = await enclave.startOrAttachBatchAsync();
-    } catch (e) {
-        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to begin batch on enclave: ', e)
-    }
-    for (let dbTableName of tables) {
-        for (let indexField of enclaveConfig.enclaveIndexesMap[dbTableName]) {
-            try {
-                await $$.promisify(enclave.addIndex)(null, dbTableName, indexField)
-            } catch (e) {
-                const addIndexError = createOpenDSUErrorWrapper(`Failed to add index ${indexField} on table ${dbTableName}`, e);
-                try {
-                    await enclave.cancelBatchAsync(bID);
-                } catch (error) {
-                    return webSkel.notificationHandler.reportUserRelevantWarning('Failed to cancel batch on enclave: ', error, addIndexError)
-                }
-                return webSkel.notificationHandler.reportUserRelevantWarning('Failed to add index on enclave: ', addIndexError);
-            }
-        }
-    }
-
-    try {
-        await enclave.commitBatchAsync(bID);
-    } catch (e) {
-        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
-    }
-
-    if (enclaveConfig.enclaveName.indexOf("demiurge") !== -1) {
-        await $$.promisify(scAPI.setSharedEnclave)(enclave);
-    }
-
-    const enclaveRecord = {
-        enclaveType: enclaveConfig.enclaveType,
-        enclaveDID,
-        enclaveKeySSI,
-        enclaveName: enclaveConfig.enclaveName
-    };
-
-    debugger
-    let batchId = await enclaveDB.startOrAttachBatchAsync();
-    await enclaveDB.writeKeyAsync(enclaveConfig.enclaveName, enclaveRecord);
-    await enclaveDB.insertRecordAsync(constants.TABLES.GROUP_ENCLAVES, enclaveRecord.enclaveDID, enclaveRecord);
-    await enclaveDB.commitBatchAsync(batchId);
-
-    if (enclaveConfig.enclaveName.indexOf("epiEnclave") !== -1) {
-        const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
-        const batchId = await sharedEnclave.startOrAttachBatchAsync();
-        await utils.setEpiEnclave(enclaveRecord);
-        await sharedEnclave.commitBatchAsync(batchId);
-    }
-
-    return enclaveRecord;
-}
 
 async function createEnclave(enclaveData) {
-
     const vaultDomain = await $$.promisify(scAPI.getVaultDomain)();
     const dsu = await $$.promisify(resolver.createSeedDSU)(vaultDomain);
     const keySSI = await $$.promisify(dsu.getKeySSIAsString)();
 
-    await initSharedEnclave(keySSI, enclaveData);
+    await utils.initSharedEnclave(keySSI, enclaveData);
 }
 
 let didDomain;

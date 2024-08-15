@@ -206,11 +206,9 @@ async function putSSOSecret() {
     const url = `${systemAPI.getBaseURL()}/putSSOSecret/${env.appName}`;
     try {
         await fetch(url, {
-            method: "PUT",
-            headers: {
+            method: "PUT", headers: {
                 "Content-Type": "application/json",
-            },
-            body: JSON.stringify(putData)
+            }, body: JSON.stringify(putData)
         });
     } catch (e) {
         console.log(e);
@@ -406,15 +404,9 @@ async function associateGroupAccess(sharedEnclave, groupType) {
     for (let member in members) {
         const memberObject = members[member];
         const apiKey = {
-            scope: groupType,
-            secret: crypto.sha256JOSE(crypto.generateRandom(32), "base64")
+            scope: groupType, secret: crypto.sha256JOSE(crypto.generateRandom(32), "base64")
         };
-        await apiKeyClient.associateAPIKey(
-            constants.APPS.DSU_FABRIC,
-            constants.API_KEY_NAME,
-            utils.getUserIdFromUsername(memberObject.username),
-            JSON.stringify(apiKey)
-        );
+        await apiKeyClient.associateAPIKey(constants.APPS.DSU_FABRIC, constants.API_KEY_NAME, utils.getUserIdFromUsername(memberObject.username), JSON.stringify(apiKey));
     }
 }
 
@@ -434,8 +426,7 @@ async function migrateDSUFabricData(sharedEnclave) {
             const sysadminSecret = await utils.getBreakGlassRecoveryCode();
             const apiKey = crypto.sha256JOSE(crypto.generateRandom(32), "base64");
             const body = {
-                secret: sysadminSecret,
-                apiKey
+                secret: sysadminSecret, apiKey
             }
             await apiKeyClient.becomeSysAdmin(JSON.stringify(body));
             await utils.setSysadminCreated(true);
@@ -795,5 +786,5 @@ function getInstance() {
     return instance;
 }
 
-export default {getInstance};
+export default {getInstance, doDemiurgeMigration, doDSUFabricMigration, getStoredDID};
 

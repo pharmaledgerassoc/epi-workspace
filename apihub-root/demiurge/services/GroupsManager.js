@@ -136,7 +136,6 @@ class GroupsManager {
         const crypto = openDSU.loadAPI("crypto");
         const apiKeyAPI = openDSU.loadAPI("apiKey");
         const allMembers = await this.getAllMembers();
-        debugger
         let alreadyExists = allMembers.find(arrMember => arrMember.did === memberDID)
         if (alreadyExists) {
             throw new Error("Member already registered in a group!");

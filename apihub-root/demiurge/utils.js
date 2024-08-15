@@ -6,6 +6,9 @@ const w3cdid = openDSU.loadAPI("w3cdid");
 const notificationHandler = openDSU.loadAPI("error");
 const crypto = openDSU.loadAPI("crypto");
 const config = openDSU.loadAPI("config");
+const resolver = openDSU.loadAPI("resolver");
+const enclaveAPI = openDSU.loadAPI("enclave");
+
 const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
@@ -25,6 +28,17 @@ async function setEpiEnclave(enclaveRecord) {
     const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
     await sharedEnclave.writeKeyAsync(constants.EPI_SHARED_ENCLAVE, enclaveRecord);
     await $$.promisify(config.setEnv)(constants.EPI_SHARED_ENCLAVE, enclaveRecord.enclaveKeySSI);
+}
+
+async function getEpiEnclave() {
+    const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+    let enclaveRecord;
+    try {
+        enclaveRecord = await sharedEnclave.readKeyAsync(constants.EPI_SHARED_ENCLAVE);
+    } catch (e) {
+        // ignore
+    }
+    return enclaveRecord;
 }
 
 const detectCurrentPage = () => {
@@ -141,6 +155,90 @@ function getPKFromContent(stringContent) {
     return crypto.sha256(stringContent);
 }
 
+//recovery arg is used to determine if the enclave is created for the first time or a recovery is performed
+async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
+    const enclaveDB = await $$.promisify(scAPI.getMainEnclave)();
+    if (recovery) {
+        try {
+            await $$.promisify(resolver.loadDSU)(keySSI);
+        } catch (e) {
+            await $$.promisify(resolver.createDSUForExistingSSI)(keySSI);
+        }
+    }
+    let enclave;
+    try {
+        enclave = enclaveAPI.initialiseWalletDBEnclave(keySSI);
+
+        function waitForEnclaveInitialization() {
+            return new Promise((resolve) => {
+                enclave.on("initialised", resolve)
+            })
+        }
+
+        await waitForEnclaveInitialization();
+    } catch (e) {
+        throw e
+    }
+
+    const enclaveDID = await $$.promisify(enclave.getDID)();
+    let enclaveKeySSI = await $$.promisify(enclave.getKeySSI)();
+    enclaveKeySSI = enclaveKeySSI.getIdentifier();
+    let tables = Object.keys(enclaveConfig.enclaveIndexesMap);
+    let bID;
+
+    try {
+        bID = await enclave.startOrAttachBatchAsync();
+    } catch (e) {
+        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to begin batch on enclave: ', e)
+    }
+    for (let dbTableName of tables) {
+        for (let indexField of enclaveConfig.enclaveIndexesMap[dbTableName]) {
+            try {
+                await $$.promisify(enclave.addIndex)(null, dbTableName, indexField)
+            } catch (e) {
+                const addIndexError = createOpenDSUErrorWrapper(`Failed to add index ${indexField} on table ${dbTableName}`, e);
+                try {
+                    await enclave.cancelBatchAsync(bID);
+                } catch (error) {
+                    return webSkel.notificationHandler.reportUserRelevantWarning('Failed to cancel batch on enclave: ', error, addIndexError)
+                }
+                return webSkel.notificationHandler.reportUserRelevantWarning('Failed to add index on enclave: ', addIndexError);
+            }
+        }
+    }
+
+    try {
+        await enclave.commitBatchAsync(bID);
+    } catch (e) {
+        return webSkel.notificationHandler.reportUserRelevantWarning('Failed to commit batch on enclave: ', e)
+    }
+
+    if (enclaveConfig.enclaveName.indexOf("demiurge") !== -1) {
+        await $$.promisify(scAPI.setSharedEnclave)(enclave);
+    }
+
+    const enclaveRecord = {
+        enclaveType: enclaveConfig.enclaveType,
+        enclaveDID,
+        enclaveKeySSI,
+        enclaveName: enclaveConfig.enclaveName
+    };
+
+    let batchId = await enclaveDB.startOrAttachBatchAsync();
+    await enclaveDB.writeKeyAsync(enclaveConfig.enclaveName, enclaveRecord);
+    await enclaveDB.insertRecordAsync(constants.TABLES.GROUP_ENCLAVES, enclaveRecord.enclaveDID, enclaveRecord);
+    await enclaveDB.commitBatchAsync(batchId);
+
+    if (enclaveConfig.enclaveName.indexOf("epiEnclave") !== -1) {
+        const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+        const batchId = await sharedEnclave.startOrAttachBatchAsync();
+        await setEpiEnclave(enclaveRecord);
+        await sharedEnclave.commitBatchAsync(batchId);
+    }
+
+    return enclaveRecord;
+}
+
 export default {
     getSorUserId,
     getSharedEnclaveKey,
@@ -154,5 +252,7 @@ export default {
     getBreakGlassRecoveryCode,
     getPKFromContent,
     getUserIdFromUsername,
-    setEpiEnclave
+    setEpiEnclave,
+    getEpiEnclave,
+    initSharedEnclave
 }

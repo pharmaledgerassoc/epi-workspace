@@ -95,7 +95,6 @@ export class GroupsPage {
                 await this.getGroupData(this.selectedGroup.id)
             });
         } catch (e) {
-            debugger;
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
         this.changeButtonState("initial");
