@@ -39,15 +39,26 @@ export class BootingIdentityPage {
         });
     }
 
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async checkPermissionAndNavigate() {
         let appManager = AppManager.getInstance();
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
         if (await permissionWatcher.checkAccess()) {
+            if (this.waitingAccessModal) {
+                await webSkel.closeModal(this.waitingAccessModal);
+            }
             document.querySelector("sidebar-menu").style.display = "flex";
-         //   await AuditService.getInstance().addAccessLog();
+            //   await AuditService.getInstance().addAccessLog();
             appManager.getWalletAccess("groups-page");
         } else {
-            const waitingAccessModal = await webSkel.showModal("waiting-access-modal", true);
+            if (!this.waitingAccessModal) {
+                this.waitingAccessModal = await webSkel.showModal("waiting-access-modal", false);
+            }
+            // implement async delay function
+            await this.delay(10000);
             await this.checkPermissionAndNavigate();
         }
     }
