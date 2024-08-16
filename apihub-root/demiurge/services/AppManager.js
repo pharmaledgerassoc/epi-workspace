@@ -693,7 +693,7 @@ class AppManager {
     }
 
 //fourth phase... get access
-    getWalletAccess = async (sourcePage) => {
+    getWalletAccess = async (sourcePage="groups-page") => {
         await webSkel.showLoading();
         let did;
         if (this.previousVersionWalletFound) {
@@ -723,7 +723,6 @@ class AppManager {
                 await doDemiurgeMigration();
                 await doDSUFabricMigration();
                 await AuditService.getInstance().addAccessLog(did);
-                document.querySelector("sidebar-menu").style.display = "flex";
                 await webSkel.changeToDynamicPage(sourcePage, sourcePage);
             }, credential);
         } catch (err) {

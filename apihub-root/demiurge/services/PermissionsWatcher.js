@@ -63,7 +63,7 @@ class PermissionsWatcher {
 
   async checkAccessAndAct(){
     this.checkAccess().then( async (hasAccess)=>{
-      let unAuthorizedPages = ["booting-identity-page", "landing-page"];
+      let unAuthorizedPages = ["booting-identity-page", ""];
       let currentPage = window.location.hash.replace("#", "");
       if(hasAccess){
         if(unAuthorizedPages.indexOf(currentPage) !== -1) {

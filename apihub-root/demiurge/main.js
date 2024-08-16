@@ -6,6 +6,7 @@ import constants from "./constants.js";
 import utils from "./utils.js";
 import env from "./environment.js";
 import AuditService from "./services/AuditService.js";
+import {getPermissionsWatcher} from "./services/PermissionsWatcher.js";
 
 function registerGlobalActions() {
     async function closeModal(_target) {
@@ -101,14 +102,35 @@ function renderToast(message, type, timeoutValue = 15000) {
         webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
 
-    if (justCreated || !await appManager.didWasCreated()) {
+    let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
+    if (justCreated || !await appManager.didWasCreated() || !await permissionWatcher.checkAccess()) {
         presenterName = "booting-identity-page";
         currentPage = presenterName;
     } else {
-        await AuditService.getInstance().addAccessLog();
+        if (await permissionWatcher.checkAccess()) {
+            await AuditService.getInstance().addAccessLog();
+        }
     }
 
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
+
+    let originalPageChange = webSkel.changeToDynamicPage;
+    webSkel.changeToDynamicPage = function(...args){
+        try{
+            if(args[0]!=="booting-identity-page"){
+                document.querySelector("sidebar-menu").style.display = "flex";
+            }
+
+            //if better to close here any remaining dialogs before navigate to the requested page...
+            let dialogs = window.document.body.querySelectorAll("dialog");
+            for(let dialog of dialogs){
+                webSkel.closeModal(dialog);
+            }
+        }catch(err){
+            console.log(err);
+        }
+        originalPageChange.call(webSkel, ...args);
+    }
 
     await webSkel.changeToDynamicPage(presenterName, currentPage);
 })();

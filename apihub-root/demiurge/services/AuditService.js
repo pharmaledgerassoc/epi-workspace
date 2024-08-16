@@ -107,6 +107,10 @@ class AuditService {
     }
 
     async addAccessLog(did) {
+        if(this.auditSent){
+            //only one access log for each session !
+            return;
+        }
         did = did || await AppManager.getInstance().getDID();
         let auditDetails = {
             payload: {
@@ -115,7 +119,8 @@ class AuditService {
                 action: constants.AUDIT_OPERATIONS.USER_ACCESS
             }
         }
-        await this.addAuditLog(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails)
+        await this.addAuditLog(constants.AUDIT_LOG_TYPES.USER_ACCESS, auditDetails);
+        this.auditSent = true;
     }
 
     async addActionLog(action, userDID, group) {

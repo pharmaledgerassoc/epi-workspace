@@ -1,6 +1,5 @@
 import utils from "./../../../utils.js";
 import AppManager from "./../../../services/AppManager.js";
-import AuditService from "./../../../services/AuditService.js";
 import {getPermissionsWatcher} from "./../../../services/PermissionsWatcher.js";
 
 export class BootingIdentityPage {
@@ -44,22 +43,16 @@ export class BootingIdentityPage {
         let navigate = async () => {
             let currentState = utils.detectCurrentPage();
             if(currentState.currentPage !== "booting-identity-page") {
+                appManager.getWalletAccess(currentState.currentPage);
                 return ;
             }
-
-            if (this.waitingAccessModal) {
-                await webSkel.closeModal(this.waitingAccessModal);
-            }
-            document.querySelector("sidebar-menu").style.display = "flex";
             appManager.getWalletAccess("groups-page");
         }
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID(), navigate);
         if (await permissionWatcher.checkAccess()) {
             navigate();
         } else {
-            if (!this.waitingAccessModal) {
-                this.waitingAccessModal = await webSkel.showModal("waiting-access-modal", false);
-            }
+            await webSkel.showModal("waiting-access-modal", false);
             permissionWatcher.setupIntervalCheck();
         }
     }
