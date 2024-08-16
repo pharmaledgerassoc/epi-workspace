@@ -39,27 +39,28 @@ export class BootingIdentityPage {
         });
     }
 
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     async checkPermissionAndNavigate() {
         let appManager = AppManager.getInstance();
-        let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
-        if (await permissionWatcher.checkAccess()) {
+        let navigate = async () => {
+            let currentState = utils.detectCurrentPage();
+            if(currentState.currentPage !== "booting-identity-page") {
+                return ;
+            }
+
             if (this.waitingAccessModal) {
                 await webSkel.closeModal(this.waitingAccessModal);
             }
             document.querySelector("sidebar-menu").style.display = "flex";
-            //   await AuditService.getInstance().addAccessLog();
             appManager.getWalletAccess("groups-page");
+        }
+        let permissionWatcher = getPermissionsWatcher(await appManager.getDID(), navigate);
+        if (await permissionWatcher.checkAccess()) {
+            navigate();
         } else {
             if (!this.waitingAccessModal) {
                 this.waitingAccessModal = await webSkel.showModal("waiting-access-modal", false);
             }
-            // implement async delay function
-            await this.delay(10000);
-            await this.checkPermissionAndNavigate();
+            permissionWatcher.setupIntervalCheck();
         }
     }
 
