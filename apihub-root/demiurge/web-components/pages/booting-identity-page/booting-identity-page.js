@@ -65,7 +65,6 @@ export class BootingIdentityPage {
         _target.classList.add("disabled-btn");
         _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:18px; width: 18px; height: 18px;"></i>`;
         _target.classList.add("remove");
-        const initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
         let appManager = AppManager.getInstance();
 
         let identity;
@@ -74,8 +73,6 @@ export class BootingIdentityPage {
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to create identity", err);
         }
-        initialiseIdentityModal.close();
-        initialiseIdentityModal.remove();
         if (appManager.firstTimeAndFirstAdmin) {
             await webSkel.showModal("break-glass-recovery-code-modal", true);
             //  await webSkel.changeToDynamicPage("groups-page");
