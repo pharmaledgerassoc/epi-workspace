@@ -2,6 +2,8 @@ import utils from "../utils.js";
 import constants from "../constants.js";
 import AuditService from "./AuditService.js";
 import AppManager from "./AppManager.js";
+const openDSU = require("opendsu");
+const crypto = openDSU.loadAPI("crypto");
 
 class IntegrationAuthorizationManager {
     async authorize(clientId, scope, clientSecret, tokenEndpoint) {
@@ -76,8 +78,6 @@ class IntegrationAuthorizationManager {
     }
 
     getApiKeyClient() {
-        const openDSU = require("opendsu");
-        const crypto = openDSU.loadAPI("crypto");
         const apiKeyAPI = openDSU.loadAPI("apiKey");
         const apiKeyClient = apiKeyAPI.getAPIKeysClient();
         return apiKeyClient;

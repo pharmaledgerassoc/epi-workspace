@@ -22,6 +22,8 @@ export class IntegrationPage {
         let formModel = formData.data;
         try {
             await this.integrationAuthorizationManager.authorize(formModel.clientId, formModel.scope, formModel.clientSecret, formModel.tokenEndpoint)
+            this.state = await this.integrationAuthorizationManager.getCurrentState();
+            this.invalidate();
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
@@ -30,9 +32,10 @@ export class IntegrationPage {
     async revokeAuthorization(_target) {
         try {
             await this.integrationAuthorizationManager.revokeAuthorization()
+            this.state = await this.integrationAuthorizationManager.getCurrentState();
+            this.invalidate();
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
-
     }
 }

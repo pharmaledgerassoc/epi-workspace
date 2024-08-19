@@ -13,6 +13,10 @@ const getSorUserId = async () => {
     return await getSharedEnclaveKey(constants.SOR_USER_ID);
 }
 
+const setSorUserId = async (userId) => {
+    return await setSharedEnclaveKey(constants.SOR_USER_ID, userId);
+}
+
 const getSharedEnclaveKey = async (key) => {
     const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
     let record;
@@ -241,6 +245,7 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
 
 export default {
     getSorUserId,
+    setSorUserId,
     getSharedEnclaveKey,
     detectCurrentPage,
     fetchGroups,
