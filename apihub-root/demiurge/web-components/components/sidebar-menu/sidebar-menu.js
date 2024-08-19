@@ -16,6 +16,7 @@ export class SidebarMenu {
         if (page === 'logout') {
             sessionStorage.setItem("initialURL", window.location.href);
             window.top.location = "/logout";
+            return;
         }
         await webSkel.changeToDynamicPage(page, `${page}`);
         this.highlightCurrentSelection(page);
