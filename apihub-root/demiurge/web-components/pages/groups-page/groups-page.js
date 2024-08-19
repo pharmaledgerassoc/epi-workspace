@@ -47,7 +47,13 @@ export class GroupsPage {
         }
 
         this.selectTab(this.selectedTab);
+        //TODO: [CODE-REVIEW] - not sure why we don't use this.element instead of document in order to query for dom elements...
         const input = document.getElementById('member-did-text');
+        if(!input){
+            //there is a possibility that this afterRender function to be called and no input is available in tht DOM to interact with
+            return ;
+        }
+        //TODO: [CODE-REVIEW] - not sure why we don't use this.element instead of document in order to query for dom elements...
         const addMemberButton = document.getElementById('add-member-button');
         input.addEventListener('input', () => {
             if (input.value.trim() !== "") {
