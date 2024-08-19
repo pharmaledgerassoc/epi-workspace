@@ -34,7 +34,7 @@ export class MyIdentitiesPage{
             //if we fail to display did, we disable the copy mechanism!
             return ;
         }
-        let input = this.element.querySelector(".did-identity");
+        let input = this.parentElement.querySelector(".did-identity");
         input.select();
         input.setSelectionRange(0, 99999); // For mobile devices
         await navigator.clipboard.writeText(input.value);
