@@ -144,7 +144,12 @@ class GroupsManager {
         if (!memberDID.toLowerCase().includes(groupData.tags.toLowerCase())) {
             throw new Error("User can not be added to selected group. Please check user group.");
         }
-        const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
+        let memberDIDDocument;
+        try{
+            memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
+        }catch(err){
+            throw new Error("Unable to add user to group, because failed to resolve user DID!");
+        }
         let newMember = {did: memberDID, username: memberDIDDocument.getName()}
         const apiKeyClient = apiKeyAPI.getAPIKeysClient();
         const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
