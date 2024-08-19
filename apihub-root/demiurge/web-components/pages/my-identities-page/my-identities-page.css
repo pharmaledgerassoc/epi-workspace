@@ -25,3 +25,8 @@ my-identities-page{
     color: var(--dw-app-color);
     position: absolute;
 }
+
+.copy-button.disabled{
+    color: grey;
+    cursor: auto;
+}
