@@ -46,13 +46,20 @@ export class BootingIdentityPage {
                 appManager.getWalletAccess(currentState.currentPage);
                 return ;
             }
+
+            if (this.waitingAccessModal) {
+                await webSkel.closeModal(this.waitingAccessModal);
+            }
+            document.querySelector("sidebar-menu").style.display = "flex";
             appManager.getWalletAccess("groups-page");
         }
         let permissionWatcher = getPermissionsWatcher(await appManager.getDID(), navigate);
         if (await permissionWatcher.checkAccess()) {
             navigate();
         } else {
-            await webSkel.showModal("waiting-access-modal", false);
+            if(!this.waitingAccessModal){
+                this.waitingAccessModal = await webSkel.showModal("waiting-access-modal", false);
+            }
             permissionWatcher.setupIntervalCheck();
         }
     }
