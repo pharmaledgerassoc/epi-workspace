@@ -57,6 +57,11 @@ export class LandingPage {
             try {
                 mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
             } catch (error) {
+                if(error.rootCause === openDSU.constants.ERROR_ROOT_CAUSE.NETWORK_ERROR) {
+                    alert("Network error");
+                    $$.forceTabRefresh();
+                    return;
+                }
                 try {
                     mainDSU = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
                     await $$.promisify(mainDSU.writeFile)('environment.json', JSON.stringify(env));

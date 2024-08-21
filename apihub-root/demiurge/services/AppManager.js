@@ -582,6 +582,12 @@ class AppManager {
         try {
             mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
         } catch (error) {
+            // if error is failed to fetch then show an alert and reload the page
+            if(error.rootCause === openDSU.constants.ERROR_ROOT_CAUSE.NETWORK_ERROR) {
+                alert("Network error");
+                $$.forceTabRefresh();
+                return;
+            }
             try {
                 mainDSU = await $$.promisify(resolver.createDSUForExistingSSI)(versionlessSSI);
                 await $$.promisify(mainDSU.writeFile)('environment.json', JSON.stringify(env));
