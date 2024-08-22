@@ -2,6 +2,7 @@ import utils from "../utils.js";
 import constants from "../constants.js";
 import AuditService from "./AuditService.js";
 import AppManager from "./AppManager.js";
+
 const openDSU = require("opendsu");
 const crypto = openDSU.loadAPI("crypto");
 
@@ -60,11 +61,8 @@ class IntegrationAuthorizationManager {
             throw new Error("Failed to revoke the authorisation");
         }
         await utils.setSorUserId("");
-        /*
-            * TODO add audit log
-            * */
-        // await utils.addLogMessage(this.did, constants.AUDIT_OPERATIONS.REVOKE, this.groupName);
-
+        let did = await AppManager.getInstance().getDID();
+        await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.REVOKE, did, constants.EPI_ADMIN_GROUP);
     }
 
     async getCurrentState() {
