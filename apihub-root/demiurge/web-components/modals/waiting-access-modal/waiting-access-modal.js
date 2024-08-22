@@ -1,4 +1,5 @@
 import AppManager from "./../../../services/AppManager.js";
+import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 
 export class WaitingAccessModal {
     constructor(element, invalidate) {
@@ -37,6 +38,9 @@ export class WaitingAccessModal {
             webSkel.notificationHandler.reportUserRelevantError("Failed to use the Break Glass Code! Check the value that you entered and try again.");
             return;
         }
+        getPermissionsWatcher(await appManager.getDID(), () => {
+            webSkel.changeToDynamicPage("groups-page");
+        });
         webSkel.closeModal(target);
     }
 }
