@@ -71,9 +71,9 @@ class IntegrationAuthorizationManager {
         let sorUserId = await utils.getSorUserId();
 
         if (sorUserId && sorUserId !== "") {
-            return "authorize"
-        } else {
             return "revoke-authorisation"
+        } else {
+            return "authorize"
         }
     }
 

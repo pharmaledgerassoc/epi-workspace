@@ -9,6 +9,10 @@ integration-page {
 }
 
 .integration-form.authorize {
+    display: block;
+}
+
+.integration-form.revoke-authorisation {
     display: none;
 }
 
@@ -17,6 +21,10 @@ integration-page {
 }
 
 .authorization-success-section.revoke-authorisation {
+    display: block;
+}
+
+.authorization-success-section.authorize {
     display: none;
 }
 

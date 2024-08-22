@@ -19,6 +19,7 @@ const setSorUserId = async (userId) => {
 
 const getSharedEnclaveKey = async (key) => {
     const sharedEnclave = await $$.promisify(scAPI.getSharedEnclave)();
+    await $$.promisify(sharedEnclave.refresh)();
     let record;
     try {
         record = await sharedEnclave.readKeyAsync(key);
