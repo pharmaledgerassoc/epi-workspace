@@ -561,7 +561,7 @@ class AppManager {
             this.encryptedSSOSecret = await putSSOSecret();
         }
 
-        const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${getSSODetectedId()}`, deriveEncryptionKey(this.encryptedSSOSecret));
+        const versionlessSSI = keySSISpace.createVersionlessSSI(undefined, `/${env.appName}_${getSSODetectedId()}`, deriveEncryptionKey(this.encryptedSSOSecret));
         try {
             const dsu = await loadWallet(this.encryptedSSOSecret);
             let envJson = await dsu.readFileAsync("environment.json");
