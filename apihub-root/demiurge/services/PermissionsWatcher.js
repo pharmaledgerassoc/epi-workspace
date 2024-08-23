@@ -273,6 +273,23 @@ class PermissionsWatcher {
   }
 }
 
-export function getPermissionsWatcher(did, isAuthorizedHandler) {
+const checkIfUserIsAuthorized = async (did) => {
+  let SecretsHandler = require("opendsu").loadApi("w3cdid").SecretsHandler;
+  const handler = await SecretsHandler.getInstance(did);
+  try{
+    let creds = await handler.checkIfUserIsAuthorized(did);
+    if(creds){
+      return true;
+    }
+  }catch(err){
+    // ignored and return false
+  }
+
+  return false;
+}
+
+function getPermissionsWatcher(did, isAuthorizedHandler) {
   return new PermissionsWatcher(did, isAuthorizedHandler);
 }
+
+export {getPermissionsWatcher, checkIfUserIsAuthorized};

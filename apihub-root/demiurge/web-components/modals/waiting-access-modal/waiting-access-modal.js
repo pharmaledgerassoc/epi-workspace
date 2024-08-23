@@ -38,9 +38,7 @@ export class WaitingAccessModal {
             webSkel.notificationHandler.reportUserRelevantError("Failed to use the Break Glass Code! Check the value that you entered and try again.");
             return;
         }
-        getPermissionsWatcher(await appManager.getDID(), () => {
-            webSkel.changeToDynamicPage("groups-page");
-        });
         webSkel.closeModal(target);
+        await webSkel.showModal("info-modal", {title: "Info", content: "Your break glass recovery code is being processed. Please wait for the access to be granted."});
     }
 }

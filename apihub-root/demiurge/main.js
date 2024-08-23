@@ -6,7 +6,7 @@ import constants from "./constants.js";
 import utils from "./utils.js";
 import env from "./environment.js";
 import AuditService from "./services/AuditService.js";
-import {getPermissionsWatcher} from "./services/PermissionsWatcher.js";
+import {getPermissionsWatcher, checkIfUserIsAuthorized} from "./services/PermissionsWatcher.js";
 
 function registerGlobalActions() {
     async function closeModal(_target) {
@@ -95,18 +95,18 @@ function renderToast(message, type, timeoutValue = 15000) {
 
     let justCreated;
     let appManager = AppManager.getInstance();
-
     try {
         justCreated = await appManager.walletInitialization();
     } catch (err) {
         webSkel.notificationHandler.reportUserRelevantError("Failed to execute initial wallet setup process", err);
     }
 
-    let permissionWatcher = getPermissionsWatcher(await appManager.getDID());
-    if (justCreated || !await appManager.didWasCreated() || !await permissionWatcher.checkAccess()) {
+    let did = await appManager.getDID();
+    if (justCreated || !await appManager.didWasCreated() || !await checkIfUserIsAuthorized(did)) {
         presenterName = "booting-identity-page";
         currentPage = presenterName;
     } else {
+        let permissionWatcher = getPermissionsWatcher(did);
         if (await permissionWatcher.checkAccess()) {
             await AuditService.getInstance().addAccessLog();
         }

@@ -1,7 +1,6 @@
 import utils from "./../../../utils.js";
 import AppManager from "./../../../services/AppManager.js";
 import {getPermissionsWatcher} from "./../../../services/PermissionsWatcher.js";
-
 export class BootingIdentityPage {
     constructor(element, invalidate) {
         this.element = element;
@@ -42,14 +41,11 @@ export class BootingIdentityPage {
         let appManager = AppManager.getInstance();
         let navigate = async () => {
             let currentState = utils.detectCurrentPage();
-            if(currentState.currentPage !== "booting-identity-page") {
+            if (currentState.currentPage !== "booting-identity-page") {
                 appManager.getWalletAccess(currentState.currentPage);
-                return ;
+                return;
             }
 
-            if (this.waitingAccessModal) {
-                await webSkel.closeModal(this.waitingAccessModal);
-            }
             document.querySelector("sidebar-menu").style.display = "flex";
             appManager.getWalletAccess("groups-page");
         }
@@ -57,10 +53,8 @@ export class BootingIdentityPage {
         if (await permissionWatcher.checkAccess()) {
             navigate();
         } else {
-            if(!this.waitingAccessModal){
-                this.waitingAccessModal = await webSkel.showModal("waiting-access-modal", false);
-            }
             permissionWatcher.setupIntervalCheck();
+            await webSkel.showModal("waiting-access-modal", false);
         }
     }
 
