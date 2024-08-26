@@ -2,14 +2,15 @@ dialog {
     outline: none;
     border: none;
     border-radius: 5px;
-    width: auto;
-    max-width: 400px;
+    min-width: 300px;
+    max-width: 90vw;
 }
 
 
 info-modal {
     display: block;
-    width: max-content;
+    width: fit-content;
+    max-width: 100%;
 }
 
 .modal-container {
@@ -32,4 +33,6 @@ info-modal {
     display: flex;
     flex-direction: column;
     padding: 0 1rem 1rem;
+    white-space: normal;
+    word-wrap: break-word;
 }
