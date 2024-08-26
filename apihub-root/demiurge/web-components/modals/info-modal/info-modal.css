@@ -24,15 +24,17 @@ info-modal {
     font-size: 1.3rem;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
+    padding: 3px 1rem;
     border-bottom: none;
     width: 100%;
+    background-color: var(--dw-app-color);
+    color: #FFFFFF;
 }
 
 .modal-body {
     display: flex;
     flex-direction: column;
-    padding: 0 1rem 1rem;
     white-space: normal;
     word-wrap: break-word;
+    padding: 1rem;
 }
