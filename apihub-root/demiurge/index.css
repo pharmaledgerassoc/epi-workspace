@@ -217,7 +217,11 @@ button:disabled {
 input:focus {
     outline: none;
 }
-
+.toast-text{
+    width: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+}
 .toast-container {
     display: flex;
     flex-direction: column;
