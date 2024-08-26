@@ -37,6 +37,12 @@ export class MyIdentitiesPage{
         let input = this.parentElement.querySelector(".did-identity");
         input.select();
         input.setSelectionRange(0, 99999); // For mobile devices
-        await navigator.clipboard.writeText(input.value);
+
+        try{
+            await navigator.clipboard.writeText(input.value);
+            webSkel.notificationHandler.reportUserRelevantInfo("Copied to clipboard!");
+        }catch(err){
+            webSkel.notificationHandler.reportUserRelevantError(`Error copying text: ${err}`);
+        }
     }
 }
