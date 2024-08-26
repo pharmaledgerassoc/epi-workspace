@@ -128,7 +128,7 @@ export class GroupsPage {
 
         _target.classList.add("disabled");
         let targetContent = _target.innerHTML;
-        _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; top: 25%; position:relative; color: var(--dw-app-disabled-color);"></i>`
+        _target.innerHTML = `<i class="fa fa-circle-o-notch fa-spin" style="font-size:24px; position:relative; color: var(--dw-app-disabled-color);"></i>`
 
         try {
             await this.groupsManager.removeMember(this.selectedGroup.id, memberDID);
