@@ -40,7 +40,7 @@ sidebar-menu{
     mask-image: url("./assets/images/icons/menu-audit.svg");
 }
 .health-check-page::before{
-    mask-image: url("./assets/images/icons/menu-system-status.svg");
+    mask-image: url("./assets/images/icons/menu-health-check.svg");
 }
 .logout::before{
     mask-image: url("./assets/images/icons/menu-logout.svg");
