@@ -237,4 +237,7 @@ input:focus {
 .pointer{
     cursor: pointer;
 }
-
+.pagination-btn.disabled {
+    cursor: initial;
+    background-color: var(--very-light-grey);
+}
