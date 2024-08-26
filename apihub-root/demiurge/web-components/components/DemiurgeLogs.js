@@ -73,12 +73,12 @@ export default class DemiurgeLogs {
 
     async searchLogs(event) {
         event.preventDefault();
-        let formData = await webSkel.extractFormInformation(this.searchField);
+        let formData = await webSkel.extractFormInformation(this.element.querySelector("search-input"));
         if (formData.isValid) {
             this.inputValue = formData.data[this.searchField];
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            this.logs = await this.auditService.getLogs(this.logType, undefined, this.logsNumber, ["__timestamp > 0", `${this.searchQueryAttribute} == ${this.inputValue}`])
+            let logs = await this.auditService.getLogs(this.logType, this.logsNumber, ["__timestamp > 0", `${this.searchQueryAttribute} == ${this.inputValue}`])
             if (logs.length > 0) {
                 this.logs = logs;
                 this.searchIdentifier = `${this.searchQueryAttribute} == ${this.inputValue}`;
@@ -90,9 +90,9 @@ export default class DemiurgeLogs {
                 }
                 this.lastElementTimestamp = this.logs[this.logs.length - 1].__timestamp;
                 this.firstElementTimestamp = this.logs[0].__timestamp;
-                this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
+                this.searchResultIcon = "<img class='result-icon' src='./assets/images/icons/check.svg' alt='check'>";
             } else {
-                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/icons/ban.svg' alt='ban'>";
+                this.searchResultIcon = "<img class='result-icon rotate' src='./assets/images/icons/ban.svg' alt='ban'>";
             }
             this.focusInput = true;
             this.invalidate();

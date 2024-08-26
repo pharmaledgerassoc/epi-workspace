@@ -4,7 +4,7 @@ search-input input {
     border: 1px solid var(--dw-app-color);
     font-size: 0.8rem;
     width: 16%;
-    min-width: 300px;
+    min-width: 400px;
     height: 36px;
 }
 search-input {
