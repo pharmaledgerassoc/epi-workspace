@@ -5,7 +5,7 @@ dialog {
     width: fit-content;
     min-width: 900px;
     max-width: 80vw;
-    min-height: 300px;
+    min-height: 280px;
 }
 
 #modal-container {
