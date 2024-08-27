@@ -47,7 +47,8 @@ export default {
         AUTHORIZE: "Authorize integration user",
         REVOKE: "Revoke integration user",
         USER_ACCESS: "Access wallet",
-        DATA_RECOVERY: "Use of the Data Recovery Key"
+        DATA_RECOVERY: "Use of the Data Recovery Key",
+        RECOVERY_KEY_COPIED: "Copy Data Recovery Key"
     },
     SHARED_ENCLAVE: "demiurgeSharedEnclave",
     ADMIN_ACCESS_MODE: "admin",

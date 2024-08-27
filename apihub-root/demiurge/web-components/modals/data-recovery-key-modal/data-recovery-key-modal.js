@@ -3,10 +3,12 @@ const notificationHandler = require("opendsu").loadAPI("error");
 import constants from "../../../constants.js";
 import AuditService from "../../../services/AuditService.js";
 import AppManager from "../../../services/AppManager.js";
+
 export class DataRecoveryKeyModal {
     constructor(element, invalidate) {
         this.element = element;
         this.invalidate = invalidate;
+        webSkel.registerAction("copyRecoveryKey", this.copyRecoveryKey);
         this.invalidate();
     }
 
@@ -67,5 +69,20 @@ export class DataRecoveryKeyModal {
             notificationHandler.reportUserRelevantError(`Couldn't initialize wallet DBEnclave with provided code`);
         }
         await webSkel.closeModal(_target);
+    }
+
+    async copyRecoveryKey(){
+        let input = this.parentElement.querySelector("#data-recovery-key-copy");
+        input.select();
+        input.setSelectionRange(0, 99999); // For mobile devices
+
+        try{
+            await navigator.clipboard.writeText(input.value);
+            let did = await AppManager.getStoredDID();
+            await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.RECOVERY_KEY_COPIED, did, constants.EPI_ADMIN_GROUP);
+            webSkel.notificationHandler.reportUserRelevantInfo("Copied to clipboard!");
+        }catch(err){
+            webSkel.notificationHandler.reportUserRelevantError(`Failed to copy Data Recovery Key: ${err}`);
+        }
     }
 }
