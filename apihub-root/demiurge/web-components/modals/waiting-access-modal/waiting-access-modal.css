@@ -92,6 +92,7 @@ dialog {
     border-radius: var(--default-border-radius);
     width: max-content;
     white-space: nowrap;
+    margin-left: auto;
 }
 
 form.recovery-code {
