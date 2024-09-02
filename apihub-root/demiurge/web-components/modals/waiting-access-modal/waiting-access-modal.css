@@ -74,6 +74,10 @@ dialog {
     width: 100%;
 }
 
+input#recoveryKey::-ms-reveal {
+    display: none;
+}
+
 .input-value {
     width: 100%;
     border: none;
