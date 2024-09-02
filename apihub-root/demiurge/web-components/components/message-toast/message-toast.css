@@ -35,6 +35,6 @@ message-toast{
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     pointer-events: all;
 }
