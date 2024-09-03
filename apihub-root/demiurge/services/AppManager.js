@@ -583,8 +583,9 @@ class AppManager {
             mainDSU = await $$.promisify(resolver.loadDSU)(versionlessSSI);
         } catch (error) {
             // if error is failed to fetch then show an alert and reload the page
-            if(error.rootCause === openDSU.constants.ERROR_ROOT_CAUSE.NETWORK_ERROR) {
-                alert("Network error");
+            if (error.rootCause === openDSU.constants.ERROR_ROOT_CAUSE.NETWORK_ERROR) {
+                utils.renderToast("Network error", "error", "block_alert");
+             //   alert("Network error");
                 $$.forceTabRefresh();
                 return;
             }
@@ -702,7 +703,7 @@ class AppManager {
     }
 
 //fourth phase... get access
-    getWalletAccess = async (sourcePage="groups-page") => {
+    getWalletAccess = async (sourcePage = "groups-page") => {
         await webSkel.showLoading();
         let did;
         if (this.previousVersionWalletFound) {

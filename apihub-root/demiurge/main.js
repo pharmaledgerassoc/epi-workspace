@@ -53,11 +53,11 @@ function registerGlobalActions() {
 
 async function setupGlobalErrorHandlers() {
     webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.WARN, (notification) => {
-        renderToast(notification.message, "warning");
+        utils.renderToast(notification.message, "warning", null, "infinite");
     });
 
     webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.INFO, (notification) => {
-        renderToast(notification.message, "info")
+        utils.renderToast(notification.message, "info")
     });
 
     webSkel.notificationHandler.observeUserRelevantMessages(constants.NOTIFICATION_TYPES.ERROR, (notification) => {
@@ -66,16 +66,90 @@ async function setupGlobalErrorHandlers() {
             errMsg = notification.err.message;
         }
         let toastMsg = `${notification.message} ${errMsg}`
-        alert(toastMsg)
+        utils.renderToast(toastMsg, "error", "alert")
     });
 }
 
-function renderToast(message, type, timeoutValue = 15000) {
-    let toastContainer = document.querySelector(".toast-container");
-    toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
-}
 
 (async () => {
+    // Define the CSS styles as a string
+    const styles = `
+dialog.toast-dialog {
+    height: min-content;
+    border: none;
+    margin: 0 0 5px;
+    width: 100%;
+}
+
+dialog.toast-dialog.block_alert {
+    margin: 10px 10px 5px auto;
+    width: 40%;
+}
+
+.toast-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    width: 40%;
+    right: 0;
+    align-items: end;
+    padding: 10px;
+    background: none;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.toast-text {
+    color: #000;
+    padding: 1.25rem;
+}
+
+.toast {
+    display: flex;
+    opacity: 100%;
+    background-color: #FFFFFF;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 3px solid;
+    border-radius: 8px;
+}
+
+.toast.info {
+    border-top-color: #33D29C;
+    box-shadow: 0 1px 3px #33D29C;
+}
+
+.toast.warn {
+    border-top-color: #FEC02D;
+    box-shadow: 0 1px 3px #FEC02D;
+}
+
+.toast.error {
+    border-top-color: #EF4C61;
+    box-shadow: 0 1px 3px #EF4C61;
+}
+
+.toast-close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    pointer-events: all;
+    padding: 10px;
+}
+`;
+
+// Create a style element
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+
+// Append the style element to the document head
+    document.head.appendChild(styleSheet);
+
     window.webSkel = await WebSkel.initialise("./webskel-configs.json");
     webSkel.notificationHandler = openDSU.loadAPI("error");
     webSkel.setLoading(`<div class="spinner-container"><div class="spin"></div></div>`);
@@ -91,7 +165,7 @@ function renderToast(message, type, timeoutValue = 15000) {
     webSkel.healthCheckClient = gtinResolver.getHealthCheckClient();
     webSkel.demiurgeSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain, "Demiurge");
     webSkel.dsuFabricSorClient = gtinResolver.getEPISorClient(epiDomain, epiSubdomain);
-    webSkel.renderToast = renderToast;
+    webSkel.renderToast = utils.renderToast;
 
     let justCreated;
     let appManager = AppManager.getInstance();
@@ -115,18 +189,18 @@ function renderToast(message, type, timeoutValue = 15000) {
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 
     let originalPageChange = webSkel.changeToDynamicPage;
-    webSkel.changeToDynamicPage = function(...args){
-        try{
-            if(args[0]!=="booting-identity-page"){
+    webSkel.changeToDynamicPage = function (...args) {
+        try {
+            if (args[0] !== "booting-identity-page") {
                 document.querySelector("sidebar-menu").style.display = "flex";
             }
 
             //if better to close here any remaining dialogs before navigate to the requested page...
             let dialogs = window.document.body.querySelectorAll("dialog");
-            for(let dialog of dialogs){
+            for (let dialog of dialogs) {
                 webSkel.closeModal(dialog);
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
         originalPageChange.call(webSkel, ...args);

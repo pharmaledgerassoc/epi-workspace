@@ -44,7 +44,9 @@ class IntegrationAuthorizationManager {
                 await utils.setSorUserId(userId);
             } catch (e) {
                 console.log(e)
-                alert("Failed to authorize the application");
+                /*    alert("Failed to authorize the application");*/
+                utils.renderToast("Failed to authorize the application", "error", "block_alert");
+
                 return;
             }
             let did = await AppManager.getInstance().getDID();
@@ -59,7 +61,9 @@ class IntegrationAuthorizationManager {
             await apiKeyClient.deleteAPIKey(constants.APPS.DSU_FABRIC, constants.API_KEY_NAME, sorUserId);
         } catch (e) {
             console.log(e)
-            alert("Failed to revoke the authorisation");
+            //  alert("Failed to revoke the authorisation");
+            utils.renderToast("Failed to revoke the authorisation", "error", "block_alert");
+
             return;
         }
         let did = await AppManager.getInstance().getDID();
@@ -68,7 +72,7 @@ class IntegrationAuthorizationManager {
 
     async getCurrentState() {
         const sorUserId = await utils.getSorUserId();
-        if(!sorUserId){
+        if (!sorUserId) {
             return "authorize";
         }
         const apiKeyClient = this.getApiKeyClient();
