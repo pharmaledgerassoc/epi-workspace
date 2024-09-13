@@ -13,6 +13,9 @@
 
 #groups-page-body {
     padding: 0 28px;
+    background: #FFFFFF;
+    position: relative;
+    top: -1px;
 }
 
 #groups-page-body-header {
