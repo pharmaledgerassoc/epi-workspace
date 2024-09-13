@@ -11,6 +11,7 @@ dialog {
     display: flex;
     flex-direction: column;
     background-color: #f4f4f5;
+    min-width: 550px;
 }
 
 #modal-header {
@@ -101,13 +102,17 @@ input#recoveryKey::-ms-reveal {
 
 form.recovery-code {
     width: 100%;
+    display: flex;
+    gap: 5px;
 }
 
 .form-input {
     width: 100%;
+    border: none;
+    padding: 0 10px 0 0;
 }
 
 form.recovery-code .modal-input-field-value {
-    padding: unset;
-    border: unset;
+    flex-direction: row;
+    margin-bottom: 0;
 }
