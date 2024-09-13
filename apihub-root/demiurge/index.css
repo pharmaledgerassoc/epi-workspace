@@ -59,20 +59,22 @@
     --dw-custom-warning-color-015: rgba(198, 155, 24, 0.15);
 
     /* New Variables */
-    --members-background: rgb(244,244,245);
-    --member-border: rgb(228,228,231);
-    --enabled-button-highlight:rgb(3,150,101);
+    --members-background: rgb(244, 244, 245);
+    --member-border: rgb(228, 228, 231);
+    --enabled-button-highlight: rgb(3, 150, 101);
     --default-border-radius: 5px;
     --disabled-background: rgb(142 153 149);
     --disabled-border: rgb(214 214 214);
     --disabled-text: rgb(0, 0, 0);
-    --white: rgb(255,255,255);
+    --white: rgb(255, 255, 255);
 }
-*{
+
+* {
     box-sizing: border-box;
-    -ms-overflow-style: none;  /* IE and Edge */
+    -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
+
 html {
     overflow: hidden;
     height: 100%;
@@ -84,27 +86,32 @@ body {
     height: 100%;
     display: flex;
 }
-.page-header{
+
+.page-header {
     color: var(--dw-custom-default-color-100);
     font-size: 28px;
     font-weight: 700;
 }
+
 *::-webkit-scrollbar {
     display: none;
 }
+
 .no-select {
     user-select: none;
-    -webkit-user-select: none;  /* Chrome, Safari */
-    -moz-user-select: none;     /* Firefox */
-    -ms-user-select: none;      /* Internet Explorer/Edge */
+    -webkit-user-select: none; /* Chrome, Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
+
 /*forms*/
-.form-item{
+.form-item {
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
 }
-.form-input{
+
+.form-input {
     height: 41px;
     width: 450px;
     border: 1px solid var(--dw-app-color);
@@ -112,10 +119,12 @@ body {
     border-radius: var(--default-border-radius);
     font-size: 14px;
 }
-.form-label{
+
+.form-label {
     margin-bottom: 8px;
 }
-.default-button{
+
+.default-button {
     font-size: 17px;
     background-color: var(--dw-app-color);
     border: none;
@@ -124,19 +133,23 @@ body {
     border-radius: var(--default-border-radius);
     cursor: pointer;
 }
+
 .default-button.disabled {
     cursor: initial;
     background-color: var(--very-light-grey);
 }
+
 #page-content {
     --background: #FFFFFF;
     height: 100%;
     width: 100%;
 }
-.hidden{
+
+.hidden {
     display: none;
 }
-.toast-container{
+
+.toast-container {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -149,12 +162,14 @@ body {
     background: none;
     pointer-events: none;
 }
+
 dialog {
     padding: 0;
     outline: none !important;
     position: relative;
     border: none;
 }
+
 dialog[class="spinner"] {
     border: none;
     background: none;
@@ -162,6 +177,7 @@ dialog[class="spinner"] {
     width: min-content;
     height: min-content;
 }
+
 .spinner-container {
     border-radius: 50%;
     border: none;
@@ -210,6 +226,7 @@ button {
 button:disabled {
     cursor: default;
 }
+
 *[disabled_feature] {
     display: none !important;
 }
@@ -217,11 +234,13 @@ button:disabled {
 input:focus {
     outline: none;
 }
-.toast-text{
-    width: 100%;
+
+.toast-text {
+    width: calc(100% - 20px);
     white-space: normal;
     word-wrap: break-word;
 }
+
 .toast-container {
     display: flex;
     flex-direction: column;
@@ -235,12 +254,15 @@ input:focus {
     background: none;
     pointer-events: none;
 }
-.remove-bold{
+
+.remove-bold {
     font-weight: normal;
 }
-.pointer{
+
+.pointer {
     cursor: pointer;
 }
+
 .pagination-btn.disabled {
     cursor: initial;
     background-color: var(--very-light-grey);
