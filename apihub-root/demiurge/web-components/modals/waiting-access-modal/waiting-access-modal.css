@@ -7,6 +7,10 @@ dialog {
 
 }
 
+.modal.info-modal-dialog {
+    width: fit-content;
+}
+
 #modal-container {
     display: flex;
     flex-direction: column;
