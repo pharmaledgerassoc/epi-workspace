@@ -267,3 +267,8 @@ input:focus {
     cursor: initial;
     background-color: var(--very-light-grey);
 }
+
+.disabled {
+    background-color: grey !important;
+    cursor: default;
+}

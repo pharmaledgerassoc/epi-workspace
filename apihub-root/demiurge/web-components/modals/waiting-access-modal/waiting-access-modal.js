@@ -16,10 +16,27 @@ export class WaitingAccessModal {
     }
 
     afterRender() {
+        if(this.submitStateHandler){
+            return;
+        }
+        this.submitStateHandler = true;
+        let submitButton = this.element.querySelector("#submitDataRecoveryKey");
+        let changeSubmitState = ()=>{
+            if(this.element.querySelector("#recoveryKey").value){
+                submitButton.classList.remove("disabled");
+                return;
+            }
+            submitButton.classList.add("disabled");
+        };
 
+        this.element.querySelector("#recoveryKey").oninput = changeSubmitState;
+        changeSubmitState();
     }
 
     async submitDataRecoveryKey(target) {
+        if(target.classList.contains("disabled")){
+            return;
+        }
         let {data} = await webSkel.extractFormInformation(this.element.querySelector("form"));
         let {recoveryKey} = data;
 
