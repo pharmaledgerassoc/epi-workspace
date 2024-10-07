@@ -1,9 +1,9 @@
-/*document.body.onbeforeunload = ()=>{
+onbeforeunload = ()=>{
     if(window.disableRefreshSafetyAlert){
         return ;
     }
     return "Are you sure? This may cause inconsistencies";
-}*/
+}
 
 if ($$) {
     $$.refreshInProgress = false;

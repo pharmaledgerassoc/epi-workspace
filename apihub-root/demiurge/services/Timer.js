@@ -12,7 +12,7 @@ window.sessionHandler = setInterval(async () => {
         clearInterval(window.sessionHandler);
         window.disableRefreshSafetyAlert = true;
         sessionStorage.setItem("initialURL", window.location.href);
-        window.location = "/logout"
+        window.location = "/logout";
         return
     }
 

@@ -739,7 +739,7 @@ class AppManager {
             webSkel.notificationHandler.reportUserRelevantError("Failed to initialize wallet", err);
             setTimeout(() => {
                 window.disableRefreshSafetyAlert = true;
-                window.location.reload()
+                window.location.reload();
             }, 2000);
         }
     }
