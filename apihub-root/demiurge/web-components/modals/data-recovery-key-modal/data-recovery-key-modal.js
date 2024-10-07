@@ -24,13 +24,18 @@ export class DataRecoveryKeyModal {
     afterRender() {
         const input = document.getElementById('data-recovery-key');
         const addMemberButton = document.getElementById('submitDataRecoveryKey');
-        input.addEventListener('input', async () => {
+        let changeHandler = async () => {
             if (input.value.trim() !== "") {
+                addMemberButton.classList.remove("disabled");
                 addMemberButton.disabled = false;
             } else {
+                addMemberButton.classList.add("disabled");
                 addMemberButton.disabled = true;
             }
-        });
+        }
+
+        input.addEventListener('input', changeHandler);
+        changeHandler();
     }
 
     async submitDataRecoveryKey(_target) {
