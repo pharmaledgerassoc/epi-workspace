@@ -14,6 +14,7 @@ export class SidebarMenu {
 
     async changePage(_target, page) {
         if (page === 'logout') {
+            window.disableRefreshSafetyAlert = true;
             sessionStorage.setItem("initialURL", window.location.href);
             window.top.location = "/logout";
             return;
