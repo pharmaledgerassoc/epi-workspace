@@ -17,8 +17,14 @@ export class IntegrationPage {
     async authorizeRequest(_target) {
         let formData = await webSkel.extractFormInformation(_target);
         if (!formData.isValid) {
-            webSkel.notificationHandler.reportUserRelevantError("All inputs are required!!!");
+            return webSkel.notificationHandler.reportUserRelevantError("All inputs are required!!!");
         }
+
+        if(this.authorizationInProgress){
+            return;
+        }
+        this.authorizationInProgress = true;
+
         let formModel = formData.data;
         try {
             await this.integrationAuthorizationManager.authorize(formModel.clientId, formModel.scope, formModel.clientSecret, formModel.tokenEndpoint)
@@ -27,9 +33,14 @@ export class IntegrationPage {
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
+        this.authorizationInProgress = false;
     }
 
     async revokeAuthorization(_target) {
+        if(this.revokeInProgress){
+            return;
+        }
+        this.revokeInProgress = true;
         try {
             await this.integrationAuthorizationManager.revokeAuthorization()
             this.state = await this.integrationAuthorizationManager.getCurrentState();
@@ -37,5 +48,6 @@ export class IntegrationPage {
         } catch (e) {
             webSkel.notificationHandler.reportUserRelevantError(e.message);
         }
+        this.revokeInProgress = false;
     }
 }
