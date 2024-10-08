@@ -3,6 +3,9 @@ import constants from "../constants.js";
 import utils from "../utils.js";
 import AppManager from "./AppManager.js";
 import AuditService from "./AuditService.js";
+import LockSmith from "./LockSmith.js";
+
+let {getLock, releaseLock} = LockSmith;
 
 function getPKFromContent(stringContent) {
     const crypto = require("opendsu").loadAPI("crypto");
@@ -130,6 +133,9 @@ class GroupsManager {
     }
 
     async addMember(groupId, memberDID) {
+
+        let lockId = await getLock(groupId, 30*1000, 5, 1000);
+
         const openDSU = require("opendsu");
         const w3cdid = openDSU.loadAPI("w3cdid");
         const scAPI = openDSU.loadAPI("sc");
@@ -209,10 +215,11 @@ class GroupsManager {
         let secretsHandler = await SecretsHandler.getInstance(adminDID);
         await secretsHandler.authorizeUser(memberDID, groupCredential, enclave);
         await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.ADD, memberDID, groupId);
-
+        await releaseLock(groupId, lockId);
     }
 
     async removeMember(groupId, memberDID) {
+        let lockId = await getLock(groupId, 30*1000, 5, 1000);
         const userDID = await AppManager.getInstance().getDID();
         if (userDID === memberDID) {
             throw new Error("You tried to delete your account. This operation is not allowed.")
@@ -238,6 +245,7 @@ class GroupsManager {
         let secretsHandler = await SecretsHandler.getInstance(adminDID);
         await secretsHandler.unAuthorizeUser(memberDID);
         await AuditService.getInstance().addActionLog(constants.AUDIT_OPERATIONS.REMOVE, memberDID, groupId);
+        await releaseLock(groupId, lockId);
     }
 
     async getMembers(groupDID) {
