@@ -62,6 +62,12 @@ export class GroupsPage {
                 addMemberButton.disabled = true;
             }
         });
+
+        this.element.querySelector("#member-did-text").onkeydown = (event)=>{
+            if(event.keyCode === 13){
+                this.element.querySelector("#add-member-button").click();
+            }
+        };
     }
 
     changeTab(_target, groupId) {
