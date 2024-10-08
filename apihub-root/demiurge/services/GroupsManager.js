@@ -133,9 +133,6 @@ class GroupsManager {
     }
 
     async addMember(groupId, memberDID) {
-
-        let lockId = await getLock(groupId, 30*1000, 5, 1000);
-
         const openDSU = require("opendsu");
         const w3cdid = openDSU.loadAPI("w3cdid");
         const scAPI = openDSU.loadAPI("sc");
@@ -156,6 +153,9 @@ class GroupsManager {
         }catch(err){
             throw new Error("Unable to add user to group, because failed to resolve user DID!");
         }
+
+        let lockId = await getLock(groupId, 30*1000, 5, 1000);
+
         let newMember = {did: memberDID, username: memberDIDDocument.getName()}
         const apiKeyClient = apiKeyAPI.getAPIKeysClient();
         const mainEnclave = await $$.promisify(scAPI.getMainEnclave)();
@@ -219,7 +219,6 @@ class GroupsManager {
     }
 
     async removeMember(groupId, memberDID) {
-        let lockId = await getLock(groupId, 30*1000, 5, 1000);
         const userDID = await AppManager.getInstance().getDID();
         if (userDID === memberDID) {
             throw new Error("You tried to delete your account. This operation is not allowed.")
@@ -234,6 +233,9 @@ class GroupsManager {
         let groupData = await this.getGroup(groupId);
         const groupDIDDocument = await $$.promisify(w3cdid.resolveDID)(groupData.did);
         const memberDIDDocument = await $$.promisify(w3cdid.resolveDID)(memberDID);
+
+        let lockId = await getLock(groupId, 30*1000, 5, 1000);
+
         if (groupData.accessMode === constants.ADMIN_ACCESS_MODE) {
             await apiKeyClient.deleteAdmin(utils.getUserIdFromUsername(memberDIDDocument.getName()));
         } else {
