@@ -51,7 +51,6 @@ const migrateAllTables = async (structuredLokiEnclaveFacadeInstance, partitioned
 }
 
 const migrateStructuredAdapterToPartitionedAdapter = async () => {
-    // return
     try {
         fs.accessSync(DSU_FABRIC_ENCLAVE_MIGRATED_PATH);
         console.log("DSU Fabric Enclave already migrated");
