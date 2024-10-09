@@ -1,5 +1,7 @@
 import AppManager from "./../../../services/AppManager.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
+import LockSmith from "../../../services/LockSmith.js";
+let {getLock, releaseLock} = LockSmith;
 
 export class WaitingAccessModal {
     constructor(element, invalidate) {
@@ -56,7 +58,9 @@ export class WaitingAccessModal {
                 content: "Your break glass recovery code is being processed. Please wait for the access to be granted."
             });
             webSkel.getClosestParentElement(target, "dialog").style.display = "none"
+            const lockId = await getLock(recoveryKey, 30*1000, 5, 1000);
             await appManager.useBreakGlassCode(recoveryKey);
+            await releaseLock(recoveryKey, lockId);
             infoModal.close();
             infoModal.remove();
             webSkel.closeModal(target);
@@ -65,6 +69,5 @@ export class WaitingAccessModal {
             webSkel.notificationHandler.reportUserRelevantError("Failed to use the Break Glass Code! Check the value that you entered and try again.");
             return;
         }
-
     }
 }

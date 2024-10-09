@@ -3,6 +3,9 @@ const notificationHandler = require("opendsu").loadAPI("error");
 import constants from "../../../constants.js";
 import AuditService from "../../../services/AuditService.js";
 import AppManager from "../../../services/AppManager.js";
+import LockSmith from "../../../services/LockSmith.js";
+
+let {getLock, releaseLock} = LockSmith;
 
 export class DataRecoveryKeyModal {
     constructor(element, invalidate) {
@@ -59,10 +62,12 @@ export class DataRecoveryKeyModal {
             }
             let enclaveRecord;
             try {
+                const lockId = await getLock(recoveryCode, 30*1000, 5, 1000);
                 enclaveRecord = await utils.initSharedEnclave(recoveryCode, epiEnclaveMsg, true);
+                await releaseLock(recoveryCode, lockId);
             } catch (e) {
                 await webSkel.closeModal(_target);
-                notificationHandler.reportUserRelevantError(`Couldn't initialize wallet DBEnclave with provided code`);
+                notificationHandler.reportUserRelevantError(`Couldn't initialize WalletDB Enclave with provided code`);
             }
             await utils.setEpiEnclave(enclaveRecord);
             const did = await AppManager.getStoredDID();
