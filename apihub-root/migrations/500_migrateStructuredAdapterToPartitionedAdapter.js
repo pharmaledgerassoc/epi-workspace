@@ -71,7 +71,7 @@ const migrateStructuredAdapterToPartitionedAdapter = async () => {
     const newContent = fileContent.toString().replace(DSU_FABRIC_ENCLAVE_FOLDER_NAME, DSU_FABRIC_ENCLAVE_RENAMED_FOLDER_NAME);
     fs.writeFileSync(DSU_FABRIC_ENCLAVE_RENAMED_PATH, newContent);
 
-    const structuredLokiEnclaveFacade = LokiEnclaveFacade.createLokiEnclaveFacadeInstance(DSU_FABRIC_ENCLAVE_RENAMED_PATH, undefined, adapters.PARTITIONED);
+    const structuredLokiEnclaveFacade = LokiEnclaveFacade.createLokiEnclaveFacadeInstance(DSU_FABRIC_ENCLAVE_RENAMED_PATH, undefined, adapters.STRUCTURED);
 
     // sleep for 1 second to allow the database to be created
     await new Promise((resolve) => setTimeout(resolve, 3000));
