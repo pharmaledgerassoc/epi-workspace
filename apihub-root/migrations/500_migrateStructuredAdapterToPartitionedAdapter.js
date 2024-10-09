@@ -39,7 +39,6 @@ const migrateTable = async (structuredLokiEnclaveFacadeInstance, tableName, part
 }
 const migrateAllTables = async (structuredLokiEnclaveFacadeInstance, partitionedLokiEnclaveFacadeInstance) => {
     const tables = await $$.promisify(structuredLokiEnclaveFacadeInstance.getCollections)($$.SYSTEM_IDENTIFIER);
-    // const tables = ["path-keyssi-private-keys", "user-access", "path", "audit", "products", "batches"];
     for (let table of tables) {
         try {
             await migrateTable(structuredLokiEnclaveFacadeInstance, table, partitionedLokiEnclaveFacadeInstance);
