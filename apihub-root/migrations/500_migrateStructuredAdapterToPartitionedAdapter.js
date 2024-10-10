@@ -91,8 +91,9 @@ const migrateStructuredAdapterToPartitionedAdapter = async () => {
     const partitionedLokiEnclaveFacade = LokiEnclaveFacade.createLokiEnclaveFacadeInstance(DSU_FABRIC_ENCLAVE_PATH, undefined, adapters.PARTITIONED);
     await migrateAllTables(structuredLokiEnclaveFacade, partitionedLokiEnclaveFacade);
     await $$.promisify(partitionedLokiEnclaveFacade.saveDatabase)($$.SYSTEM_IDENTIFIER);
-    fs.rmSync(DSU_FABRIC_ENCLAVE_RENAMED_FOLDER_PATH, {recursive: true});
+    // fs.rmSync(DSU_FABRIC_ENCLAVE_RENAMED_FOLDER_PATH, {recursive: true});
     fs.writeFileSync(DSU_FABRIC_ENCLAVE_MIGRATED_PATH, "");
+    console.info(0x333, "DSU Fabric Enclave migration completed");
 }
 
 module.exports = migrateStructuredAdapterToPartitionedAdapter;
