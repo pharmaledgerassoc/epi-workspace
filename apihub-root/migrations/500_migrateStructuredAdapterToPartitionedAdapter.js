@@ -57,6 +57,14 @@ const migrateStructuredAdapterToPartitionedAdapter = async () => {
     } catch (e) {
         // continue with migration
     }
+    //check if the enclave folder exists
+    try {
+        fs.accessSync(DSU_FABRIC_ENCLAVE_FOLDER_PATH);
+    } catch (e) {
+        // nothing to migrate
+        fs.writeFileSync(DSU_FABRIC_ENCLAVE_MIGRATED_PATH, "");
+        return;
+    }
     // rename the folder to avoid conflicts
     try {
         fs.renameSync(DSU_FABRIC_ENCLAVE_FOLDER_PATH, DSU_FABRIC_ENCLAVE_RENAMED_FOLDER_PATH);
