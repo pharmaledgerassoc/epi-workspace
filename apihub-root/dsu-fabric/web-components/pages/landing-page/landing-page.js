@@ -1,6 +1,7 @@
 import {getUserDetails, loadPage, getSSOId, setHealthyAuthorizationInfo} from "../../../utils/utils.js";
 import {getPermissionsWatcher} from "../../../services/PermissionsWatcher.js";
 import env from "../../../environment.js";
+import HistoryGateKeeper from "../../../services/HistoryGateKeeper.js";
 
 const openDSU = require("opendsu");
 const keySSISpace = openDSU.loadAPI("keyssi");
@@ -229,6 +230,8 @@ export class LandingPage {
                 await webSkel.appServices.addAccessLog(did);
                 await loadPage(this.sourcePage);
             }, credential);
+
+            HistoryGateKeeper.init();
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError("Failed to initialize wallet", err);
             setTimeout(() => {

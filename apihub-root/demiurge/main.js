@@ -2,6 +2,7 @@ import WebSkel from "./WebSkel/webSkel.js";
 
 const openDSU = require("opendsu");
 import AppManager from "./services/AppManager.js";
+import HistoryGateKeeper from "./services/HistoryGateKeeper.js";
 import constants from "./constants.js";
 import utils from "./utils.js";
 import env from "./environment.js";
@@ -185,6 +186,8 @@ dialog.toast-dialog.block_alert {
             await AuditService.getInstance().addAccessLog();
         }
     }
+
+    HistoryGateKeeper.init();
 
     pageContent.insertAdjacentHTML("beforebegin", `<sidebar-menu data-presenter="left-sidebar"></sidebar-menu>`);
 
