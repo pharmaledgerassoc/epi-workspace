@@ -649,7 +649,8 @@ class AppManager {
         let didDocument;
         let shouldPersist = false;
         const mainDID = await scAPI.getMainDIDAsync();
-        const initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
+
+        let initialiseIdentityModal;
 
         const healDID = async (didIdentifier) => {
             try {
@@ -680,6 +681,7 @@ class AppManager {
         if (mainDID) {
             await healDID(mainDID);
         } else {
+            initialiseIdentityModal = await webSkel.showModal("create-identity-modal");
             const didIdentifier = `did:ssi:name:${vaultDomain}:${userId}`;
             await healDID(didIdentifier);
             shouldPersist = true;
@@ -689,8 +691,11 @@ class AppManager {
         }
 
         await this.oneTimeSetup(this.walletJustCreated);
-        initialiseIdentityModal.close();
-        initialiseIdentityModal.remove();
+        if(initialiseIdentityModal){
+            initialiseIdentityModal.close();
+            initialiseIdentityModal.remove();
+        }
+
         if (this.firstTimeAndFirstAdmin) {
             //we need to auto-authorize because we are the first one...
             await doDemiurgeMigration();
