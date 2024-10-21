@@ -19,6 +19,7 @@ if ($$) {
         setTimeout(()=>{
             console.info("The refresh procedure is currently executing...");
             try{
+                window.disableRefreshSafetyAlert = true;
                 window.top.location.reload();
                 window.top.history.go(0);
                 window.top.location.href = window.top.location.href;
