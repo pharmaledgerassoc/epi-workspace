@@ -2,17 +2,30 @@
 <html lang="en">
 
 <body>
-    <script>
-        function redirectToInitialURL() {
-            const initialURL = sessionStorage.getItem('initialURL');
-            if(!initialURL) {
-                return window.location.href = '/';
-            }
+<script>
+    function isValidURL(url) {
+        try {
+            const parsedUrl = new URL(url, window.location.origin);
+            // Ensure the URL is relative to the same origin
+            return parsedUrl.origin === window.location.origin;
+        } catch (e) {
+            return false;
+        }
+    }
 
-            window.location.href = initialURL;
+    function redirectToInitialURL() {
+        const initialURL = sessionStorage.getItem('initialURL');
+
+        if (!initialURL || !isValidURL(initialURL)) {
+            // If no valid URL is found, redirect to a default safe location (homepage)
+            return window.location.href = '/';
         }
 
-        redirectToInitialURL();
-    </script>
+        // Redirect to the valid initial URL
+        window.location.href = initialURL;
+    }
+
+    redirectToInitialURL();
+</script>
 </body>
 </html>
