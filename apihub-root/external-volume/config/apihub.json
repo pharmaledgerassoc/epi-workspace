@@ -76,6 +76,7 @@
     "/leaflets/"
   ],
   "oauthConfig": {
+    "whitelist": ["https://login.microsoftonline.com"],
     "issuer": {
       "issuer": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/",
       "authorizationEndpoint": "https://login.microsoftonline.com/d69968dd-8f36-47eb-b724-7f5e6e660066/oauth2/v2.0/authorize",
