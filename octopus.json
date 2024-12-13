@@ -27,7 +27,7 @@
           },
           {
             "type": "execute",
-            "cmd": "cd opendsu-sdk && npm install --skip-scripts"
+            "cmd": "cd opendsu-sdk && npm install --ignore-scripts"
           }
         ]
       },
