@@ -8,7 +8,6 @@
     "anchoring",
     "epi-mapping-engine",
     "epi-mapping-engine-results",
-    "get-gtin-owner",
     "leaflet-web-api",
     "integration-api",
     "versionlessDSU",
@@ -29,10 +28,6 @@
     "leaflet-web-api": {
       "module": "./../../gtin-resolver",
       "function": "getWebLeaflet"
-    },
-    "get-gtin-owner": {
-      "module": "./../../gtin-resolver",
-      "function": "getGTINOwner"
     },
     "integration-api": {
       "module": "./../../gtin-resolver",
@@ -83,9 +78,9 @@
     },
     "client": {
       "clientId": "e65a2002-324f-48f2-b32f-a40b76d5f821",
-      "scope": "email user.read offline_access openid api://e65a2002-324f-48f2-b32f-a40b76d5f821/.default",
+      "scope": "email user.read offline_access openid api://e65a2002-324f-48f2-b32f-a40b76d5f821/custom_scope",
       "redirectPath": "http://localhost:8080/?root=true",
-      "clientSecret": "null",
+      "clientSecret": "",
       "logoutUrl": "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/logout",
       "postLogoutRedirectUrl": "http://localhost:8080/?logout=true"
     },

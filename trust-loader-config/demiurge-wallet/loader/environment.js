@@ -4,7 +4,7 @@ export default {
   "agent": "browser",
   "system": "any",
   "browser": "any",
-  "mode": "dev-secure",
+  "mode": "sso-pin",
   "vaultDomain": "vault",
   "didDomain": "vault",
   "enclaveType": "WalletDBEnclave",

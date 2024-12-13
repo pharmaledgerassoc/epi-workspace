@@ -6,6 +6,7 @@
   "enable": ["mq", "enclave"],
   "skipOAuth": [
     "/bricking/vault",
-    "/anchor/vault"
+    "/anchor/vault",
+    "/bricking/vault/get-brick"
   ]
 }
