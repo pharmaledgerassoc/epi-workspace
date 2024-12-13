@@ -8,6 +8,7 @@
     "anchoring",
     "epi-mapping-engine",
     "epi-mapping-engine-results",
+    "get-gtin-owner",
     "leaflet-web-api",
     "integration-api",
     "versionlessDSU",
@@ -28,6 +29,10 @@
     "leaflet-web-api": {
       "module": "./../../gtin-resolver",
       "function": "getWebLeaflet"
+    },
+    "get-gtin-owner": {
+      "module": "./../../gtin-resolver",
+      "function": "getGTINOwner"
     },
     "integration-api": {
       "module": "./../../gtin-resolver",
@@ -63,11 +68,7 @@
     "/bdns",
     "/bundles",
     "/gtinOwner/",
-    "/leaflet-wallet/",
-    "/external-volume/wallets/leaflet-wallet/",
-    "/cloud-wallet/",
-    "/directory-summary/",
-    "/iframe/"
+    "/leaflets/"
   ],
   "oauthConfig": {
     "issuer": {
@@ -86,7 +87,7 @@
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
-    "debugLogEnabled": true
+    "debugLogEnabled": false
   },
   "serverAuthentication": true
 }
