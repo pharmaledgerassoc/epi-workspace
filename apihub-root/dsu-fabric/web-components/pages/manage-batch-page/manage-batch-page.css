@@ -288,3 +288,16 @@ input[type="time"]::-webkit-clear-button,
 #custom-date-icon svg {
     z-index: -1;
 }
+
+.advanced-settings {
+    margin-top: 60px;
+}
+
+#recallLabel {
+    background-color: transparent;
+    border: none;
+    color: fieldtext;
+    font-size: inherit;
+    margin-top: 20px;
+    margin-bottom: 0.75rem;
+}

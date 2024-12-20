@@ -1,7 +1,7 @@
 const LokiEnclaveFacade = require("loki-enclave-facade");
 const apihubModule = require("apihub");
 require("opendsu")
-const adapters = LokiEnclaveFacade.Adaptors;
+const adapters = LokiEnclaveFacade.Adapters;
 const path = require('path');
 const fs = require('fs');
 const apihubRootFolder = apihubModule.getServerConfig().storage;

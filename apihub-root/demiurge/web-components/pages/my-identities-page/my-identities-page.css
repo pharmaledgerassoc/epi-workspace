@@ -1,0 +1,32 @@
+my-identities-page{
+    display: block;
+    height: 100%;
+    padding: 40px 28px;
+}
+.page-header{
+    margin-bottom: 10px;
+}
+.did-identity{
+    width: 100%;
+    color: var(--dw-app-color);
+    font-size: 1rem;
+    font-family: "DM Sans regular";
+}
+.input-container{
+    position: relative;
+    width: 80%;
+}
+.copy-button{
+    font-size: 1.1rem;
+    top: 9px;
+    right: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--dw-app-color);
+    position: absolute;
+}
+
+.copy-button.disabled{
+    color: grey;
+    cursor: auto;
+}

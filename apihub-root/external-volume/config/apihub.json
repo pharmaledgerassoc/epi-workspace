@@ -11,6 +11,7 @@
     "get-gtin-owner",
     "leaflet-web-api",
     "integration-api",
+    "health-check-api",
     "versionlessDSU",
     "mq",
     "secrets",
@@ -42,6 +43,10 @@
         "epiCapacity": 5
       }
     },
+    "health-check-api": {
+      "module": "./../../gtin-resolver",
+      "function": "getHealthCheckAPIs"
+    },
     "versionlessDSU": {
       "module": "./components/versionlessDSU"
     },
@@ -71,6 +76,7 @@
     "/leaflets/"
   ],
   "oauthConfig": {
+    "whitelist": ["https://login.microsoftonline.com"],
     "issuer": {
       "issuer": "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/v2.0/",
       "authorizationEndpoint": "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/v2.0/authorize",

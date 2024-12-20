@@ -396,13 +396,14 @@ export class BatchesService {
 
     async saveBatch(batchData, isUpdate, skipMetadataUpdate = false) {
 
+        await webSkel.showLoading()
+        let checkResult = await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
+
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
             message: "Saving Batch..."
         });
-
-        let checkResult = await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
-
+        await webSkel.hideLoading();
         if (checkResult.status === "invalid") {
             await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);

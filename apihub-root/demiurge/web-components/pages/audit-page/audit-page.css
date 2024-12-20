@@ -1,0 +1,126 @@
+audit-page {
+    display: block;
+    height: 100%;
+    padding: 40px 28px;
+    overflow-y: scroll;
+}
+
+action-logs,
+demiurge-access-logs,
+dsu-fabric-access-logs {
+    display: grid;
+}
+
+
+.tab-section {
+    display: flex;
+    gap: 1px;
+}
+
+.tab-section div {
+    color: white;
+    text-align: center;
+    line-height: 1.5;
+    width: 50%;
+    border-radius: 8px 8px 0 0;
+    padding: 8px 16px;
+}
+
+.tab {
+    background-color: var(--tab-color);
+}
+
+.tab.selected {
+    background-color: var(--dw-app-color);
+}
+
+.data-item {
+    border-bottom: 0.25px solid var(--very-light-grey);
+}
+
+.search-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10px;
+    border-left: 1px solid var(--very-light-grey);
+    border-right: 1px solid var(--very-light-grey);
+}
+
+.input-container-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-label {
+    margin-right: 5px;
+}
+
+.table {
+    border: 1px solid var(--very-light-grey);
+}
+
+.table div {
+    padding: 0.75rem;
+}
+
+.column-header {
+    padding: 0.75rem;
+    background: var(--tab-color);
+    font-weight: bold;
+    border-bottom: 1px solid var(--very-light-grey);
+}
+
+
+.export-csv {
+    background-color: var(--dw-app-color);
+    border: 1px solid var(--dw-app-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 110%;
+}
+
+.x-mark {
+    font-weight: bold;
+    position: absolute;
+    left: 93%;
+    bottom: 1.5px;
+    display: none;
+}
+
+.result-icon {
+    height: 10px;
+    margin-left: 5px;
+}
+
+.rotate {
+    transform: rotate(90deg);
+}
+
+.table-pagination {
+    margin-top: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination-btn {
+    cursor: pointer;
+    background-color: var(--dw-app-color);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: bolder;
+}
+
+.margin-right {
+    margin-right: 16px;
+}
+
+search-input {
+    display: inline-block;
+    height: 27px;
+}
+

@@ -1,0 +1,90 @@
+booting-identity-page {
+    display: block;
+    height: 100%;
+    padding: 40px 28px;
+}
+
+.page-header {
+    margin-bottom: 10px;
+}
+
+.did-info-section {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-radius: var(--default-border-radius);
+    border: 1px solid var(--very-light-grey);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.warning-sign {
+    width: 20px;
+    margin-right: 20px;
+}
+
+.did-container {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.vault {
+    width: calc(100% - 427px);
+}
+
+.disabled-input {
+    font-size: 16px;
+    pointer-events: none;
+    background-color: var(--disabled-background);
+    border: 1px solid var(--disabled-border);
+    border-radius: var(--default-border-radius);
+    opacity: 0.5;
+    padding: 10px;
+    color: var(--disabled-text) !important;
+
+}
+
+.username {
+    width: -webkit-fill-available;
+}
+
+.did {
+    width: 45px;
+}
+
+.page-body {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.create-identity-button {
+    justify-content: center;
+    color: white;
+    display: flex;
+    align-items: center;
+    width: 190px;
+}
+
+.create-identity-button::before {
+    display: block;
+    content: "";
+    background-color: var(--white);
+    height: 16px;
+    aspect-ratio: 1;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: url("../../../demiurge/assets/images/icons/shield-fill-plus.svg");
+    margin-right: 10px;
+}
+
+.remove::before {
+    content: none !important;
+}
+
+.disabled-btn {
+    background-color: var(--dw-app-disabled-color);
+}
