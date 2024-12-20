@@ -1,0 +1,40 @@
+dialog {
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    min-width: 300px;
+    max-width: 90vw;
+}
+
+
+info-modal {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.modal-container {
+    display: flex;
+    flex-direction: column;
+    background-color: #f4f4f5;
+}
+
+.modal-header {
+    display: flex;
+    font-size: 1.3rem;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 1rem;
+    border-bottom: none;
+    width: 100%;
+    background-color: var(--dw-app-color);
+    color: #FFFFFF;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    white-space: normal;
+    word-wrap: break-word;
+    padding: 1rem;
+}

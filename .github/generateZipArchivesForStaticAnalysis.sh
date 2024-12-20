@@ -62,7 +62,7 @@ cd ../apihub-root/lwa
 zip -r "$targetFolder/LPWA$currentDate.zip" . -x ".git/*" "**/.git/**" "**/node_modules/**" "package-lock.json"
 cd $initialPWD
 
-cd ../demiurge
+cd ../apihub-root/demiurge
 zip -r "$targetFolder/Demiurge$currentDate.zip" . -x ".git/*" "**/.git/**" "**/node_modules/**" "seed" "package-lock.json"
 cd $initialPWD
 

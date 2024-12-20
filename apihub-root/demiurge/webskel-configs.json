@@ -1,0 +1,122 @@
+{
+  "components": [
+    {
+      "name": "sidebar-menu",
+      "type": "components",
+      "presenterClassName": "SidebarMenu"
+    },
+    {
+      "name": "groups-page",
+      "type": "pages",
+      "presenterClassName": "GroupsPage"
+    },
+    {
+      "name": "integration-page",
+      "type": "pages",
+      "presenterClassName": "IntegrationPage"
+    },
+    {
+      "name": "audit-page",
+      "type": "pages",
+      "presenterClassName": "AuditPage"
+    },
+    {
+      "name": "search-input",
+      "type": "components",
+      "presenterClassName": "SearchInput"
+    },
+    {
+      "name": "health-check-page",
+      "type": "pages",
+      "presenterClassName": "HealthCheckPage"
+    },
+    {
+      "name": "run-results-page",
+      "type": "pages",
+      "presenterClassName": "RunResultsPage"
+    },
+    {
+      "name": "component-details-page",
+      "type": "pages",
+      "presenterClassName": "ComponentDetailsPage"
+    },
+    {
+      "name": "group-member",
+      "type": "components",
+      "presenterClassName": "GroupMember"
+    },
+    {
+      "name": "data-recovery-key-modal",
+      "type": "modals",
+      "presenterClassName": "DataRecoveryKeyModal"
+    },
+    {
+      "name": "create-identity-modal",
+      "type": "modals",
+      "presenterClassName": "CreateIdentityModal"
+    },
+    {
+      "name": "break-glass-recovery-code-modal",
+      "type": "modals",
+      "presenterClassName": "BreakGlassRecoveryCodeModal"
+    },
+    {
+      "name": "waiting-access-modal",
+      "type": "modals",
+      "presenterClassName": "WaitingAccessModal"
+    },
+    {
+      "name": "my-identities-page",
+      "type": "pages",
+      "presenterClassName": "MyIdentitiesPage"
+    },
+    {
+      "name": "demiurge-access-logs",
+      "type": "components",
+      "presenterClassName": "DemiurgeAccessLogs"
+    },
+    {
+      "name": "dsu-fabric-access-logs",
+      "type": "components",
+      "presenterClassName": "DsuFabricAccessLogs"
+    },
+    {
+      "name": "action-logs",
+      "type": "components",
+      "presenterClassName": "ActionLogs"
+    },
+    {
+      "name": "message-toast",
+      "type": "components",
+      "presenterClassName": "MessageToast"
+    },
+    {
+      "name": "booting-identity-page",
+      "type": "pages",
+      "presenterClassName": "BootingIdentityPage"
+    },
+    {
+      "name": "info-modal",
+      "type": "modals"
+    },
+    {
+      "name": "member-info-modal",
+      "type": "modals",
+      "presenterClassName": "MemberInfoModal"
+    }
+  ],
+  "services": [
+    {
+      "name": "MembersService",
+      "path": "../services/MembersService.js"
+    },
+    {
+      "name": "MessagesService",
+      "path": "../services/MessagesService.js"
+    }
+  ],
+  "webComponentsRootDir": "web-components",
+  "defaultPage": "landing-page",
+  "storageServices": []
+}
+

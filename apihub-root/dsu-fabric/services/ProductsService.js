@@ -220,13 +220,14 @@ export class ProductsService {
     }
 
     async saveProduct(productData, updatedPhoto, isUpdate, skipMetadataUpdate = false) {
+        await webSkel.showLoading();
+        let checkResult = await this.checkProductStatus(productData.productCode, isUpdate);
 
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
             message: "Saving Product..."
         });
-
-        let checkResult = await this.checkProductStatus(productData.productCode, isUpdate);
+        await webSkel.hideLoading();
 
         if (checkResult.status === "invalid") {
             await webSkel.closeModal(modal);
