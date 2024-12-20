@@ -3,7 +3,7 @@
     "dependencies": [
         {
             "name": "opendsu-sdk",
-            "src": "http://github.com/opendsu/opendsu-sdk.git",
+            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
             "actions": [
                 {
                     "type": "smartClone",
@@ -52,7 +52,7 @@
         },
         {
             "name": "ethadapter",
-            "src": "https://github.com/opendsu/eth-adapter",
+            "src": "https://github.com/pdmfcsa/eth-adapter",
             "actions": [
                 {
                     "type": "smartClone",
