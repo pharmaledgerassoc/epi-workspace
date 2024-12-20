@@ -2,22 +2,22 @@
   "local.epi": {
    "replicas": [],
    "brickStorages": [
-     "$ORIGIN"
+     "http://127.0.0.1:8080"
    ],
    "anchoringServices": [
-     "$ORIGIN"
+     "http://127.0.0.1:8080"
    ]
  },
   "vault": {
     "replicas": [],
     "brickStorages": [
-      "$ORIGIN"
+      "http://127.0.0.1:8080"
     ],
     "anchoringServices": [
-      "$ORIGIN"
+      "http://127.0.0.1:8080"
     ],
     "notifications": [
-      "$ORIGIN"
+      "http://127.0.0.1:8080"
     ]
   }
 }

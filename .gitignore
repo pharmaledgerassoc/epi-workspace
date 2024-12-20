@@ -43,6 +43,8 @@ opendsu-sdk/
 apihub-root/lwa/
 apihub-root/initialEncryptionTest
 apihub-root/dsu-fabric/bundles/
+apihub-root/demiurge/bundles/
+apihub-root/external-volume/locks
 apihub-root/external-volume/cache/
 apihub-root/external-volume/encryption-keys/
 apihub-root/external-volume/lightDB/
