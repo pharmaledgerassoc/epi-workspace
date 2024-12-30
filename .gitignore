@@ -33,6 +33,8 @@ apihub-root/bundles/
 apihub-root/external-volume/mqs/
 apihub-root/external-volume/wallets/
 apihub-root/lightweight-pwa/lib/
+.ssotoken
+demiurge/
 delayv-auth-feat-ssapp/
 reporting-service/
 truemedhemo-auth-feat-ssapp/
