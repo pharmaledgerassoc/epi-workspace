@@ -66,6 +66,7 @@
   "enableJWTAuthorisation": false,
   "enableSimpleAuth": true,
   "enableOAuth": true,
+  "enableClientCredentialsOauth": true,
   "oauthJWKSEndpoint": "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/discovery/v2.0/keys",
   "enableLocalhostAuthorization": true,
   "skipOAuth": [
