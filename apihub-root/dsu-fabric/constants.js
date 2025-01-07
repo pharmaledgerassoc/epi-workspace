@@ -81,6 +81,7 @@ export default {
             internalMaterialCode: "Internal material code",
             strength: "Strength",
             photo: "Product Photo",
+            productRecall: "Mark Product as Recalled",
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management"
         },
@@ -90,7 +91,8 @@ export default {
             expiryDate: "Expiry date",
             enableExpiryDay: "Enable day selection",
             gtin: "Product Code",
-            productName: "Product Brand/Invented name"
+            productName: "Product Brand/Invented name",
+            recallCheckbox: "Mark Batch as Recalled",
         }
     },
     OBJECT_AVAILABILITY_STATUS: {

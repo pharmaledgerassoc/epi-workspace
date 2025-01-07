@@ -4,9 +4,9 @@ mobile/scan-app
 privatesky
 menu-wallet-prototype
 leaflet-ssapp
-demiurge
 ethadapter
 apihub-root/dsu-fabric/WebSkel
+apihub-root/demiurge/WebSkel
 apihub-root/demiurge-wallet/loader
 apihub-root/leaflet-wallet/loader
 apihub-root/dsu-fabric-wallet/loader
@@ -33,9 +33,25 @@ apihub-root/bundles/
 apihub-root/external-volume/mqs/
 apihub-root/external-volume/wallets/
 apihub-root/lightweight-pwa/lib/
+.ssotoken
+demiurge/
 delayv-auth-feat-ssapp/
 reporting-service/
 truemedhemo-auth-feat-ssapp/
 opendsu-sdk/
 
 .htpassword.secret
+
+apihub-root/lwa/
+apihub-root/initialEncryptionTest
+apihub-root/dsu-fabric/bundles/
+apihub-root/demiurge/bundles/
+apihub-root/external-volume/locks
+apihub-root/external-volume/cache/
+apihub-root/external-volume/encryption-keys/
+apihub-root/external-volume/lightDB/
+apihub-root/external-volume/mq_JWT_Auth_Seeder
+apihub-root/external-volume/secrets/
+apihub-root/external-volume/fixed-urls/
+apihub-root/external-volume/gtinOwner/
+apihub-root/external-volume/versionlessdsu/
