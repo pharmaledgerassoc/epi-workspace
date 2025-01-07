@@ -33,6 +33,12 @@ For more details about what a *workspace* is check out the [template-workspace](
 
 In order to use the workspace, we need to follow a list of steps presented below.
 
+### Step 0: Check specific instructions/configurations for a particular setup.
+
+For a single-sign-on setup on a developer's laptop, please see the private annex documents on Jira PDMONB-6.
+
+The remaining instructions are generic.
+
 ### Step 1: Clone the workspace
 
 ```sh
