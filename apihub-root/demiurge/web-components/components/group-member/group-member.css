@@ -1,0 +1,43 @@
+.member-container{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items: center;
+    border: 1px solid var(--member-border);
+    margin-bottom:10px;
+    padding: 5px 15px;
+    cursor:pointer;
+}
+.member-data{
+    display:flex;
+    gap:10px;
+    flex-direction:column;
+    cursor:pointer;
+}
+.member-did{
+    font-family: "DM Sans";
+    font-size:14px;
+}
+.remove-member-button {
+    background:none;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border: none;
+    width: 72px;
+    height: 57px;
+    color:initial;
+}
+.remove-member-button:hover{
+    background: var(--dw-app-color);
+    color:white;
+}
+.remove-member-button:hover .remove-member-button-icon{
+ filter:invert(1);
+}
+.remove-member-button-icon{
+    background: url("./assets/images/icons/trash.svg") no-repeat center;
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+}

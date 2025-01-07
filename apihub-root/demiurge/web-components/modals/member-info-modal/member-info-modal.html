@@ -1,0 +1,42 @@
+<div id="modal-container">
+    <div id="modal-header">
+        <div id="modal-title">
+            <strong>$$data-title</strong>
+        </div>
+        <div id="modal-exit" class="pointer" data-action="closeModal">
+            <img id="close-modal-icon" src="./assets/images/icons/close-modal.svg" alt="">
+        </div>
+    </div>
+    <div id="modal-body">
+        <div class="member-page-data-row">
+            <div class="member-page-data-row-field">
+                <div class="data-row-field-name">Username</div>
+                <input type="text" class="data-row-field-value" value="$$username" readonly>
+            </div>
+            <div class="member-page-data-row-field">
+                <div class="data-row-field-name">User DID</div>
+                <div class="data-row-field-value value-highlight-field">
+                    <input type="text" id="userDID" value="$$userDID" readonly>
+                    <div class="copy-field-button no-select" data-action="copyFieldValue userDID"><strong>Copy</strong>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="member-page-data-row">
+            <div class="member-page-data-row-field">
+                <div class="data-row-field-name">Group Name</div>
+                <input type="text" class="data-row-field-value" value="$$groupName" readonly>
+            </div>
+            <div class="member-page-data-row-field">
+                <div class="data-row-field-name">Group DID</div>
+                <div class="data-row-field-value value-highlight-field">
+                    <input type="text" id="groupDID" value="$$groupDID" readonly>
+                    <div class="copy-field-button no-select" data-action="copyFieldValue groupDID"><strong>Copy</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -259,3 +259,14 @@ manage-product-page {
     max-height: 175px;
     max-width: 100%;
 }
+
+.advanced-settings {
+    margin-top: 60px;
+}
+
+#recallLabel {
+    background-color: transparent;
+    border: none;
+    color: fieldtext;
+    font-size: inherit;
+}
