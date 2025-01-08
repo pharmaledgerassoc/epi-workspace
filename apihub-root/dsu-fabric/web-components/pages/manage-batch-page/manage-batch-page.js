@@ -105,10 +105,11 @@ export class ManageBatchPage extends CommonPresenterClass {
             //to do format with 00 if no day in date
             this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
         } else {
-            if (inputName === "enableExpiryDay") {
+            if (inputName === "enableExpiryDay") 
                 event.target.value = event.target.checked ? "on" : "off";
-            }
-            this.updatedBatch[inputName] = event.target.value;
+            
+            this.updatedBatch[inputName] = inputName === "batchRecall" ? 
+                event.target.checked : event.target.value; 
         }
     }
 
@@ -188,6 +189,8 @@ export class ManageBatchPage extends CommonPresenterClass {
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
                 dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
+                if(this.existingBatch?.batchRecall === true)
+                    this.element.querySelector('#batchRecall').checked = true;
             }
 
         }

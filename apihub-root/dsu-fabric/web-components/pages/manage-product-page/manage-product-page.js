@@ -25,7 +25,6 @@ export class ManageProductPage extends CommonPresenterClass {
                 productModel.photo = "./assets/images/no-picture.png";
             }
             //save initial state
-         
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
            
