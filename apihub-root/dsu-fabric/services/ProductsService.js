@@ -329,6 +329,15 @@ export class ProductsService {
                     result.push(webSkel.appServices.getPhotoDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
                     return;
                 }
+                if (key === "productRecall") {
+                    const diffsKey = {
+                        oldValue:(typeof diffs[key].oldValue === 'boolean' && diffs[key].oldValue === true) ? 'Yes' : ' ',
+                        newValue: (typeof diffs[key].newValue === 'boolean' && diffs[key].newValue === true) ? 'Yes' : ' ',
+                    };
+                    return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.PRODUCT)); 
+                   
+                } 
+                    
                 result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.PRODUCT));
             });
             Object.keys(epiDiffs).forEach(key => {
