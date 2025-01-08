@@ -25,6 +25,9 @@ export class ManageProductPage extends CommonPresenterClass {
                 productModel.photo = "./assets/images/no-picture.png";
             }
             //save initial state
+            if(productModel?.recallProduct === "")
+                productModel?.recallProduct = false;
+
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
            
@@ -371,7 +374,6 @@ export class ManageProductPage extends CommonPresenterClass {
                 if (!diffs.needsMetadataUpdate) {
                     shouldSkipMetadataUpdate = true;
                 }
-                console.log(this.productData);
                 await webSkel.appServices.saveProduct(this.productData, this.existingProduct.photo, true, shouldSkipMetadataUpdate);
             }
             //else cancel button pressed

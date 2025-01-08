@@ -55,7 +55,7 @@ export class ProductsService {
             internalMaterialCode: clone.internalMaterialCode,
             inventedName: clone.inventedName,
             nameMedicinalProduct: clone.nameMedicinalProduct,
-            productRecall: clone?.productRecall || "",
+            productRecall: typeof (clone?.productRecall) === 'boolean' ? clone?.productRecall : false,
             strengths: this.cleanUnitsForPayload(clone.strengthUnits),
             markets: this.cleanUnitsForPayload(clone.marketUnits)
             /*,
