@@ -25,9 +25,7 @@ export class ManageProductPage extends CommonPresenterClass {
                 productModel.photo = "./assets/images/no-picture.png";
             }
             //save initial state
-            if(productModel?.recallProduct === "")
-                productModel?.recallProduct = false;
-
+         
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
            
