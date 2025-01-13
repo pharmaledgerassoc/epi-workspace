@@ -59,6 +59,18 @@ export class WaitingAccessModal {
             });
             webSkel.getClosestParentElement(target, "dialog").style.display = "none"
             const lockId = await getLock(recoveryKey, 30*1000, 5, 1000);
+
+            if(!lockId){
+                webSkel.getClosestParentElement(target, "dialog").style.display = "";
+                webSkel.notificationHandler.reportUserRelevantError("Somebody else is editing right now. Try again later!");
+                
+                infoModal.close();
+                infoModal.remove();
+                webSkel.closeModal(target);
+                return;
+            }
+
+
             await appManager.useBreakGlassCode(recoveryKey);
             await releaseLock(recoveryKey, lockId);
             infoModal.close();
