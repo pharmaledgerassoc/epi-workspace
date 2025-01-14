@@ -401,11 +401,15 @@ export class ManageProductPage extends CommonPresenterClass {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
+        selectedUnit.mahName = webSkel.unsanitize(selectedUnit.mahName);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit));
+       
         let excludedOptions = this.productData.marketUnits
             .filter(data => data.marketId !== selectedUnit.marketId && data.action !== "delete")
             .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+
+        
         let modalData = await webSkel.showModal("markets-management-modal", {
             ["updateData"]: encodedJSON, id: selectedUnit.id, excluded: encodedExcludedOptions
         }, true);
