@@ -289,7 +289,7 @@ export class ManageBatchPage extends CommonPresenterClass {
 
     async addBatch(_target) {
         let formData = await webSkel.extractFormInformation(_target);
-
+        formData.data.batchRecall = formData.elements.batchRecall.element.checked;
         let validationResult = this.validateFormData(formData.data);
         if (validationResult.isValid) {
             formData.data.expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);
