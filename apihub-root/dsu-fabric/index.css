@@ -442,7 +442,6 @@ dialog[class="spinner"] {
 .toast.error {
     border-top-color: #EF4C61;
     box-shadow: 0 1px 3px #EF4C61;
-
 }
 
 .toast-close-button {

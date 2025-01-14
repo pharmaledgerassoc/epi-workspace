@@ -11,6 +11,7 @@
     "get-gtin-owner",
     "leaflet-web-api",
     "integration-api",
+    "health-check-api",
     "versionlessDSU",
     "mq",
     "secrets",
@@ -42,6 +43,10 @@
         "epiCapacity": 5
       }
     },
+    "health-check-api": {
+          "module": "./../../gtin-resolver",
+          "function": "getHealthCheckAPIs"
+    },
     "versionlessDSU": {
       "module": "./components/versionlessDSU"
     },
@@ -72,6 +77,7 @@
     "/leaflets/"
   ],
   "oauthConfig": {
+    "whitelist": ["${whitelist}"],
     "issuer": {
       "issuer": "${issuer}",
       "authorizationEndpoint": "${authorization_endpoint}",

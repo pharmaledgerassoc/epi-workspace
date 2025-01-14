@@ -46,6 +46,7 @@ export class BatchesService {
 
     batchFields() {
         return [
+            "batchRecall",
             "batchNumber",
             "enableExpiryDay",
             "epiProtocol",
@@ -313,7 +314,8 @@ export class BatchesService {
             productCode: batchData.productCode,
             batchNumber: batchData.batchNumber,
             expiryDate: batchData.expiryDate,
-            packagingSiteName: batchData.packagingSiteName,
+            batchRecall: typeof (batchData?.batchRecall) === 'boolean' ? batchData?.batchRecall : false,
+            packagingSiteName: batchData.packagingSiteName, 
         };
         return result;
     }
@@ -396,13 +398,14 @@ export class BatchesService {
 
     async saveBatch(batchData, isUpdate, skipMetadataUpdate = false) {
 
+        await webSkel.showLoading()
+        let checkResult = await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
+
         let modal = await webSkel.showModal("progress-info-modal", {
             header: "Info",
             message: "Saving Batch..."
         });
-
-        let checkResult = await this.checkBatchStatus(batchData.productCode, batchData.batchNumber, isUpdate);
-
+        await webSkel.hideLoading();
         if (checkResult.status === "invalid") {
             await webSkel.closeModal(modal);
             webSkel.notificationHandler.reportUserRelevantError(checkResult.message, checkResult.err);
@@ -481,6 +484,7 @@ export class BatchesService {
             }
 
             Object.keys(diffs).forEach(key => {
+                
                 if (key === "expiryDate") {
                     let daySelectionObj = {
                         oldValue: initialBatch.enableExpiryDay,
@@ -494,8 +498,16 @@ export class BatchesService {
                     result.push(item);
                     return;
                 }
+                if(key === "batchRecall") {
+                    const diffsKey = {
+                        oldValue:(typeof diffs[key].oldValue === 'boolean' && diffs[key].oldValue === true) ? 
+                            constants.MODEL_LABELS_MAP.BATCH.recalled : ' ',
+                        newValue: (typeof diffs[key].newValue === 'boolean' && diffs[key].newValue === true) ? 
+                            constants.MODEL_LABELS_MAP.BATCH.recalled : ' ',
+                    };
+                    return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH)); 
+                }
                 result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
-
             });
             Object.keys(epiDiffs).forEach(key => {
                 result.push(webSkel.appServices.getEpiDiffViewObj(epiDiffs[key]));

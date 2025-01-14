@@ -7,7 +7,7 @@
       "label": "Enterprise Wallet"
     },
     {
-      "href": "demiurge-wallet/loader/",
+      "href": "demiurge",
       "background_color": "#FAA368",
       "icon": "fa-solid fa-atom fa-4x",
       "label": "Demiurge Wallet"

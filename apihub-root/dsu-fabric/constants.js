@@ -1,4 +1,5 @@
 export default {
+    YES: 'Yes',
     'PACKAGES_STORAGE_PATH': "/app/data/packages.json",
     'DATA_STORAGE_PATH': "/app/data",
     'PRODUCTS_TABLE': "products",
@@ -81,6 +82,8 @@ export default {
             internalMaterialCode: "Internal material code",
             strength: "Strength",
             photo: "Product Photo",
+            productRecall: "Mark Product as Recalled",
+            recalled: "Yes",
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management"
         },
@@ -90,7 +93,9 @@ export default {
             expiryDate: "Expiry date",
             enableExpiryDay: "Enable day selection",
             gtin: "Product Code",
-            productName: "Product Brand/Invented name"
+            productName: "Product Brand/Invented name",
+            batchRecall: "Mark Batch as Recalled",
+            recalled: "Yes"
         }
     },
     OBJECT_AVAILABILITY_STATUS: {

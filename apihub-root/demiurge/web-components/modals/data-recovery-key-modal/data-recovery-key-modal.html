@@ -1,0 +1,47 @@
+<div id="modal-container">
+    <div id="modal-header">
+        <div id="modal-title">
+            <strong>Data Recovery Key</strong>
+        </div>
+        <div id="modal-exit" class="pointer" data-action="closeModal">
+            <img id="close-modal-icon" src="./assets/images/icons/close-modal.svg" alt="">
+        </div>
+    </div>
+    <div id="modal-body">
+        <div class="modal-input">
+            <div class="modal-input-field-data">
+                <div class="modal-input-field-name">
+                    <strong>Copy Data Recovery Key</strong>
+                </div>
+                <div class="modal-input-field-value">
+                    <input class="input-value" type="password" id="data-recovery-key-copy" value="$$dataRecoveryKey"
+                           readonly>
+                    <div class="pointer no-select" data-action="copyRecoveryKey"><strong>Copy</strong></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-input">
+            <div class="alternative-action">
+                <img src="./assets/images/icons/clipboard-check.svg" alt="">
+                <strong>Or go ahead and</strong>
+            </div>
+            <div class="modal-input-field-data">
+                <div class="modal-input-field-name">
+                    <strong>Paste and submit your Data Recovery Key here</strong>
+                </div>
+                <div class="modal-input-field-value-container">
+                    <div class="modal-input-field-value">
+                        <input class="input-value" type="password" id="data-recovery-key">
+                        <div class="pointer no-select" data-action="pasteToField data-recovery-key"><strong>Paste</strong></div>
+                    </div>
+                    <button class="modal-action-button n" id="submitDataRecoveryKey"
+                            data-local-action="submitDataRecoveryKey"><strong>Submit</strong>
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
