@@ -66,7 +66,6 @@ export class WaitingAccessModal {
                 
                 infoModal.close();
                 infoModal.remove();
-                webSkel.closeModal(target);
                 return;
             }
 
