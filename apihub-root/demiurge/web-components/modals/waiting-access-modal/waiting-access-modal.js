@@ -61,7 +61,17 @@ export class WaitingAccessModal {
                 content: "Your break glass recovery code is being processed. Please wait for the access to be granted."
             });
             webSkel.getClosestParentElement(target, "dialog").style.display = "none"
+
             lockId = await getLock(recoveryKey, 30*1000, 5, 1000);
+
+            if(!lockId){
+                webSkel.getClosestParentElement(target, "dialog").style.display = "";
+                webSkel.notificationHandler.reportUserRelevantError("Somebody else is editing right now. Try again later!");
+                
+                infoModal.close();
+                infoModal.remove();
+                return;
+            }
 
             await appManager.useBreakGlassCode(recoveryKey);
             await releaseLock(recoveryKey, lockId);
