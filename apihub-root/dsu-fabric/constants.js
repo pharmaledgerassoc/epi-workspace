@@ -86,7 +86,7 @@ export default {
             recalled: "Yes",
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management",
-            marketingAuthorizationNumber: "Marketing Authorization Name",
+            marketingAuthorizationNumber: "Marketing Authorization Number",
             dateOfFirstAuthorization: "Date of first authorization",
             genericNameProduct: "Generic Name"
         },
