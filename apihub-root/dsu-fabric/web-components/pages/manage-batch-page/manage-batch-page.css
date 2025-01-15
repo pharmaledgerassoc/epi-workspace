@@ -53,36 +53,6 @@
     width: 50%;
 }
 
-.form-field {
-    display: flex;
-    flex-direction: column;
-    padding: 4px 0.75rem 0px;
-    border-bottom: 1.5px solid var(--primary-background-color);
-}
-
-.label {
-    color: var(--primary-background-color);
-}
-
-.text-input::placeholder {
-    font-size: 14px;
-    font-style: italic;
-}
-
-.text-input {
-    font-size: 16px;
-    border: 0;
-    outline: none;
-    margin: 10px 0;
-}
-
-.text-input-disabled {
-    background: var(--disabled-background);
-    font-size: 16px;
-    border: 0;
-    outline: none;
-    margin: 10px 0;
-}
 
 #productCode {
     color: var(--select-color);
@@ -94,41 +64,6 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 1.5;
-}
-
-.text-input:focus {
-    border: none;
-}
-
-.form-field-container .form-field {
-    margin-top: 1rem;
-}
-
-.form-field:not(:first-child) {
-    margin-top: 1rem;
-}
-
-.label-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.pen-square {
-    width: 16px;
-}
-
-.pen-square-white {
-    width: 16px;
-    fill: white;
-}
-
-.form-field-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-#expiry-date, #day-selection {
-    width: 50%;
 }
 
 #day-selection {
@@ -149,35 +84,6 @@
     font-size: 12px;
 }
 
-#date {
-    /* Firefox overlapping of default calendar Icon */
-    /*margin: 10px 0px 10px 4.34px; */
-    width: 100%;
-}
-
-input[type="date"] {
-    outline: none;
-    border: none;
-}
-
-input[type="month"] {
-    outline: none;
-    border: none;
-}
-
-.disabled-form-field {
-    display: flex;
-    color: var(--disabled);
-    border-color: var(--disabled);
-    background: var(--disabled-background);
-}
-
-.checkbox {
-    padding: 10px;
-    border-bottom: none;
-    display: block;
-    min-height: initial;
-}
 
 .leaflet-container {
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.6);
@@ -211,6 +117,10 @@ input[type="month"] {
     resize: none;
 }
 
+#custom-date-input {
+   margin-top: .25rem;
+}
+
 .form-buttons {
     margin-top: calc(60px - 1rem);
 }
@@ -223,70 +133,6 @@ input[type="month"] {
 .checkbox-container {
     display: flex;
     align-items: flex-start;
-}
-
-#custom-date-icon {
-    position: relative;
-    display: inline-block;
-}
-
-#custom-date-icon {
-    position: relative;
-}
-
-#custom-date-icon svg {
-    /* Firefox Default Calendar Icon overriding */
-    position: absolute;
-    right: -1.24px;
-    top: 11.4px;
-    width: 19px;
-    height: 13px;
-    cursor: pointer;
-}
-
-#displayDate {
-    width: 100%;
-}
-
-#svg2 {
-    display: none;
-}
-
-/* Chrome,Safari,Edge */
-input[type="month"]::-webkit-calendar-picker-indicator,
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="time"]::-webkit-clear-button,
-.date-format-remover::-webkit-datetime-edit,
-.date-format-remover::-webkit-inner-spin-button,
-.date-format-remover::-webkit-clear-button {
-    display: none !important;
-}
-
-.date-format-remover:before {
-    position: absolute;
-    top: 0.45rem;
-    content: attr(data-date);
-    display: inline-block;
-}
-
-.form-control {
-    display: block;
-    width: 100%;
-    height: calc(1.5em + 0.75rem + 2px);
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    border: none;
-    background: none;
-    box-shadow: none;
-    padding: 0px;
-    outline: none;
-    resize: none;
-    overflow: auto;
-}
-
-#custom-date-icon svg {
-    z-index: -1;
 }
 
 .advanced-settings {

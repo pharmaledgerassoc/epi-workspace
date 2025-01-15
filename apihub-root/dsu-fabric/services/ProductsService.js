@@ -12,7 +12,11 @@ export class ProductsService {
             "productCode",
             "inventedName",
             "nameMedicinalProduct",
-            "internalMaterialCode"/*,
+            "internalMaterialCode",
+            "marketingAuthorizationNumber",
+            "dateOfFirstAuthorization",
+            "genericNameProduct"
+            /*,
             "patientLeafletInfo"*/
         ]
     }
@@ -54,7 +58,10 @@ export class ProductsService {
             productCode: clone.productCode,
             internalMaterialCode: clone.internalMaterialCode,
             inventedName: clone.inventedName,
+            genericNameProduct: clone.genericNameProduct,
             nameMedicinalProduct: clone.nameMedicinalProduct,
+            marketingAuthorizationNumber: clone.marketingAuthorizationNumber,
+            dateOfFirstAuthorization: clone.dateOfFirstAuthorization,
             productRecall: typeof (clone?.productRecall) === 'boolean' ? clone?.productRecall : false,
             strengths: this.cleanUnitsForPayload(clone.strengthUnits),
             markets: this.cleanUnitsForPayload(clone.marketUnits)

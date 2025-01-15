@@ -1,4 +1,4 @@
-import {changeSidebarFromURL, createObservableObject, navigateToPage} from "../../../utils/utils.js";
+import {changeSidebarFromURL, createObservableObject, navigateToPage, parseFormData, renderDateInput} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
 
@@ -36,6 +36,8 @@ export class ManageProductPage extends CommonPresenterClass {
         }
         this.selected = "epi";
         this.productVersion = this.productData.productVersion;
+
+        console.log(this.productData);
 
     }
 
@@ -82,6 +84,9 @@ export class ManageProductPage extends CommonPresenterClass {
 
     afterRender() {
         changeSidebarFromURL();
+        // render date input
+        renderDateInput(this.element.querySelector("#custom-date-input"), null, this.productData?.dateOfFirstAuthorization || null); 
+ 
         document.addEventListener('keypress', function (event) {
             if (event.key === 'Enter' && event.currentTarget.activeElement.tagName.toLowerCase() === "input") {
                 event.stopImmediatePropagation();
@@ -92,9 +97,11 @@ export class ManageProductPage extends CommonPresenterClass {
         let productCode = this.element.querySelector("#productCode");
         for (const key of webSkel.appServices.productInputFieldNames()) {
             let input = this.element.querySelector(`#${key}`);
+            
             if(input.type === 'checkbox' && input.name === 'productRecall') {
                 input.checked = this.productData[key];
             } else { 
+              
                 input.value = this.productData[key] || "";
             }
         }
@@ -324,7 +331,6 @@ export class ManageProductPage extends CommonPresenterClass {
 
     validateFormData(data) {
         const errors = [];
-
         if (!data.productCode) {
             errors.push('Product Code is required.');
         }
@@ -358,10 +364,16 @@ export class ManageProductPage extends CommonPresenterClass {
     async updateProduct() {
         //const conditions = {"otherFieldsCondition": {fn: this.otherFieldsCondition, errorMessage: "Invalid input!"}};
         //  let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        
+        // parse do valor para remover trim no final do campo
+        // this.productData = parseFormData(this.productData);
         let validationResult = this.validateFormData(this.productData);
 
         if (validationResult.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
+            if(diffs.length === 0)
+                return false;
+            
             let confirmation = await webSkel.showModal("data-diffs-modal", {
                 diffs: encodeURIComponent(JSON.stringify(diffs)),
                 productData: encodeURIComponent(JSON.stringify(this.productData))

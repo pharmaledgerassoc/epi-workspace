@@ -1,4 +1,7 @@
 <div class="page-header">
+    <!-- <button onclick="toggleSidebar()" id="toggle-sidebar-button">
+        <img src="./assets/icons/menu.svg" alt="menu">
+    </button> -->
     <div class="page-title">
         Manage Product
     </div>
@@ -26,8 +29,19 @@
                 <input userRights="$$userRights" type="text" class="text-input" name="inventedName" id="inventedName"
                        placeholder="Add product name" required>
             </div>
+
+            <div class="form-field">
+                <div class="label-container">
+                    <label class="label" for="genericNameProduct" userRights="$$userRights">Generic Name</label>
+                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                </div>
+                <input userRights="$$userRights" type="text" class="text-input" name="genericNameProduct" id="genericNameProduct"
+                       placeholder="Add Generic Name">
+            </div>
+
+
             <div class="form-field-container">
-                <div class="form-field name-of-medicinal-product">
+                <div class="form-field width-expand">
                     <div class="label-container">
                         <label class="label" for="nameMedicinalProduct" userRights="$$userRights">Name of Medicinal
                             Product</label>
@@ -37,7 +51,8 @@
                               name="nameMedicinalProduct"
                               id="nameMedicinalProduct" placeholder="Add product description" required></textarea>
                 </div>
-                <div class="form-field product-photo-field">
+
+                <div class="form-field width-1-3">
                     <div class="label-container">
                         <label class="label" for="photo" userRights="$$userRights">Product Photo</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
@@ -52,6 +67,8 @@
                     </div>
                 </div>
             </div>
+
+
             <div class="form-field material-code">
                 <div class="label-container">
                     <label class="label" for="internalMaterialCode" userRights="$$userRights">Internal Material
@@ -61,6 +78,35 @@
                 <input userRights="$$userRights" type="text" class="text-input" name="internalMaterialCode"
                        id="internalMaterialCode"
                        placeholder="Add internal material code">
+            </div>
+
+
+            <div class="form-field-container" userRights="$$userRights">
+                <div class="form-field width-expand">
+                    <div class="label-container">
+                        <label class="label" for="marketingAuthorizationNumber" userRights="$$userRights">Marketing Authorization Name</label>
+                        <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                    </div>
+                    <input userRights="$$userRights" type="text" class="text-input" name="marketingAuthorizationNumber" id="marketingAuthorizationNumber"
+                        placeholder="Add Marketing Authorization Name">
+                </div>
+
+                <div userRights="$$userRights" class="form-field width-1-3">
+                    <div class="date-field" id="dateOfFirstAuthorization">
+                        <div class="label-container">
+                            <label class="label" for="dateOfFirstAuthorization">First Authorization</label>
+                            <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                        </div>
+                        <div id="custom-date-input" class="custom-date-input"  data-input-name="dateOfFirstAuthorization">
+                            <svg id="svg1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/>
+                            </svg>
+                            <svg id="svg2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192h80v56H48V192zm0 104h80v64H48V296zm128 0h96v64H176V296zm144 0h80v64H320V296zm80-48H320V192h80v56zm0 160v40c0 8.8-7.2 16-16 16H320V408h80zm-128 0v56H176V408h96zm-144 0v56H64c-8.8 0-16-7.2-16-16V408h80zM272 248H176V192h96v56z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-buttons">

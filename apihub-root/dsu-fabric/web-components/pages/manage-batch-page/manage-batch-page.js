@@ -1,6 +1,7 @@
 import {
     changeSidebarFromURL,
     createObservableObject,
+    renderDateInput
 } from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
@@ -116,7 +117,7 @@ export class ManageBatchPage extends CommonPresenterClass {
     attachEventListeners() {
         let newDateInput;
         this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-            const dateContainer = this.element.querySelector('#custom-date-icon');
+            const dateContainer = this.element.querySelector('#custom-date-input');
             const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
             const svg1 = dateContainer.querySelector('#svg1');
             const svg2 = dateContainer.querySelector('#svg2');
@@ -160,7 +161,7 @@ export class ManageBatchPage extends CommonPresenterClass {
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
         /*TODO replace webSkel.appServices.createDateInput with date web component if necessary */
 
-        const dateContainer = this.element.querySelector('#custom-date-icon');
+        const dateContainer = this.element.querySelector('#custom-date-input');
 
 
         const pageModes = {
@@ -173,7 +174,8 @@ export class ManageBatchPage extends CommonPresenterClass {
                     option.text = `${product.productCode} - ${product.inventedName}`;
                     selectInput.appendChild(option);
                 });
-                dateContainer.insertBefore(webSkel.appServices.createDateInput('date'), dateContainer.firstChild);
+                renderDateInput(dateContainer);
+                // dateContainer.insertBefore(webSkel.appServices.createDateInput('date'), dateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
                     const {
@@ -188,7 +190,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             EDIT_BATCH: () => {
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
-                dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
+                renderDateInput(dateContainer, expiryDateInput);
                 if(this.existingBatch?.batchRecall === true)
                     this.element.querySelector('#batchRecall').checked = true;
             }
