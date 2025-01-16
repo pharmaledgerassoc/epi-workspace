@@ -52,22 +52,38 @@ export class WaitingAccessModal {
 
         let appManager = AppManager.getInstance();
 
+        let infoModal;
+        let lockId;
+        
         try {
-            let infoModal = await webSkel.showModal("info-modal", {
+            infoModal = await webSkel.showModal("info-modal", {
                 title: "Info",
                 content: "Your break glass recovery code is being processed. Please wait for the access to be granted."
             });
             webSkel.getClosestParentElement(target, "dialog").style.display = "none"
-            const lockId = await getLock(recoveryKey, 30*1000, 5, 1000);
+            lockId = await getLock(recoveryKey, 30*1000, 5, 1000);
+
+            if(!lockId){
+                webSkel.getClosestParentElement(target, "dialog").style.display = "";
+                webSkel.notificationHandler.reportUserRelevantError("Somebody else is editing right now. Try again later!");
+                return;
+            }
+
             await appManager.useBreakGlassCode(recoveryKey);
-            await releaseLock(recoveryKey, lockId);
-            infoModal.close();
-            infoModal.remove();
-            webSkel.closeModal(target);
         } catch (err) {
             webSkel.getClosestParentElement(target, "dialog").style.display = "";
             webSkel.notificationHandler.reportUserRelevantError("Failed to use the Break Glass Code! Check the value that you entered and try again.");
             return;
+        } finally {
+            if(!!infoModal) {
+                infoModal.close();
+                infoModal.remove();
+            }
+
+            if(!!lockId)
+                await releaseLock(recoveryKey, lockId);
         }
+
+        webSkel.closeModal(target);
     }
 }
