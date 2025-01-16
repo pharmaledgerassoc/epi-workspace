@@ -35,29 +35,62 @@ In order to use the workspace, we need to follow a list of steps presented below
 
 ### Step 0: Check specific instructions/configurations for a particular setup.
 
-For a single-sign-on setup on a developer's laptop, please see the private annex documents on Jira PDMONB-6.
+Installation will default to use single sign-on.  
+~~For a single-sign-on setup on a developer's laptop, please see the private annex documents on Jira PDMONB-6.~~
 
-The remaining instructions are generic.
+~~The remaining instructions are generic.~~
 
 ### Step 1: Clone the workspace
 
 ```sh
-$ git clone https://github.com/pharmaledgerassoc/epi-workspace.git
+$ git clone https://github.com/pharmaledgerassoc/epi-workspace.git  
+   
+   or   
+     
+$ git clone https://github.com/pdmfcsa/epi-workspace.git
+```   
+After you cloned the repository was cloned, you must export the environment variable for the github repositories.   
+
+```sh   
+$ export GITHUB_ORGANIZATION=PharmaledgerAssoc 
+
+    or 
+
+$ export GITHUB_ORGANIZATION=PDMFCSA 
+```
+<span style="color:red">Note: If you switch terminals you have to redo the previous step.</span>
+
+Add a file called .ssotoken to the project root with the sso client secret.
+
+While in the *epi-workspace* folder run:
+```sh    
+$ echo "Client Secret" > .ssotoken
 ```
 
-After the repository was cloned, you must install all the dependencies.
 
+Install all the dependencies.
+While in the *epi-workspace* folder run:
 ```sh
-$ cd epi-workspace
-#Important: If you plan to contribute to the project and/or dependencies please use npm run dev-install cmd instead
-$ npm install
+# To use a stable version   
+$ npm install   
+
+   or
+
+# To use the latest code
+$ npm run dev-install
 ```
 **Note:** this command might take quite some time depending on your internet connection and you machine processing power.
 
-### Step 2: Launch the "server"
+### Step 2: Launch the "server"/ Build all things needed for the application to run.
 
-While in the *epi-workspace* folder run:
+While in the *epi-workspace* folder:
 
+ - If it is the first time you are running the aplication:
+
+```sh
+$ npm run skip-sso-build-all
+```
+ - After the first time always run this command:
 ```sh
 $ npm run server
 ```
@@ -67,13 +100,13 @@ At the end of this command you get something similar to:
 ![alt text](scr-npm-run-server.png)
 
 
-### Step 3: Build all things needed for the application to run.
+### ~~Step 3: Build all things needed for the application to run.~~ (Deprecated)
 
-Open a new console inside *epi-workspace* folder and run:
-
+~~Open a new console inside *epi-workspace* folder and run:~~
+(Deprecated)
 ```sh
 # Note: Run this in a new console inside "epi-workspace" folder
-$ npm run build-all
+$ npm run build-all (Deprecated)
 ```
 
 ## Running 
@@ -104,15 +137,17 @@ Enterprise wallet allows creation of Products and Batches.
 
 #### Step 1: Register new account details
 
-```
-Username: test1234
+With the sso enabled you woun't need to input any data.
 
-Email: test@test.test
 
-Company: Test Company Inc
+~~Username: test1234~~ (Deprecated)
 
-Password: Test1234567890#
-```
+~~Email: test@test.test~~ (Deprecated)
+
+~~Company: Test Company Inc~~ (Deprecated)
+
+~~Password: Test1234567890#~~ (Deprecated)
+
 
 
 #### Step 2: Authorization process
@@ -158,11 +193,11 @@ npm run freeze
 7. commit the new version of the octopus.json file obtained with the freeze command.
 
 
-### Build Android APK
+### ~~Build Android APK~~ (Deprecated)
 
-Steps
+~~Steps~~
 
-1. Install all dependencies for this workspace
+~~1. Install all dependencies for this workspace~~
 ```sh
 #freeze
 npm install
@@ -171,43 +206,43 @@ npm install
 npm run dev-install
 ```
 
-2. Bind Android repository into workspace
+~~2. Bind Android repository into workspace~~
 ```sh
 npm run install-mobile
 ```
 
-3. Launch API HUB
+~~3. Launch API HUB~~
 ```sh
 npm run server
 ```
 
-4. Prepare the Node files that will be packed into the Android app
+~~4. Prepare the Node files that will be packed into the Android app~~
 ```sh
 #In another tab / console
 npm run build-mobile
 ```
 
-5. Have /mobile/scan-app/android/local.properties file with the following content
+~~5. Have /mobile/scan-app/android/local.properties file with the following content~~
 
 ```sh
 # Change the value to your SDK path
 sdk.dir=/home/username/Android/Sdk
 ```
-More on this [here](https://github.com/opendsu/android-edge-agent#iv-setup-local-environment-values)
+~~More on this [here](https://github.com/opendsu/android-edge-agent#iv-setup-local-environment-values)~~
 
-6. Build the APK
+~~6. Build the APK~~
 ```sh
 npm run build-android-apk
 ```
 
-This concludes the steps to build the APK file.
+~~This concludes the steps to build the APK file.~~
 
-**Note:** The .apk file should be in folder
+~~**Note:** The .apk file should be in folder~~
 ```
 mobile/scan-app/android/app/build/outputs/apk/release
 ```
 
-### Build iOS ipa
+### ~~Build iOS ipa~~ (Deprecated)
 1. Install all dependencies for this workspace (if needed)
 ```sh
 #freeze
