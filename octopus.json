@@ -94,6 +94,23 @@
                     "collectLog": false
                 }
             ]
+        },
+        {
+            "name": "configure-apihub.json",
+            "actions": [
+              {
+                "type": "copy",
+                "src": "./apihub-root/external-volume/config/apihub.json.template",
+                "target": "./apihub-root/external-volume/config/apihub.json",
+                "options": {
+                  "overwrite": true
+                }
+              },
+              {
+                "type": "execute",
+                "cmd": "[ -f .ssotoken ] && node ./bin/configureApihubJson.js"
+              }
+            ]
         }
     ],
     "patch": [
