@@ -3,6 +3,9 @@ import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
+    
+    licenseNumberIsRequired = false;
+
     constructor(element, invalidate) {
         super(element, invalidate);
         this.invalidate(async () => {
@@ -36,8 +39,6 @@ export class ManageProductPage extends CommonPresenterClass {
         }
         this.selected = "epi";
         this.productVersion = this.productData.productVersion;
-
-        console.log(this.productData);
 
     }
 
@@ -289,11 +290,13 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async handleMarketModalData(data) {
+        const self = this;
         if (!this.updateMarket(data)) {
             data.id = webSkel.appServices.generateID(16);
             data.action = "add";
             this.productData.marketUnits.push(data);
         }
+        
         this.selected = "market";
         this.invalidate();
     }

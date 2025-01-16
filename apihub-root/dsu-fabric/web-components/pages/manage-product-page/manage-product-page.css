@@ -199,8 +199,9 @@ manage-product-page {
     max-width: 100%;
 }
 
-.advanced-settings {
-    margin-top: 60px;
+
+.advanced-settings{
+    margin-top: 60px !important;
 }
 
 #recallLabel {

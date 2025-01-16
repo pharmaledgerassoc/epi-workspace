@@ -462,6 +462,17 @@ dialog[class="spinner"] {
 
 
 /** Demerson **/
+form {
+    margin-top: .5rem;
+}
+
+form > * > .form-field:not(:first-child) {
+    margin-top: 1rem;
+}
+
+form > * > .form-field-container .form-field {
+    margin-top: 1rem;
+}
 .form-field-container {
     display: flex;
     justify-content: space-between;
@@ -470,12 +481,13 @@ dialog[class="spinner"] {
 .form-field {
     display: flex;
     flex-direction: column;
-    padding: 4px 0.75rem 0px;
+    /* padding: 4px 0.75rem 0px; */
+    padding: 4px 0.75rem .25rem;
     border-bottom: 1.5px solid var(--primary-background-color);
+    margin-bottom: 10px;
 }
-.form-field:not(:first-child) {
-    margin-top: 1rem;
-}
+
+
 
 .form-field .label {
     color: var(--primary-background-color);
@@ -555,6 +567,10 @@ dialog[class="spinner"] {
     min-height: initial;
 }
 
+.form-field input[type="checkbox"] {
+    margin-bottom: 20px;
+}
+
 .disabled-form-field {
     display: flex;
     color: var(--disabled);
@@ -582,6 +598,21 @@ dialog[class="spinner"] {
     border: none;
 }
 
+/* Hidding calendar icon on firefox browsers */
+@-moz-document url-prefix() {
+    .custom-date-input::after {
+        width: 25px;
+        height: 25px;
+        background: white;
+        /* background: white; */
+        position: absolute;
+        content: " ";
+        right: 0px;
+        top: 2px;
+        
+    }
+}
+
 .custom-date-input svg {
     /* Firefox Default Calendar Icon overriding */
     position: absolute;
@@ -590,7 +621,9 @@ dialog[class="spinner"] {
     width: 19px;
     height: 13px;
     cursor: pointer;
+    z-index: 1;
 }
+
 
 .custom-date-input #svg2 {
     display: none;
@@ -694,3 +727,6 @@ input[type="time"]::-webkit-clear-button,
     margin-left: 1rem;
 }
 
+.hidden {
+    display: none !important;
+}
