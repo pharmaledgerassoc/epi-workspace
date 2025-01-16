@@ -115,7 +115,7 @@ export class UtilsService {
         let oldValue = diff.oldValue;
         let newValue = diff.newValue;
         if (typeof oldValue !== "string") {
-            oldValue = JSON.stringify(oldValue);
+            oldValue =  JSON.stringify(oldValue);
         }
         if (typeof newValue !== "string") {
             newValue = JSON.stringify(newValue);
@@ -124,7 +124,7 @@ export class UtilsService {
             "changedProperty": modelLabelsMap[property],
             "oldValue": {"value": oldValue || " ", "directDisplay": true},
             "newValue": {"value": newValue || " ", "directDisplay": true}
-        }
+        } 
     }
 
     initMessage(msgType) {
