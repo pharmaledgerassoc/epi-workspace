@@ -65,15 +65,15 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter/EthAdapter && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter/EthAdapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter/SmartContracts && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter/SmartContracts && npm install\""
                 }
             ]
         },
