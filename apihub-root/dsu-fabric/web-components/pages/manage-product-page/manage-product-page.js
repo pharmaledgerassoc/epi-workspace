@@ -1,10 +1,9 @@
-import {changeSidebarFromURL, createObservableObject, navigateToPage, parseFormData, renderDateInput} from "../../../utils/utils.js";
+import {changeSidebarFromURL, createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
     
-    licenseNumberIsRequired = false;
 
     constructor(element, invalidate) {
         super(element, invalidate);
@@ -70,6 +69,7 @@ export class ManageProductPage extends CommonPresenterClass {
             };
         });
         marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
+        console.log(marketsInfo);
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
 
         if (this.selected === "market") {
@@ -86,7 +86,6 @@ export class ManageProductPage extends CommonPresenterClass {
     afterRender() {
         changeSidebarFromURL();
         // render date input
-        renderDateInput(this.element.querySelector("#custom-date-input"), null, this.productData?.dateOfFirstAuthorization || null); 
  
         document.addEventListener('keypress', function (event) {
             if (event.key === 'Enter' && event.currentTarget.activeElement.tagName.toLowerCase() === "input") {
