@@ -117,10 +117,6 @@
     resize: none;
 }
 
-#custom-date-input {
-   margin-top: .25rem;
-}
-
 .form-buttons {
     margin-top: calc(60px - 1rem);
 }

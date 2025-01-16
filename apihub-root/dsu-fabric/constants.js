@@ -99,7 +99,15 @@ export default {
             gtin: "Product Code",
             productName: "Product Brand/Invented name",
             batchRecall: "Mark Batch as Recalled",
-            recalled: "Yes"
+            recalled: "Yes",
+            importLicenceNumber: "Import Licence Number", 
+            manufacturerName: "Manufacturer Name",
+            dateOfManufacturing: "Date of Manufacturing",
+            manufacturerAddress1: "Address Line 1",
+            manufacturerAddress2: "Address Line 2",
+            manufacturerAddress3: "Address Line 3",
+            manufacturerAddress4: "Address Line 4",
+            manufacturerAddress5: "Address Line 5",
         }
     },
     OBJECT_AVAILABILITY_STATUS: {

@@ -54,7 +54,15 @@ export class BatchesService {
             "inventedName",
             "nameMedicinalProduct",
             "packagingSiteName",
-            "productCode"
+            "productCode",
+            "importLicenceNumber",
+            "manufacturerName",
+            "dateOfManufacturing",
+            "manufacturerAddress1",
+            "manufacturerAddress2",
+            "manufacturerAddress3",
+            "manufacturerAddress4",
+            "manufacturerAddress5"
         ]
     }
 
@@ -141,13 +149,13 @@ export class BatchesService {
         return inputStringDate;
     }
 
-    createDateInput(dateInputType, assignDateValue = null) {
+    createDateInput(dateInputType, name = 'expiryDate', assignDateValue = null) {
         let dateInput = document.createElement('input');
-        dateInput.id = 'date';
+        dateInput.id = name;
         dateInput.classList.add('pointer');
         dateInput.classList.add('date-format-remover');
         dateInput.classList.add('form-control');
-        dateInput.setAttribute('name', 'expiryDate');
+        dateInput.setAttribute('name', name);
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
         dateInput.required = true;
@@ -316,6 +324,14 @@ export class BatchesService {
             expiryDate: batchData.expiryDate,
             batchRecall: typeof (batchData?.batchRecall) === 'boolean' ? batchData?.batchRecall : false,
             packagingSiteName: batchData.packagingSiteName, 
+            importLicenceNumber: batchData.importLicenceNumber,
+            manufacturerName: batchData.manufacturerName,
+            dateOfManufacturing:  batchData.dateOfManufacturing,
+            manufacturerAddress1: batchData.manufacturerAddress1,
+            manufacturerAddress2: batchData.manufacturerAddress2,
+            manufacturerAddress3: batchData.manufacturerAddress3,
+            manufacturerAddress4: batchData.manufacturerAddress4,
+            manufacturerAddress5: batchData.manufacturerAddress5
         };
         return result;
     }
@@ -497,6 +513,15 @@ export class BatchesService {
                     item.newValue.value = `<label>${item.newValue.value}</label><br><label class="gs1-label">GS1 format (${updatedBatch.expiryDate})</label>`
                     result.push(item);
                     return;
+                }
+
+                if (key === "dateOfManufacturing") { 
+                    const diffsKey = {
+                        oldValue: webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
+                        newValue: webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
+                    };
+                    return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
+                    
                 }
                 if(key === "batchRecall") {
                     const diffsKey = {

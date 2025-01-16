@@ -76,11 +76,23 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.enableExpiryDateCheck = enableExpiryDayCheck;
                 this.productInventedName = product.inventedName;
                 this.productMedicinalName = product.nameMedicinalProduct;
+  
+                this.importLicenceNumber = batchModel.importLicenceNumber;
+                this.manufacturerName = batchModel.manufacturerName;
+                this.dateOfManufacturing =  batchModel.dateOfManufacturing;
+                this.manufacturerAddress1 = batchModel.manufacturerAddress1;
+                this.manufacturerAddress2 = batchModel.manufacturerAddress2;
+                this.manufacturerAddress3 = batchModel.manufacturerAddress3;
+                this.manufacturerAddress4 = batchModel.manufacturerAddress4;
+                this.manufacturerAddress5 = batchModel.manufacturerAddress5; 
+
                 this.penImage = "";
                 this.formActionButtonState = "disabled";
                 this.leafletsInfo = this.getEncodedEPIS(EPIs);
                 this.updatedBatch = createObservableObject(webSkel.appServices.createNewBatch(batch, EPIs), this.onChange.bind(this));
                 this.gs1Date = this.updatedBatch.expiryDate;
+
+                console.log(batchModel);
             }
         }
         await initPage[pageMode]();
@@ -117,11 +129,12 @@ export class ManageBatchPage extends CommonPresenterClass {
     attachEventListeners() {
         let newDateInput;
         this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-            const dateContainer = this.element.querySelector('#custom-date-input');
+            console.log(this.element);
+            const dateContainer = this.element.querySelector('#expiryDateContainer');
             const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
             const svg1 = dateContainer.querySelector('#svg1');
             const svg2 = dateContainer.querySelector('#svg2');
-            const oldDateInput = dateContainer.querySelector('#date');
+            const oldDateInput = dateContainer.querySelector('input');
             const isChecked = enableDayCheckbox.checked;
             svg1.style.display = isChecked ? 'none' : 'block';
             svg2.style.display = isChecked ? 'block' : 'none';
@@ -131,12 +144,12 @@ export class ManageBatchPage extends CommonPresenterClass {
                 const [year, month] = oldDateInput.value.split('-');
                 let assignValue = `${year}-${month}-${webSkel.appServices.getLastDayOfMonth(year, month)}`;
                 assignValue = assignValue.split("-").join("/");
-                newDateInput = webSkel.appServices.createDateInput('date', assignValue);
+                newDateInput = webSkel.appServices.createDateInput('date', 'expiryDate', assignValue);
             } else {
                 /* DD-MM-YYYY -> MM-YYYY */
                 let assignValue = oldDateInput.value.slice(0, 7);
                 assignValue = assignValue.split("-").join("/");
-                newDateInput = webSkel.appServices.createDateInput('month', assignValue);
+                newDateInput = webSkel.appServices.createDateInput('month', 'expiryDate', assignValue);
             }
             dateContainer.replaceChild(newDateInput, oldDateInput);
             let newGS1value = webSkel.appServices.formatBatchExpiryDate(newDateInput.value);
@@ -161,8 +174,8 @@ export class ManageBatchPage extends CommonPresenterClass {
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
         /*TODO replace webSkel.appServices.createDateInput with date web component if necessary */
 
-        const dateContainer = this.element.querySelector('#custom-date-input');
-
+        const expiryDateContainer = this.element.querySelector('#expiryDateContainer');
+        const dateOfManufacturingContainer = this.element.querySelector('#dateOfManufacturingContainer');
 
         const pageModes = {
 
@@ -174,8 +187,9 @@ export class ManageBatchPage extends CommonPresenterClass {
                     option.text = `${product.productCode} - ${product.inventedName}`;
                     selectInput.appendChild(option);
                 });
-                renderDateInput(dateContainer);
-                // dateContainer.insertBefore(webSkel.appServices.createDateInput('date'), dateContainer.firstChild);
+                renderDateInput(dateOfManufacturingContainer);
+                renderDateInput(expiryDateContainer);
+                // expiryDateContainer.insertBefore(webSkel.appServices.createDateInput('date'), expiryDateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
                     const {
@@ -189,8 +203,9 @@ export class ManageBatchPage extends CommonPresenterClass {
             },
             EDIT_BATCH: () => {
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
-                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
-                renderDateInput(dateContainer, expiryDateInput);
+                const expiryDateInput = webSkel.appServices.createDateInput(dateType, 'expiryDate', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
+                renderDateInput(dateOfManufacturingContainer, null, this.batch.dateOfManufacturing);
+                renderDateInput(expiryDateContainer, expiryDateInput);
                 if(this.existingBatch?.batchRecall === true)
                     this.element.querySelector('#batchRecall').checked = true;
             }

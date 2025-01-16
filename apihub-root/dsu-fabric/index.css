@@ -475,6 +475,7 @@ form > * > .form-field-container .form-field {
 }
 .form-field-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
 }
 
@@ -567,9 +568,9 @@ form > * > .form-field-container .form-field {
     min-height: initial;
 }
 
-.form-field input[type="checkbox"] {
+/* .form-field input[type="checkbox"] {
     margin-bottom: 20px;
-}
+} */
 
 .disabled-form-field {
     display: flex;
@@ -621,7 +622,7 @@ form > * > .form-field-container .form-field {
     width: 19px;
     height: 13px;
     cursor: pointer;
-    z-index: 1;
+    z-index: 1 !important;
 }
 
 
@@ -668,13 +669,15 @@ input[type="time"]::-webkit-clear-button,
     z-index: -1;
 }
 
-[class*="width-"] {
+ [class*="width-"] {
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
   }
 
- 
+  .width-1-1 {
+    width: 100% !important;
+  }
   /* Halves */
   .width-1-2 {
     width: 50%;
