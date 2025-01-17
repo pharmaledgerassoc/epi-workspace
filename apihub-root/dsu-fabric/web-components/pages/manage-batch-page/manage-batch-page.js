@@ -79,7 +79,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.productInventedName = product.inventedName;
                 this.productMedicinalName = product.nameMedicinalProduct;
   
-                this.importLicenceNumber = batchModel.importLicenceNumber;
+                this.importLicenseNumber = batchModel.importLicenseNumber;
                 this.manufacturerName = batchModel.manufacturerName;
                 this.dateOfManufacturing =  batchModel.dateOfManufacturing;
                 this.manufacturerAddress1 = batchModel.manufacturerAddress1;

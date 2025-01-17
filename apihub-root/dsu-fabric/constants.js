@@ -87,7 +87,7 @@ export default {
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management",
             genericNameProduct: "Generic Name",
-            importLicenceNumber: "Import Licence Number",
+            importLicenseNumber: "Import License Number",
             // marketingAuthorizationNumber: "Marketing Authorization Number",
             // dateOfFirstAuthorization: "Date of first authorization",
         },
@@ -100,7 +100,7 @@ export default {
             productName: "Product Brand/Invented name",
             batchRecall: "Mark Batch as Recalled",
             recalled: "Yes",
-            importLicenceNumber: "Import Licence Number", 
+            importLicenseNumber: "Import License Number", 
             manufacturerName: "Manufacturer Name",
             dateOfManufacturing: "Date of Manufacturing",
             manufacturerAddress1: "Address Line 1",
