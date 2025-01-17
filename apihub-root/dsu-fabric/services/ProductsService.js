@@ -16,7 +16,6 @@ export class ProductsService {
             // "marketingAuthorizationNumber",
             // "dateOfFirstAuthorization",
             "genericNameProduct",
-            "importLicenseNumber"
             /*,
             "patientLeafletInfo"*/
         ]
@@ -61,9 +60,6 @@ export class ProductsService {
             inventedName: clone.inventedName,
             genericNameProduct: clone.genericNameProduct,
             nameMedicinalProduct: clone.nameMedicinalProduct,
-            // marketingAuthorizationNumber: clone.marketingAuthorizationNumber,
-            // dateOfFirstAuthorization: clone.dateOfFirstAuthorization,
-            importLicenseNumber: clone.importLicenseNumber,
             productRecall: typeof (clone?.productRecall) === 'boolean' ? clone?.productRecall : false,
             strengths: this.cleanUnitsForPayload(clone.strengthUnits),
             markets: this.cleanUnitsForPayload(clone.marketUnits)
