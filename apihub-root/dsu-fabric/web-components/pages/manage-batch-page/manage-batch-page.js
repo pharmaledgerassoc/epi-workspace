@@ -72,6 +72,8 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.product = product;
                 this.productCode = product.productCode;
                 this.packagingSiteName = batchModel.packagingSiteName;
+                this.expiryDate = batchModel.expiryDate;
+
                 this.enableExpiryDate = batchModel.enableExpiryDay;
                 this.enableExpiryDateCheck = enableExpiryDayCheck;
                 this.productInventedName = product.inventedName;
@@ -92,7 +94,6 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.updatedBatch = createObservableObject(webSkel.appServices.createNewBatch(batch, EPIs), this.onChange.bind(this));
                 this.gs1Date = this.updatedBatch.expiryDate;
 
-                console.log(batchModel);
             }
         }
         await initPage[pageMode]();

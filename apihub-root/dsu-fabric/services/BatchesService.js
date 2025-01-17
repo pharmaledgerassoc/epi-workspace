@@ -176,6 +176,7 @@ export class BatchesService {
         });
         let self = this;
         dateInput.addEventListener('change', function (event) {
+            console.log(event);
             if (!event.target.value) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
@@ -517,8 +518,8 @@ export class BatchesService {
 
                 if (key === "dateOfManufacturing") { 
                     const diffsKey = {
-                        oldValue: webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
-                        newValue: webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
+                        oldValue: !initialBatch.dateOfManufacturing ?  "" : webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
+                        newValue: !updatedBatch.dateOfManufacturing ? "" : webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
                     
@@ -526,9 +527,9 @@ export class BatchesService {
                 if(key === "batchRecall") {
                     const diffsKey = {
                         oldValue:(typeof diffs[key].oldValue === 'boolean' && diffs[key].oldValue === true) ? 
-                            constants.MODEL_LABELS_MAP.BATCH.recalled : ' ',
+                            "On" : "Off",
                         newValue: (typeof diffs[key].newValue === 'boolean' && diffs[key].newValue === true) ? 
-                            constants.MODEL_LABELS_MAP.BATCH.recalled : ' ',
+                            "On" : "Off",
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH)); 
                 }

@@ -489,10 +489,16 @@ form > * > .form-field-container .form-field {
 }
 
 
+.form-field.remove-padding-top {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
 
 .form-field .label {
     color: var(--primary-background-color);
 }
+
 .form-field .text-input::placeholder {
     font-size: 14px;
     font-style: italic;

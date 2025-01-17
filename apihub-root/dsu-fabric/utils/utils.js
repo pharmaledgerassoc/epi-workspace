@@ -75,12 +75,13 @@ function renderDateInput(container, dateInput, value = null) {
             dateInput = webSkel.appServices.createDateInput('date', name);
         if(value !== null && value !== undefined) {
             dateInput.setAttribute('value', value);
-            dateInput.dispatchEvent(new Event('change', { bubbles: true }));
+            dateInput.dispatchEvent(new Event('input', { bubbles: false }));
         }
         if(container.classList.contains('custom-date-input'))
             container.classList.add('custom-date-input');
         container.append(dateInput);   
     }
+
 }   
 
 function parseFormData(data) {
