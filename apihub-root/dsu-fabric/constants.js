@@ -87,7 +87,6 @@ export default {
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
             markets: "Markets management",
             genericNameProduct: "Generic Name",
-            importLicenseNumber: "Import License Number",
             // marketingAuthorizationNumber: "Marketing Authorization Number",
             // dateOfFirstAuthorization: "Date of first authorization",
         },
