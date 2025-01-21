@@ -40,6 +40,8 @@ reporting-service/
 truemedhemo-auth-feat-ssapp/
 opendsu-sdk/
 
+apihub-root/external-volume/config/apihub.json
+
 .htpassword.secret
 
 apihub-root/lwa/

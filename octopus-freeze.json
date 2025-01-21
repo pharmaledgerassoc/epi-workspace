@@ -9,8 +9,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "32221867e24d6c14b54daed8bcb1c1612eb756ec",
-                    "tag": "v2.0.14"
+                    "commit": "32221867e24d6c14b54daed8bcb1c1612eb756ec"
                 },
                 {
                     "type": "execute",
@@ -25,7 +24,8 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "f17fa06dc1875c6bca202d0c83674fe4912bcaa4"
                 },
                 {
                     "type": "execute",
@@ -40,7 +40,8 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "0ad066de207f83f54c92190329c793bab15ddb30"
                 },
                 {
                     "type": "execute",
@@ -60,8 +61,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "308701c71522394e64914ac00e30b41f13bea947",
-                    "tag": "v1.2.1"
+                    "commit": "308701c71522394e64914ac00e30b41f13bea947"
                 },
                 {
                     "type": "execute",
@@ -85,8 +85,7 @@
                     "type": "smartClone",
                     "target": "./apihub-root/dsu-fabric",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a",
-                    "tag": "v1.0.2"
+                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a"
                 }
             ]
         },
@@ -98,9 +97,25 @@
                     "type": "smartClone",
                     "target": "./apihub-root/demiurge",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a",
-                    "tag": "v1.0.2"
+                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a"
                 }
+            ]
+        },
+        {
+            "name": "configure-apihub.json",
+            "actions": [
+              {
+                "type": "copy",
+                "src": "./apihub-root/external-volume/config/apihub.json.template",
+                "target": "./apihub-root/external-volume/config/apihub.json",
+                "options": {
+                  "overwrite": true
+                }
+              },
+              {
+                "type": "execute",
+                "cmd": "[ -f .ssotoken ] && node ./bin/configureApihubJson.js"
+              }
             ]
         }
     ],
@@ -197,4 +212,4 @@
             ]
         }
     ]
-} 
+}

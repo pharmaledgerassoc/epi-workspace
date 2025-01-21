@@ -61,15 +61,15 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter/EthAdapter && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter/EthAdapter && npm install\""
                 },
                 {
                     "type": "execute",
-                    "cmd": "echo \"manualy run cd ethadapter/SmartContracts && npm install\""
+                    "cmd": "echo \"manually run cd ethadapter/SmartContracts && npm install\""
                 }
             ]
         },
@@ -93,6 +93,23 @@
                     "target": "./apihub-root/demiurge",
                     "collectLog": false
                 }
+            ]
+        },
+        {
+            "name": "configure-apihub.json",
+            "actions": [
+              {
+                "type": "copy",
+                "src": "./apihub-root/external-volume/config/apihub.json.template",
+                "target": "./apihub-root/external-volume/config/apihub.json",
+                "options": {
+                  "overwrite": true
+                }
+              },
+              {
+                "type": "execute",
+                "cmd": "[ -f .ssotoken ] && node ./bin/configureApihubJson.js"
+              }
             ]
         }
     ],
