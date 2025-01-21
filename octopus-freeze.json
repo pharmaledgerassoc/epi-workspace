@@ -117,6 +117,15 @@
                 "cmd": "[ -f .ssotoken ] && node ./bin/configureApihubJson.js"
               }
             ]
+        },
+        {
+            "name": "Patch OpenDsu",
+            "actions":[
+                {
+                    "type": "execute",
+                    "cmd": "node ./bin/patch/replaceFunctions.js"
+                }
+            ]
         }
     ],
     "patch": [
