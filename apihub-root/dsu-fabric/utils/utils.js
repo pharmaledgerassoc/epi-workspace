@@ -67,20 +67,18 @@ function renderToast(type, message, timeoutValue = 5000) {
     }, timeoutValue)
 }
 
-function renderDateInput(container, dateInput, value = null) {  
+function renderDateInput(container, isRequired = false, dateInput, value = null) {  
     const hasInput = container.querySelector('input[type="date"]');
     if(!hasInput) {
         const name = container.getAttribute('data-input-name') || 'date';
         if(!dateInput)
-            dateInput = webSkel.appServices.createDateInput('date', name);
-        if(value !== null && value !== undefined) {
-            dateInput.setAttribute('value', value);
-            dateInput.dispatchEvent(new Event('input', { bubbles: false }));
-        }
+            dateInput = webSkel.appServices.createDateInput('date', name, null, isRequired);
+        if(value !== null && value !== undefined) 
+            webSkel.appServices.updateUIDate(dateInput, value)
         if(container.classList.contains('custom-date-input'))
             container.classList.add('custom-date-input');
         container.append(dateInput);   
-    }
+    } 
 
 }   
 

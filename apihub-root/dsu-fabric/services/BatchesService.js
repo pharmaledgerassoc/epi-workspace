@@ -149,7 +149,7 @@ export class BatchesService {
         return inputStringDate;
     }
 
-    createDateInput(dateInputType, name = 'expiryDate', assignDateValue = null) {
+    createDateInput(dateInputType, name = 'expiryDate', assignDateValue = null, isRequired = true) {
         let dateInput = document.createElement('input');
         dateInput.id = name;
         dateInput.classList.add('pointer');
@@ -158,8 +158,8 @@ export class BatchesService {
         dateInput.setAttribute('name', name);
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
-        dateInput.required = true;
-        if (assignDateValue) {
+        dateInput.required = isRequired;
+        if (assignDateValue && name === 'expiryDate') {
             /* to reverse the format of the date displayed on UI */
             dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
             dateInput.value = assignDateValue.split("/").join("-");
@@ -176,14 +176,15 @@ export class BatchesService {
         });
         let self = this;
         dateInput.addEventListener('change', function (event) {
-            console.log(event);
-            if (!event.target.value) {
+            const {target} = event;
+            if (!event.target.value && target.required) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
-                webSkel.notificationHandler.reportUserRelevantError("Expiry date is a mandatory field and can not be empty. Please select a valid date");
+                webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
                 return;
             }
-            self.updateUIDate(this, event.target.value);
+            if(!!event.target.value)
+                self.updateUIDate(this, event.target.value);
         })
         return dateInput
     }
@@ -244,8 +245,12 @@ export class BatchesService {
     }
 
     updateUIDate(dateInputElementRef, assignDateValue) {
-        dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
-        dateInputElementRef.value = assignDateValue;
+        if(typeof assignDateValue === "string" && assignDateValue.length < 6) 
+            assignDateValue = null;
+        if(!!assignDateValue) {
+            dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
+            dateInputElementRef.value = assignDateValue;
+        }
     }
 
     createNewBatch(batchRef = {}, EPIs = []) {

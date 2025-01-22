@@ -188,8 +188,8 @@ export class ManageBatchPage extends CommonPresenterClass {
                     option.text = `${product.productCode} - ${product.inventedName}`;
                     selectInput.appendChild(option);
                 });
-                renderDateInput(dateOfManufacturingContainer);
-                renderDateInput(expiryDateContainer);
+                renderDateInput(dateOfManufacturingContainer, false);
+                renderDateInput(expiryDateContainer, true);
                 // expiryDateContainer.insertBefore(webSkel.appServices.createDateInput('date'), expiryDateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
@@ -205,8 +205,8 @@ export class ManageBatchPage extends CommonPresenterClass {
             EDIT_BATCH: () => {
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, 'expiryDate', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
-                renderDateInput(dateOfManufacturingContainer, null, this.batch.dateOfManufacturing);
-                renderDateInput(expiryDateContainer, expiryDateInput);
+                renderDateInput(dateOfManufacturingContainer, false, null, this.batch.dateOfManufacturing);
+                renderDateInput(expiryDateContainer, true, expiryDateInput);
                 if(this.existingBatch?.batchRecall === true)
                     this.element.querySelector('#batchRecall').checked = true;
             }
