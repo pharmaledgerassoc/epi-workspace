@@ -6,7 +6,7 @@ import {
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
 export class ManageBatchPage extends CommonPresenterClass {
-
+    addresses = [];
     constructor(element, invalidate) {
         super(element, invalidate);
 
@@ -87,7 +87,7 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.manufacturerAddress3 = batchModel.manufacturerAddress3;
                 this.manufacturerAddress4 = batchModel.manufacturerAddress4;
                 this.manufacturerAddress5 = batchModel.manufacturerAddress5; 
-
+                this.getAddressesOnBatch(batchModel);
                 this.penImage = "";
                 this.formActionButtonState = "disabled";
                 this.leafletsInfo = this.getEncodedEPIS(EPIs);
@@ -113,26 +113,151 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     detectInputChange(event) {
-        let inputName = event.target.name;
-        if (inputName === "expiryDate" && event.target.value) {
-            this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
-            //to do format with 00 if no day in date
-            this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
-        } else {
-            if (inputName === "enableExpiryDay") 
-                event.target.value = event.target.checked ? "on" : "off";
+        const {target} = event;
+        const inputName = target.name;
+        if(inputName) {
             
-            this.updatedBatch[inputName] = inputName === "batchRecall" ? 
-                event.target.checked : event.target.value; 
+            if (inputName === "expiryDate" && event.target.value) {
+                this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
+                //to do format with 00 if no day in date
+                this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
+            } else {
+                if (inputName === "enableExpiryDay") 
+                    event.target.value = event.target.checked ? "on" : "off";
+                
+                this.updatedBatch[inputName] = inputName === "batchRecall" ? 
+                    event.target.checked : event.target.value; 
+            }
         }
+    };
+
+    addAddress(target) {
+       const input = target.closest('.form-field').querySelector('input');
+       if(input.value.length) {
+         this.createAddressLine(input.value);
+         input.value = '';
+       }
+    };
+
+    getAddressesOnBatch(batchModel) {
+        Object.entries(batchModel).forEach(([key, value]) => {
+            if(key.includes('manufacturerAddress') && (value || "")?.length)
+                this.addresses.push({name: key, value})
+        });
+    };
+
+    createAddressLine(value) {
+        const element = this.element;
+        const index = this.addresses?.length + 1;
+        const name = `manufacturerAddress${index}`;
+        const item = {value, name};
+
+        this.addresses = [... this.addresses, item];
+        const disableInput = this.addresses.length === 5;
+        
+        element.querySelector('#buttonAddAddress').disabled = disableInput;
+        element.querySelector('#inputAddAddress').disabled = disableInput;
+
+        const container = this.element.querySelector('#addressContainers');
+      
+        const field = container.querySelector('#sampleAddressField').cloneNode(true);
+        const label = field.querySelector('label');
+        const input = field.querySelector('input');
+        
+        field.classList.add('card', 'form-field');
+        label.textContent = `Address Line ${index}`;
+        label.setAttribute('for', name);
+        input.id = input.name = name;
+        input.hidden = false;
+        input.value = value;
+
+        const fieldsContainer = container.querySelector('#fields')
+        fieldsContainer.append(field);
+        field.querySelector('.edit').addEventListener('click', (event) => {
+            const {field} = this.getAddressLineElements(event.target);
+            field.classList.remove('card');
+        });
+        
+        this.updatedBatch[item.name] = item.value;
+
+        field.querySelector('.remove').addEventListener('click', (event) => this.removeAddressLine(event.target));
+        field.querySelector('.save').addEventListener('click', (event) => this.updateAddressLine(event.target));        
+
+        // if(!fieldsContainer.classList.contains('.sortable')) {
+        //     fieldsContainer.classList.add('sortable');
+        //     new Sortable(fieldsContainer, {
+        //         animation: 150,
+        //         ghostClass: 'dragging-ghost',
+        //         handle: ".card",
+        //         onEnd: (event) => {
+        //             console.log(fieldsContainer);
+        //             console.log(`element sorted`);
+        //             this.updateAddressOrder(fieldsContainer);
+        //         }
+        //     });
+        // }
+    };
+
+    updateAddressOrder(container) {
+        const fields = container.querySelectorAll('.card');
+        this.addresses = [];
+        container.innerHTML = "";
+        fields.forEach(field =>  this.createAddressLine(field.querySelector('input').value));
+        
+        console.log(this.addresses);
+    };
+
+    getAddressLineElements(target) {
+        const element = this.element;
+        const container = element.querySelector('#addressContainers');
+        const field = target.closest('.form-field');
+        const input = field.querySelector('input');
+
+        return {component: element, container, field, input};
+    };
+
+    updateAddressLine(target) {
+        const {field, input} = this.getAddressLineElements(target);
+        this.addresses.forEach((item) => {
+            if(item.name === input.name) {
+                this.updatedBatch[item.name] = item.value;
+                item.value = input.value;
+            }
+        });
+
+        field.classList.add('card');
+    };
+
+    getteAddressLinesObject() {
+        let result = {};
+        if(this.addresses?.length) {
+            this.addresses.forEach(item => {
+                result[item.name] = item.value;       
+            });
+        }
+        return result;
     }
+
+    removeAddressLine(target) {
+       const {input, container} = this.getAddressLineElements(target);
+       const addresses = this.addresses.filter((item) => item.name !== input.name);
+       this.addresses = [];
+       container.querySelector('#fields').innerHTML = "";
+       delete this.updatedBatch[input.name];
+
+       if(addresses.length) 
+            addresses.forEach(item => this.createAddressLine(item.value));
+    };
+
 
     attachEventListeners() {
         let newDateInput;
-        this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-            console.log(this.element);
-            const dateContainer = this.element.querySelector('#expiryDateContainer');
-            const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
+        const element = this.element;
+        element.querySelector('#buttonAddAddress').addEventListener('click', (event) => this.addAddress(event.target));
+        element.querySelector('#enableExpiryDay').addEventListener('change', () => {
+            console.log(element);
+            const dateContainer = element.querySelector('#expiryDateContainer');
+            const enableDayCheckbox = element.querySelector('#enableExpiryDay');
             const svg1 = dateContainer.querySelector('#svg1');
             const svg2 = dateContainer.querySelector('#svg2');
             const oldDateInput = dateContainer.querySelector('input');
@@ -203,6 +328,12 @@ export class ManageBatchPage extends CommonPresenterClass {
                 });
             },
             EDIT_BATCH: () => {
+                if(this.addresses?.length) {
+                    const addresses = [... this.addresses];
+                    this.addresses = [];
+                    addresses.forEach(item => this.createAddressLine(item.value));
+                    this.element.querySelector('#inputAddAddress').value = "";
+                }
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, 'expiryDate', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
                 renderDateInput(dateOfManufacturingContainer, false, null, this.batch.dateOfManufacturing);
@@ -212,6 +343,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             }
 
         }
+        
         pageModes[this.pageMode]();
         this.attachEventListeners();
     }
@@ -308,6 +440,8 @@ export class ManageBatchPage extends CommonPresenterClass {
     async addBatch(_target) {
         let formData = await webSkel.extractFormInformation(_target);
         formData.data.batchRecall = formData.elements.batchRecall.element.checked;
+        // formData.data = {...formData.data, ... this.getteAddressLinesObject()};
+        console.log(formData);
         let validationResult = this.validateFormData(formData.data);
         if (validationResult.isValid) {
             formData.data.expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);

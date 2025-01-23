@@ -113,7 +113,43 @@
                     </div>
                 </div>
             </div>
+            <div class="form-field-container address-field" userRights="$$userRights">
+                <div class="form-field label width-1-1">
+                    <div class="label-container">
+                        <label class="label" for="inputAddAddress" userRights="$$userRights">Add Manufacturer Address</label>
+                    </div>
+                </div>
+                <div class="form-field width-1-1">
+                    <input userRights="$$userRights" id="inputAddAddress"  type="text" class="text-input ignore-changes" autocomplete="off"
+                    placeholder="Use button add to confirm input" value="$$manufacturerAddress1">
+                       
+                    <button class="button-add" id="buttonAddAddress" type="button">+ Add</button>
+                </div>
+            </div>
 
+            <div id="addressContainers">
+                <div class="remove-padding-top width-1-1" hidden id="sampleAddressField">
+                    <div class="label-container">
+                        <label class="label" for="packagingSiteName" userRights="$$userRights"></label>
+                        <button class="edit icon-button" type="button">
+                            <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                        </button>
+                        <button class="remove icon-button" type="button">
+                            <img class="icon" src="./assets/icons/thrash.svg" alt="pen-square">    
+                        </button>
+                        <button class="save icon-button" type="button">
+                            <img class="icon" src="./assets/icons/check.svg" alt="pen-square">    
+                        </button>
+                    </div>
+                    <input type="text" class="text-input" name="manufacturerAddress5"
+                           id="manufacturerAddress5" autocomplete="off"
+                           placeholder="Add Address Line 5" value="$$manufacturerAddress5">
+                           
+                </div>
+                <div id="fields"></div>
+            </div>
+
+<!-- 
             <div class="form-field-container" userRights="$$userRights">
                 <div class="form-field width-1-1">
                     <div class="label-container">
@@ -148,7 +184,7 @@
                            placeholder="Add Address Line 5" value="$$manufacturerAddress5">
                 </div>
 
-            </div>
+            </div> -->
 
         </div>
 
@@ -190,3 +226,5 @@
         </div>
     </form>
 </div>
+
+
