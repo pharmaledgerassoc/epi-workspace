@@ -108,7 +108,7 @@
               },
               {
                 "type": "execute",
-                "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\" else echo \"Token not found: .ssotoken file is missing.\"fi"
+                "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
               }
             ]
         },
