@@ -346,6 +346,8 @@ export class ManageBatchPage extends CommonPresenterClass {
         
         pageModes[this.pageMode]();
         this.attachEventListeners();
+        if(this.pageMode === "ADD_BATCH") 
+            this.element.querySelector('#enableExpiryDay').dispatchEvent(new Event('change'));
     }
 
     async navigateToBatchesPage() {
@@ -440,8 +442,6 @@ export class ManageBatchPage extends CommonPresenterClass {
     async addBatch(_target) {
         let formData = await webSkel.extractFormInformation(_target);
         formData.data.batchRecall = formData.elements.batchRecall.element.checked;
-        // formData.data = {...formData.data, ... this.getteAddressLinesObject()};
-        console.log(formData);
         let validationResult = this.validateFormData(formData.data);
         if (validationResult.isValid) {
             formData.data.expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);

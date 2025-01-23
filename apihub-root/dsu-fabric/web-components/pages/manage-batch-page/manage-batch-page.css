@@ -46,7 +46,7 @@
     transform: translatey(2px) !important;
 }
 .icon-button.save {
-    border: 2px solid var(--primary-background-color);
+    border: 1px solid var(--primary-background-color);
 }
 .icon-button.save:hover {
     background: var(--light-green);
