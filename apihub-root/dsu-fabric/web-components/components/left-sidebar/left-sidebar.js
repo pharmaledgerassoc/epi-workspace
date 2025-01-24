@@ -10,6 +10,14 @@ export class LeftSidebar {
     }
 
     beforeRender() {
+        // responsive sidebar
+        // const sidebar = this.element;
+        // window.sidebarElement = sidebar;
+        // window.toggleSidebar = function() {
+        //     const sidebar = window.sidebarElement
+        //     if(sidebar)
+        //         sidebar.classList.toggle("active");
+        // };
     }
 
     afterRender() {

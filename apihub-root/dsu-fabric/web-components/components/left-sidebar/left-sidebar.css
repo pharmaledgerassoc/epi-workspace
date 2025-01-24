@@ -1,3 +1,47 @@
+
+/* responsive sidebar */
+/* @media(max-width: 960px) {
+    
+    left-sidebar:not(.active) {
+        display: none;
+    }
+    left-sidebar.active {
+        position: absolute;
+        z-index: 1;
+    }
+
+    left-sidebar.active + div {
+        filter: grayscale(80%);
+    }
+} 
+
+@media(min-width: 961px) {
+    #toggle-sidebar-button { display: none !important; }
+}
+
+#toggle-sidebar-button {
+    box-sizing: border-box;
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    border-width: 2px;
+    background: #f8f8f8;
+    color: #999;
+   
+    vertical-align: middle;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.1s ease-in-out;
+    transition-property: color, background-color;    
+}
+
+#toggle-sidebar-button:hover {
+    border-color: var(--primary-background-color) !important;
+    cursor: pointer;
+}  */
+
+
 left-sidebar {
     background-color: var(--primary-background-color);
     color: var(--primary-text-color);

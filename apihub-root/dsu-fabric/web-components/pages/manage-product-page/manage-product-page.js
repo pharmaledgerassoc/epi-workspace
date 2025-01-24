@@ -3,6 +3,8 @@ import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
+    
+
     constructor(element, invalidate) {
         super(element, invalidate);
         this.invalidate(async () => {
@@ -67,6 +69,7 @@ export class ManageProductPage extends CommonPresenterClass {
             };
         });
         marketsInfo = encodeURIComponent(JSON.stringify(marketsInfo));
+        console.log(marketsInfo);
         this.marketTab = `<markets-tab data-presenter="markets-tab" data-units="${marketsInfo}"></markets-tab>`;
 
         if (this.selected === "market") {
@@ -82,6 +85,8 @@ export class ManageProductPage extends CommonPresenterClass {
 
     afterRender() {
         changeSidebarFromURL();
+        // render date input
+ 
         document.addEventListener('keypress', function (event) {
             if (event.key === 'Enter' && event.currentTarget.activeElement.tagName.toLowerCase() === "input") {
                 event.stopImmediatePropagation();
@@ -92,9 +97,11 @@ export class ManageProductPage extends CommonPresenterClass {
         let productCode = this.element.querySelector("#productCode");
         for (const key of webSkel.appServices.productInputFieldNames()) {
             let input = this.element.querySelector(`#${key}`);
+            
             if(input.type === 'checkbox' && input.name === 'productRecall') {
                 input.checked = this.productData[key];
             } else { 
+              
                 input.value = this.productData[key] || "";
             }
         }
@@ -282,11 +289,13 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async handleMarketModalData(data) {
+        const self = this;
         if (!this.updateMarket(data)) {
             data.id = webSkel.appServices.generateID(16);
             data.action = "add";
             this.productData.marketUnits.push(data);
         }
+        
         this.selected = "market";
         this.invalidate();
     }
@@ -324,7 +333,6 @@ export class ManageProductPage extends CommonPresenterClass {
 
     validateFormData(data) {
         const errors = [];
-
         if (!data.productCode) {
             errors.push('Product Code is required.');
         }
@@ -358,10 +366,16 @@ export class ManageProductPage extends CommonPresenterClass {
     async updateProduct() {
         //const conditions = {"otherFieldsCondition": {fn: this.otherFieldsCondition, errorMessage: "Invalid input!"}};
         //  let formData = await webSkel.extractFormInformation(this.element.querySelector("form"));
+        
+        // parse do valor para remover trim no final do campo
+        // this.productData = parseFormData(this.productData);
         let validationResult = this.validateFormData(this.productData);
 
         if (validationResult.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
+            if(diffs.length === 0)
+                return false;
+            
             let confirmation = await webSkel.showModal("data-diffs-modal", {
                 diffs: encodeURIComponent(JSON.stringify(diffs)),
                 productData: encodeURIComponent(JSON.stringify(this.productData))
@@ -409,11 +423,15 @@ export class ManageProductPage extends CommonPresenterClass {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
+        selectedUnit.mahName = webSkel.unsanitize(selectedUnit.mahName);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit));
+       
         let excludedOptions = this.productData.marketUnits
             .filter(data => data.marketId !== selectedUnit.marketId && data.action !== "delete")
             .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+
+        
         let modalData = await webSkel.showModal("markets-management-modal", {
             ["updateData"]: encodedJSON, id: selectedUnit.id, excluded: encodedExcludedOptions
         }, true);

@@ -12,7 +12,8 @@ export class ProductsService {
             "productCode",
             "inventedName",
             "nameMedicinalProduct",
-            "internalMaterialCode"/*,
+            "internalMaterialCode",
+            /*,
             "patientLeafletInfo"*/
         ]
     }
@@ -332,9 +333,9 @@ export class ProductsService {
                 if (key === "productRecall") {
                     const diffsKey = {
                         oldValue:(typeof diffs[key].oldValue === 'boolean' && diffs[key].oldValue === true) ? 
-                            constants.MODEL_LABELS_MAP.PRODUCT.recalled : ' ',
+                           "On" : 'Off',
                         newValue: (typeof diffs[key].newValue === 'boolean' && diffs[key].newValue === true) ? 
-                            constants.MODEL_LABELS_MAP.PRODUCT.recalled : ' ',
+                           "On" : 'Off',
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.PRODUCT)); 
                    
