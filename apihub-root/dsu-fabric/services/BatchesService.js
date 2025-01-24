@@ -159,7 +159,7 @@ export class BatchesService {
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
         dateInput.required = isRequired;
-        if (assignDateValue && name === 'expiryDate') {
+        if (assignDateValue && name === 'expiryDate' && !assignDateValue.includes("undefined")) {
             /* to reverse the format of the date displayed on UI */
             dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
             dateInput.value = assignDateValue.split("/").join("-");

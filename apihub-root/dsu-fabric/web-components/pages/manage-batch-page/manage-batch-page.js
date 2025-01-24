@@ -108,6 +108,7 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     onChange() {
+        console.log(this.updatedBatch);
         this.element.querySelector("#formActionButton").disabled =
             JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeEPIForDeletion);
     }
@@ -219,10 +220,8 @@ export class ManageBatchPage extends CommonPresenterClass {
     updateAddressLine(target) {
         const {field, input} = this.getAddressLineElements(target);
         this.addresses.forEach((item) => {
-            if(item.name === input.name) {
-                this.updatedBatch[item.name] = item.value;
+            if(item.name === input.name) 
                 item.value = input.value;
-            }
         });
 
         field.classList.add('card');
@@ -241,12 +240,19 @@ export class ManageBatchPage extends CommonPresenterClass {
     removeAddressLine(target) {
        const {input, container} = this.getAddressLineElements(target);
        const addresses = this.addresses.filter((item) => item.name !== input.name);
-       this.addresses = [];
        container.querySelector('#fields').innerHTML = "";
-       delete this.updatedBatch[input.name];
 
-       if(addresses.length) 
+       this.addresses = [];
+       this.updatedBatch[input.name] = "";
+
+       
+       if(addresses.length) {
+            addresses.push({
+                name: input.name,
+                value: ""
+            });
             addresses.forEach(item => this.createAddressLine(item.value));
+       }
     };
 
 
