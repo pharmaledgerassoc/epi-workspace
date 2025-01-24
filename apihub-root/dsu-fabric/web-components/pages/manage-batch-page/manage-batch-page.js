@@ -158,45 +158,32 @@ export class ManageBatchPage extends CommonPresenterClass {
         
         element.querySelector('#buttonAddAddress').disabled = disableInput;
         element.querySelector('#inputAddAddress').disabled = disableInput;
-
-        const container = this.element.querySelector('#addressContainers');
-      
-        const field = container.querySelector('#sampleAddressField').cloneNode(true);
-        const label = field.querySelector('label');
-        const input = field.querySelector('input');
-        
-        field.classList.add('card', 'form-field');
-        label.textContent = `Address Line ${index}`;
-        label.setAttribute('for', name);
-        input.id = input.name = name;
-        input.hidden = false;
-        input.value = value;
-
-        const fieldsContainer = container.querySelector('#fields')
-        fieldsContainer.append(field);
-        field.querySelector('.edit').addEventListener('click', (event) => {
-            const {field} = this.getAddressLineElements(event.target);
-            field.classList.remove('card');
-        });
-        
         this.updatedBatch[item.name] = item.value;
-
-        field.querySelector('.remove').addEventListener('click', (event) => this.removeAddressLine(event.target));
-        field.querySelector('.save').addEventListener('click', (event) => this.updateAddressLine(event.target));        
-
-        // if(!fieldsContainer.classList.contains('.sortable')) {
-        //     fieldsContainer.classList.add('sortable');
-        //     new Sortable(fieldsContainer, {
-        //         animation: 150,
-        //         ghostClass: 'dragging-ghost',
-        //         handle: ".card",
-        //         onEnd: (event) => {
-        //             console.log(fieldsContainer);
-        //             console.log(`element sorted`);
-        //             this.updateAddressOrder(fieldsContainer);
-        //         }
-        //     });
-        // }
+ 
+        if(value?.length) {
+            const container = this.element.querySelector('#addressContainers');
+      
+            const field = container.querySelector('#sampleAddressField').cloneNode(true);
+            const label = field.querySelector('label');
+            const input = field.querySelector('input');
+            
+            field.classList.add('card', 'form-field');
+            label.textContent = `Address Line ${index}`;
+            label.setAttribute('for', name);
+            input.id = input.name = name;
+            input.hidden = false;
+            input.value = value;
+    
+            const fieldsContainer = container.querySelector('#fields')
+            fieldsContainer.append(field);
+            field.querySelector('.edit').addEventListener('click', (event) => {
+                const {field} = this.getAddressLineElements(event.target);
+                field.classList.remove('card');
+            });
+            
+            field.querySelector('.remove').addEventListener('click', (event) => this.removeAddressLine(event.target));
+            field.querySelector('.save').addEventListener('click', (event) => this.updateAddressLine(event.target));        
+        }
     };
 
     updateAddressOrder(container) {
@@ -244,8 +231,6 @@ export class ManageBatchPage extends CommonPresenterClass {
 
        this.addresses = [];
        this.updatedBatch[input.name] = "";
-
-       
        if(addresses.length) {
             addresses.push({
                 name: input.name,
@@ -479,10 +464,13 @@ export class ManageBatchPage extends CommonPresenterClass {
                 inventedName: this.productInventedName,
                 nameMedicinalProduct: this.productMedicinalName
             }
-            let confirmation = await webSkel.showModal("data-diffs-modal", {
-                diffs: encodeURIComponent(JSON.stringify(diffs)),
-                productData: encodeURIComponent(JSON.stringify(selectedProduct))
-            }, true);
+            let confirmation = true;
+            if(diffs.length) {
+                confirmation = await webSkel.showModal("data-diffs-modal", {
+                    diffs: encodeURIComponent(JSON.stringify(diffs)),
+                    productData: encodeURIComponent(JSON.stringify(selectedProduct))
+                }, true);
+            }
             if (confirmation) {
 
                 let shouldSkipMetadataUpdate = false;

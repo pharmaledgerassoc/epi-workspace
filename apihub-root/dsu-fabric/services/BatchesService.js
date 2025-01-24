@@ -180,6 +180,8 @@ export class BatchesService {
             if (!event.target.value && target.required) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
+                target.setAttribute('data-date', '');
+                target.value = '';
                 webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
                 return;
             }
@@ -246,7 +248,7 @@ export class BatchesService {
 
     updateUIDate(dateInputElementRef, assignDateValue) {
         if(typeof assignDateValue === "string" && assignDateValue.length < 6) 
-            assignDateValue = null;
+            assignDateValue = "";
         if(!!assignDateValue) {
             dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
             dateInputElementRef.value = assignDateValue;
