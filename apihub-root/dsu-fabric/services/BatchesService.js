@@ -159,7 +159,7 @@ export class BatchesService {
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
         dateInput.required = isRequired;
-        if (assignDateValue && name === 'expiryDate') {
+        if (assignDateValue && name === 'expiryDate' && !assignDateValue.includes("undefined")) {
             /* to reverse the format of the date displayed on UI */
             dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
             dateInput.value = assignDateValue.split("/").join("-");
@@ -180,6 +180,8 @@ export class BatchesService {
             if (!event.target.value && target.required) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
+                target.setAttribute('data-date', '');
+                target.value = '';
                 webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
                 return;
             }
@@ -246,7 +248,7 @@ export class BatchesService {
 
     updateUIDate(dateInputElementRef, assignDateValue) {
         if(typeof assignDateValue === "string" && assignDateValue.length < 6) 
-            assignDateValue = null;
+            assignDateValue = "";
         if(!!assignDateValue) {
             dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
             dateInputElementRef.value = assignDateValue;
