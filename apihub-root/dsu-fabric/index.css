@@ -559,6 +559,9 @@ form > * > .form-field-container .form-field {
     display: flex;
     justify-content: space-between;
 }
+.icon {
+    width: 16px;
+}
 .form-field .pen-square {
     width: 16px;
 }
