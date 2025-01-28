@@ -247,7 +247,7 @@ export class BatchesService {
     }
 
     updateUIDate(dateInputElementRef, assignDateValue) {
-        if(typeof assignDateValue === "string" && assignDateValue.length < 6) 
+        if(typeof assignDateValue === "string" && assignDateValue.length < 6)
             assignDateValue = "";
         if(!!assignDateValue) {
             dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
@@ -523,13 +523,13 @@ export class BatchesService {
                     return;
                 }
 
-                if (key === "dateOfManufacturing") { 
+                if (key === "dateOfManufacturing") {
                     const diffsKey = {
                         oldValue: !initialBatch.dateOfManufacturing ?  "" : webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
                         newValue: !updatedBatch.dateOfManufacturing ? "" : webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
-                    
+
                 }
                 if(key === "batchRecall") {
                     const diffsKey = {

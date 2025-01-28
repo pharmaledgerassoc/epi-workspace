@@ -15,6 +15,23 @@ export class UtilsService {
 
     dbMessageFields = ["pk", "meta", "did", "__timestamp", "$loki", "context", "keySSI", "epiProtocol", "version"];
 
+    generateDeterministicId(...input) {
+        input = Array.isArray(input) ? input : [input];
+        input = input.map((item) => {
+            if (typeof item === "object" && item !== null) {
+                return Object.entries(item).map(([key, value]) => `${key}:${value}`).join("_");
+            }
+            return item;
+        }).join("_");
+        let encode = 0;
+        const length = input.length;
+        for (let i = 0; i < length; i++) {
+            const char = input.charCodeAt(i);
+            encode = (encode * 131 + char) >>> 0;
+        }
+        return encode.toString();
+    }
+
     generateID(length) {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         return this.generate(characters, length);
@@ -67,17 +84,20 @@ export class UtilsService {
     }
 
     getEpiDiffViewObj(epiDiffObj) {
-        let newValueLanguage = "";
-        if (epiDiffObj.newValue) {
-            newValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.newValue.language);
+        let changedPropertyLabel;
+        const obj = epiDiffObj.newValue ? epiDiffObj.newValue : epiDiffObj.oldValue;
+        if (obj) {
+            const langLabel = gtinResolver.Languages.getLanguageName(obj.language)
+            const typeDescription = gtinResolver.UploadTypes.getEpiTypeDescription(obj.type);
+            changedPropertyLabel = `${langLabel} ${typeDescription}`
+            if (obj.ePIMarket) {
+                const ePIMarket = gtinResolver.Countries.getCountry(obj.ePIMarket)
+                changedPropertyLabel += ` for ${ePIMarket} (${obj.ePIMarket})`;
+            }
         }
-        let oldValueLanguage = "";
-        if (epiDiffObj.oldValue) {
-            oldValueLanguage = gtinResolver.Languages.getLanguageName(epiDiffObj.oldValue.language);
-        }
-        let changedProperty = epiDiffObj.newValue ? `${newValueLanguage}  ${epiDiffObj.newValue.type}` : `${oldValueLanguage}  ${epiDiffObj.oldValue.type}`
+
         return {
-            "changedProperty": changedProperty,
+            "changedProperty": changedPropertyLabel,
             "oldValue": {"value": epiDiffObj.oldValue || "-", "directDisplay": !epiDiffObj.oldValue},
             "newValue": {
                 "value": epiDiffObj.newValue && epiDiffObj.newValue.action !== "delete" ? epiDiffObj.newValue : "-",
