@@ -19,7 +19,7 @@ export class EPIsTab extends CommonPresenterClass {
                 stringHTML += `<div class="epi-unit" data-id="${epi.id}">
                             <div class="epi-details">
                                 <div class="epi-language">${gtinResolver.Languages.getLanguageName(epi.language)} ${this.getEPIDescription(epi.type)}</div>
-                                <div>${this.getCountryName(epi.ePIMarket)}</div>
+                                <div>${epi?.ePIMarket ? this.getCountryName(epi?.ePIMarket) : ''}</div>
                                 <div class="epi-files">${epi.filesCount} files</div>
                             </div>
                             <div class="epi-buttons">
@@ -45,8 +45,8 @@ export class EPIsTab extends CommonPresenterClass {
     }
 
     getEPIDescription(value) {
-        const key = Object.keys(gtinResolver.constants.EPI_TYPES).find(key => gtinResolver.constants.EPI_TYPES[key] === value);
-        return key ? gtinResolver.constants.EPI_TYPES_DESCRIPTION[key] : null;
+        const key = Object.keys(gtinResolver.constants.EPI_TYPES || {}).find(key => gtinResolver.constants.EPI_TYPES[key] === value);
+        return key ? gtinResolver.constants.EPI_TYPES_DESCRIPTION[key] : "";
     }
 
     getCountryName(countryCode) {
