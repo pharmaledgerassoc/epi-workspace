@@ -84,7 +84,7 @@
     "/bdns",
     "/bundles",
     "/gtinOwner/",
-    "/leaflets/"
+    "/leaflets/",
     "/metadata/"
   ],
   "oauthConfig": {
