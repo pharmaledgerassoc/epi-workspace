@@ -25,7 +25,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "f17fa06dc1875c6bca202d0c83674fe4912bcaa4"
+                    "commit": "c7f9b7dca4079cac1ed7086a391bd03be42d51de"
                 },
                 {
                     "type": "execute",
@@ -41,7 +41,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "0ad066de207f83f54c92190329c793bab15ddb30"
+                    "commit": "5e5bdfbeb7cdcd6c102313470ea5e20f0e0b02d3"
                 },
                 {
                     "type": "execute",
@@ -85,7 +85,7 @@
                     "type": "smartClone",
                     "target": "./apihub-root/dsu-fabric",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a"
+                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
                 }
             ]
         },
@@ -97,33 +97,33 @@
                     "type": "smartClone",
                     "target": "./apihub-root/demiurge",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a"
+                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
                 }
             ]
         },
         {
             "name": "configure-apihub.json",
             "actions": [
-              {
-                "type": "copy",
-                "src": "./apihub-root/external-volume/config/apihub.json.template",
-                "target": "./apihub-root/external-volume/config/apihub.json",
-                "options": {
-                  "overwrite": true
+                {
+                    "type": "copy",
+                    "src": "./apihub-root/external-volume/config/apihub.json.template",
+                    "target": "./apihub-root/external-volume/config/apihub.json",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "execute",
+                    "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
                 }
-              },
-              {
-                "type": "execute",
-                "cmd": "[ -f .ssotoken ] && node ./bin/configureApihubJson.js"
-              }
             ]
         },
         {
             "name": "Patch OpenDsu",
-            "actions":[
+            "actions": [
                 {
                     "type": "execute",
-                    "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
+                    "cmd": "node ./bin/patch/replaceFunctions.js"
                 }
             ]
         }
