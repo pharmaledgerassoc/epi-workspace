@@ -3,14 +3,13 @@
     "dependencies": [
         {
             "name": "opendsu-sdk",
-            "src": "http://github.com/opendsu/opendsu-sdk.git",
+            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "32221867e24d6c14b54daed8bcb1c1612eb756ec",
-                    "tag": "v2.0.14"
+                    "commit": "9ea666c2848a477bebb1eee56d47c9bc9701112b"
                 },
                 {
                     "type": "execute",
@@ -25,7 +24,8 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "cdbc99afd9c944fbfbab600fbb6fbc4e2b70c855"
                 },
                 {
                     "type": "execute",
@@ -40,7 +40,8 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "7a4ac59791d04ebed9555ff32a6bf8bdfce883ce"
                 },
                 {
                     "type": "execute",
@@ -54,14 +55,13 @@
         },
         {
             "name": "ethadapter",
-            "src": "https://github.com/opendsu/eth-adapter",
+            "src": "https://github.com/pdmfcsa/eth-adapter",
             "actions": [
                 {
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "308701c71522394e64914ac00e30b41f13bea947",
-                    "tag": "v1.2.1"
+                    "commit": "308701c71522394e64914ac00e30b41f13bea947"
                 },
                 {
                     "type": "execute",
@@ -85,8 +85,7 @@
                     "type": "smartClone",
                     "target": "./apihub-root/dsu-fabric",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a",
-                    "tag": "v1.0.2"
+                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
                 }
             ]
         },
@@ -98,8 +97,33 @@
                     "type": "smartClone",
                     "target": "./apihub-root/demiurge",
                     "collectLog": false,
-                    "commit": "7adbb2c355fec5c7a020c49c548359b417b8242a",
-                    "tag": "v1.0.2"
+                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
+                }
+            ]
+        },
+        {
+            "name": "configure-apihub.json",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./apihub-root/external-volume/config/apihub.json.template",
+                    "target": "./apihub-root/external-volume/config/apihub.json",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "execute",
+                    "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
+                }
+            ]
+        },
+        {
+            "name": "Patch OpenDsu",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "node ./bin/patch/replaceFunctions.js"
                 }
             ]
         }
@@ -197,4 +221,5 @@
             ]
         }
     ]
-} 
+}
+

@@ -1,12 +1,19 @@
 import {changeSidebarFromURL, createObservableObject, navigateToPage} from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
+import constants from "../../../constants.js";
 
 export class ManageProductPage extends CommonPresenterClass {
+
+
     constructor(element, invalidate) {
         super(element, invalidate);
         this.invalidate(async () => {
             await this.initModel();
         });
+    }
+
+    static  getEPIKey(epi) {
+        return epi.ePIMarket ? `${epi.type}_${epi.language}_${epi.ePIMarket}` : `${epi.type}_${epi.language}`;
     }
 
     async initModel() {
@@ -18,6 +25,7 @@ export class ManageProductPage extends CommonPresenterClass {
             let {
                 productPayload, productPhotoPayload, EPIs,
             } = await webSkel.appServices.getProductData(params["product-code"]);
+
             let productModel = webSkel.appServices.createNewProduct(productPayload, productPhotoPayload, EPIs);
             if (!productModel.photo.startsWith("data:image")) {
                 productModel.photo = "./assets/images/no-picture.png";
@@ -25,6 +33,7 @@ export class ManageProductPage extends CommonPresenterClass {
             //save initial state
             this.existingProduct = JSON.parse(JSON.stringify(productModel));
             //observe changes for diffs
+
             this.productData = createObservableObject(productModel, this.onChange.bind(this));
         } else {
             this.buttonName = "Save Product";
@@ -39,7 +48,12 @@ export class ManageProductPage extends CommonPresenterClass {
     beforeRender() {
         let tabInfo = this.productData.epiUnits.map((data) => {
             return {
-                language: data.language, filesCount: data.filesCount, id: data.id, action: data.action, type: data.type
+                id: data.id,
+                action: data.action,
+                language: data.language,
+                type: data.type,
+                ePIMarket: data.ePIMarket,
+                filesCount: data.filesCount,
             };
         });
         tabInfo = encodeURIComponent(JSON.stringify(tabInfo));
@@ -88,8 +102,13 @@ export class ManageProductPage extends CommonPresenterClass {
         });
         let productCode = this.element.querySelector("#productCode");
         for (const key of webSkel.appServices.productInputFieldNames()) {
-            let input = this.element.querySelector(`#${key}`)
-            input.value = this.productData[key] || "";
+            let input = this.element.querySelector(`#${key}`);
+
+            if(input.type === 'checkbox' && input.name === 'productRecall') {
+                input.checked = this.productData[key];
+            } else {
+                input.value = this.productData[key] || "";
+            }
         }
 
         this.element.querySelectorAll(".epi-market-tabs button.epi-market-button").forEach(item => {
@@ -154,8 +173,9 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     detectInputChange(event) {
-        let inputName = event.target.name;
-        this.productData[inputName] = event.target.value;
+        const {name, type, value, checked} = event.target;
+        this.productData[name] = (type === 'checkbox' && name === 'productRecall') ?
+        checked : value;
     }
 
     validateProductCode(input) {
@@ -212,16 +232,17 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async addOrUpdateEpi(modalData) {
-        const existingLeafletIndex = this.productData.epiUnits.findIndex(epi => epi.language === modalData.language);
+        const existingLeafletIndex = this.productData.epiUnits.findIndex(epi => ManageProductPage.getEPIKey(epi) === ManageProductPage.getEPIKey(modalData));
         if (existingLeafletIndex !== -1) {
             /* epi already exists */
             if (this.productData.epiUnits[existingLeafletIndex].action === "add") {
                 /* previously added epi */
                 modalData.action = "add"
             } else {
+                const epiMarket = modalData.ePIMarket ? ` for ${this.getCountryName(modalData.ePIMarket)} market` : "";
                 let accept = await webSkel.showModal("dialog-modal", {
                     header: "Warning!!!",
-                    message: `This action will replace ${modalData.languageLabel} ${modalData.type}`,
+                    message: `This action will replace ${modalData.languageLabel} ${modalData.type}${epiMarket}`,
                     denyButtonText: "Cancel",
                     acceptButtonText: "Proceed"
                 }, true);
@@ -240,6 +261,17 @@ export class ManageProductPage extends CommonPresenterClass {
         }
         this.selected = "epi";
         this.invalidate();
+    }
+
+    getCountryName(countryCode) {
+        let countryName = countryCode || "";
+        try {
+            if (countryCode)
+                countryName = gtinResolver.Countries.getCountry(countryCode);
+        } catch (e) {
+            console.error(e);
+        }
+        return countryName;
     }
 
     async handleEPIModalData(data) {
@@ -267,25 +299,28 @@ export class ManageProductPage extends CommonPresenterClass {
         let existingStrengthIndex = this.productData.strengthUnits.findIndex(strength => strength.id === modalData.id);
         if (existingStrengthIndex !== -1) {
             this.productData.strengthUnits[existingStrengthIndex] = modalData;
-            console.log(`updated strengthUnits, substance: ${modalData.substance}`);
+            console.log(`updated strengthUnits, strength:`, modalData);
             return true;
         }
         return false;
     }
 
     async handleMarketModalData(data) {
+        const self = this;
         if (!this.updateMarket(data)) {
             data.id = webSkel.appServices.generateID(16);
             data.action = "add";
             this.productData.marketUnits.push(data);
         }
+
         this.selected = "market";
         this.invalidate();
     }
 
     async handleStrengthModalData(data) {
-        if (!this.updateStrength(data)) {
-            data.id = webSkel.appServices.generateID(16);
+        const {action, id, ...payload} = data;
+        data.id = webSkel.appServices.generateDeterministicId(payload);
+        if (!this.updateStrength({...data})) {
             data.action = "add";
             this.productData.strengthUnits.push(data);
         }
@@ -294,7 +329,7 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async showAddMarketModal() {
-        let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete")
+        let excludedOptions = this.productData.marketUnits.filter(data => data.action !== constants.ACTIONS.DELETE)
             .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
         let modalData = await webSkel.showModal("markets-management-modal", {excluded: encodedExcludedOptions}, true);
@@ -305,7 +340,7 @@ export class ManageProductPage extends CommonPresenterClass {
     }
 
     async addStrengthModal() {
-        let excludedOptions = this.productData.marketUnits.filter(data => data.action !== "delete");
+        let excludedOptions = this.productData.strengthUnits.filter(data => data.action !== constants.ACTIONS.DELETE);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
         let modalData = await webSkel.showModal("strengths-management-modal", {excluded: encodedExcludedOptions}, true);
         if (modalData) {
@@ -316,7 +351,6 @@ export class ManageProductPage extends CommonPresenterClass {
 
     validateFormData(data) {
         const errors = [];
-
         if (!data.productCode) {
             errors.push('Product Code is required.');
         }
@@ -354,6 +388,9 @@ export class ManageProductPage extends CommonPresenterClass {
 
         if (validationResult.isValid) {
             let diffs = webSkel.appServices.getProductDiffs(this.existingProduct, this.productData);
+            if(diffs.length === 0)
+                return false;
+
             let confirmation = await webSkel.showModal("data-diffs-modal", {
                 diffs: encodeURIComponent(JSON.stringify(diffs)),
                 productData: encodeURIComponent(JSON.stringify(this.productData))
@@ -383,7 +420,7 @@ export class ManageProductPage extends CommonPresenterClass {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedMarketUnit = this.productData.marketUnits.find(unit => unit.id === id);
-        selectedMarketUnit.action = "delete";
+        selectedMarketUnit.action = constants.ACTIONS.DELETE;
         //this.productData.marketUnits = this.productData.marketUnits.filter(unit => unit.id !== id);
         this.invalidate();
     }
@@ -401,11 +438,14 @@ export class ManageProductPage extends CommonPresenterClass {
         let marketUnit = webSkel.getClosestParentElement(_target, ".market-unit");
         let id = marketUnit.getAttribute("data-id");
         let selectedUnit = this.productData.marketUnits.find(unit => unit.id === id);
+        selectedUnit.mahName = webSkel.unsanitize(selectedUnit.mahName);
         const encodedJSON = encodeURIComponent(JSON.stringify(selectedUnit));
+
         let excludedOptions = this.productData.marketUnits
             .filter(data => data.marketId !== selectedUnit.marketId && data.action !== "delete")
             .map(data => data.marketId);
         let encodedExcludedOptions = encodeURIComponent(JSON.stringify(excludedOptions));
+
         let modalData = await webSkel.showModal("markets-management-modal", {
             ["updateData"]: encodedJSON, id: selectedUnit.id, excluded: encodedExcludedOptions
         }, true);

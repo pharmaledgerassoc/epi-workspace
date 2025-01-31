@@ -4,7 +4,7 @@ export default {
   "agent": "browser",
   "system": "any",
   "browser": "any",
-  "mode": "dev-secure",
+  "mode": "sso-direct",
   "vaultDomain": "vault",
   "didDomain": "vault",
   "epiDomain": "local.epi",

@@ -46,6 +46,7 @@ export class BatchesService {
 
     batchFields() {
         return [
+            "batchRecall",
             "batchNumber",
             "enableExpiryDay",
             "epiProtocol",
@@ -53,7 +54,15 @@ export class BatchesService {
             "inventedName",
             "nameMedicinalProduct",
             "packagingSiteName",
-            "productCode"
+            "productCode",
+            "importLicenseNumber",
+            "manufacturerName",
+            "dateOfManufacturing",
+            "manufacturerAddress1",
+            "manufacturerAddress2",
+            "manufacturerAddress3",
+            "manufacturerAddress4",
+            "manufacturerAddress5"
         ]
     }
 
@@ -140,17 +149,17 @@ export class BatchesService {
         return inputStringDate;
     }
 
-    createDateInput(dateInputType, assignDateValue = null) {
+    createDateInput(dateInputType, name = 'expiryDate', assignDateValue = null, isRequired = true) {
         let dateInput = document.createElement('input');
-        dateInput.id = 'date';
+        dateInput.id = name;
         dateInput.classList.add('pointer');
         dateInput.classList.add('date-format-remover');
         dateInput.classList.add('form-control');
-        dateInput.setAttribute('name', 'expiryDate');
+        dateInput.setAttribute('name', name);
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
-        dateInput.required = true;
-        if (assignDateValue) {
+        dateInput.required = isRequired;
+        if (assignDateValue && name === 'expiryDate' && !assignDateValue.includes("undefined")) {
             /* to reverse the format of the date displayed on UI */
             dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
             dateInput.value = assignDateValue.split("/").join("-");
@@ -167,13 +176,17 @@ export class BatchesService {
         });
         let self = this;
         dateInput.addEventListener('change', function (event) {
-            if (!event.target.value) {
+            const {target} = event;
+            if (!event.target.value && target.required) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
-                webSkel.notificationHandler.reportUserRelevantError("Expiry date is a mandatory field and can not be empty. Please select a valid date");
+                target.setAttribute('data-date', '');
+                target.value = '';
+                webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
                 return;
             }
-            self.updateUIDate(this, event.target.value);
+            if(!!event.target.value)
+                self.updateUIDate(this, event.target.value);
         })
         return dateInput
     }
@@ -234,8 +247,12 @@ export class BatchesService {
     }
 
     updateUIDate(dateInputElementRef, assignDateValue) {
-        dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
-        dateInputElementRef.value = assignDateValue;
+        if(typeof assignDateValue === "string" && assignDateValue.length < 6)
+            assignDateValue = "";
+        if(!!assignDateValue) {
+            dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
+            dateInputElementRef.value = assignDateValue;
+        }
     }
 
     createNewBatch(batchRef = {}, EPIs = []) {
@@ -313,7 +330,16 @@ export class BatchesService {
             productCode: batchData.productCode,
             batchNumber: batchData.batchNumber,
             expiryDate: batchData.expiryDate,
-            packagingSiteName: batchData.packagingSiteName,
+            batchRecall: typeof (batchData?.batchRecall) === 'boolean' ? batchData?.batchRecall : false,
+            packagingSiteName: batchData.packagingSiteName, 
+            importLicenseNumber: batchData.importLicenseNumber,
+            manufacturerName: batchData.manufacturerName,
+            dateOfManufacturing:  batchData.dateOfManufacturing,
+            manufacturerAddress1: batchData.manufacturerAddress1,
+            manufacturerAddress2: batchData.manufacturerAddress2,
+            manufacturerAddress3: batchData.manufacturerAddress3,
+            manufacturerAddress4: batchData.manufacturerAddress4,
+            manufacturerAddress5: batchData.manufacturerAddress5
         };
         return result;
     }
@@ -482,6 +508,7 @@ export class BatchesService {
             }
 
             Object.keys(diffs).forEach(key => {
+                
                 if (key === "expiryDate") {
                     let daySelectionObj = {
                         oldValue: initialBatch.enableExpiryDay,
@@ -495,8 +522,25 @@ export class BatchesService {
                     result.push(item);
                     return;
                 }
-                result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
 
+                if (key === "dateOfManufacturing") {
+                    const diffsKey = {
+                        oldValue: !initialBatch.dateOfManufacturing ?  "" : webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
+                        newValue: !updatedBatch.dateOfManufacturing ? "" : webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
+                    };
+                    return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
+
+                }
+                if(key === "batchRecall") {
+                    const diffsKey = {
+                        oldValue:(typeof diffs[key].oldValue === 'boolean' && diffs[key].oldValue === true) ? 
+                            "On" : "Off",
+                        newValue: (typeof diffs[key].newValue === 'boolean' && diffs[key].newValue === true) ? 
+                            "On" : "Off",
+                    };
+                    return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH)); 
+                }
+                result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
             });
             Object.keys(epiDiffs).forEach(key => {
                 result.push(webSkel.appServices.getEpiDiffViewObj(epiDiffs[key]));

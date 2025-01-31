@@ -11,23 +11,7 @@
     left: 0px;
     opacity: 0.7;
 }
-.read-only-label{
-    font-weight: 700;
-    color: var(--light-green);
-    font-size: 1.802rem;
-    margin-bottom: 10px;
-}
-input[type="text"] {
-    margin-top: 20px;
-}
 
-input[type="text"]:focus {
-    outline: none;
-}
-
-textarea:focus {
-    outline: none;
-}
 
 manage-product-page {
     height: 100%;
@@ -76,14 +60,11 @@ manage-product-page {
     width: 50%;
 }
 
-.form-field-container {
-    display: flex;
-    justify-content: space-between;
-}
 
-.name-of-medicinal-product {
-    width: 50%;
-}
+
+/* .name-of-medicinal-product {
+    max-width: 50%;
+} */
 
 #productCode {
     margin: 10px 0;
@@ -100,7 +81,6 @@ manage-product-page {
 .product-photo-field {
     padding-bottom: 80px !important;
     height: 100%;
-    width: 40%;
 }
 
 .product-photo-container {
@@ -157,33 +137,6 @@ manage-product-page {
 
 /*color: #328569;*/
 
-.form-field {
-    display: flex;
-    flex-direction: column;
-    min-height: 78px;
-    padding: 4px 0.75rem;
-    border-bottom: 1.5px solid var(--primary-background-color);
-    margin-bottom: 1rem;
-}
-
-.label {
-    color: var(--primary-background-color);
-}
-
-.label[disabled] {
-    color: var(--disabled);
-}
-
-.text-input::placeholder {
-    font-size: 14px;
-    font-style: italic;
-}
-
-.text-input {
-    font-size: 16px;
-    border: 0;
-    background: transparent;
-}
 
 
 .default-button {
@@ -213,20 +166,6 @@ manage-product-page {
 
 .highlighted {
     background-color: var(--primary-background-color);
-}
-
-.label-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.pen-square {
-    width: 16px;
-}
-
-.pen-square-white {
-    width: 16px;
-    fill: white;
 }
 
 .gtin-validity {
@@ -260,8 +199,9 @@ manage-product-page {
     max-width: 100%;
 }
 
-.advanced-settings {
-    margin-top: 60px;
+
+.advanced-settings{
+    margin-top: 60px !important;
 }
 
 #recallLabel {

@@ -1,0 +1,22 @@
+    WebCardinal release for bundle-minimal (build-id #80)
+    Add lightDB-sql-adapter to octopus.json dependencies
+    
+    This commit adds the lightDB-sql-adapter repository as a dependency in octopus.json. It is now included alongside other required modules for the project.
+    WebCardinal release for bundle-minimal (build-id #80)
+    Add lightDB-sql-adapter to octopus.json dependencies
+    
+    This commit adds the lightDB-sql-adapter repository as a dependency in octopus.json. It is now included alongside other required modules for the project.
+    WebCardinal release for bundle-minimal (build-id #80)
+    Add lightDB-sql-adapter to octopus.json dependencies
+    
+    This commit adds the lightDB-sql-adapter repository as a dependency in octopus.json. It is now included alongside other required modules for the project.
+    WebCardinal release for bundle-minimal (build-id #80)
+    Add lightDB-sql-adapter to octopus.json dependencies
+    
+    This commit adds the lightDB-sql-adapter repository as a dependency in octopus.json. It is now included alongside other required modules for the project.
+    Publishing new release bundles
+    LWA-225 remove unnecessary scripts from head
+    update healthCheck API
+    fixing security issues in cookie (sub dep of express) and elliptic (sub dep of ethers)
+    add fameCore in apis
+    add fameCore in apis

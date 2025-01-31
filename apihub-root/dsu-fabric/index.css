@@ -459,3 +459,286 @@ dialog[class="spinner"] {
     cursor: initial;
     background-color: var(--very-light-grey);
 }
+
+
+/** Demerson **/
+form {
+    margin-top: .5rem;
+}
+
+form > * > .form-field:not(:first-child) {
+    margin-top: 1rem;
+}
+
+form > * > .form-field-container .form-field {
+    margin-top: 1rem;
+}
+.form-field-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    /* padding: 4px 0.75rem 0px; */
+    padding: 4px 0.75rem .25rem;
+    border-bottom: 1.5px solid var(--primary-background-color);
+    margin-bottom: 10px;
+}
+
+
+.form-field.remove-padding-top {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+
+.form-field .label {
+    color: var(--primary-background-color);
+}
+
+.form-field .text-input::placeholder {
+    font-size: 14px;
+    font-style: italic;
+}
+.form-field .text-input {
+    font-size: 16px;
+    border: 0;
+    outline: none;
+    margin: 10px 0;
+}
+.form-field .text-input-disabled {
+    background: var(--disabled-background);
+    font-size: 16px;
+    border: 0;
+    outline: none;
+    margin: 10px 0;
+}
+.form-field .text-input:focus {
+    border: none;
+}
+
+.form-field .label[disabled] {
+    color: var(--disabled);
+}
+
+.form-field .text-input::placeholder {
+    font-size: 14px;
+    font-style: italic;
+}
+
+
+.form-field .text-input {
+    font-size: 16px;
+    border: 0;
+    background: transparent;
+}
+
+.form-field.read-only-label,
+.form-field .read-only-label{
+    font-weight: 700;
+    color: var(--light-green);
+    font-size: 1.802rem;
+    margin-bottom: 10px;
+}
+.form-field input[type="text"] {
+    margin-top: 20px;
+}
+
+.form-field input[type="text"]:focus {
+    outline: none;
+}
+
+.form-field textarea:focus {
+    outline: none;
+}
+
+.form-field .label-container {
+    display: flex;
+    justify-content: space-between;
+}
+.icon {
+    width: 16px;
+}
+.form-field .pen-square {
+    width: 16px;
+}
+.form-field .pen-square-white {
+    width: 16px;
+    fill: white;
+}
+
+.form-field .checkbox {
+    padding: 10px;
+    border-bottom: none;
+    display: block;
+    min-height: initial;
+}
+
+/* .form-field input[type="checkbox"] {
+    margin-bottom: 20px;
+} */
+
+.disabled-form-field {
+    display: flex;
+    color: var(--disabled);
+    border-color: var(--disabled);
+    background: var(--disabled-background);
+}
+
+
+
+/** date inputs **/
+.custom-date-input {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+
+.custom-date-input input[type="date"] {
+    outline: none;
+    border: none;
+}
+
+.custom-date-input input[type="month"] {
+    outline: none;
+    border: none;
+}
+
+/* Hidding calendar icon on firefox browsers */
+@-moz-document url-prefix() {
+    .custom-date-input::after {
+        width: 25px;
+        height: 25px;
+        background: white;
+        /* background: white; */
+        position: absolute;
+        content: " ";
+        right: 0px;
+        top: 2px;
+
+    }
+}
+
+.custom-date-input svg {
+    /* Firefox Default Calendar Icon overriding */
+    position: absolute;
+    right: -1.24px;
+    top: 11.4px;
+    width: 19px;
+    height: 13px;
+    cursor: pointer;
+    z-index: 1 !important;
+}
+
+
+.custom-date-input #svg2 {
+    display: none;
+}
+
+
+
+/* Chrome,Safari,Edge */
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-clear-button,
+.date-format-remover::-webkit-datetime-edit,
+.date-format-remover::-webkit-inner-spin-button,
+.date-format-remover::-webkit-clear-button {
+    display: none !important;
+}
+
+.custom-date-input  .date-format-remover:before {
+    position: absolute;
+    top: 0.45rem;
+    content: attr(data-date);
+    display: inline-block;
+}
+
+.custom-date-input .form-control {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 0px;
+    outline: none;
+    resize: none;
+    overflow: auto;
+}
+
+.custom-date-input svg {
+    z-index: -1;
+}
+
+ [class*="width-"] {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .width-1-1 {
+    width: 100% !important;
+  }
+  /* Halves */
+  .width-1-2 {
+    width: 50%;
+  }
+  /* Thirds */
+  .width-1-3 {
+    width: calc(100% * 1 / 3.001);
+  }
+  .width-2-3 {
+    width: calc(100% * 2 / 3.001);
+  }
+  /* Quarters */
+  .width-1-4 {
+    width: 25%;
+  }
+  .width-3-4 {
+    width: 75%;
+  }
+  /* Fifths */
+  .width-1-5 {
+    width: 20%;
+  }
+  .width-2-5 {
+    width: 40%;
+  }
+  .width-3-5 {
+    width: 60%;
+  }
+  .width-4-5 {
+    width: 80%;
+  }
+  /* Sixths */
+  .width-1-6 {
+    width: calc(100% * 1 / 6.001);
+  }
+  .width-5-6 {
+    width: calc(100% * 5 / 6.001);
+  }
+
+  .width-auto {
+    width: auto;
+  }
+
+  .width-expand {
+    flex: 1;
+    min-width: 1px;
+  }
+
+.width-expand.form-field + .form-field {
+    margin-left: 1rem;
+}
+
+.hidden {
+    display: none !important;
+}

@@ -1,11 +1,12 @@
 import {
     changeSidebarFromURL,
     createObservableObject,
+    renderDateInput
 } from "../../../utils/utils.js";
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
 export class ManageBatchPage extends CommonPresenterClass {
-
+    addresses = [];
     constructor(element, invalidate) {
         super(element, invalidate);
 
@@ -71,15 +72,28 @@ export class ManageBatchPage extends CommonPresenterClass {
                 this.product = product;
                 this.productCode = product.productCode;
                 this.packagingSiteName = batchModel.packagingSiteName;
+                this.expiryDate = batchModel.expiryDate;
+
                 this.enableExpiryDate = batchModel.enableExpiryDay;
                 this.enableExpiryDateCheck = enableExpiryDayCheck;
                 this.productInventedName = product.inventedName;
                 this.productMedicinalName = product.nameMedicinalProduct;
+  
+                this.importLicenseNumber = batchModel.importLicenseNumber;
+                this.manufacturerName = batchModel.manufacturerName;
+                this.dateOfManufacturing =  batchModel.dateOfManufacturing;
+                this.manufacturerAddress1 = batchModel.manufacturerAddress1;
+                this.manufacturerAddress2 = batchModel.manufacturerAddress2;
+                this.manufacturerAddress3 = batchModel.manufacturerAddress3;
+                this.manufacturerAddress4 = batchModel.manufacturerAddress4;
+                this.manufacturerAddress5 = batchModel.manufacturerAddress5; 
+                this.getAddressesOnBatch(batchModel);
                 this.penImage = "";
                 this.formActionButtonState = "disabled";
                 this.leafletsInfo = this.getEncodedEPIS(EPIs);
                 this.updatedBatch = createObservableObject(webSkel.appServices.createNewBatch(batch, EPIs), this.onChange.bind(this));
                 this.gs1Date = this.updatedBatch.expiryDate;
+
             }
         }
         await initPage[pageMode]();
@@ -94,32 +108,150 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     onChange() {
+        console.log(this.updatedBatch);
         this.element.querySelector("#formActionButton").disabled =
             JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeEPIForDeletion);
     }
 
     detectInputChange(event) {
-        let inputName = event.target.name;
-        if (inputName === "expiryDate" && event.target.value) {
-            this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
-            //to do format with 00 if no day in date
-            this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
-        } else {
-            if (inputName === "enableExpiryDay") {
-                event.target.value = event.target.checked ? "on" : "off";
+        const {target} = event;
+        const inputName = target.name;
+        if(inputName) {
+            
+            if (inputName === "expiryDate" && event.target.value) {
+                this.updatedBatch.expiryDate = webSkel.appServices.formatBatchExpiryDate(event.target.value);
+                //to do format with 00 if no day in date
+                this.element.querySelector("label.gs1-date").innerHTML = `GS1 format (${this.updatedBatch.expiryDate.length === 4 ? this.updatedBatch.expiryDate + "00" : this.updatedBatch.expiryDate})`
+            } else {
+                if (inputName === "enableExpiryDay") 
+                    event.target.value = event.target.checked ? "on" : "off";
+                
+                this.updatedBatch[inputName] = inputName === "batchRecall" ? 
+                    event.target.checked : event.target.value; 
             }
-            this.updatedBatch[inputName] = event.target.value;
         }
+    };
+
+    addAddress(target) {
+       const input = target.closest('.form-field').querySelector('input');
+       if(input.value.length) {
+         this.createAddressLine(input.value);
+         input.value = '';
+       }
+    };
+
+    getAddressesOnBatch(batchModel) {
+        Object.entries(batchModel).forEach(([key, value]) => {
+            if(key.includes('manufacturerAddress') && (value || "")?.length)
+                this.addresses.push({name: key, value})
+        });
+    };
+
+    createAddressLine(value) {
+        const element = this.element;
+        const index = this.addresses?.length + 1;
+        const name = `manufacturerAddress${index}`;
+        const item = {value, name};
+
+        this.addresses = [... this.addresses, item];
+        const disableInput = this.addresses.length === 5;
+        
+        element.querySelector('#buttonAddAddress').disabled = disableInput;
+        element.querySelector('#inputAddAddress').disabled = disableInput;
+        this.updatedBatch[item.name] = item.value;
+ 
+        if(value?.length) {
+            const container = this.element.querySelector('#addressContainers');
+      
+            const field = container.querySelector('#sampleAddressField').cloneNode(true);
+            const label = field.querySelector('label');
+            const input = field.querySelector('input');
+            
+            field.classList.add('card', 'form-field');
+            label.textContent = `Address Line ${index}`;
+            label.setAttribute('for', name);
+            input.id = input.name = name;
+            input.hidden = false;
+            input.value = value;
+    
+            const fieldsContainer = container.querySelector('#fields')
+            fieldsContainer.append(field);
+            field.querySelector('.edit').addEventListener('click', (event) => {
+                const {field} = this.getAddressLineElements(event.target);
+                field.classList.remove('card');
+            });
+            
+            field.querySelector('.remove').addEventListener('click', (event) => this.removeAddressLine(event.target));
+            field.querySelector('.save').addEventListener('click', (event) => this.updateAddressLine(event.target));        
+        }
+    };
+
+    updateAddressOrder(container) {
+        const fields = container.querySelectorAll('.card');
+        this.addresses = [];
+        container.innerHTML = "";
+        fields.forEach(field =>  this.createAddressLine(field.querySelector('input').value));
+        
+        console.log(this.addresses);
+    };
+
+    getAddressLineElements(target) {
+        const element = this.element;
+        const container = element.querySelector('#addressContainers');
+        const field = target.closest('.form-field');
+        const input = field.querySelector('input');
+
+        return {component: element, container, field, input};
+    };
+
+    updateAddressLine(target) {
+        const {field, input} = this.getAddressLineElements(target);
+        this.addresses.forEach((item) => {
+            if(item.name === input.name) 
+                item.value = input.value;
+        });
+
+        field.classList.add('card');
+    };
+
+    getteAddressLinesObject() {
+        let result = {};
+        if(this.addresses?.length) {
+            this.addresses.forEach(item => {
+                result[item.name] = item.value;       
+            });
+        }
+        return result;
     }
+
+    removeAddressLine(target) {
+       const {input, container} = this.getAddressLineElements(target);
+       const addresses = this.addresses.filter((item) => item.name !== input.name);
+       container.querySelector('#fields').innerHTML = "";
+
+       this.addresses = [];
+       this.updatedBatch[input.name] = "";
+       if(addresses.length) {
+            addresses.push({
+                name: input.name,
+                value: ""
+            });
+            addresses.forEach(item => this.createAddressLine(item.value));
+       }
+    };
+
 
     attachEventListeners() {
         let newDateInput;
-        this.element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-            const dateContainer = this.element.querySelector('#custom-date-icon');
-            const enableDayCheckbox = this.element.querySelector('#enableExpiryDay');
+        const element = this.element;
+        element.querySelector('#buttonAddAddress').addEventListener('click', (event) => this.addAddress(event.target));
+        element.querySelector('#enableExpiryDay').addEventListener('change', () => {
+            console.log(element);
+            const dateContainer = element.querySelector('#expiryDateContainer');
+            const enableDayCheckbox = element.querySelector('#enableExpiryDay');
             const svg1 = dateContainer.querySelector('#svg1');
             const svg2 = dateContainer.querySelector('#svg2');
-            const oldDateInput = dateContainer.querySelector('#date');
+            const oldDateInput = dateContainer.querySelector('input');
             const isChecked = enableDayCheckbox.checked;
             svg1.style.display = isChecked ? 'none' : 'block';
             svg2.style.display = isChecked ? 'block' : 'none';
@@ -129,12 +261,12 @@ export class ManageBatchPage extends CommonPresenterClass {
                 const [year, month] = oldDateInput.value.split('-');
                 let assignValue = `${year}-${month}-${webSkel.appServices.getLastDayOfMonth(year, month)}`;
                 assignValue = assignValue.split("-").join("/");
-                newDateInput = webSkel.appServices.createDateInput('date', assignValue);
+                newDateInput = webSkel.appServices.createDateInput('date', 'expiryDate', assignValue);
             } else {
                 /* DD-MM-YYYY -> MM-YYYY */
                 let assignValue = oldDateInput.value.slice(0, 7);
                 assignValue = assignValue.split("-").join("/");
-                newDateInput = webSkel.appServices.createDateInput('month', assignValue);
+                newDateInput = webSkel.appServices.createDateInput('month', 'expiryDate', assignValue);
             }
             dateContainer.replaceChild(newDateInput, oldDateInput);
             let newGS1value = webSkel.appServices.formatBatchExpiryDate(newDateInput.value);
@@ -159,8 +291,8 @@ export class ManageBatchPage extends CommonPresenterClass {
         /*TODO dictionary for each key/attribute(classes,id,etc) and iterate over it */
         /*TODO replace webSkel.appServices.createDateInput with date web component if necessary */
 
-        const dateContainer = this.element.querySelector('#custom-date-icon');
-
+        const expiryDateContainer = this.element.querySelector('#expiryDateContainer');
+        const dateOfManufacturingContainer = this.element.querySelector('#dateOfManufacturingContainer');
 
         const pageModes = {
 
@@ -172,7 +304,9 @@ export class ManageBatchPage extends CommonPresenterClass {
                     option.text = `${product.productCode} - ${product.inventedName}`;
                     selectInput.appendChild(option);
                 });
-                dateContainer.insertBefore(webSkel.appServices.createDateInput('date'), dateContainer.firstChild);
+                renderDateInput(dateOfManufacturingContainer, false);
+                renderDateInput(expiryDateContainer, true);
+                // expiryDateContainer.insertBefore(webSkel.appServices.createDateInput('date'), expiryDateContainer.firstChild);
                 this.element.querySelector('#productCode').addEventListener('change', async (event) => {
                     const {value: productCode} = event.target;
                     const {
@@ -185,14 +319,26 @@ export class ManageBatchPage extends CommonPresenterClass {
                 });
             },
             EDIT_BATCH: () => {
+                if(this.addresses?.length) {
+                    const addresses = [... this.addresses];
+                    this.addresses = [];
+                    addresses.forEach(item => this.createAddressLine(item.value));
+                    this.element.querySelector('#inputAddAddress').value = "";
+                }
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
-                const expiryDateInput = webSkel.appServices.createDateInput(dateType, webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
-                dateContainer.insertBefore(expiryDateInput, dateContainer.firstChild);
+                const expiryDateInput = webSkel.appServices.createDateInput(dateType, 'expiryDate', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
+                renderDateInput(dateOfManufacturingContainer, false, null, this.batch.dateOfManufacturing);
+                renderDateInput(expiryDateContainer, true, expiryDateInput);
+                if(this.existingBatch?.batchRecall === true)
+                    this.element.querySelector('#batchRecall').checked = true;
             }
 
         }
+        
         pageModes[this.pageMode]();
         this.attachEventListeners();
+        if(this.pageMode === "ADD_BATCH") 
+            this.element.querySelector('#enableExpiryDay').dispatchEvent(new Event('change'));
     }
 
     async navigateToBatchesPage() {
@@ -286,7 +432,7 @@ export class ManageBatchPage extends CommonPresenterClass {
 
     async addBatch(_target) {
         let formData = await webSkel.extractFormInformation(_target);
-
+        formData.data.batchRecall = formData.elements.batchRecall.element.checked;
         let validationResult = this.validateFormData(formData.data);
         if (validationResult.isValid) {
             formData.data.expiryDate = webSkel.appServices.formatBatchExpiryDate(formData.data.expiryDate);
@@ -318,10 +464,13 @@ export class ManageBatchPage extends CommonPresenterClass {
                 inventedName: this.productInventedName,
                 nameMedicinalProduct: this.productMedicinalName
             }
-            let confirmation = await webSkel.showModal("data-diffs-modal", {
-                diffs: encodeURIComponent(JSON.stringify(diffs)),
-                productData: encodeURIComponent(JSON.stringify(selectedProduct))
-            }, true);
+            let confirmation = true;
+            if(diffs.length) {
+                confirmation = await webSkel.showModal("data-diffs-modal", {
+                    diffs: encodeURIComponent(JSON.stringify(diffs)),
+                    productData: encodeURIComponent(JSON.stringify(selectedProduct))
+                }, true);
+            }
             if (confirmation) {
 
                 let shouldSkipMetadataUpdate = false;
