@@ -335,11 +335,11 @@ export class BatchesService {
             importLicenseNumber: batchData.importLicenseNumber,
             manufacturerName: batchData.manufacturerName,
             dateOfManufacturing:  batchData.dateOfManufacturing,
-            manufacturerAddress1: batchData.manufacturerAddress1,
-            manufacturerAddress2: batchData.manufacturerAddress2,
-            manufacturerAddress3: batchData.manufacturerAddress3,
-            manufacturerAddress4: batchData.manufacturerAddress4,
-            manufacturerAddress5: batchData.manufacturerAddress5
+            manufacturerAddress1: batchData.manufacturerAddress1 || "",
+            manufacturerAddress2: batchData.manufacturerAddress2 || "",
+            manufacturerAddress3: batchData.manufacturerAddress3 || "",
+            manufacturerAddress4: batchData.manufacturerAddress4 || "",
+            manufacturerAddress5: batchData.manufacturerAddress5 || ""
         };
         return result;
     }
