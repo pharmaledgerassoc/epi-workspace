@@ -13,7 +13,7 @@
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
+                    "cmd": "cd opendsu-sdk && npm run no-freeze-install"
                 }
             ]
         },
@@ -25,7 +25,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "1f6a83698416d0712344d7ab70940555f5898cd0"
+                    "commit": "1edf3c2c7a2e0b1889c067524c9c7746a8dae889"
                 },
                 {
                     "type": "execute",
@@ -41,7 +41,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "ad45ee2afc1d20d70590246a317496bdcf4f6073"
+                    "commit": "95453c9b918c60ee43871bdca4f90f53c507ae46"
                 },
                 {
                     "type": "execute",
