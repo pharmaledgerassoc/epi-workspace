@@ -1,8 +1,10 @@
 import {
     changeSidebarFromURL,
     createObservableObject,
-    renderDateInput
+    renderDateInput,
 } from "../../../utils/utils.js";
+import {unsanitize} from "../../../WebSkel/utils/dom-utils.js";
+
 import {CommonPresenterClass} from "../../CommonPresenterClass.js";
 
 export class ManageBatchPage extends CommonPresenterClass {
@@ -108,7 +110,6 @@ export class ManageBatchPage extends CommonPresenterClass {
     }
 
     onChange() {
-        console.log(this.updatedBatch);
         this.element.querySelector("#formActionButton").disabled =
             JSON.stringify(this.batch) === JSON.stringify(this.updatedBatch, webSkel.appServices.removeEPIForDeletion);
     }
@@ -172,8 +173,7 @@ export class ManageBatchPage extends CommonPresenterClass {
             label.setAttribute('for', name);
             input.id = input.name = name;
             input.hidden = false;
-            input.value = value;
-    
+            input.value = unsanitize(value);
             const fieldsContainer = container.querySelector('#fields')
             fieldsContainer.append(field);
             field.querySelector('.edit').addEventListener('click', (event) => {
@@ -190,9 +190,7 @@ export class ManageBatchPage extends CommonPresenterClass {
         const fields = container.querySelectorAll('.card');
         this.addresses = [];
         container.innerHTML = "";
-        fields.forEach(field =>  this.createAddressLine(field.querySelector('input').value));
-        
-        console.log(this.addresses);
+        fields.forEach(field =>  this.createAddressLine(field.querySelector('input').value));        
     };
 
     getAddressLineElements(target) {
@@ -246,7 +244,6 @@ export class ManageBatchPage extends CommonPresenterClass {
         const element = this.element;
         element.querySelector('#buttonAddAddress').addEventListener('click', (event) => this.addAddress(event.target));
         element.querySelector('#enableExpiryDay').addEventListener('change', () => {
-            console.log(element);
             const dateContainer = element.querySelector('#expiryDateContainer');
             const enableDayCheckbox = element.querySelector('#enableExpiryDay');
             const svg1 = dateContainer.querySelector('#svg1');
