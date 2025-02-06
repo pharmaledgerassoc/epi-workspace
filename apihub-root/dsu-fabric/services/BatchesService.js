@@ -159,7 +159,7 @@ export class BatchesService {
         dateInput.setAttribute('type', dateInputType);
         dateInput.setAttribute('min', "2000-01-01");
         dateInput.required = isRequired;
-        if (assignDateValue && name === 'expiryDate' && !assignDateValue.includes("undefined")) {
+        if (assignDateValue && !assignDateValue.includes("undefined")) {
             /* to reverse the format of the date displayed on UI */
             dateInput.setAttribute('data-date', this.reverseSeparatedDateString(assignDateValue, "/"));
             dateInput.value = assignDateValue.split("/").join("-");
@@ -334,14 +334,18 @@ export class BatchesService {
             packagingSiteName: batchData.packagingSiteName, 
             importLicenseNumber: batchData.importLicenseNumber,
             manufacturerName: batchData.manufacturerName,
-            dateOfManufacturing:  batchData.dateOfManufacturing,
-            manufacturerAddress1: batchData.manufacturerAddress1,
-            manufacturerAddress2: batchData.manufacturerAddress2,
-            manufacturerAddress3: batchData.manufacturerAddress3,
-            manufacturerAddress4: batchData.manufacturerAddress4,
-            manufacturerAddress5: batchData.manufacturerAddress5
+            dateOfManufacturing:  this.formatBatchExpiryDate(batchData.dateOfManufacturing),
+            manufacturerAddress1: batchData.manufacturerAddress1 || "",
+            manufacturerAddress2: batchData.manufacturerAddress2 || "",
+            manufacturerAddress3: batchData.manufacturerAddress3 || "",
+            manufacturerAddress4: batchData.manufacturerAddress4 || "",
+            manufacturerAddress5: batchData.manufacturerAddress5 || ""
         };
         return result;
+    }
+
+    parseDateOfManufacturing(date) {
+
     }
 
     async loadEditData(gtin, batchId) {
@@ -523,10 +527,14 @@ export class BatchesService {
                     return;
                 }
 
-                if (key === "dateOfManufacturing") { 
+                if (key === "dateOfManufacturing") {
+                    const formatDate = (value) => {
+                        value = webSkel.appServices.parseDateStringToDateInputValue(value);
+                        return value.split("-").join("/");
+                    };
                     const diffsKey = {
-                        oldValue: !initialBatch.dateOfManufacturing ?  "" : webSkel.appServices.reverseInputFormattedDateString(initialBatch.dateOfManufacturing),
-                        newValue: !updatedBatch.dateOfManufacturing ? "" : webSkel.appServices.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
+                        oldValue: !initialBatch.dateOfManufacturing ?  "" : formatDate(initialBatch.dateOfManufacturing),
+                        newValue: !updatedBatch.dateOfManufacturing ? "" : this.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
                     

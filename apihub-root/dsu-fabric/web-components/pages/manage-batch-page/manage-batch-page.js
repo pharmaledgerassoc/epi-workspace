@@ -327,8 +327,12 @@ export class ManageBatchPage extends CommonPresenterClass {
                 }
                 const dateType = webSkel.appServices.getDateInputTypeFromDateString(this.batch.expiryDate, this.enableExpiryDateCheck);
                 const expiryDateInput = webSkel.appServices.createDateInput(dateType, 'expiryDate', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.expiryDate), "-"));
-                renderDateInput(dateOfManufacturingContainer, false, null, this.batch.dateOfManufacturing);
                 renderDateInput(expiryDateContainer, true, expiryDateInput);
+
+
+                const manufacturerDateInput = webSkel.appServices.createDateInput(dateType, 'dateOfManufacturing', webSkel.appServices.reverseSeparatedDateString(webSkel.appServices.parseDateStringToDateInputValue(this.batch.dateOfManufacturing), "-"));
+                renderDateInput(dateOfManufacturingContainer, false, manufacturerDateInput);
+
                 if(this.existingBatch?.batchRecall === true)
                     this.element.querySelector('#batchRecall').checked = true;
             }
