@@ -1,6 +1,7 @@
 import constants from "../constants.js";
 import bwipjs from "../cloned-dependecies/bwip.js";
 import {navigateToPage} from "../utils/utils.js";
+import { unsanitize } from "../WebSkel/utils/dom-utils.js";
 
 //TODO: CODE-REVIEW - bwipjs is a helper or an external library/dependency??
 
@@ -247,7 +248,7 @@ export class BatchesService {
     }
 
     updateUIDate(dateInputElementRef, assignDateValue) {
-        if(typeof assignDateValue === "string" && assignDateValue.length < 6) 
+        if(typeof assignDateValue === "string" && assignDateValue.length < 6)
             assignDateValue = "";
         if(!!assignDateValue) {
             dateInputElementRef.setAttribute('data-date', this.reverseInputFormattedDateString(assignDateValue));
@@ -537,7 +538,7 @@ export class BatchesService {
                         newValue: !updatedBatch.dateOfManufacturing ? "" : this.reverseInputFormattedDateString(updatedBatch.dateOfManufacturing)
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH));
-                    
+
                 }
                 if(key === "batchRecall") {
                     const diffsKey = {
@@ -548,6 +549,10 @@ export class BatchesService {
                     };
                     return result.push(webSkel.appServices.getPropertyDiffViewObj(diffsKey, key, constants.MODEL_LABELS_MAP.BATCH)); 
                 }
+
+                if (key.includes("manufacturerAddress")) 
+                    diffs[key].oldValue = unsanitize(diffs[key].oldValue);
+                
                 result.push(webSkel.appServices.getPropertyDiffViewObj(diffs[key], key, constants.MODEL_LABELS_MAP.BATCH));
             });
             Object.keys(epiDiffs).forEach(key => {

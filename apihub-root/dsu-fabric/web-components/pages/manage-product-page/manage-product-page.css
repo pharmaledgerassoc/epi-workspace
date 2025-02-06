@@ -12,6 +12,10 @@
     opacity: 0.7;
 }
 
+.recall-check {
+    width: calc(100% - 30px);
+}
+
 
 manage-product-page {
     height: 100%;

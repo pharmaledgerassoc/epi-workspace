@@ -102,7 +102,7 @@ export class ProductsService {
 
             if (productPayload.strengths) {
                 productPayload.strengths = productPayload.strengths.map(item => {
-                    item.id = webSkel.appServices.generateID(16);
+                    item.id = webSkel.appServices.generateDeterministicId(item);
                     return item
                 });
             }
@@ -139,8 +139,11 @@ export class ProductsService {
         let productPhotoPayload = await this.retrieveProductPhotoPayload(productCode)
 
         let leafletEPIs = await webSkel.appServices.retrieveEPIs(productCode, undefined, constants.API_MESSAGE_TYPES.EPI.LEAFLET);
+        let prescribingInfoEPIS = await webSkel.appServices.retrieveEPIs(productCode, undefined, constants.API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO);
         let smpcEPIs = await webSkel.appServices.retrieveEPIs(productCode, undefined, constants.API_MESSAGE_TYPES.EPI.SMPC);
-        let EPIs = [...leafletEPIs, ...smpcEPIs];
+
+        // let EPIs = result.flat();
+        let EPIs = [...leafletEPIs, ...prescribingInfoEPIS, ...smpcEPIs];
         return {productPayload, productPhotoPayload, EPIs}
     }
 
@@ -277,7 +280,7 @@ export class ProductsService {
             delete marketDiffObj.oldValue.id
         }
 
-        let changedProperty = marketDiffObj.newValue ? `${newValueCountry}  Market` : `${oldValueCountry}  Market`
+        let changedProperty = marketDiffObj.newValue ? `${newValueCountry} Market` : `${oldValueCountry} Market`
         return {
             "changedProperty": changedProperty,
             "oldValue": {"value": marketDiffObj.oldValue || "-", "directDisplay": !marketDiffObj.oldValue},
@@ -293,7 +296,7 @@ export class ProductsService {
         delete strengthDiffsObj.oldValue.id
         delete strengthDiffsObj.newValue.id
         return {
-            "changedProperty": strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance} Strength` : `${strengthDiffsObj.oldValue.substance} `,
+            "changedProperty": (strengthDiffsObj.newValue ? `${strengthDiffsObj.newValue.substance} Strength` : `${strengthDiffsObj.oldValue.substance} `).trim(),
             "oldValue": {"value": strengthDiffsObj.oldValue || "-", "directDisplay": !strengthDiffsObj.oldValue},
             "newValue": {
                 "value": strengthDiffsObj.newValue && strengthDiffsObj.newValue.action !== "delete" ? strengthDiffsObj.newValue : "-",

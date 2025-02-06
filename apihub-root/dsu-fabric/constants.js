@@ -30,7 +30,14 @@ export default {
         PRODUCT: "Product",
         BATCH: "Batch",
         PRODUCT_PHOTO: "ProductPhoto",
-        EPI: {LEAFLET: "leaflet", SMPC: "smpc"}
+        EPI: {
+            LEAFLET: "leaflet",
+            PRESCRIBING_INFO: "prescribingInfo",
+            SMPC: "smpc"
+        }
+    },
+    ACTIONS: {
+        DELETE: "delete"
     },
     EPI_ACTIONS: {
         ADD: "add",

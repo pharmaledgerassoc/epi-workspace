@@ -1,4 +1,7 @@
 
+.recall-check {
+    width: calc(100% - 30px);
+}
 
 #addressContainers .form-field {
     padding: 1rem !important;
@@ -242,4 +245,8 @@
     font-size: inherit;
     margin-top: 20px;
     margin-bottom: 0.75rem;
+}
+
+.hidden-for-batch {
+    display: none;
 }

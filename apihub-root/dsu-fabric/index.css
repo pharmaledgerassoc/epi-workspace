@@ -619,7 +619,7 @@ form > * > .form-field-container .form-field {
         content: " ";
         right: 0px;
         top: 2px;
-        
+
     }
 }
 
@@ -666,7 +666,7 @@ input[type="time"]::-webkit-clear-button,
     font-weight: 400;
     line-height: 1.5;
     border: none;
-    background: none; 
+    background: none;
     box-shadow: none;
     padding: 0px;
     outline: none;

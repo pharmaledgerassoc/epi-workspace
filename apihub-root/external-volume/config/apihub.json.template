@@ -11,6 +11,7 @@
     "epi-mapping-engine-results",
     "get-gtin-owner",
     "leaflet-web-api",
+    "metadata",
     "integration-api",
     "health-check-api",
     "versionlessDSU",
@@ -31,6 +32,10 @@
     "leaflet-web-api": {
       "module": "./../../gtin-resolver",
       "function": "getWebLeaflet"
+    },
+    "metadata": {
+          "module": "./../../gtin-resolver",
+          "function": "getMetadata"
     },
     "get-gtin-owner": {
       "module": "./../../gtin-resolver",
@@ -79,7 +84,8 @@
     "/bdns",
     "/bundles",
     "/gtinOwner/",
-    "/leaflets/"
+    "/leaflets/",
+    "/metadata/"
   ],
   "oauthConfig": {
     "whitelist": ["${whitelist}"],
