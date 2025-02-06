@@ -144,47 +144,9 @@
                     <input type="text" class="text-input " name="manufacturerAddress5"
                            id="manufacturerAddress5" autocomplete="off"
                            placeholder="Add Address Line 5" value="$$manufacturerAddress5">
-                           
                 </div>
                 <div id="fields"></div>
             </div>
-
-<!-- 
-            <div class="form-field-container" userRights="$$userRights">
-                <div class="form-field width-1-1">
-                    <div class="label-container">
-                        <label class="label" for="manufacturerAddress1" userRights="$$userRights">Manufacturer Address</label>
-                        <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
-                    </div>
-                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerAddress1"
-                           id="manufacturerAddress1" autocomplete="off"
-                           placeholder="Add Address Line 1" value="$$manufacturerAddress1">
-                </div>
-
-                <div class="form-field remove-padding-top width-1-1">
-                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerAddress2"
-                           id="manufacturerAddress2" autocomplete="off"
-                           placeholder="Add Address Line 2" value="$$manufacturerAddress2">
-                </div>
-
-                <div class="form-field remove-padding-top width-1-1">
-                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerAddress3"
-                           id="manufacturerAddress3" autocomplete="off"
-                           placeholder="Add Address Line 3" value="$$manufacturerAddress3">
-                </div>
-
-                <div class="form-field remove-padding-top width-1-1">
-                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerAddress4"
-                           id="manufacturerAddress4" autocomplete="off"
-                           placeholder="Add Address Line 4" value="$$manufacturerAddress4">
-                </div>
-                <div class="form-field remove-padding-top width-1-1">
-                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerAddress5"
-                           id="manufacturerAddress5" autocomplete="off"
-                           placeholder="Add Address Line 5" value="$$manufacturerAddress5">
-                </div>
-
-            </div> -->
 
         </div>
 
@@ -213,12 +175,12 @@
                 </div>
                 <div class="advanced-settings-container"> 
                     <input userRights="$$userRights" type="checkbox" class="text-input" name="batchRecall" id="batchRecall">
-                    <input userRights="$$userRights" type="text" class="" name="recallLabel" id="recallLabel" value="Mark Batch as Recalled" disabled>
+                    <input userRights="$$userRights" type="text" class="recall-check" name="recallLabel" id="recallLabel" value="Mark Batch as Recalled (Enabled only for Brazil)" disabled>
                 </div>
             </div>
 
             <div class="form-buttons">
-                <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
+                <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button> 
                 <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction"
                         $$formActionButtonState userRights="$$userRights">$$formActionButtonText
                 </button>

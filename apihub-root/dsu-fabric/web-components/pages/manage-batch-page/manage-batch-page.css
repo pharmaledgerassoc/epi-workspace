@@ -1,4 +1,7 @@
 
+.recall-check {
+    width: calc(100% - 30px);
+}
 
 #addressContainers .form-field {
     padding: 1rem !important;
