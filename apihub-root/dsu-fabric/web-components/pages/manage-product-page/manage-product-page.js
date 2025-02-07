@@ -226,7 +226,7 @@ export class ManageProductPage extends CommonPresenterClass {
     deleteEpi(_target) {
         let epiUnit = webSkel.appServices.deleteEPI(_target, this.productData.epiUnits);
         if (!this.existingProduct || !this.existingProduct.epiUnits || !this.existingProduct.epiUnits.find(item => item.language === epiUnit.language && item.type === epiUnit.type)) {
-            this.productData.epiUnits = this.productData.epiUnits.filter(item => item.language !== epiUnit.language || item.type !== epiUnit.type)
+            this.productData.epiUnits = this.productData.epiUnits.filter(item => item.language !== epiUnit.language || item.ePIMarket !== epiUnit.ePIMarket || item.type !== epiUnit.type)
         }
         this.invalidate();
     }
