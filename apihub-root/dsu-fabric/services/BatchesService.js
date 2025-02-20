@@ -335,7 +335,7 @@ export class BatchesService {
             packagingSiteName: batchData.packagingSiteName, 
             importLicenseNumber: batchData.importLicenseNumber,
             manufacturerName: batchData.manufacturerName,
-            dateOfManufacturing:  this.formatBatchExpiryDate(batchData.dateOfManufacturing),
+            dateOfManufacturing: batchData.dateOfManufacturing?.length === 6 ? batchData.dateOfManufacturing : this.formatBatchExpiryDate(batchData.dateOfManufacturing),
             manufacturerAddress1: batchData.manufacturerAddress1 || "",
             manufacturerAddress2: batchData.manufacturerAddress2 || "",
             manufacturerAddress3: batchData.manufacturerAddress3 || "",

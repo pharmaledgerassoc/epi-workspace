@@ -3,14 +3,14 @@ dialog {
     max-height: 95vh;
     height: 95%;
     border-radius: 3px;
-
+    overflow: hidden;
     max-width: 75vw;
     width: 75%;
 }
 
 audit-entry-modal {
     margin-left: 240px;
-    height: 100%;
+    height: calc(100% - 50px);
     display: flex;
     flex-direction: column;
 

@@ -1,6 +1,6 @@
 {
   "name": "ePI-workspace",
-  "version": "v4.0.0-rc",
+  "version": "v4.0.0-rc2",
   "description": "",
   "scripts": {
     "dev-install": "node ./bin/mkDevEnv.js",
