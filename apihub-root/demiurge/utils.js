@@ -249,7 +249,7 @@ async function initSharedEnclave(keySSI, enclaveConfig, recovery) {
 * alert - show toast but user can continue with app
 * block_alert - blocks interaction with app
 * */
-function renderToast(message, type, mode, timeoutValue = 15000) {
+function renderToast(message, type, mode, timeoutValue = 5000) { 
     if (mode && (mode === "alert" || "block_alert")) {
         let toastContainer = document.querySelector(".toast-container");
         const dialogElement = document.createElement('dialog');
@@ -284,9 +284,15 @@ function renderToast(message, type, mode, timeoutValue = 15000) {
             })
             dialogElement.showModal();
         }
+        setTimeout(() => {
+            if (dialogElement && toastContainer.contains(dialogElement)) 
+                toastContainer.removeChild(dialogElement);
+        }, timeoutValue)
 
         return;
     }
+
+   
     let toastContainer = document.querySelector(".toast-container");
     toastContainer.insertAdjacentHTML("beforeend", `<message-toast data-message="${message}" data-type="${type}" data-timeout="${timeoutValue}" data-presenter="message-toast"></message-toast>`);
 }
