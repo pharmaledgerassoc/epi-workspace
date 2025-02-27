@@ -15,7 +15,7 @@ export class AddEpiModal {
         this.languageOptions = stringHTML;
 
         let countriesStringHTML = "";
-        for(let country of gtinResolver.Countries.getEpiAsVM()){
+        for(let country of gtinResolver.Countries.getListAsVM()){  
             countriesStringHTML += `<option id="${country.value}" value="${country.value}">${country.label}</option>`;
         }
         this.countries = countriesStringHTML;
