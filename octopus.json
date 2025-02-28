@@ -8,11 +8,15 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "options": {
+                        "branch": "TRUST-407_lokiDBMigration",
+                        "depth": 1
+                    }
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run no-freeze-install"
+                    "cmd": "cd opendsu-sdk && git fetch --unshallow && npm run dev-install"
                 }
             ]
         },
