@@ -109,7 +109,7 @@
   },
   "serverAuthentication": ${server_authentication},
   "db": {
-    user: "${db_user}",
-    secret: "${db_secret}"
+    "user": "${db_user}",
+    "secret": "${db_secret}"
   }
 }
