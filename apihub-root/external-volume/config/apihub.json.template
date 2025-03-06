@@ -107,5 +107,9 @@
     "keyTTL": 3600000,
     "debugLogEnabled": false
   },
-  "serverAuthentication": ${server_authentication}
+  "serverAuthentication": ${server_authentication},
+  "db": {
+    user: "${db_user}",
+    secret: "${db_secret}"
+  }
 }
