@@ -17,7 +17,10 @@ const localValues = {
     issuer: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/v2.0/",
     whitelist: "https://login.microsoftonline.com",
     oauth_jwks_endpoint: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/discovery/v2.0/keys",
-    enable_oauth: true
+    enable_oauth: true,
+    db_uri: "http://localhost:5984",
+    db_user: "admin",
+    db_secret: "adminpw"
 };
 
 /**
