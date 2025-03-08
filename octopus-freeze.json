@@ -2,22 +2,6 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "opendsu-sdk",
-            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false,
-                    "commit": "8f0a6a7d790c53d3ebe555a8684d011724e83052"
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
-                }
-            ]
-        },
-        {
             "name": "apihub-root/lwa",
             "src": "https://github.com/${GITHUB_ORGANIZATION}/LWA.git",
             "actions": [
