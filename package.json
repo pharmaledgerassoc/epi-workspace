@@ -3,6 +3,8 @@
   "version": "v4.0.0-rc2",
   "description": "",
   "scripts": {
+    "init": "git submodule update --init --recursive && git submodule foreach \"git checkout master\" && git clone https://github.com/pharmaledgerassoc/http-wrapper.git  ./modules/apihub/http-wrapper",
+    "preinstall": "npm run init",
     "dev-install": "node ./bin/mkDevEnv.js",
     "postinstall": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"npm run do-install\"",
     "do-install": "node ./node_modules/octopus/scripts/ensureFreezeState.js && node ./node_modules/octopus/scripts/run",
