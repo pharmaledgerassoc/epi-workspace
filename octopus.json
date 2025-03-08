@@ -7,7 +7,7 @@
             "actions": [
                 {
                     "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run build"
+                    "cmd": "cd opendsu-sdk && npm install && npm run build"
                 }
             ]
         },
