@@ -2,6 +2,16 @@
     "workDir": ".",
     "dependencies": [
         {
+            "name": "build-opendsu",
+            "src": ".",
+            "actions": [
+                {
+                    "type": "execute",
+                    "cmd": "cd opendsu-sdk && npm run build"
+                }
+            ]
+        },
+        {
             "name": "apihub-root/lwa",
             "src": "https://github.com/${GITHUB_ORGANIZATION}/LWA.git",
             "actions": [
