@@ -25,7 +25,7 @@ node_modules
 package-lock.json
 env.json.devel
 opendsu-sdk/builds/output/
-
+opendsu-sdk
 
 acdc-authentication-feature-template/
 acdc/
