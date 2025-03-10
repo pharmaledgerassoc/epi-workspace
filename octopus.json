@@ -2,12 +2,18 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "build-opendsu",
-            "src": ".",
+            "name": "opendsu-sdk",
+            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
             "actions": [
                 {
+                    "type": "smartClone",
+                    "target": ".",
+                    "collectLog": false,
+                    "commit": "240f52715b1e758480b6b03bfc9b2c3ea7b187c7"
+                },
+                {
                     "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm install && npm run build"
+                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
                 }
             ]
         },
@@ -146,16 +152,6 @@
         }
     ],
     "build": [
-        {
-            "name": "opendsu-build",
-            "src": "",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run build"
-                }
-            ]
-        },
         {
             "name": "gtin-resolver-build",
             "src": "",
