@@ -168,7 +168,7 @@ export class DsuFabricAccessLogs extends DemiurgeLogs {
                         <div>Access Wallet</div>
                         <div>${item.userDID}</div>
                         <div>${item.userGroup}</div>
-                        <div>${new Date(item.__timestamp).toISOString()}</div>`;
+                        <div>${new Date(item.timestamp).toISOString()}</div>`;
         }
         this.items = string;
     }
