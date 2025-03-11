@@ -77,9 +77,6 @@ export class ProductsService {
         let result = webSkel.appServices.initMessage(constants.API_MESSAGE_TYPES.PRODUCT_PHOTO);
         result.payload = {
             productCode: productData.productCode,
-            imageId: webSkel.appServices.generateNumericID(12),
-            imageType: "front",
-            imageFormat: imageType,
             imageData: productData.photo
         };
         return result;

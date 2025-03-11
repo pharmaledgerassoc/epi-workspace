@@ -8,11 +8,12 @@
                 {
                     "type": "smartClone",
                     "target": ".",
-                    "collectLog": false
+                    "collectLog": false,
+                    "commit": "240f52715b1e758480b6b03bfc9b2c3ea7b187c7"
                 },
                 {
                     "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run no-freeze-install"
+                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
                 }
             ]
         },

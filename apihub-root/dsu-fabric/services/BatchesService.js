@@ -178,12 +178,13 @@ export class BatchesService {
         let self = this;
         dateInput.addEventListener('change', function (event) {
             const {target} = event;
-            if (!event.target.value && target.required) {
+            if (!event.target.value) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 target.setAttribute('data-date', '');
                 target.value = '';
-                webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
+                if(target.required)
+                    webSkel.notificationHandler.reportUserRelevantError(`${name} is a mandatory field and can not be empty. Please select a valid date`);
                 return;
             }
             if(!!event.target.value)
