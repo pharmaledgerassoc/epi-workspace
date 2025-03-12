@@ -52,7 +52,7 @@
    "enableLocalhostAuthorization": false,
    "db": {
       "uri": "${db_uri}",
-      "user": "${db_user}",
+      "user": "epi-reader",
       "secret": "${db_secret}"
    }
 }

@@ -93,6 +93,24 @@ walk(myPath, filterFiles, filterFolders, function (err, result) {
 
 });
 
+fs.rm("./apihub-root/external-volume/encryption-keys", { recursive: true, force: true }, (err)=>{
+    if(err){
+        console.error(err);
+    }
+});
+
+fs.rm("./apihub-root/external-volume/fixed-urls", { recursive: true, force: true }, (err)=>{
+    if(err){
+        console.error(err);
+    }
+});
+
+fs.rm("./apihub-root/external-volume/gtinOwner", { recursive: true, force: true }, (err)=>{
+    if(err){
+        console.error(err);
+    }
+});
+
 //we need to clean also any lightdbs
 fs.rm("./apihub-root/external-volume/lightDB", { recursive: true, force: true }, (err)=>{
     if(err){
@@ -102,6 +120,18 @@ fs.rm("./apihub-root/external-volume/lightDB", { recursive: true, force: true },
 
 //we need to clean also any secrets
 fs.rm("./apihub-root/external-volume/secrets", { recursive: true, force: true }, (err)=>{
+    if(err){
+        console.error(err);
+    }
+});
+//we need to clean also any secrets
+fs.rm("./apihub-root/external-volume/maindsu", { recursive: true, force: true }, (err)=>{
+    if(err){
+        console.error(err);
+    }
+});
+//we need to clean also any secrets
+fs.rm("./apihub-root/external-volume/oba", { recursive: true, force: true }, (err)=>{
     if(err){
         console.error(err);
     }
