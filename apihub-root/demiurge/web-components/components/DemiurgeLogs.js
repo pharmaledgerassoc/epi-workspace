@@ -32,7 +32,7 @@ export default class DemiurgeLogs {
                 }
             });
         };
-        this.loadLogs(["__timestamp > 0"]);
+        this.loadLogs(["timestamp > 0"]);
     }
 
     beforeRender() {
@@ -78,7 +78,7 @@ export default class DemiurgeLogs {
             this.inputValue = formData.data[this.searchField];
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await this.auditService.getLogs(this.logType, this.logsNumber, ["__timestamp > 0", `${this.searchQueryAttribute} == ${this.inputValue}`])
+            let logs = await this.auditService.getLogs(this.logType, this.logsNumber, ["timestamp > 0", `${this.searchQueryAttribute} == ${this.inputValue}`])
             if (logs.length > 0) {
                 this.logs = logs;
                 this.searchIdentifier = `${this.searchQueryAttribute} == ${this.inputValue}`;
@@ -103,7 +103,7 @@ export default class DemiurgeLogs {
         this.searchResultIcon = "";
         this.inputValue = "";
         this.focusInput = "";
-        this.loadLogs(["__timestamp > 0"]);
+        this.loadLogs(["timestamp > 0"]);
     }
 
     async downloadCSV(logType) {
@@ -121,7 +121,7 @@ export default class DemiurgeLogs {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            let query = [`timestamp <= ${this.firstElementTimestamp}`];
             if (this.searchIdentifier) {
                 query.push(this.searchIdentifier);
             }
@@ -134,7 +134,7 @@ export default class DemiurgeLogs {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            let query = [`timestamp < ${this.firstElementTimestamp}`];
             if (this.searchIdentifier) {
                 query.push(this.searchIdentifier);
             }
