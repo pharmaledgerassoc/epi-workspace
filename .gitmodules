@@ -1,0 +1,3 @@
+[submodule "opendsu-sdk"]
+	path = opendsu-sdk
+	url = https://github.com/PDMFCSA/opendsu-sdk.git
