@@ -3,7 +3,7 @@
   "version": "v4.0.0-rc2",
   "description": "",
   "scripts": {
-    "init": "git submodule update --init && git submodule sync",
+    "init": "git submodule update --init --merge",
     "dev-install": "node ./bin/mkDevEnv.js",
     "postinstall": "cd opendsu-sdk && npm install && cd .. && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"npm run do-install\"",
     "do-install": "node ./node_modules/octopus/scripts/ensureFreezeState.js && node ./node_modules/octopus/scripts/run",
@@ -21,7 +21,8 @@
     "clean": "node ./bin/clean.js ./",
     "clean-build": "npm run clean && npm run build opendsu-sdk && npm run build-all",
     "freeze": "node ./node_modules/octopus/scripts/freeze dependencies",
-    "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze dependencies"
+    "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze dependencies",
+    "uml": "cd workdocs/uml && for FILE in ./*.puml; do docker run --rm -v $(pwd):/work -w /work miy4/plantuml -DPLANTUML_LIMIT_SIZE=8192 -tpng $FILE; done"
   },
   "repository": {
     "type": "git",
