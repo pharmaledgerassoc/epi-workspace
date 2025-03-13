@@ -85,7 +85,8 @@
     "/bundles",
     "/gtinOwner/",
     "/leaflets/",
-    "/metadata/"
+    "/metadata/",
+    "/lwa/"
   ],
   "oauthConfig": {
     "whitelist": ["${whitelist}"],
