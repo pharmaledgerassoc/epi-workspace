@@ -8,51 +8,7 @@
     <node-interpreter value="project" />
     <envs />
     <method v="2">
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="shutdown-db" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="start-db" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="clean" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="build" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="build-all" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="reset-rebuild" run_configuration_type="js.build_tools.npm" />
     </method>
   </configuration>
 </component>

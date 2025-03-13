@@ -18,10 +18,37 @@
         <envs />
       </option>
       <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="clean" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+      <option name="NpmBeforeRunTask" enabled="true">
         <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
         <command value="run" />
         <scripts>
           <script value="start-db" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="create-users-db" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="create-read-user" />
         </scripts>
         <node-interpreter value="project" />
         <envs />
