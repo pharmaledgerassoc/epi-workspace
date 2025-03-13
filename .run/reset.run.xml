@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="reset" type="js.build_tools.npm">
-    <package-json value="$PROJECT_DIR$/package.json" />
+    <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
     <command value="run" />
     <scripts>
-      <script value="clean" />
+      <script value="create-read-user" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
@@ -13,6 +13,15 @@
         <command value="run" />
         <scripts>
           <script value="shutdown-db" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="start-db" />
         </scripts>
         <node-interpreter value="project" />
         <envs />
@@ -30,25 +39,7 @@
         <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
         <command value="run" />
         <scripts>
-          <script value="start-db" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
-        <command value="run" />
-        <scripts>
           <script value="create-users-db" />
-        </scripts>
-        <node-interpreter value="project" />
-        <envs />
-      </option>
-      <option name="NpmBeforeRunTask" enabled="true">
-        <package-json value="$PROJECT_DIR$/opendsu-sdk/package.json" />
-        <command value="run" />
-        <scripts>
-          <script value="create-read-user" />
         </scripts>
         <node-interpreter value="project" />
         <envs />
