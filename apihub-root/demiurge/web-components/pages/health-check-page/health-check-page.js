@@ -1,4 +1,6 @@
 import constants from "../../../constants.js";
+const STATUS_CHECK_TIME = 750;
+const DEFAULT_QUERY = ["__timestamp > 0"];
 
 export class HealthCheckPage {
     constructor(element, invalidate) {
@@ -12,7 +14,7 @@ export class HealthCheckPage {
             this.previousPageFirstElements = [];
         };
         this.setPaginationDefaultValues();
-        this.loadRuns = (query) => {
+        this.loadRuns = (query = DEFAULT_QUERY) => {
             this.invalidate(async () => {
                 this.healthChecks = await webSkel.healthCheckClient.getIterationsMetadata(undefined, this.itemsNumber, "dsc", query);
                 if (this.healthChecks && this.healthChecks.length > 0) {
@@ -23,8 +25,8 @@ export class HealthCheckPage {
                         this.disableNextBtn = true;
                     }
                     for (let healthRecord of this.healthChecks) {
-                        let statuses = await webSkel.healthCheckClient.getCheckStatus(healthRecord.pk);
-                        let statusKeys = Object.keys(statuses);
+                        const statuses = await webSkel.healthCheckClient.getCheckStatus(healthRecord.pk);
+                        const statusKeys = Object.keys(statuses);
                         for (let i = 0; i < statusKeys.length; i++) {
                             healthRecord.status = statuses[statusKeys[i]].status;
                             if (statuses[statusKeys[i]].status !== "success") {
@@ -49,12 +51,13 @@ export class HealthCheckPage {
         }
         this.items = string;
         if (this.healthCheckPK) {
-            let currentCheck = this.healthChecks.find(check => check.pk === this.healthCheckPK);
-            if(!currentCheck)
-                return;
-            if (currentCheck.status === constants.HEALTH_CHECK_STATUSES.IN_PROGRESS) {
-                this.disabledClass = "disabled";
+            const currentCheck = this.healthChecks.find(check => check.pk === this.healthCheckPK);
+            if (["never_executed", constants.HEALTH_CHECK_STATUSES.IN_PROGRESS].includes(currentCheck?.status)) {
+                return setTimeout(() => {
+                    this.checkStatus();
+                }, STATUS_CHECK_TIME);
             }
+            this.disabledClass = "";
         }
     }
 
@@ -102,4 +105,16 @@ export class HealthCheckPage {
         this.healthCheckPK = await webSkel.healthCheckClient.startHealthCheck();
         this.loadRuns(["__timestamp > 0"]);
     }
+
+    async checkStatus() {
+        const self = this;
+        const statuses = await webSkel.healthCheckClient.getCheckStatus(this.healthCheckPK);
+        const hasFailure = Object.values(statuses).some(status => status.status !== "success");
+        if (hasFailure) {
+            this.disabledClass = "disabled";
+            return setTimeout(() => self.checkStatus.call(self), STATUS_CHECK_TIME);
+        }
+        this.loadRuns(["__timestamp > 0"]);
+    }
+
 }
