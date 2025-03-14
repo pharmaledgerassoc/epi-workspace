@@ -96,15 +96,6 @@
                 "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
               }
             ]
-        },
-        {
-            "name": "Patch OpenDsu",
-            "actions":[
-                {
-                    "type": "execute",
-                    "cmd": "node ./bin/patch/replaceFunctions.js"
-                }
-            ]
         }
     ],
     "patch": [

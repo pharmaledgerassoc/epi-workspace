@@ -6,7 +6,6 @@
     "bdns",
     "bricking",
     "anchoring",
-    "get-fixed-url",
     "epi-mapping-engine",
     "epi-mapping-engine-results",
     "get-gtin-owner",
@@ -40,10 +39,6 @@
     "get-gtin-owner": {
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
-    },
-    "get-fixed-url": {
-      "module": "./../../gtin-resolver",
-      "function": "getFixedUrl"
     },
     "integration-api": {
       "module": "./../../gtin-resolver",
