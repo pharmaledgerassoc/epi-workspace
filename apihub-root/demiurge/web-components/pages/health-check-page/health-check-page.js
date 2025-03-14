@@ -50,10 +50,8 @@ export class HealthCheckPage {
         this.items = string;
         if (this.healthCheckPK) {
             let currentCheck = this.healthChecks.find(check => check.pk === this.healthCheckPK);
-
             if(!currentCheck)
-                return
-            
+                return;
             if (currentCheck.status === constants.HEALTH_CHECK_STATUSES.IN_PROGRESS) {
                 this.disabledClass = "disabled";
             }
