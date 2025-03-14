@@ -88,7 +88,7 @@ While in the *epi-workspace* folder:
  - If it is the first time you are running the aplication:
 
 ```sh
-$ npm run skip-sso-build-all
+$ npm run build-all
 ```
  - After the first time always run this command:
 ```sh
