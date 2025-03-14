@@ -29,7 +29,7 @@ export class HealthCheckPage {
                         const statusKeys = Object.keys(statuses);
                         for (let i = 0; i < statusKeys.length; i++) {
                             healthRecord.status = statuses[statusKeys[i]].status;
-                            if (statuses[statusKeys[i]].status !== "success") {
+                            if (statuses[statusKeys[i]].status !== constants.HEALTH_CHECK_STATUSES.SUCCESS) {
                                 break;
                             }
                         }
@@ -109,7 +109,7 @@ export class HealthCheckPage {
     async checkStatus() {
         const self = this;
         const statuses = await webSkel.healthCheckClient.getCheckStatus(this.healthCheckPK);
-        const hasFailure = Object.values(statuses).some(status => status.status !== "success");
+        const hasFailure = Object.values(statuses).some(status => status.status !== constants.HEALTH_CHECK_STATUSES.SUCCESS);
         if (hasFailure) {
             this.disabledClass = "disabled";
             return setTimeout(() => self.checkStatus.call(self), STATUS_CHECK_TIME);
