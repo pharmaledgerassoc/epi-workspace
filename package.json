@@ -5,6 +5,7 @@
   "scripts": {
     "init": "git submodule update --init --remote --merge --recursive",
     "sync-branches": "BRANCH=\"$(git rev-parse --abbrev-ref HEAD)\" git submodule foreach '([[ -n \"$(git branch --list $BRANCH)\" ]] || [[ -n \"$(git ls-remote --heads origin $BRANCH)\" ]]) && git checkout $BRANCH || git checkout master'",
+    "preinstall": "npm run init && npm run sync-branches",
     "dev-install": "node ./bin/mkDevEnv.js",
     "postinstall": "cd opendsu-sdk && npm install && cd .. && node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"npm run do-install\"",
     "do-install": "node ./node_modules/octopus/scripts/ensureFreezeState.js && node ./node_modules/octopus/scripts/run",
