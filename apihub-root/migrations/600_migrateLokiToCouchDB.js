@@ -2,18 +2,21 @@
 const EnclaveFacade = require("loki-enclave-facade");
 const apihubModule = require("apihub");
 require("opendsu");
-const adapters = EnclaveFacade.Adapters;
 const path = require('path');
 const fs = require('fs');
 
 const apihubRootFolder = apihubModule.getServerConfig().storage;
-// const FIXED_URLS_PATH = path.join(apihubRootFolder, "external-volume/fixed-urls/FixedUrls.db");
-// const FIXED_URLS_MIGRATED_PATH = FIXED_URLS_PATH + ".migrated";
-
 
 const DATABASE = "database";
 const STORAGE_LOCATION = path.join(apihubRootFolder, "/external-volume/lightDB");
 const COUCH_DB_MIGRATED_FILE = STORAGE_LOCATION + "/couchdb.migrated";
+
+
+const ANCHORS_TABLE_NAME = "anchors_table";
+const ANCHORS_TABLE_INDEXES = ["scheduled"];
+
+const FIXED_URL_TABLE_NAMES = ["history", "tasks"];
+const FIXED_URL_TABLE_INDEXES = ["url"];
 
 const mapRecordToCouchDB = (record) => {
     delete record.meta;
@@ -71,10 +74,18 @@ const migrate = async (dbPath) => {
     const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
     const tables = db.collections
 
-    // const couchDB = EnclaveFacade.createCouchDBEnclaveFacadeInstance(dbLocation);
+    const couchDB = EnclaveFacade.createCouchDBEnclaveFacadeInstance(dbLocation);
 
     for (let table of tables){
-        // couchDB.storageDB.createCollection(undefined, table.name, );
+        let indexes = ["pk", "timestamp"]
+
+        if(ANCHORS_TABLE_NAME === table.name)
+            indexes.push(ANCHORS_TABLE_INDEXES)
+
+        if(FIXED_URL_TABLE_NAMES.includes(table.name))
+            indexes.push(FIXED_URL_TABLE_INDEXES)
+
+        couchDB.storageDB.createCollection(undefined, table.name, );
         console.log(table.binaryIndices)
 
     }
@@ -82,8 +93,7 @@ const migrate = async (dbPath) => {
 }
 
 const migrateLokiToCouchDB = async () => {
-    return
-
+    return 
     try {
         fs.mkdirSync(path.dirname(STORAGE_LOCATION), {recursive: true});
     } catch (e) {
