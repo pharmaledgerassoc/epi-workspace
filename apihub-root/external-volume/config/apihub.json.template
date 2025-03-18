@@ -101,7 +101,7 @@
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
-    "debugLogEnabled": false
+    "debugLogEnabled": true
   },
   "serverAuthentication": ${server_authentication},
   "db": {
