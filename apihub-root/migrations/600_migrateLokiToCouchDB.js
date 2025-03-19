@@ -81,7 +81,7 @@ const createCollection = async (dbPath, tableName, indexes) => {
         const exists = await dbService.dbExists(dbName);
     
         if (exists)
-            throw new Error(`Database already exists: ${dbName}! If DB Exists It means the migration should already happened!`);
+            return
 
         await dbService.createDatabase(dbName, indexes);
     } catch (e) {
@@ -140,7 +140,7 @@ const migrate = async (dbPath) => {
 }
 
 const migrateLokiToCouchDB = async () => {
-    return
+    // return
     try {
         fs.mkdirSync(path.dirname(STORAGE_LOCATION), {recursive: true});
     } catch (e) {
