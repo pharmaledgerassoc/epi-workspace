@@ -163,6 +163,7 @@ const migrateLokiToCouchDB = async () => {
         uri: config.db.uri,
         username: config.db.user,
         secret: config.db.secret,
+        debug: config.db.debug
     });
 
     let folders;
