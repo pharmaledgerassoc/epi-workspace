@@ -28,46 +28,22 @@ const mapRecordToCouchDB = (record) => {
     return record
 }
 
-// const migrateTableFromLightDBToCouchDB = async (table, couchDB) => {
-//     const records = table.data;
+const migrateTable = async (couchDB, tableName, records) => {
 
-//     for (let record of records) {
-//         try {
-//             console.log(mapRecordToCouchDB(record))
-//             // await $$.promisify(lightDB.insertRecord)($$.SYSTEM_IDENTIFIER, tableName, record.pk, record);
-//         } catch (e) {
-//             // console.error("Failed to insert record", record, "in table", tableName, e);
-//             throw e;
-//         }
-//     }
+    for (let record in records) {
+        try {
+            const processedRecord = mapRecordToCouchDB(record)
 
-    
-
+            await $$.promisify(couchDB.insertRecord)($$.SYSTEM_IDENTIFIER, tableName, processedRecord.pk, processedRecord);
+        } catch (e) {
+            console.error("Failed to migrate table", table, e);
+            throw e;
+        }
+     
+    }
 
 
-
-
-
-
-//     return;
-
-// }
-
-// const migrateAllTablesFromLightDBToCouchDB = async (dbLocation) => {
-//     const db = JSON.parse(fs.readFileSync(dbLocation, 'utf8'));
-//     const tables = db.collections
-
-//     const couchDB = EnclaveFacade.createCouchDBEnclaveFacadeInstance(dbLocation);
-
-//     for (let table of tables) {
-//         try {
-//             await migrateTableFromLightDBToCouchDB(table, couchDB);
-//         } catch (e) {
-//             console.error("Failed to migrate table", table, e);
-//             throw e;
-//         }
-//     }
-// }
+}
 
 
 const migrate = async (dbPath) => {
@@ -85,8 +61,10 @@ const migrate = async (dbPath) => {
         if(FIXED_URL_TABLE_NAMES.includes(table.name))
             indexes.push(FIXED_URL_TABLE_INDEXES)
 
-        couchDB.storageDB.createCollection(undefined, table.name, );
-        console.log(table.binaryIndices)
+        await $$.promisify(couchDB.storageDB.createCollection)(undefined, table.name, indexes);
+
+        await migrateTable(couchDB, table.name, table.data);
+        
 
     }
 
