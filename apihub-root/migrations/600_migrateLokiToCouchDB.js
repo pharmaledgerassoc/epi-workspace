@@ -4,6 +4,7 @@ const apihubModule = require("apihub");
 require("opendsu");
 const path = require('path');
 const fs = require('fs');
+const readline = require('readline');
 
 const DBService = EnclaveFacade.DBService;
 
@@ -14,6 +15,7 @@ const apihubRootFolder = config.storage;
 const DATABASE = "database";
 const STORAGE_LOCATION = path.join(apihubRootFolder, "/external-volume/lightDB");
 const COUCH_DB_MIGRATED_FILE = STORAGE_LOCATION + "/couchdb.migrated";
+const GTIN_OWNER_DATABASE_LOCATION = path.join(apihubRootFolder, "/external-volume/gtinOwner/cache/gtinOwners");
 
 
 const ANCHORS_TABLE_NAME = "anchors_table";
@@ -95,6 +97,28 @@ const getDbName = async (dbPath, tableName) => {
     return ["db", prefix, tableName].filter(e => !!e).join("_");
 }
 
+const migrateGtinResolver = async (dbPath) => {
+    const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+    const tables = db.collections
+  
+    const readStream = fs.createReadStream(dbPath + ".0", 'utf8');
+    const rl = readline.createInterface({ input: readStream });
+
+    let records = [];
+
+    if(tables.length > 1)
+        throw new Error("GTIN OWNER should only contain 1 table")
+
+    for await (const line of rl) {
+        let cleanedLine = line;
+        cleanedLine = cleanedLine.replaceAll('$<', ''); // Remove words
+        records.push(JSON.parse(cleanedLine));
+    }
+
+    await createCollection(dbPath, tables[0].name, ["pk", "timestamp"]);
+    await migrateTable(dbPath, tables[0].name, records);
+}
+
 
 const migrate = async (dbPath) => {
     const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
@@ -159,8 +183,23 @@ const migrateLokiToCouchDB = async () => {
         }
     }
 
+    try {
+        if(fs.existsSync(GTIN_OWNER_DATABASE_LOCATION)) {
+            if(!fs.existsSync(GTIN_OWNER_DATABASE_LOCATION + ".0")){
+                await migrate(GTIN_OWNER_DATABASE_LOCATION);
+            } else {
+                await migrateGtinResolver(GTIN_OWNER_DATABASE_LOCATION)
+            }
+        } else {
+            console.log("Nothing to migrate in folder: ", GTIN_OWNER_DATABASE_LOCATION);
+        }
+    } catch (e) {
+        console.error("Failed migration to Couch DB");
+        throw e;
+    }
 
     // MARK AS COMPLETED
+    fs.writeFileSync(COUCH_DB_MIGRATED_FILE, 'Completed couchDB migration!');
 }
 
 module.exports = migrateLokiToCouchDB;
