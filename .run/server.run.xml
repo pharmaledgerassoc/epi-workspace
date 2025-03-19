@@ -8,7 +8,6 @@
     <node-interpreter value="project" />
     <envs>
       <env name="OPENDSU_ENABLE_DEBUG" value="true" />
-      <env name="READ_ONLY_MODE" value="true" />
     </envs>
     <method v="2" />
   </configuration>
