@@ -140,7 +140,6 @@ const migrate = async (dbPath) => {
 }
 
 const migrateLokiToCouchDB = async () => {
-    // return
     try {
         fs.mkdirSync(path.dirname(STORAGE_LOCATION), {recursive: true});
     } catch (e) {
