@@ -106,7 +106,8 @@
   "serverAuthentication": ${server_authentication},
   "db": {
     "uri": "${db_uri}",
-    "user": "${db_user}",
-    "secret": "${db_secret}"
+    "user": "admin",
+    "secret": "${db_secret}",
+    "debug": ${db_debug}
   }
 }

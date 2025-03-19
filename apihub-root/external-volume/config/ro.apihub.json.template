@@ -48,6 +48,7 @@
    "db": {
       "uri": "${db_uri}",
       "user": "reader",
-      "secret": "${db_secret}"
+      "secret": "${db_secret}",
+      "debug": ${db_debug}
    }
 }
