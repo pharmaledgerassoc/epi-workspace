@@ -156,12 +156,13 @@ const migrateLokiToCouchDB = async () => {
     } catch (e) {
         // continue with migration
     }
-
+    const userName = process.env.DB_USER || config.db.user;
+    const secret = process.env.DB_SECRET || config.db.secret;
 
     dbService = new DBService( {
         uri: config.db.uri,
-        username: config.db.user,
-        secret: config.db.secret,
+        username: userName,
+        secret: secret,
         debug: config.db.debug
     });
 
