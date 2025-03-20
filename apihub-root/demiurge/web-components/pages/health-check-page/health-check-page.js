@@ -103,7 +103,10 @@ export class HealthCheckPage {
 
     async runHealthCheck(_target) {
         this.healthCheckPK = await webSkel.healthCheckClient.startHealthCheck();
-        this.loadRuns(["__timestamp > 0"]);
+        setTimeout(() => {
+            this.loadRuns(["__timestamp > 0"]);
+        }, 100) 
+        
     }
 
     async checkStatus() {
