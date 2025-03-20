@@ -23,7 +23,8 @@
     "clean-build": "npm run clean && npm run build opendsu-sdk && npm run build-all",
     "freeze": "node ./node_modules/octopus/scripts/freeze dependencies",
     "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze dependencies",
-    "uml": "cd workdocs/uml && for FILE in ./*.puml; do docker run --rm -v $(pwd):/work -w /work miy4/plantuml -DPLANTUML_LIMIT_SIZE=8192 -tpng $FILE; done"
+    "uml": "cd workdocs/uml && for FILE in ./*.puml; do docker run --rm -v $(pwd):/work -w /work miy4/plantuml -DPLANTUML_LIMIT_SIZE=8192 -tpng $FILE; done",
+    "patch-lwa-xml-parser": "node bin/patch/lwaXmlParser.js"
   },
   "repository": {
     "type": "git",
