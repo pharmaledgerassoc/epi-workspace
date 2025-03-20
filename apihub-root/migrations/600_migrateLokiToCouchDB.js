@@ -69,7 +69,8 @@ const insertRecord = async (dbPath, tableName, pk, record) => {
 
         await dbService.insertDocument(dbName, pk, record)
     } catch (e) {
-        throw e
+        console.log("Record Already exists!");
+        // throw e
     }
 }
 
@@ -97,26 +98,46 @@ const getDbName = async (dbPath, tableName) => {
     return ["db", prefix, tableName].filter(e => !!e).join("_");
 }
 
-const migrateGtinResolver = async (dbPath) => {
-    const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
-    const tables = db.collections
+// const migrateGtinResolver = async (dbPath) => {
+//     const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+//     const tables = db.collections
   
-    const readStream = fs.createReadStream(dbPath + ".0", 'utf8');
-    const rl = readline.createInterface({ input: readStream });
+//     const readStream = fs.createReadStream(dbPath + ".0", 'utf8');
+//     const rl = readline.createInterface({ input: readStream });
 
-    let records = [];
+//     let records = [];
 
-    if(tables.length > 1)
-        throw new Error("GTIN OWNER should only contain 1 table")
+//     if(tables.length > 1)
+//         throw new Error("GTIN OWNER should only contain 1 table")
 
-    for await (const line of rl) {
-        let cleanedLine = line;
-        cleanedLine = cleanedLine.replaceAll('$<', ''); // Remove words
-        records.push(JSON.parse(cleanedLine));
+//     for await (const line of rl) {
+//         let cleanedLine = line;
+//         cleanedLine = cleanedLine.replaceAll('$<', ''); // Remove words
+//         records.push(JSON.parse(cleanedLine));
+//     }
+
+//     await createCollection(dbPath, tables[0].name, ["pk", "timestamp"]);
+//     await migrateTable(dbPath, tables[0].name, records);
+// }
+
+const extractRecords = async (dbPath, index) => {
+    try {
+        const readStream = fs.createReadStream(dbPath + "." + index, 'utf8');
+        const rl = readline.createInterface({ input: readStream });
+    
+        let records = [];
+    
+        for await (const line of rl) {
+            let cleanedLine = line;
+            cleanedLine = cleanedLine.replaceAll('$<', ''); // Remove words
+            records.push(JSON.parse(cleanedLine));
+        }
+
+        return records;
+    } catch (e) {
+        return [];
     }
 
-    await createCollection(dbPath, tables[0].name, ["pk", "timestamp"]);
-    await migrateTable(dbPath, tables[0].name, records);
 }
 
 
@@ -124,7 +145,7 @@ const migrate = async (dbPath) => {
     const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
     const tables = db.collections
 
-    for (let table of tables){
+    for (let [index, table] of tables.entries()){
         let indexes = ["pk", "timestamp"];
 
         if(ANCHORS_TABLE_NAME === table.name)
@@ -134,7 +155,13 @@ const migrate = async (dbPath) => {
             indexes.push(FIXED_URL_TABLE_INDEXES);
 
         await createCollection(dbPath, table.name, indexes);
-        await migrateTable(dbPath, table.name, table.data);
+
+        let records = table.data;
+
+        if(!records || records.length < 1)
+            records = await extractRecords(dbPath, index);
+            
+        await migrateTable(dbPath, table.name, records);
     }
 
 }
@@ -185,11 +212,7 @@ const migrateLokiToCouchDB = async () => {
 
     try {
         if(fs.existsSync(GTIN_OWNER_DATABASE_LOCATION)) {
-            if(!fs.existsSync(GTIN_OWNER_DATABASE_LOCATION + ".0")){
-                await migrate(GTIN_OWNER_DATABASE_LOCATION);
-            } else {
-                await migrateGtinResolver(GTIN_OWNER_DATABASE_LOCATION)
-            }
+            await migrate(GTIN_OWNER_DATABASE_LOCATION)  
         } else {
             console.log("Nothing to migrate in folder: ", GTIN_OWNER_DATABASE_LOCATION);
         }
