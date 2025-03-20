@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="read-only server" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="server" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="OPENDSU_ENABLE_DEBUG" value="true" />
+      <env name="READ_ONLY_MODE" value="true" />
+      <env name="DB_USER" value="reader" />
+      <env name="DB_SECRET" value="readerpw" />
+    </envs>
+    <method v="2" />
+  </configuration>
+</component>
