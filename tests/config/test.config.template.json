@@ -1,0 +1,9 @@
+{
+  "tenantId": "${tenant_id}",
+  "clientSecret": "${client_secret}",
+  "scope": "${scope}",
+  "clientId": "${client_id}",
+  "senderId": "${sender_id}",
+
+  "lwa_endpoint": "${lwa_endpoint}"
+}
