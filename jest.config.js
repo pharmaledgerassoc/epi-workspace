@@ -1,6 +1,11 @@
 module.exports = {
   verbose: true,
-  // transform: {'^.+\\.ts?$': 'ts-jest'},
+  transform: {
+    '^.+\\.(js|jsx|mjs|cjs)$': 'babel-jest',
+  },
+  transformIgnorePatterns: [
+      "@swagger-api\/apidom-reference"
+  ],
   testEnvironment: 'node',
   testRegex: '/tests/.*\\.(test)\\.(js)$',
   moduleFileExtensions: ['js',  'json', 'node'],
@@ -12,6 +17,9 @@ module.exports = {
       // 'apihub-root/demiurge/**/*.js',
       // 'apihub-root/lwa/app/**/*.js',
   ],
+  // moduleNameMapper: {
+  //   "@swagger-api\/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference",
+  // },
   coveragePathIgnorePatterns: [
   ],
   modulePathIgnorePatterns: [

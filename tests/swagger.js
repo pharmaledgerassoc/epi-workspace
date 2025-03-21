@@ -17,6 +17,10 @@ let client;
 function getSwaggerClient() {
     if (client)
         return client;
-    client = new Swagger(path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json"));
+    client = new Swagger({url: path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json")});
     return client;
 }
+
+module.exports = {
+    getSwaggerClient
+};
