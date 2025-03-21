@@ -18,7 +18,6 @@ express-demo
 ethereum-anchoring
 dsu-fabric-ssapp
 node_modules
-package-lock.json
 env.json.devel
 opendsu-sdk/builds/output/
 .git
