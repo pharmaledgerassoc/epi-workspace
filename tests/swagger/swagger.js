@@ -6,6 +6,7 @@ jestOpenAPI(path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json"));
 const axios = require("axios")
 const {UtilsService} = require("./utils");
 const {API_MESSAGE_TYPE} = require("../constants");
+const {getConfig} = require("../conf");
 
 function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort) {
      if (!query) {
@@ -25,62 +26,6 @@ function processParametersAndSendRequest(baseURL, endpoint, start, number, query
     return axios.get(url)
 }
 
-function sendRequest(endpoint, method, data, responseType = "json"){
-    //add domain and subdomain as query parameters
-    //check if the endpoint already has query parameters
-    if (endpoint.indexOf('?') !== -1) {
-        endpoint += '&';
-    } else {
-        endpoint += '?';
-    }
-    endpoint += `domain=${encodeURIComponent(domain)}&subdomain=${encodeURIComponent(subdomain)}`;
-    if (appName) {
-        endpoint += `&appName=${encodeURIComponent(appName)}`
-    }
-    const http = require('opendsu').loadAPI('http');
-    if (method === 'GET') {
-        let promise = http.fetch(endpoint, {method})
-            .then(async response => {
-                if (response.status >= 400) {
-                    let reason = await response.text();
-                    throw {code: response.status, reason}
-                }
-                return response
-            })
-
-        if (responseType === "json") {
-            promise.then(response => response.json())
-                .then(response => callback(undefined, response))
-                .catch(error => callback(error))
-
-        } else {
-            promise.then(response => response.text())
-                .then(response => callback(undefined, response))
-                .catch(error => callback(error))
-        }
-
-        //TODO: CODE-REVIEW - double callback call if the callback code is throwing errors...
-    } else {
-        let body;
-        if (method !== 'DELETE' && data) {
-            body = data ? JSON.stringify(data) : undefined;
-        }
-        http.fetch(endpoint, {method, body})
-            .then(async response => {
-                if (response.status >= 400) {
-                    let reason = await response.text();
-                    throw {code: response.status, reason}
-                }
-                return response
-            })
-            .then(response => response.text())
-            .then(response => callback(undefined, response))
-            .catch(error => callback(error))
-        //TODO: CODE-REVIEW - double callback call if the callback code is throwing errors...
-    }
-};
-
-
 class SwaggerClient {
     config;
     utils;
@@ -95,29 +40,102 @@ class SwaggerClient {
         return ePIMarket ? `${baseEndpoint}/${ePIMarket}` : baseEndpoint;
     };
 
-    addProduct(gtin, product){
+    async addProduct(gtin, product){
         const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPE.PRODUCT)
-        return sendRequest(`${this.getBaseURL()}/product/${gtin}`, 'POST', productMessage);
+        return this.send(`${this.getBaseURL()}/product/${gtin}`, 'POST', productMessage);
     };
 
-    updateProduct(gtin, productMessage){
-        return sendRequest(`${this.getBaseURL()}/product/${gtin}`, 'PUT', productMessage);
+    async updateProduct(gtin, productMessage){
+        return this.send(`${this.getBaseURL()}/product/${gtin}`, 'PUT', productMessage);
     };
 
-    getProductMetadata(gtin){
-        return sendRequest(`${this.getBaseURL()}/product/${gtin}`, 'GET');
+    async getProductMetadata(gtin){
+        return this.send(`${this.getBaseURL()}/product/${gtin}`, 'GET');
     };
 
-    addImage(gtin, productPhotoMessage){
-        return sendRequest(`${this.getBaseURL()}/image/${gtin}`, 'POST', productPhotoMessage);
+    async addImage(gtin, productPhotoMessage){
+        return this.send(`${this.getBaseURL()}/image/${gtin}`, 'POST', productPhotoMessage);
     };
 
-    updateImage(gtin, productPhotoMessage){
-        return sendRequest(`${this.getBaseURL()}/image/${gtin}`, 'PUT', productPhotoMessage);
+    async updateImage(gtin, productPhotoMessage){
+        return this.send(`${this.getBaseURL()}/image/${gtin}`, 'PUT', productPhotoMessage);
     };
+
+    async getProduct(gtin){
+        return this.send(`${this.getBaseURL()}/product/${gtin}`, 'GET');
+    };
+
+    async filterAuditLogs(logType, start, number, query, sort){
+        return processParametersAndSendRequest(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
+    }
 
     getBaseURL(){
         return `${this.config.sor_endpoint}/integration`;
+    }
+
+    async send(endpoint, method, data, responseType = "json"){
+        //add domain and subdomain as query parameters
+        //check if the endpoint already has query parameters
+
+        const {domain, subdomain, appName} = this.config;
+
+
+        if (endpoint.indexOf('?') !== -1) {
+            endpoint += '&';
+        } else {
+            endpoint += '?';
+        }
+        endpoint += `domain=${encodeURIComponent(domain)}&subdomain=${encodeURIComponent(subdomain)}`;
+        if (appName) {
+            endpoint += `&appName=${encodeURIComponent(appName)}`
+        }
+
+        let response;
+
+        try {
+            if (method === 'GET') {
+                response = await axios.get(endpoint);
+                if (response.status >= 400) {
+                    let reason = response.data;
+                    throw {code: response.status, reason}
+                }
+
+                if (responseType === "json") {
+                    return JSON.parse(response.data)
+                }
+
+                return response.data
+            } else {
+                let body;
+                if (method !== 'DELETE' && data) {
+                    body = data ? JSON.stringify(data) : undefined;
+                }
+                switch (method) {
+                    case 'POST':
+                        response = await axios.post(endpoint, body);
+                        break;
+                    case 'PUT':
+                        response = await axios.put(endpoint, body);
+                        break;
+                    case 'DELETE':
+                        response = await axios.delete(endpoint);
+                        break;
+                    default:
+                        throw new Error(`Unsupported HTTP method: ${method}`);
+                }
+                if (response.status >= 400) {
+                    let reason = await response.data;
+                    throw {code: response.status, reason}
+                }
+
+                return response.data
+            }
+        } catch (e){
+            if (e instanceof Error) {
+                throw new Error(`Error sending ${method} request to ${endpoint} - ${e.message}`)
+            }
+            throw e;
+        }
     }
 }
 

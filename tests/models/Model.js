@@ -1,3 +1,5 @@
+const {UtilsService} = require("../swagger/utils");
+
 /**
  * @description Base model class for data objects.
  * @summary The Model class provides a foundation for creating data models with
@@ -37,6 +39,10 @@ class Model {
                 acc[key] = self[key];
             return acc;
         }, {}));
+    }
+
+    equals(other, ...propsToIgnore){
+        return UtilsService.isEqual(this, other, ...propsToIgnore);
     }
 
     /**

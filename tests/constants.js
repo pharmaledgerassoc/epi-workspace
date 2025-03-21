@@ -1,4 +1,6 @@
-const {API_MESSAGE_TYPES} = require('../apihub-root/dsu-fabric/constants')
+const {API_MESSAGE_TYPES, AUDIT_LOG_TYPES, AUDIT_OPERATIONS} = require('../apihub-root/dsu-fabric/constants')
 module.exports = {
-    API_MESSAGE_TYPES
+    API_MESSAGE_TYPES,
+    AUDIT_LOG_TYPES,
+    AUDIT_OPERATIONS
 }
