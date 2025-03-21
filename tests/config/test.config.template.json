@@ -7,5 +7,8 @@
 
   "lwa_endpoint": "${lwa_endpoint}",
   "sor_endpoint": "${sor_endpoint}",
+  "domain": "${domain}",
+  "subdomain": "${subdomain}",
+  "appName": "${app_name}",
   "gtin_persistence": ${gtin_persistence}
 }

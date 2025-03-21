@@ -15,9 +15,15 @@ let testConf;
  *     scope: string,
  *     clientId: string,
  *     senderId: string
+ *     lwa_endpoint: string,
+ *     sor_endpoint: string,
+ *     gtin_persistence: boolean
+ *     domain: string,
+ *     subdomain: string,
+ *     appName: string
  * }} Config
  *
- * @returns {{tenantId: string, clientSecret: string, scope: string, clientId: string, senderId: string}} The populated configuration object.
+ * @returns {Config} The populated configuration object.
  * @throws {Error} If the config file cannot be read or parsed.
  */
 function getConfig() {

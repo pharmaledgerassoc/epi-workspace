@@ -1,7 +1,18 @@
 const {getAccessToken} = require("../oauth");
-// const {setOpenDSU} = require("../config/jest-opendsu-client");
-const {getSwaggerClient} = require("../swagger")
+const {getSwaggerClient} = require("../swagger/swagger")
+getSwaggerClient();
 
+// const {setOpenDSU} = require("../config/jest-opendsu-client");
+// const {getSwaggerClient} = require("../swagger")
+// require("../browser");
+// try {
+//     require('../../../opendsu-sdk/builds/output/openDSU.js');
+//     const opendsu = require("opendsu");
+//     console.log("loaded OpenDSU SDK");
+// } catch (e){
+//     console.error("Failed to load OpenDSU SDK:", e);
+//     process.exit(1);
+// }
 
 let client;
 

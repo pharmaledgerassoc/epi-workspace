@@ -55,6 +55,8 @@ function generateGTIN(baseNumber) {
     return gtinDigits.join('');
 }
 
+let gtinGenerator;
+
 /**
  * @description A class for generating unique GTIN numbers.
  * @summary This class provides functionality to generate unique GTIN (Global Trade Item Number) values.
@@ -80,9 +82,14 @@ class GTINGenerator {
      * 
      * @param {boolean} [persistence=false] - Whether to persist the last generated GTIN.
      */
-    constructor(persistence = false) {
+    constructor(persistence = true) {
+        if (gtinGenerator)
+            return gtinGenerator;
+
+        this._last = persistence? parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 0 : undefined;
         this.persistence = persistence;
         this._reload();
+        gtinGenerator = this;
     }
 
     /**

@@ -24,6 +24,10 @@ const localValues = {
     gtin_persistence: true,
     senderId: "auto-tester@pdmfc.com",
     sor_endpoint: "https://localhost:8080",
+    domain: "local.epi",
+    subdomain: "",
+    sender_id: "auto-tester@pdmfc.com",
+    appName: "PharmaLedger",
     browserstack_token: fs.existsSync(browserstackTokenPath) ? fs.readFileSync(browserstackTokenPath, 'utf8').trim() : '',
 };
 

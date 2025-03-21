@@ -1,11 +1,11 @@
 module.exports = {
   verbose: true,
-  transform: {
-    '^.+\\.(js|jsx|mjs|cjs)$': 'babel-jest',
-  },
-  transformIgnorePatterns: [
-      "@swagger-api\/apidom-reference"
-  ],
+  // transform: {
+  //   '^.+\\.(js|jsx|mjs|cjs)$': 'babel-jest',
+  // },
+  // transformIgnorePatterns: [
+  //     "@swagger-api\/apidom-reference"
+  // ],
   testEnvironment: 'node',
   testRegex: '/tests/.*\\.(test)\\.(js)$',
   moduleFileExtensions: ['js',  'json', 'node'],
