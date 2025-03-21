@@ -1,4 +1,5 @@
 const {getConfig} = require("./conf");
+const fetch = require("node-fetch");
 
 let tokens = {}
 
