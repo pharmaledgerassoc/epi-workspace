@@ -2,17 +2,20 @@ module.exports = {
   verbose: true,
   // transform: {'^.+\\.ts?$': 'ts-jest'},
   testEnvironment: 'node',
-  testRegex: '/tests/.*\\.(test|spec)\\.(js)$',
+  testRegex: '/tests/.*\\.(test)\\.(js)$',
   moduleFileExtensions: ['js',  'json', 'node'],
   collectCoverage: true,
   coverageDirectory: "./workdocs/coverage",
   collectCoverageFrom: [
-      'gtin-resolver/lib/**/*.js',
-      'apihub-root/dsu-fabric/**/*.js',
-      'apihub-root/demiurge/**/*.js',
-      'apihub-root/lwa/app/**/*.js',
+      // 'gtin-resolver/lib/**/*.js',
+      // 'apihub-root/dsu-fabric/**/*.js',
+      // 'apihub-root/demiurge/**/*.js',
+      // 'apihub-root/lwa/app/**/*.js',
   ],
   coveragePathIgnorePatterns: [
+  ],
+  modulePathIgnorePatterns: [
+      "opendsu-sdk"
   ],
   // coverageThreshold: {
   //   global: {
