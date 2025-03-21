@@ -11,6 +11,21 @@ function replacePlaceholders(input, values) {
     return input.replace(/\$\{([a-zA-Z0-9_]+)\}/g, (match, variable) => values[variable] || match);
 }
 
+function patchFile(path, values) {
+    if (!fs.existsSync(path))
+        throw new Error(`File not found at path "${path}".`);
+
+    try {
+        const jsonString = fs.readFileSync(path, 'utf8');
+        const updatedJsonString = replacePlaceholders(jsonString, values);
+
+        fs.writeFileSync(path, updatedJsonString, 'utf8');
+        console.log(`Successfully updated "${path}".`);
+    } catch (error) {
+        throw new Error(`Error updating JSON file: ${error.message}`);
+    }
+}
+
 /**
  * Patches a JSON file by replacing placeholders and optionally applying a transformation.
  *
@@ -24,7 +39,7 @@ function replacePlaceholders(input, values) {
  * @throws {Error} Throws an error if the file is not found at the specified path or if update failed.
  * @returns {void}
  */
-function patchJSONFile(path, values, transformation){
+function patchJSONFile(path, values, transformation = undefined){
         if (!fs.existsSync(path))
             throw new Error(`File not found at path "${path}".`);
 
@@ -46,5 +61,6 @@ function patchJSONFile(path, values, transformation){
 
 module.exports = {
     replacePlaceholders,
-    patchJSONFile
+    patchJSONFile,
+    patchFile
 }

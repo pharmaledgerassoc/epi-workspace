@@ -2,10 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths
-const apihubJsonPath = path.resolve("apihub-root/external-volume/config/apihub.json");
+const testsConfigFile = path.resolve("tests/config/test.config.json");
+const browserStackConfigFile = path.resolve("browserstack.yml");
 const ssoTokenPath = path.resolve(".ssotoken");
+const browserstackTokenPath = path.resolve(".browserstack");
 
-const {patchJSONFile} = require('./patchingUtils');
+const {patchJSONFile, patchFile} = require('./patchingUtils');
 
 // Local values for replacement
 const localValues = {
@@ -18,22 +20,10 @@ const localValues = {
     issuer: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/v2.0/",
     oauth_jwks_endpoint: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/discovery/v2.0/keys",
     scope: "api://e65a2002-324f-48f2-b32f-a40b76d5f821/.default",
-    lwa_endpoint: "http://localhost:8080/lwa"
+    lwa_endpoint: "http://localhost:8080/lwa",
+    browserstack_token: fs.existsSync(browserstackTokenPath) ? fs.readFileSync(browserstackTokenPath, 'utf8').trim() : '',
 };
 
 
-patchJSONFile(apihubJsonPath, localValues, (jsonData) => {
-    // Update specific configuration settings
-    jsonData.oauthConfig = jsonData.oauthConfig || {};
-    jsonData.oauthConfig.client = jsonData.oauthConfig.client || {};
-    jsonData.oauthConfig.client.postLogoutRedirectUrl = "http://localhost:8080/?logout=true";
-    jsonData.oauthConfig.client.redirectPath = "http://localhost:8080/?root=true";
-});
-
-patchJSONFile(apihubJsonPath, localValues, (jsonData) => {
-    // Update specific configuration settings
-    jsonData.oauthConfig = jsonData.oauthConfig || {};
-    jsonData.oauthConfig.client = jsonData.oauthConfig.client || {};
-    jsonData.oauthConfig.client.postLogoutRedirectUrl = "http://localhost:8080/?logout=true";
-    jsonData.oauthConfig.client.redirectPath = "http://localhost:8080/?root=true";
-});
+patchJSONFile(testsConfigFile, localValues);
+patchFile(browserStackConfigFile, localValues)
