@@ -1,8 +1,8 @@
 const {getAccessToken} = require("../oauth");
-const {setOpenDSU} = require("../config/jest-opendsu-client");
+// const {setOpenDSU} = require("../config/jest-opendsu-client");
 
 beforeAll(() => {
-    setOpenDSU()
+    // setOpenDSU()
 })
 
 describe("Initialization", () => {

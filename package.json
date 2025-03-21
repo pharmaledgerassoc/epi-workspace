@@ -17,7 +17,7 @@
     "server": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd opendsu-sdk && npm run start\"",
     "apihub": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd opendsu-sdk && npm run start\"",
     "watch": "node ./bin/watcher/watcher.js",
-    "test-release": "jest --runInBand --coverage --testPathPattern=\"/tests/setup\" --detectOpenHandles --globalSetup=\"./tests/config/opendsu-setup.js\"",
+    "test-release": "jest --runInBand --coverage --testPathPattern=\"/tests/setup\" --detectOpenHandles",
     "test-browserstack": "browserstack-node-sdk jest tests/browserstack/browserstack.test.js",
     "test-browserstack-local": "browserstack-node-sdk jest tests/browserstack/browserstack.test.js",
     "setup-browserstack-local": "npx setup --username tiagovenceslau_w5srmK --key $(cat .browserstack)",
@@ -51,6 +51,7 @@
     "jest-junit": "13.0.0",
     "jsdoc": "^4.0.4",
     "jsdoc-mermaid": "^1.0.0",
-    "selenium-webdriver": "^4.29.0"
+    "selenium-webdriver": "^4.29.0",
+    "swagger-client": "^3.34.3"
   }
 }

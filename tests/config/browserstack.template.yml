@@ -1,5 +1,5 @@
 userName: tiagovenceslau_w5srmK
-accessKey: ${access_key}
+accessKey: ${browserstack_token}
 platforms:
   - deviceName: iPhone 16 Pro
     osVersion: 18
