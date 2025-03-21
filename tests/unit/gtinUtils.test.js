@@ -22,14 +22,21 @@ describe("gtin-utils", () => {
         const limit = parseInt(new Array(13).fill(9).join(''));
         const start = Date.now();
 
+        let counter = 10;
+        let elapsed;
         const gtins = []
         for(let i = 0; i <= limit; i++) {
+            if (i % counter === 0){
+                elapsed = Date.now();
+                console.log(`Generating ${counter}th out of ${possibleGtins} in ${elapsed - start} milliseconds`);
+                counter = counter * 10;
+            }
             const gtin = generateGTIN(i);
             gtins.push(gtin);
         }
         const end = Date.now();
 
-        console.log(`Generated ${gtins.length}out of ${10**14} gtins in ${end - start} milliseconds`);
+        console.log(`Generated ${gtins.length}out of ${possibleGtins} gtins in ${end - start} milliseconds`);
     })
 
 })
