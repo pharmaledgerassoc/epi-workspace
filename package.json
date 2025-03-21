@@ -48,7 +48,6 @@
     "browserstack-node-sdk": "^1.34.45",
     "dotenv": "^16.4.7",
     "jest": "27.0.6",
-    "jest-coverage-badges": "^1.0.0",
     "jest-junit": "13.0.0",
     "jsdoc": "^4.0.4",
     "jsdoc-mermaid": "^1.0.0",
