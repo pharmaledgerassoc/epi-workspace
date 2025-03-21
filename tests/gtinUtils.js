@@ -1,3 +1,5 @@
+const {Lock} = require("../gtin-resolver/lib/utils/Lock.js")
+
 const GTIN_LENGTH = 13
 
 /**
@@ -40,6 +42,25 @@ function generateGTIN(baseNumber) {
     gtinDigits.push(validDigit);
 
     return gtinDigits.join('');
+}
+
+class GTINGenerator {
+
+    _last;
+
+    _lock = new Lock();
+
+    constructor(persistence = false) {
+        this.persistence = persistence;
+    }
+
+    async next(){
+        await this._lock.acquire();
+        const base = typeof this._last === 'undefined'? 0 : ++this._last;
+        const gtin = generateGTIN(base);
+        this._lock.release()
+        return gtin;
+    }
 }
 
 module.exports = {

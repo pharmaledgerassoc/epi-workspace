@@ -5,5 +5,6 @@
   "clientId": "${client_id}",
   "senderId": "${sender_id}",
 
-  "lwa_endpoint": "${lwa_endpoint}"
+  "lwa_endpoint": "${lwa_endpoint}",
+  "gtin_persistence": ${gtin_persistence}
 }
