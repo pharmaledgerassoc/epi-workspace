@@ -59,3 +59,4 @@ workdocs/coverage/**/*
 tests/config/test.config.json
 .browserstack
 browserstack.yml
+apihub-root/external-volume/gtin-counter.lock
