@@ -351,3 +351,7 @@ preview-epi-modal {
 .leaflet-accordion-item:before {
     margin-top: 1.2em;
 }
+video {
+    display: block;
+    margin: 0 auto;
+}

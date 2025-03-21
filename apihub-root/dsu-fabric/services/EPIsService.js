@@ -71,7 +71,7 @@ export class EPIsService {
     }
 
     async validateEPIFilesContent(epiFiles) {
-        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp","video/mp4"];
         let returnMsg = "";
         let toastMessage = "Uploaded XML file contains unknown image reference";
         try {
