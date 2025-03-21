@@ -99,7 +99,7 @@ export class EPIsService {
                 return {isValid: false, message: returnMsg};
             }
 
-            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img");
+            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img, source");
             let uploadedImageNames = Object.keys(epiImages);
             let differentCaseImgFiles = [];
             let missingImgFiles = [];
