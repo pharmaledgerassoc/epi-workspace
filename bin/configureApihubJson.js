@@ -33,4 +33,6 @@ patchJSONFile(apihubJsonPath, localValues, (jsonData) => {
     jsonData.oauthConfig.client = jsonData.oauthConfig.client || {};
     jsonData.oauthConfig.client.postLogoutRedirectUrl = "http://localhost:8080/?logout=true";
     jsonData.oauthConfig.client.redirectPath = "http://localhost:8080/?root=true";
+
+    return jsonData;
 });
