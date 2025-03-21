@@ -14,6 +14,6 @@ describe("Initialization", () => {
     })
 
     it("logs in to sso", async () => {
-
+        expect(oathToken).toBeDefined();
     })
 })

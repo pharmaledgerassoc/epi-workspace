@@ -23,6 +23,7 @@ const localValues = {
     lwa_endpoint: "http://localhost:8080/lwa",
     gtin_persistence: true,
     senderId: "auto-tester@pdmfc.com",
+    sor_endpoint: "https://localhost:8080",
     browserstack_token: fs.existsSync(browserstackTokenPath) ? fs.readFileSync(browserstackTokenPath, 'utf8').trim() : '',
 };
 
