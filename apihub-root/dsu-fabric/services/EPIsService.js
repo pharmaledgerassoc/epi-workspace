@@ -105,7 +105,7 @@ export class EPIsService {
             let missingImgFiles = [];
             let htmlImageNames = Array.from(leafletHtmlImages).map(img => img.getAttribute("src"));
 
-            let dataUrlRegex = new RegExp(/^\s*data:([a-z]+\/[a-z4]+(;[a-z-]+=[a-z-]+)?)?(;base64)?,[a-z0-9!$&',()*+;=\-._~:@/?%\s]*\s*$/i);
+            let dataUrlRegex = gtinResolver.mediaUrlRegex;
             let hasUnsupportedEmbeddedImage = false;
 
             htmlImageNames.forEach(imgName => {
