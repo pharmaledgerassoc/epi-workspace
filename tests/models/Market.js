@@ -1,4 +1,4 @@
-const {Model} = require("./Model");
+const {Model} = require("./Model.js");
 
 /**
  * @description Represents a market entity in the system.

@@ -1,14 +1,15 @@
-module.exports = {
+export default {
   verbose: true,
-  // transform: {
-  //   '^.+\\.(js|jsx|mjs|cjs)$': 'babel-jest',
-  // },
+  // transform: { "^.+\\.[jt]s?$": "ts-jest" },
   // transformIgnorePatterns: [
-  //     "@swagger-api\/apidom-reference"
+  //     "@clients-api\/apidom-reference"
   // ],
   testEnvironment: 'node',
   testRegex: '/tests/.*\\.(test)\\.(js)$',
-  moduleFileExtensions: ['js',  'json', 'node'],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  // moduleNameMapper: {
+  //   "^axios$": "axios/dist/node/axios.cjs"
+  // },
   collectCoverage: true,
   coverageDirectory: "./workdocs/coverage",
   collectCoverageFrom: [
@@ -18,7 +19,7 @@ module.exports = {
       // 'apihub-root/lwa/app/**/*.js',
   ],
   // moduleNameMapper: {
-  //   "@swagger-api\/apidom-reference": "<rootDir>/node_modules/@swagger-api/apidom-reference",
+  //   "@clients-api\/apidom-reference": "<rootDir>/node_modules/@clients-api/apidom-reference",
   // },
   coveragePathIgnorePatterns: [
   ],

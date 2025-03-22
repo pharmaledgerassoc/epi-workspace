@@ -1,4 +1,4 @@
-const {Lock} = require("../gtin-resolver/lib/utils/Lock.js")
+const Lock = require("../gtin-resolver/lib/utils/Lock.js")
 
 const GTIN_LENGTH = 13
 const GTIN_LOCK = "gtin-counter.lock"
@@ -20,20 +20,17 @@ const path = require("path")
  */
 function generateGTIN(baseNumber) {
     const gtinDigits = [];
-    if (!baseNumber){
+    if (typeof baseNumber === 'undefined'){
         for (let i = 0; i < GTIN_LENGTH; i++) {
             gtinDigits.push(Math.floor(Math.random() * 10))
         }
     } else {
         baseNumber = typeof baseNumber === 'number'? baseNumber.toString() : baseNumber;
-        for (let i = 0; i < GTIN_LENGTH; i++) {
-            const diff = GTIN_LENGTH - i - baseNumber.length - 1;
-            if (diff > 0){
-                gtinDigits.push(0);
-                continue;
-            }
-            gtinDigits.push(Math.floor(Math.random() * 10))
+        gtinDigits.push(...baseNumber.split('').map(x => parseInt(x)).reverse());
+        while(gtinDigits.length < GTIN_LENGTH){
+            gtinDigits.push(0)
         }
+        gtinDigits.reverse();
     }
 
     const gtinMultiplicationArray = [3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3, 1, 3];
@@ -85,8 +82,6 @@ class GTINGenerator {
     constructor(persistence = true) {
         if (gtinGenerator)
             return gtinGenerator;
-
-        this._last = persistence? parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 0 : undefined;
         this.persistence = persistence;
         this._reload();
         gtinGenerator = this;
@@ -99,9 +94,10 @@ class GTINGenerator {
     _reload(){
         if (this.persistence){
             try {
-                this._last = parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 0;
+                this._last = parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 1;
             } catch (e){
                 console.debug("Could not load last GTIN from file: " + e.message);
+                this.last = 1;
             }
         }
     }
@@ -140,11 +136,12 @@ class GTINGenerator {
      */
     async next(){
         await this._lock.acquire();
-        const base = typeof this._last === 'undefined'? 0 : ++this._last;
+        const base = typeof this._last === 'undefined'? 1 : ++this._last;
         const gtin = generateGTIN(base);
         if (this.persistence){
             this._persist(gtin)
         }
+        this._last = base
         this._lock.release()
         return gtin;
     }

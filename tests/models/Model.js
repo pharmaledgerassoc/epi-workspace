@@ -1,4 +1,4 @@
-const {UtilsService} = require("../swagger/utils");
+const {UtilsService} = require("../clients/utils");
 
 /**
  * @description Base model class for data objects.
@@ -14,8 +14,7 @@ class Model {
      * 
      * @param {Object} [model] - The object containing initial property values.
      */
-    constructor(model) {
-        Model.fromObject(this, model);
+    constructor() {
     }
     
     /**
@@ -34,11 +33,12 @@ class Model {
      */
     toPayload(){
         const self = this;
-        return JSON.stringify(Object.keys(this).reduce((acc, key) => {
-            if(typeof self[key] !== "undefined" && typeof self[key] !== "function")
+        return Object.keys(this).reduce((acc, key) => {
+            if((typeof self[key] === "string" && !self[key])
+                || (typeof self[key] !== "undefined" && typeof self[key] !== "function"))
                 acc[key] = self[key];
             return acc;
-        }, {}));
+        }, {});
     }
 
     equals(other, ...propsToIgnore){
@@ -67,7 +67,7 @@ class Model {
         if (!obj) obj = {};
         const keys = Object.keys(self)
         for (const prop of keys) {
-            self[prop] = obj[prop] || undefined;
+            self[prop] = obj[prop] || self[prop];
         }
         return self;
     }

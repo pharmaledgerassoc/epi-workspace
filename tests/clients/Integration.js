@@ -1,37 +1,17 @@
 // const Swagger = require('swagger-client')
 const path = require('path');
-const jestOpenAPI = require('jest-openapi').default;
-jestOpenAPI(path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json"));
 
 const axios = require("axios")
 const {UtilsService} = require("./utils");
-const {API_MESSAGE_TYPE} = require("../constants");
-const {getConfig} = require("../conf");
+const {API_MESSAGE_TYPES} = require("../constants");
+const {ApiClient} = require("./Client.js");
 
-function processParametersAndSendRequest(baseURL, endpoint, start, number, query, sort) {
-     if (!query) {
-        query = "__timestamp > 0";
-    }
-    let url = `${baseURL}/${endpoint}?query=${query}`;
-    if (typeof start !== 'undefined') {
-        url += `&start=${start}`;
-    }
-    if (typeof number !== 'undefined') {
-        url += `&number=${number}`;
-    }
-    if (typeof sort !== 'undefined') {
-        url += `&sort=${sort}`;
-    }
 
-    return axios.get(url)
-}
 
-class SwaggerClient {
-    config;
-    utils;
+class IntegrationClient extends ApiClient {
 
     constructor(config) {
-        this.config = config;
+        super(config);
         this.utils = new UtilsService(this.config);
     }
 
@@ -41,7 +21,7 @@ class SwaggerClient {
     };
 
     async addProduct(gtin, product){
-        const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPE.PRODUCT)
+        const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPES.PRODUCT)
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'POST', productMessage);
     };
 
@@ -66,7 +46,7 @@ class SwaggerClient {
     };
 
     async filterAuditLogs(logType, start, number, query, sort){
-        return processParametersAndSendRequest(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
+        return this.processAndSend(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
     }
 
     getBaseURL(){
@@ -94,17 +74,17 @@ class SwaggerClient {
 
         try {
             if (method === 'GET') {
-                response = await axios.get(endpoint);
+                response = await axios.get(endpoint, {headers: this.getHeaders()});
                 if (response.status >= 400) {
                     let reason = response.data;
                     throw {code: response.status, reason}
                 }
 
                 if (responseType === "json") {
-                    return JSON.parse(response.data)
+                    expect(typeof response.data).toEqual("object")
                 }
 
-                return response.data
+                return response
             } else {
                 let body;
                 if (method !== 'DELETE' && data) {
@@ -112,23 +92,23 @@ class SwaggerClient {
                 }
                 switch (method) {
                     case 'POST':
-                        response = await axios.post(endpoint, body);
+                        response = await axios.post(endpoint, body, {headers: this.getHeaders()});
                         break;
                     case 'PUT':
-                        response = await axios.put(endpoint, body);
+                        response = await axios.put(endpoint, body, {headers: this.getHeaders()});
                         break;
                     case 'DELETE':
-                        response = await axios.delete(endpoint);
+                        response = await axios.delete(endpoint, {headers: this.getHeaders()});
                         break;
                     default:
                         throw new Error(`Unsupported HTTP method: ${method}`);
                 }
                 if (response.status >= 400) {
-                    let reason = await response.data;
+                    let reason = response.statusText;
                     throw {code: response.status, reason}
                 }
 
-                return response.data
+                return response
             }
         } catch (e){
             if (e instanceof Error) {
@@ -140,5 +120,5 @@ class SwaggerClient {
 }
 
 module.exports = {
-    SwaggerClient
+    IntegrationClient
 };

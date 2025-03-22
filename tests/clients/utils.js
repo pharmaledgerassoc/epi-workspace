@@ -1,20 +1,21 @@
 
-export class UtilsService {
+class UtilsService {
     config;
     constructor(config) {
         this.config = config;
     }
 
     initMessage(model, msgType) {
-        Object.assign(model, {
+        return Object.assign({
             messageType: msgType,
             messageTypeVersion: 2,
             senderId: this.config.senderId,
             receiverId: "QPNVR",
-            messageId: webSkel.appServices.generateID(16),
+            messageId: this.generateID(16),
             messageDateTime: new Date().toISOString()
+        }, {
+            payload: model
         })
-        return model;
     }
 
     cleanMessage(message) {
@@ -150,4 +151,21 @@ export class UtilsService {
 
         return true;
     }
+
+    static getTicket(testName){
+        const testRegexp = /^((:?TRUST|LWA)-\d+)\s(STEP\s\d+)(\s-\s(.+))?$/g
+        const match = testRegexp.exec(testName);
+        if (!match) {
+            throw new Error(`Your test name does not follow the pattern 'TRUST|LWA-XXX STEP XXX - description'`)
+        }
+        return {
+            ticket: match[1],
+            step: match[2],
+            description: match[4] || ""
+        }
+    }
 }
+
+module.exports = {
+    UtilsService
+};

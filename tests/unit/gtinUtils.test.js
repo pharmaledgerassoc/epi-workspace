@@ -11,9 +11,11 @@ describe("gtin-utils", () => {
     paddings.forEach(baseNumber => {
         it(`generates gtins from ${baseNumber} length numbers`, () => {
             const arr = new Array(baseNumber)
-            arr.fill(1);
+            arr.fill(0)
+            arr[0] = 1; // First digit is always 1 to make it powers of 10
             const gtin = generateGTIN(arr.join(""));
             expect(gtin).toHaveLength(14);
+            console.log(`Generated gtin: ${gtin} from base number: ${baseNumber}`);
         })
     })
 

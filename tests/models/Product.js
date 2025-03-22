@@ -22,22 +22,23 @@ const {Market} = require("./Market");
  */
 class Product extends Model {
     
-    productCode = undefined; 
-    internalMaterialCode = undefined;
-    inventedName = undefined;
-    nameMedicinalProduct = undefined;
-    productRecall = undefined;
-    flagEnableAdverseEventReporting = undefined;
-    adverseEventReportingURL = undefined;
-    flagEnableACFProductCheck = undefined;
-    acfProductCheckURL = undefined;
-    patientSpecificLeaflet = undefined;
-    healthcarePractitionerInfo = undefined;
-    strengths = undefined;
-    markets = undefined;
+    productCode = "";
+    internalMaterialCode = "";
+    inventedName = "";
+    nameMedicinalProduct = "";
+    productRecall = false;
+    flagEnableAdverseEventReporting = false;
+    adverseEventReportingURL = "";
+    flagEnableACFProductCheck = false;
+    acfProductCheckURL = "";
+    patientSpecificLeaflet = "";
+    healthcarePractitionerInfo = "";
+    strengths = [];
+    markets = [];
 
     constructor(product) {
-       super(product);
+       super();
+       Model.fromObject(this, product);
        if (this.strengths && this.strengths.length) {
            this.strengths = this.strengths.map(strength => new Strength(strength));
        }
