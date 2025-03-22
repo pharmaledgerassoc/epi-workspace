@@ -94,7 +94,7 @@ class ApiClient {
             url += `&sort=${sort}`;
         }
 
-        return axios.get(url)
+        return axios.get(url, {headers: this.getHeaders()});
     }
 
 }
