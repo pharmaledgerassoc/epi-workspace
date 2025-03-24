@@ -47,13 +47,15 @@ const migrateTable = async (dbPath, tableName, records) => {
             const processedRecord = mapRecordToCouchDB(record)
 
             await insertRecord(dbPath, tableName, processedRecord.pk, processedRecord);
+            const read = await readRecord(dbPath, tableName, processedRecord.pk);
+            read.timestamp = processedRecord.timestamp;
+            await updateRecord(dbPath, tableName, processedRecord.pk, read);
         } catch (e) {
             console.error("Failed to migrate table", tableName, e);
             throw e;
         }
      
     }
-
 
 }
 
@@ -72,6 +74,32 @@ const insertRecord = async (dbPath, tableName, pk, record) => {
         console.log("Record Already exists!");
         // throw e
     }
+}
+
+const readRecord = async (dbPath, tableName, _id) => {
+    let dbName = await getDbName(dbPath, tableName);
+    dbName = dbService.changeDBNameToLowerCaseAndValidate(dbName);
+
+    const exists = await dbService.dbExists(dbName);
+
+    if (!exists)
+        throw new Error(`Database Doesn't exist: ${dbName}! Failed to migrate!`);
+
+    const db = await this.openDatabase(dbName);
+    return await db.readDocument(_id);
+}
+
+const updateRecord = async (dbPath, tableName, _id, record) => {
+    let dbName = await getDbName(dbPath, tableName);
+    dbName = dbService.changeDBNameToLowerCaseAndValidate(dbName);
+
+    const exists = await dbService.dbExists(dbName);
+
+    if (!exists)
+        throw new Error(`Database Doesn't exist: ${dbName}! Failed to migrate!`);
+
+    const db = await this.openDatabase(dbName);
+    return await db.updateDocument(_id,  record);
 }
 
 const createCollection = async (dbPath, tableName, indexes) => {
@@ -97,28 +125,6 @@ const getDbName = async (dbPath, tableName) => {
 
     return ["db", prefix, tableName].filter(e => !!e).join("_");
 }
-
-// const migrateGtinResolver = async (dbPath) => {
-//     const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
-//     const tables = db.collections
-  
-//     const readStream = fs.createReadStream(dbPath + ".0", 'utf8');
-//     const rl = readline.createInterface({ input: readStream });
-
-//     let records = [];
-
-//     if(tables.length > 1)
-//         throw new Error("GTIN OWNER should only contain 1 table")
-
-//     for await (const line of rl) {
-//         let cleanedLine = line;
-//         cleanedLine = cleanedLine.replaceAll('$<', ''); // Remove words
-//         records.push(JSON.parse(cleanedLine));
-//     }
-
-//     await createCollection(dbPath, tables[0].name, ["pk", "timestamp"]);
-//     await migrateTable(dbPath, tables[0].name, records);
-// }
 
 const extractRecords = async (dbPath, index) => {
     try {
