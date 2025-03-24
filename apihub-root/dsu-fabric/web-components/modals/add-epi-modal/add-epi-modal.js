@@ -127,7 +127,7 @@ export class AddEpiModal {
                     let fileContent = await gtinResolver.DSUFabricUtils.getFileContentAsBuffer(file);
                     resultObject.otherFilesContent.push({
                         filename: file.name,
-                        fileContent: gtinResolver.utils.getImageAsBase64(fileContent)
+                        fileContent: gtinResolver.utils.getImageAsBase64(fileContent,file.type)
                     })
                 }
             }
