@@ -18,7 +18,6 @@ express-demo
 ethereum-anchoring
 dsu-fabric-ssapp
 node_modules
-package-lock.json
 env.json.devel
 opendsu-sdk/builds/output/
 .git
@@ -56,3 +55,9 @@ apihub-root/external-volume/versionlessdsu/
 apihub-root/external-volume/metadata/
 !apihub-root/external-volume/metadata/cache/.gitlock
 workdocs/uml/*.png
+workdocs/coverage/**/*
+workdocs/reports/**/*
+tests/config/test.config.json
+.browserstack
+browserstack.yml
+apihub-root/external-volume/gtin-counter.lock

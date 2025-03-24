@@ -1,0 +1,26 @@
+userName: tiagovenceslau_w5srmK
+accessKey: ${browserstack_token}
+platforms:
+  - deviceName: iPhone 16 Pro
+    osVersion: 18
+    browserName: safari
+    deviceOrientation: portrait
+  - deviceName: iPhone 15 Pro
+    osVersion: 17
+    browserName: safari
+    deviceOrientation: portrait
+  - deviceName: iPhone 14
+    osVersion: 16
+    browserName: safari
+    deviceOrientation: portrait
+parallelsPerPlatform: 1
+browserstackLocal: true
+buildName: 3.0.0
+projectName: LWA
+CUSTOM_TAG_1: "Compatibility Testing"
+# Use CUSTOM_TAG_<N> and set more build tags as you need.
+debug: true
+networkLogs: true
+consoleLogs: info
+percy: false
+percyCaptureMode: auto
