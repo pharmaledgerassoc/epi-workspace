@@ -30,7 +30,6 @@ const mapRecordToCouchDB = (record) => {
     delete record.meta;
     delete record.$loki;
     record["timestamp"] = record.__timestamp;
-    record["_rev"] = record.__version || 0;
     delete record.__timestamp;
     delete record.__version;
 
@@ -47,15 +46,13 @@ const migrateTable = async (dbPath, tableName, records) => {
             const processedRecord = mapRecordToCouchDB(record)
 
             await insertRecord(dbPath, tableName, processedRecord.pk, processedRecord);
-            const read = await readRecord(dbPath, tableName, processedRecord.pk);
-            read.timestamp = processedRecord.timestamp;
-            await updateRecord(dbPath, tableName, processedRecord.pk, read);
         } catch (e) {
             console.error("Failed to migrate table", tableName, e);
             throw e;
         }
      
     }
+
 
 }
 
@@ -74,32 +71,6 @@ const insertRecord = async (dbPath, tableName, pk, record) => {
         console.log("Record Already exists!");
         // throw e
     }
-}
-
-const readRecord = async (dbPath, tableName, _id) => {
-    let dbName = await getDbName(dbPath, tableName);
-    dbName = dbService.changeDBNameToLowerCaseAndValidate(dbName);
-
-    const exists = await dbService.dbExists(dbName);
-
-    if (!exists)
-        throw new Error(`Database Doesn't exist: ${dbName}! Failed to migrate!`);
-
-    const db = await this.openDatabase(dbName);
-    return await db.readDocument(_id);
-}
-
-const updateRecord = async (dbPath, tableName, _id, record) => {
-    let dbName = await getDbName(dbPath, tableName);
-    dbName = dbService.changeDBNameToLowerCaseAndValidate(dbName);
-
-    const exists = await dbService.dbExists(dbName);
-
-    if (!exists)
-        throw new Error(`Database Doesn't exist: ${dbName}! Failed to migrate!`);
-
-    const db = await this.openDatabase(dbName);
-    return await db.updateDocument(_id,  record);
 }
 
 const createCollection = async (dbPath, tableName, indexes) => {
