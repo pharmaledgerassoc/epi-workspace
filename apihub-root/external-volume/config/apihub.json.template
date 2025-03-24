@@ -69,9 +69,9 @@
   },
   "enableRequestLogger": true,
   "enableJWTAuthorisation": false,
-  "enableOAuth": "${enable_oauth}",
-  "enableAPIKeyAuth": "${enable_oauth}",
-  "enableClientCredentialsOauth": "${enable_oauth}",
+  "enableOAuth": ${enable_oauth},
+  "enableAPIKeyAuth": ${enable_oauth},
+  "enableClientCredentialsOauth": ${enable_oauth},
   "oauthJWKSEndpoint": "${oauth_jwks_endpoint}",
   "enableLocalhostAuthorization": false,
   "skipOAuth": [
@@ -101,13 +101,13 @@
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
-    "debugLogEnabled": "${oauth_logging}"
+    "debugLogEnabled": ${oauth_logging}
   },
-  "serverAuthentication": "${server_authentication}",
+  "serverAuthentication": ${server_authentication},
   "db": {
     "uri": "${db_uri}",
     "user": "admin",
     "secret": "${db_secret}",
-    "debug": "${db_debug}"
+    "debug": ${db_debug}
   }
 }
