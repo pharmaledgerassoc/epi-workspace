@@ -23,7 +23,8 @@ const localValues = {
     db_uri: "http://localhost:5984",
     db_user: "admin",
     db_secret: "adminpw",
-    db_debug: true
+    db_debug: true,
+    oauth_logging: true
 };
 
 
