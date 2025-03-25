@@ -149,5 +149,6 @@ class GTINGenerator {
 
 module.exports = {
     generateGTIN,
-    GTINGenerator
+    GTINGenerator,
+    GTIN_LOCK
 };

@@ -73,7 +73,7 @@ class ApiClient {
                 throw new Error(`Unsupported HTTP method: ${method}`);
         }
 
-        if (!response.ok) {
+        if (!((response.ok || response.statusText === "OK" || response.status === 200))) {
             throw new Error(`Failed to fetch ${endpoint} with status ${response.status}`);
         }
         return response.data;
