@@ -8,86 +8,141 @@ const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const path = require("path");
 
-const jestOpenAPI = require('jest-openapi').default;
-const openApiPath = path.resolve(__dirname, "ePI-SOR.json");
-jestOpenAPI(openApiPath);
-
 jest.setTimeout(60000);
 
-describe('Product', () => {
+const issueId = "TRUST-YYY";
+describe(`${issueId} Product`, () => {
 
-    let product
     let client;
-    let oauth;
 
-    const baseURL = "/product";
+    const productUrl = "/product";
+    const listProductsUrl = "/listProducts";
+    const listProductMarketsUrl = "/listProductMarkets";
+    const listProductLangsUrl = "/listProductLangs";
 
     beforeAll(async () => {
-        oauth = new OAuth(config);
-        const token = await oauth.getAccessToken();
-        oauth.setSharedToken(token);
+        // log in to SSO
+        const token = await client.getAccessToken();
+        // retrieve integration api client
         client = new IntegrationClient(config);
+        // store auth SSO token
         client.setSharedToken(token);
-    })
-
-    describe(`TRUST-YYY - ${baseURL} (POST)`, () => {
-        it("success - create a product", () => {
-
-        })
-
-        it("fail - 422", () => {
-
-        })
-
-        it("fail 422 (TRUST-69, TRUST-79)", () => {
-            const testName = expect.getState().currentConcurrentTestName();
-
-        })
     });
 
-    describe(`TRUST-YYY - ${baseURL} (GET)`, () => {
-        it("success - get a product", () => {
+    describe(`${productUrl} (POST)`, () => {
+        it("SUCCESS 200 - Create a product", () => {
+
+        });
+
+        it("FAIL 422 - Unprocessable Entity", () => {
+
+        });
+
+        it("FAIL 422 - Unprocessable Entity (TRUST-69)", async () => {
+            const {ticket} = UtilsService.getTicket(expect.getState().currentTestName);
+            const product = await ModelFactory.product(ticket, {nameMedicinalProduct: "", inventedName: ""});
+
+            try {
+                await client.addProduct(product.productCode, product);
+                fail("Request should have failed with 422 status code");
+            } catch (e) {
+                const response = e?.response || {};
+                expect(e.status).toEqual(422);
+                expect(e.statusText).toEqual("Unprocessable Entity");
+            }
+        });
+    });
+
+    describe(`${productUrl} (GET)`, () => {
+        it("SUCCESS 200 - Get a product", () => {
             "/product/{GTIN}"
         })
 
-        it("fail - 422", () => {
+        it("FAIL 422 - Unprocessable Entity", () => {
 
         })
 
-        it("fail 422 (TRUST-69, TRUST-79)", () => {
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
             const testName = expect.getState().currentConcurrentTestName();
 
         })
     });
 
-    describe(`TRUST-YYY - ${baseURL} (PUT)`, () => {
-        it("success - update a product", () => {
+    describe(`${productUrl} (PUT)`, () => {
+        it("SUCCESS 200 - Update a product", () => {
 
         })
 
-        it("fail - 422", () => {
+        it("FAIL 422 - Unprocessable Entity", () => {
 
         })
 
-        it("fail 422 (TRUST-69, TRUST-79)", () => {
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
             const testName = expect.getState().currentConcurrentTestName();
 
         })
     });
 
-    describe(`TRUST-YYY - ${baseURL} (DELETE)`, () => {
-        it("success - delete a product", () => {
+    describe(`${productUrl} (DELETE)`, () => {
+        it("SUCCESS 200 - Delete a product", () => {
 
         })
 
-        it("fail - 422", () => {
+        it("FAIL 422 - Unprocessable Entity", () => {
 
         })
 
-        it("fail 422 (TRUST-69, TRUST-79)", () => {
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
             const testName = expect.getState().currentConcurrentTestName();
 
         })
+    });
+
+
+    describe(`${listProductsUrl} (GET)`, () => {
+        it("SUCCESS 200 - List products", () => {
+
+        });
+
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
+            const testName = expect.getState().currentConcurrentTestName();
+
+        });
+
+        it("FAIL 500 - Internal Server Error", () => {
+
+        });
+    });
+
+    describe(`${listProductMarketsUrl} (GET)`, () => {
+        it("SUCCESS 200 - list products", () => {
+
+        });
+
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
+            const testName = expect.getState().currentConcurrentTestName();
+
+        });
+
+        it("FAIL 500 - Internal Server Error", () => {
+
+        });
+    });
+
+    describe(`${listProductLangsUrl} (GET)`, () => {
+        it("SUCCESS 200 - list products", () => {
+
+        });
+
+        it("FAIL 422 - Unprocessable Entity (TRUST-XX, TRUST-XY)", () => {
+            const testName = expect.getState().currentConcurrentTestName();
+
+        });
+
+        it("FAIL 500 - Internal Server Error", () => {
+
+        });
+
     });
 
 });
