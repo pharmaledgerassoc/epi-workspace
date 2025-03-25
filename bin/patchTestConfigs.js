@@ -27,7 +27,7 @@ const localValues = {
     domain: "local.epi",
     subdomain: "local.epi",
     sender_id: "auto-tester@pdmfc.com",
-    appName: "PharmaLedger",
+    app_name: "DSU_FABRIC",
     browserstack_token: fs.existsSync(browserstackTokenPath) ? fs.readFileSync(browserstackTokenPath, 'utf8').trim() : '',
 };
 
