@@ -84,9 +84,15 @@ $ npm run dev-install
 
 ### Step 2: Launch the "server"/ Build all things needed for the application to run.
 
+launch the couchdb instance:
+
+```shell
+cd opendsu-sdk && npm run start-db
+```
+
 While in the *epi-workspace* folder:
 
- - If it is the first time you are running the aplication:
+ - If it is the first time you are running the application:
 
 ```sh
 $ npm run build-all
