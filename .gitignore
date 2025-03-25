@@ -49,6 +49,7 @@ apihub-root/external-volume/lightDB/
 apihub-root/external-volume/mq_JWT_Auth_Seeder
 apihub-root/external-volume/secrets/
 apihub-root/external-volume/fixed-urls/
+apihub-root/external-volume/FixedUrls.db/
 apihub-root/external-volume/gtinOwner/
 apihub-root/external-volume/versionlessdsu/
 
