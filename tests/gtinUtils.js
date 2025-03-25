@@ -26,6 +26,7 @@ function generateGTIN(baseNumber) {
         }
     } else {
         baseNumber = typeof baseNumber === 'number'? baseNumber.toString() : baseNumber;
+        baseNumber = baseNumber.slice(0, GTIN_LENGTH);
         gtinDigits.push(...baseNumber.split('').map(x => parseInt(x)).reverse());
         while(gtinDigits.length < GTIN_LENGTH){
             gtinDigits.push(0)
@@ -41,6 +42,8 @@ function generateGTIN(baseNumber) {
     for (let i = gtinDigits.length - 1; i >= 0; i--) {
         reszultSum = reszultSum + gtinDigits[i] * gtinMultiplicationArray[j];
         j--;
+        if (j < 0)
+            j = gtinMultiplicationArray.length - 1; // restart index
     }
     let validDigit = Math.floor((reszultSum + 10) / 10) * 10 - reszultSum;
     if (validDigit === 10) {
@@ -48,7 +51,6 @@ function generateGTIN(baseNumber) {
     }
 
     gtinDigits.push(validDigit);
-
     return gtinDigits.join('');
 }
 
