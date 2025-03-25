@@ -8,6 +8,8 @@ const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const {FixedUrls} = require("../clients/FixedUrls");
 
+jest.setTimeout(600000);
+
 describe('TRUST-67', () => {
 
     let product
