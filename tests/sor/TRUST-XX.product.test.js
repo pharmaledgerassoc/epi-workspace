@@ -20,6 +20,8 @@ describe('Product', () => {
     let client;
     let oauth;
 
+    const baseURL = "/product";
+
     beforeAll(async () => {
         oauth = new OAuth(config);
         const token = await oauth.getAccessToken();
@@ -28,7 +30,7 @@ describe('Product', () => {
         client.setSharedToken(token);
     })
 
-    describe("TRUST-YYY - PRODUCT POST", () => {
+    describe(`TRUST-YYY - ${baseURL} (POST)`, () => {
         it("success - create a product", () => {
 
         })
@@ -43,9 +45,9 @@ describe('Product', () => {
         })
     });
 
-    describe("TRUST-YYY - PRODUCT GET", () => {
+    describe(`TRUST-YYY - ${baseURL} (GET)`, () => {
         it("success - get a product", () => {
-
+            "/product/{GTIN}"
         })
 
         it("fail - 422", () => {
@@ -58,7 +60,7 @@ describe('Product', () => {
         })
     });
 
-    describe("TRUST-YYY - PRODUCT PUT", () => {
+    describe(`TRUST-YYY - ${baseURL} (PUT)`, () => {
         it("success - update a product", () => {
 
         })
@@ -73,22 +75,19 @@ describe('Product', () => {
         })
     });
 
+    describe(`TRUST-YYY - ${baseURL} (DELETE)`, () => {
+        it("success - delete a product", () => {
 
-    // test(`Should return Unprocessable Entity for blank mandatory fields`, async () => {
-    //     const {ticket} = UtilsService.getTicket(expect.getState().currentTestName);
-    //     product = await ModelFactory.product(ticket, {
-    //         nameMedicinalProduct: "",
-    //         inventedName: ""
-    //     });
-    //
-    //     try {
-    //         await client.addProduct(product.productCode, product);
-    //         fail('Request should have failed with 422'); // This makes the test fail if it reaches here
-    //     } catch (e) {
-    //         const response = e?.response || {};
-    //         expect(e.status).toEqual(422);
-    //         expect(e.statusText).toEqual("Unprocessable Entity");
-    //     }
-    // });
+        })
+
+        it("fail - 422", () => {
+
+        })
+
+        it("fail 422 (TRUST-69, TRUST-79)", () => {
+            const testName = expect.getState().currentConcurrentTestName();
+
+        })
+    });
 
 });
