@@ -1,7 +1,7 @@
 const Lock = require("../gtin-resolver/lib/utils/Lock.js")
 
 const GTIN_LENGTH = 13
-const GTIN_LOCK = "gtin-counter.lock"
+const GTIN_LOCK = ".gtin-counter.lock"
 const externalVolume = "apihub-root/external-volume"
 const fs = require("fs")
 const path = require("path")
@@ -94,7 +94,7 @@ class GTINGenerator {
     _reload(){
         if (this.persistence){
             try {
-                this._last = parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 1;
+                this._last = parseInt(fs.readFileSync(path.join(process.cwd(), GTIN_LOCK), "utf8")) || 1;
             } catch (e){
                 console.debug("Could not load last GTIN from file: " + e.message);
                 this.last = 1;
@@ -109,7 +109,7 @@ class GTINGenerator {
      * @param {string} gtin - The GTIN to persist.
      */
     _persist(gtin){
-        fs.writeFileSync(path.join(externalVolume, GTIN_LOCK), gtin)
+        fs.writeFileSync(path.join(process.cwd(), GTIN_LOCK), gtin)
     }
 
     /**
