@@ -8,7 +8,7 @@ const fs = require("fs");
  * @returns {string} - The string with placeholders replaced.
  */
 function replacePlaceholders(input, values) {
-    return input.replace(/\$\{([a-zA-Z0-9_]+)\}/g, (match, variable) => values[variable] || match);
+    return input.replace(/\$\{([a-zA-Z0-9_]+)\}/g, (match, variable) => values[variable] || "");
 }
 
 function patchFile(path, values) {
