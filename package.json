@@ -60,6 +60,7 @@
     "jsdoc-mermaid": "^1.0.0",
     "selenium-webdriver": "^4.29.0",
     "swagger-client": "^3.34.3",
+    "swagger-jsdoc": "^6.2.8",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2"
   }
