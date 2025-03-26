@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   verbose: true,
   // transform: { "^.+\\.[jt]s?$": "ts-jest" },
   // transformIgnorePatterns: [
