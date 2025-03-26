@@ -1,6 +1,7 @@
 const path = require('path');
 
 const axios = require('axios');
+const {Reporter} = require('./reporter');
 // const jestOpenAPI = require('jest-openapi').default;
 // jestOpenAPI(path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json"));
 
@@ -13,8 +14,12 @@ class ApiClient {
     privateToken;
     privateHeaders = {}
 
-    constructor(config) {
+    cached = {}
+
+    constructor(config, testName) {
         this.config = config;
+        this.testName = testName;
+        this.reporter = new Reporter(this.testName);
     }
 
     getToken(){
@@ -49,9 +54,26 @@ class ApiClient {
         return `${this.config.sor_endpoint}/integration`;
     }
 
-    async send(endpoint, method, data){
+    async send(endpoint, method, data, step, reference){
         if (typeof data === "object") {
             data = JSON.stringify(data);
+        }
+        const self = this;
+        function referenceFromUrl(url, response = false){
+            const name = [method, response ? "response" : "payload",...url.split('/')].join('-');
+            const cached = Object.keys(self.cached)
+                .filter(k => k.includes(name));
+
+            if (cached.length){
+                const arr = self.cached.pop().split('-');
+                const last = parseInt(arr[arr.length - 1]);
+
+                self.cached[`${name}-${last + 1}`] = response.data;
+                return name;
+            }
+
+            self.cached[`${name}-0`] = response.data;
+            return name;
         }
 
         const url = `${this.getBaseURL()}${endpoint}`;
@@ -61,10 +83,14 @@ class ApiClient {
                 response = await axios.get(url, {headers: this.getHeaders()});
                 break;
             case 'POST':
+                await this.reporter.outputPayload(step, referenceFromUrl(url), data, "json")
                 response = await axios.post(url, data, {headers: this.getHeaders()});
+                await this.reporter.outputPayload(step, referenceFromUrl(url, true), response, "json")
                 break;
             case 'PUT':
+                await this.reporter.outputPayload(step, referenceFromUrl(url), data, "json")
                 response = await axios.put(url, data, {headers: this.getHeaders()});
+                await this.reporter.outputPayload(step, referenceFromUrl(url,true), response, "json")
                 break;
             case 'DELETE':
                 response = await axios.delete(url, {headers: this.getHeaders()});
@@ -73,7 +99,7 @@ class ApiClient {
                 throw new Error(`Unsupported HTTP method: ${method}`);
         }
 
-        if (!response.ok) {
+        if (!((response.ok || response.statusText === "OK" || response.status === 200))) {
             throw new Error(`Failed to fetch ${endpoint} with status ${response.status}`);
         }
         return response.data;

@@ -1,7 +1,7 @@
 const Lock = require("../gtin-resolver/lib/utils/Lock.js")
 
 const GTIN_LENGTH = 13
-const GTIN_LOCK = "gtin-counter.lock"
+const GTIN_LOCK = ".gtin-counter.lock"
 const externalVolume = "apihub-root/external-volume"
 const fs = require("fs")
 const path = require("path")
@@ -26,6 +26,7 @@ function generateGTIN(baseNumber) {
         }
     } else {
         baseNumber = typeof baseNumber === 'number'? baseNumber.toString() : baseNumber;
+        baseNumber = baseNumber.slice(0, GTIN_LENGTH);
         gtinDigits.push(...baseNumber.split('').map(x => parseInt(x)).reverse());
         while(gtinDigits.length < GTIN_LENGTH){
             gtinDigits.push(0)
@@ -41,6 +42,8 @@ function generateGTIN(baseNumber) {
     for (let i = gtinDigits.length - 1; i >= 0; i--) {
         reszultSum = reszultSum + gtinDigits[i] * gtinMultiplicationArray[j];
         j--;
+        if (j < 0)
+            j = gtinMultiplicationArray.length - 1; // restart index
     }
     let validDigit = Math.floor((reszultSum + 10) / 10) * 10 - reszultSum;
     if (validDigit === 10) {
@@ -48,7 +51,6 @@ function generateGTIN(baseNumber) {
     }
 
     gtinDigits.push(validDigit);
-
     return gtinDigits.join('');
 }
 
@@ -94,7 +96,7 @@ class GTINGenerator {
     _reload(){
         if (this.persistence){
             try {
-                this._last = parseInt(fs.readFileSync(path.join(externalVolume, GTIN_LOCK), "utf8")) || 1;
+                this._last = parseInt(fs.readFileSync(path.join(process.cwd(), GTIN_LOCK), "utf8")) || 1;
             } catch (e){
                 console.debug("Could not load last GTIN from file: " + e.message);
                 this.last = 1;
@@ -109,7 +111,7 @@ class GTINGenerator {
      * @param {string} gtin - The GTIN to persist.
      */
     _persist(gtin){
-        fs.writeFileSync(path.join(externalVolume, GTIN_LOCK), gtin)
+        fs.writeFileSync(path.join(process.cwd(), GTIN_LOCK), gtin)
     }
 
     /**
@@ -149,5 +151,6 @@ class GTINGenerator {
 
 module.exports = {
     generateGTIN,
-    GTINGenerator
+    GTINGenerator,
+    GTIN_LOCK
 };

@@ -1,4 +1,4 @@
-const {generateGTIN} = require("../gtinUtils");
+const {generateGTIN, GTIN_LOCK, GTINGenerator} = require("../gtinUtils");
 
 describe("gtin-utils", () => {
     it("randomly generates gtins", () => {
@@ -19,6 +19,22 @@ describe("gtin-utils", () => {
         })
     })
 
+    const sequenceTest = 10000
+
+    it(`generates ${sequenceTest} valid GTINS sequentially`, async() => {
+        require('fs').rmSync(require("path").join(process.cwd(), GTIN_LOCK), { force: true });
+        const generator = new GTINGenerator(false);
+        const testScope = Object.keys(new Array(10000).fill(0))
+        let padded;
+        let gtin;
+        for(let i of testScope){
+            if (i === "0") continue; // no gtin with all zeros
+            padded = i.padStart(13, "0");
+            gtin = await generator.next();
+            expect(gtin.slice(0, padded.length)).toEqual(padded)
+        }
+    })
+
     it.skip("enumerates all possible gtins", () => {
         const possibleGtins = 10**14;
         const limit = parseInt(new Array(13).fill(9).join(''));
@@ -34,6 +50,7 @@ describe("gtin-utils", () => {
                 counter = counter * 10;
             }
             const gtin = generateGTIN(i);
+            console.log(gtin)
             gtins.push(gtin);
         }
         const end = Date.now();
