@@ -8,6 +8,8 @@ const {Leaflet} = require("../models/Leaflet");
 const {API_MESSAGE_TYPES} = require("../constants");
 const fs = require("node:fs");
 const path = require("path");
+const {Batch} = require("../models/Batch");
+const {UtilsService} = require("../clients/utils");
 
 jest.setTimeout(60000);
 
@@ -146,6 +148,27 @@ describe(`TRUST-001 ePI Leaflet`, () => {
                     otherFilesContent: []
                 });
             }
+        });
+    });
+
+    describe(`${listBatchLangsUrl} (GET)`, () => {
+        let batch = new Batch();
+        beforeAll(async () => {
+            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const _batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+            const res = await client.addBatch(_batch.productCode, _batch.batchNumber, _batch);
+            expect(res.status).toBe(200);
+
+            const batchResponse = await client.getBatch(_batch.productCode, _batch.batchNumber);
+            expect(batchResponse.data).toEqual(expect.objectContaining(_batch));
+            batch = batchResponse.data;
+        });
+
+        it("SUCCESS 200 - Should list batches langs", async () => {
+            const response = await client.listBatchesLang(batch.productCode, batch.batchNumber, "leaflet");
+            expect(response.status).toEqual(200);
+            expect(Array.isArray(response.data)).toBeTruthy();
+            expect(response.data.length).toBeGreaterThan(0);
         });
     });
 

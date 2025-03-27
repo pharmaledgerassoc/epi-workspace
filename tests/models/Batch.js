@@ -38,9 +38,9 @@ class Batch extends Model {
     // epiProtocol = "";
     // lockId = "";
     expiryDate = "";
-    inventedName = "";
-    nameMedicinalProduct = "";
-    importLicenseNumber = "";
+    // inventedName = "";
+    // nameMedicinalProduct = "";
+    // importLicenseNumber = "";
     dateOfManufacturing = "";
     manufacturerName = "";
     manufacturerAddress1 = "";
@@ -50,17 +50,6 @@ class Batch extends Model {
     manufacturerAddress5 = "";
     batchRecall = false;
     packagingSiteName = "";
-    flagEnableEXPVerification = false;
-    flagEnableExpiredEXPCheck = false;
-    batchMessage = "";
-    flagEnableBatchRecallMessage = false;
-    recallMessage = "";
-    flagEnableACFBatchCheck = false;
-    acfBatchCheckURL = "";
-    flagEnableSNVerification = false;
-    acdcAuthFeatureSSI = "";
-    snValidReset = false;
-    snValid = [];
     // version = 1;
 
     constructor(batch) {
