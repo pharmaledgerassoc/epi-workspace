@@ -1,6 +1,8 @@
 const {Product} = require("./Product");
+const {Batch} = require("./Batch");
 const {getConfig} = require("../conf");
 const {GTINGenerator} = require("../gtinUtils");
+const {getYYMMDDDate} = require("../utils");
 
 /**
  * @description Factory for creating model instances.
@@ -38,7 +40,7 @@ class ModelFactory {
      *   MF->>MF: Cache product
      *   MF-->>MF: Return product
      */
-    async product(test, props){
+    async product(test, props) {
         const p = new Product(Object.assign({}, {
             productCode: await this._gtinGenerator.next(),
             inventedName: `Test Product ${test}`,
@@ -47,6 +49,17 @@ class ModelFactory {
         this._cachedProducts[p.productCode] = p;
         console.log(`generated product: ${p.productCode} for test ${test}`);
         return p;
+    }
+
+    async batch(test, productCode, props) {
+        const batch = new Batch(Object.assign({}, {
+            productCode: productCode,
+            batchNumber: (Math.random() * 100).toString(36).replace(".", "").toUpperCase(),
+            expiryDate: getYYMMDDDate("1y"),
+            manufacturerName: test
+        }, props || {}));
+        console.log(`generated batch: ${productCode} - ${batch.batchNumber} for test ${test}`);
+        return batch;
     }
 }
 

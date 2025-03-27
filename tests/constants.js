@@ -31,7 +31,7 @@ const constants = {
         BATCH: "Batch",
         PRODUCT_PHOTO: "ProductPhoto",
         EPI: {
-        LEAFLET: "leaflet",
+            LEAFLET: "leaflet",
             PRESCRIBING_INFO: "prescribingInfo",
             SMPC: "smpc"
         }

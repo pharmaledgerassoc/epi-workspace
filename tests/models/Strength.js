@@ -19,6 +19,7 @@ class Strength extends Model {
 
     constructor(strength) {
         super(strength);
+        Model.fromObject(this, strength);
     }
 }
 

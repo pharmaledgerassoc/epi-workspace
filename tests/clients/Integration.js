@@ -21,11 +21,12 @@ class IntegrationClient extends ApiClient {
     };
 
     async addProduct(gtin, product){
-        const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPES.PRODUCT)
+        const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPES.PRODUCT);
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'POST', productMessage);
     };
 
-    async updateProduct(gtin, productMessage){
+    async updateProduct(gtin, payload){
+        const productMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.PRODUCT);
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'PUT', productMessage);
     };
 
@@ -45,9 +46,52 @@ class IntegrationClient extends ApiClient {
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'GET');
     };
 
+    async listProducts(number = 100, sort = "desc"){
+        return this.send(`${this.getBaseURL()}/listProducts?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
+    };
+
+    async listBatches(number = 100, sort = "desc"){
+        return this.send(`${this.getBaseURL()}/listBatches?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
+    };
+
+    async listBatchesLang(gtin, batchNumber, epiType){
+        return this.send(`${this.getBaseURL()}/listBatchLangs/${gtin}/${batchNumber}/${epiType}`, 'GET');
+    };
+
     async filterAuditLogs(logType, start, number, query, sort){
         return this.processAndSend(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
     }
+
+    async addLeaflet(gtin, batchNumber, epiLang, epiType, leafletPayload) {
+        const epiMessage = this.utils.initMessage(leafletPayload, API_MESSAGE_TYPES.EPI.LEAFLET)
+        const path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`
+        return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'POST', epiMessage);
+    }
+
+    async getLeaflet(gtin, batchNumber, epiLang, epiType) {
+        const path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`;
+        return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'GET');
+    }
+
+    async updateLeaflet(gtin, batchNumber, epiLang, epiType, leafletPayload) {
+        const epiMessage = this.utils.initMessage(leafletPayload, API_MESSAGE_TYPES.EPI.LEAFLET)
+        const path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`;
+        return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'PUT', epiMessage);
+    }
+
+    async addBatch(gtin, batchNumber, payload){
+        const batchMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.BATCH)
+        return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'POST', batchMessage);
+    };
+
+    async updateBatch(gtin, batchNumber, payload){
+        const batchMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.BATCH)
+        return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'PUT', batchMessage);
+    };
+
+    async getBatch(gtin, batchNumber){
+        return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'GET');
+    };
 
     getBaseURL(){
         return `${this.config.sor_endpoint}/integration`;
@@ -111,9 +155,9 @@ class IntegrationClient extends ApiClient {
                 return response
             }
         } catch (e){
-            if (e instanceof Error) {
-                throw new Error(`Error sending ${method} request to ${endpoint} - ${e.message}`)
-            }
+            // if (e instanceof Error) {
+            //     throw new Error(`Error sending ${method} request to ${endpoint} - ${e.message}`)
+            // }
             throw e;
         }
     }
