@@ -21,7 +21,7 @@ const {Market} = require("./Market");
  * @property {Market[]} [markets] - The markets where the product is available.
  */
 class Product extends Model {
-    
+
     productCode = "";
     internalMaterialCode = "";
     inventedName = "";
@@ -37,14 +37,14 @@ class Product extends Model {
     markets = [];
 
     constructor(product) {
-       super();
-       Model.fromObject(this, product);
-       if (this.strengths && this.strengths.length) {
-           this.strengths = this.strengths.map(strength => new Strength(strength));
-       }
-       if (this.markets && this.markets.length) {
-           this.markets = this.markets.map(market => new Market(market));
-       }
+        super();
+        Model.fromObject(this, product);
+        if (this.strengths && this.strengths.length) {
+            this.strengths = this.strengths.map(strength => new Strength(strength));
+        }
+        if (this.markets && this.markets.length) {
+            this.markets = this.markets.map(market => new Market(market));
+        }
     }
 }
 
