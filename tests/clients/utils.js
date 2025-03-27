@@ -164,6 +164,17 @@ class UtilsService {
             description: match[4] || ""
         }
     }
+
+    static getTicketId(testName){
+        // const testRegexp = /^((:?TRUST|LWA)-\d+)(\s-\s(.+))?$/g
+        const match = /^(TRUST|LWA)-\d+/.exec(testName);
+        if (!match) {
+            throw new Error(`Your test name does not follow the pattern 'TRUST|LWA-XXX STEP XXX - description'`)
+        }
+        return {
+            ticket: match[0]
+        }
+    }
 }
 
 module.exports = {

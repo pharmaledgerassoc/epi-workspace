@@ -24,6 +24,7 @@ class Market extends Model {
     mahAddress = undefined;
     constructor(market) {
         super(market);
+        Model.fromObject(this, market);
     }
 
 }
