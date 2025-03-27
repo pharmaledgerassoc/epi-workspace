@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Reset environment",
+        "type": "shell",
+        "command": "npm run clean && cd opendsu-sdk && npm run build && npm run shutdown-db && npm run start-db && cd ../gtin-resolver && npm run build && cd .. && npm run build-all",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Clean install",
+        "type": "shell",
+        "command": "rm -rf * && git checkout . && export GITHUB_ORGANIZATION=PDMFCSA && npm run dev-install && cd opendsu-sdk && npm run shutdown-db && npm run start-db && cd .. && npm run build-all",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+}
