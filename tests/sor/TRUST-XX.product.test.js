@@ -14,8 +14,6 @@ describe(`TRUST-001 Product`, () => {
     const fixedUrl = new FixedUrls(config);
     const productUrl = "/product";
     const listProductsUrl = "/listProducts";
-    const listProductMarketsUrl = "/listProductMarkets";
-    const listProductLangsUrl = "/listProductLangs";
 
     beforeAll(async () => {
         const oauth = new OAuth(config);
@@ -28,11 +26,12 @@ describe(`TRUST-001 Product`, () => {
         fixedUrl.setSharedToken(token);
     });
 
-    afterEach(async () => {
+    beforeEach(async () => {
         await fixedUrl.waitForCompletion();
     });
 
     describe(`${productUrl} (POST)`, () => {
+
         it("SUCCESS 200 - Should create a product properly", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const product = await ModelFactory.product(ticket, {
@@ -133,71 +132,123 @@ describe(`TRUST-001 Product`, () => {
             expect(getProductResponse.data.strengths.length).toEqual(1);
             expect(getProductResponse.data.markets.length).toEqual(1);
         });
+
     });
 
     describe(`${productUrl} (PUT)`, () => {
         let product = new Product();
         beforeAll(async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const createdProduct = await ModelFactory.product(ticket);
+            const createdProduct = await ModelFactory.product(ticket, {
+                markets: [{
+                    marketId: "IN",
+                    nationalCode: "NC001",
+                    mahAddress: "001A Baker Street",
+                    mahName: `${ticket} MAH`,
+                    legalEntityName: `${ticket} Legal Entity`
+                }],
+                strengths: [{
+                    substance: "Metformin", strength: "500mg"
+                }]
+            });
             const res = await client.addProduct(createdProduct.productCode, createdProduct);
             expect(res.status).toBe(200);
-            product = createdProduct;
+            const {data} = await client.getProduct(createdProduct.productCode);
+            product = data;
         });
 
         it("SUCCESS 200 - Should update a product properly", async () => {
+            const {version} = product;
             product = new Product({
                 ...product,
-                internalMaterialCode: "Update internalMaterialCode"
+                internalMaterialCode: "Update internalMaterialCode",
+                productRecall: true,
+                markets: [{
+                    marketId: "BR",
+                    nationalCode: "BR001",
+                    mahAddress: "Rua das Flores, 411",
+                    mahName: `BR MAH`,
+                    legalEntityName: `BR Legal Entity`
+                }],
+                strengths: []
             });
             const updateProductResponse = await client.updateProduct(product.productCode, product);
-            expect(product).toMatchObject(updateProductResponse.data);
+            expect(updateProductResponse.status).toEqual(200);
 
             const getProductResponse = await client.getProduct(product.productCode);
-            expect(product).toMatchObject(getProductResponse.data);
+            expect(getProductResponse.data).toMatchObject(product);
+            expect(getProductResponse.data.version).toBeGreaterThan(version);
         });
 
         it("SUCCESS 200 - Should maintain data consistency when making sequential updates", async () => {
-            const requests = [100, 150, 200, 300].map((delay, index) => new Promise((resolve) => {
-                setTimeout(async () => {
-                    const updatedProduct = new Product({
-                        ...product,
-                        internalMaterialCode: `Update_${index + 1}_${product.internalMaterialCode}`,
-                        markets: (index + 1) % 2 === 0 ? [] : [{
-                            marketId: "IN", nationalCode: "", mahAddress: "", mahName: "", legalEntityName: ""
-                        }]
-                    });
+            const timeBetweenRequests = [1000, 2000, 3000];
+            const expectedUpdates = timeBetweenRequests.map((delay, index) => {
+                return new Product({
+                    ...product,
+                    internalMaterialCode: `${Math.random().toString().replace(",", "")}`,
+                    markets: (index + 1) % 2 === 0 ? [] : [{
+                        marketId: "IN",
+                        nationalCode: `IN00${index}`,
+                        mahAddress: `10${index}, Bakon Avenue`,
+                        mahName: `IndianMAH`,
+                        legalEntityName: `Indian Legal Entity`
+                    }]
+                })
+            });
 
-                    const response = await client.updateProduct(updatedProduct.productCode, updatedProduct);
-                    resolve(response);
-                }, delay);
-            }));
-            await Promise.all(requests);
-            // TODO validate
+            const requests = expectedUpdates.map((update, index) =>
+                new Promise((resolve) => {
+                    setTimeout(async () => {
+                        const updatedProduct = new Product({
+                            ...product,
+                            ...update
+                        });
+
+                        await client.updateProduct(updatedProduct.productCode, updatedProduct);
+                        const response = await client.getProduct(product.productCode); // Fetch the updated product
+                        resolve(response.data);
+                    }, timeBetweenRequests[index]);
+                })
+            );
+
+            const responses = await Promise.all(requests);
+            responses.forEach((response, index) => {
+                expect(response).toEqual(expect.objectContaining(expectedUpdates[index]));
+            });
         });
 
-        it("FAIL 200 - Should not update productCode field", async () => {
+        it("FAIL 422 - Should not update productCode field", async () => {
             const originalProductCode = product.productCode;
-            const fakeProduct = ModelFactory.product("Fake");
+            const fakeProduct = await ModelFactory.product("Fake");
             const fakeProductCode = fakeProduct.productCode;
 
-            await client.updateProduct(originalProductCode, {
-                ...product,
-                productCode: fakeProductCode
-            });
+            try {
+                await client.updateProduct(originalProductCode, {
+                    ...product,
+                    productCode: fakeProductCode
+                });
+                throw new Error(`Request should have failed with 422 status code`);
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
+            }
 
             const updatedProduct = await client.getProduct(originalProductCode);
             expect(updatedProduct.data.productCode).toEqual(originalProductCode);
 
             try {
-                await expect(client.getProduct(fakeProductCode)).rejects.toThrow();
-            } catch (error) {
-                expect(error.response.status).toBe(404);
+                await client.getProduct(fakeProductCode);
+                throw new Error(`Request should have failed with 404 status code`);
+            } catch (e) {
+                expect(e.response.status).toBe(404);
             }
         });
+
     });
 
     describe(`${listProductsUrl} (GET)`, () => {
+
         it("SUCCESS 200 - List products", async () => {
             const response = await client.listProducts();
             expect(response.status).toEqual(200);
@@ -216,7 +267,7 @@ describe(`TRUST-001 Product`, () => {
             const ascOrderResponse = await client.listProducts(100, "asc");
             expect(ascOrderResponse.status).toEqual(200);
             expect(Array.isArray(ascOrderResponse.data)).toBeTruthy();
-            expect(response.data.length).toBeGreaterThan(0);
+            expect(ascOrderResponse.data.length).toBeGreaterThan(0);
             for (let i = 0; i < ascOrderResponse.data.length - 1; i++) {
                 expect(ascOrderResponse.data[i + 1]["__timestamp"]).toBeGreaterThan(ascOrderResponse.data[i]["__timestamp"]);
             }
@@ -224,23 +275,12 @@ describe(`TRUST-001 Product`, () => {
             const descOrderResponse = await client.listProducts(100, "desc");
             expect(descOrderResponse.status).toEqual(200);
             expect(Array.isArray(descOrderResponse.data)).toBeTruthy();
-            expect(response.data.length).toBeGreaterThan(0);
+            expect(descOrderResponse.data.length).toBeGreaterThan(0);
             for (let i = 0; i < descOrderResponse.data.length - 1; i++) {
                 expect(descOrderResponse.data[i + 1]["__timestamp"]).toBeLessThan(descOrderResponse.data[i]["__timestamp"]);
             }
         });
-    });
 
-    describe(`${listProductMarketsUrl} (GET)`, () => {
-        it("SUCCESS 200", () => {
-            throw new Erro("No implemented");
-        });
-    });
-
-    describe(`${listProductLangsUrl} (GET)`, () => {
-        it("SUCCESS 200", () => {
-            throw new Erro("No implemented");
-        });
     });
 
 });
