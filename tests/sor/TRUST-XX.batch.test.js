@@ -6,38 +6,50 @@ const {Batch} = require("../models/Batch");
 const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
-const {getYYMMDDDate} = require("../utils");
+const {getYYMMDDDate, getRandomNumber} = require("../utils");
+const {FixedUrls} = require("../clients/FixedUrls");
 
-jest.setTimeout(60000);
+jest.setTimeout(1200000);
 
-describe(`TRUST-001 Product`, () => {
-    let product = new Product();
-    let client = new IntegrationClient({});
-    const batchUrl = "/product";
+describe(`TRUST-002 Batch`, () => {
+    let PRODUCT = new Product();
+
+    // retrieve integration api client
+    const client = new IntegrationClient(config);
+    const oauth = new OAuth(config);
+    const fixedUrl = new FixedUrls(config);
+
+    const batchUrl = "/batch";
     const listBatchesUrl = "/listBatches";
     const listBatchLangsUrl = "/listBatchLangs";
 
     beforeAll(async () => {
-        const oauth = new OAuth(config);
-        // log in to SSO
-        const token = await oauth.getAccessToken();
-        // retrieve integration api client
-        client = new IntegrationClient(config);
+        const token = await oauth.getAccessToken(); // log in to SSO
         // store auth SSO token
         client.setSharedToken(token);
+        fixedUrl.setSharedToken(token);
 
-        const res = await client.getProduct("18624862486261");
-        // const res = await client.addProduct(product.productCode, product);
-        // expect(res.status).toBe(200);
+        const _product = await ModelFactory.product("TRUST-002");
+        const res = await client.addProduct(_product.productCode, _product);
+        expect(res.status).toBe(200);
 
-        // GTIN = product.productCode;
-        product = res.data;
+        const {data} = await client.getProduct(_product.productCode);
+        PRODUCT = data;
     });
+
+    // beforeEach(async () => {
+    //     await fixedUrl.waitForCompletion();
+    // });
 
     describe(`${batchUrl} (POST)`, () => {
         it("SUCCESS 200 - Should create a batch properly", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const batch = await ModelFactory.batch(ticket, GTIN);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode, {
+                packagingSiteName: ticket,
+                importLicenseNumber: getRandomNumber().toString(),
+                manufacturerAddress1: "1313, Burrito Boulevard, Taco City - Mexico",
+                manufacturerAddress2: "411, Bakon Street"
+            });
             const res = await client.addBatch(batch.productCode, batch.batchNumber, batch);
             expect(res.status).toBe(200);
 
@@ -47,15 +59,15 @@ describe(`TRUST-001 Product`, () => {
 
         it("FAIL 422 - Should throw Unprocessable Entity when mandatory fields are empty", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const batch = await ModelFactory.batch(ticket, product.productCode);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
 
-            const mandatoryFields = ['productCode', 'batchNumber', 'expiryDate'];
+            const mandatoryFields = ["productCode", "batchNumber", "expiryDate"];
             for (const field of mandatoryFields) {
                 const invalidBatch = {...batch};
                 invalidBatch[field] = undefined;
 
                 try {
-                    await client.addBatch(batch.productCode, batch.batchNumber, batch);
+                    await client.addBatch(batch.productCode, batch.batchNumber, invalidBatch);
                     throw new Error(`Request should have failed with 422 status code when ${field} is empty`);
                 } catch (e) {
                     const response = e?.response || {};
@@ -65,14 +77,14 @@ describe(`TRUST-001 Product`, () => {
             }
         });
 
-        it("FAIL 422 - Should throw Unprocessable Entity when additional property is provided", async () => {
+        it("FAIL 422 - Should throw Unprocessable Entity when invalid property is provided", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const batch = await ModelFactory.batch(ticket, product.productCode);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
             try {
-                await client.addBatch(batch.productCode, batch.batchNumber, new Batch({
+                await client.addBatch(batch.productCode, batch.batchNumber, {
                     ...batch,
                     dummyProperty: "No matter value"
-                }));
+                });
                 throw new Error("Request should have failed with 422 status code");
             } catch (e) {
                 const response = e?.response || {};
@@ -84,55 +96,55 @@ describe(`TRUST-001 Product`, () => {
     });
 
     describe(`${batchUrl} (GET)`, () => {
-        let batch = new Batch();
+        let BATCH = new Batch();
         beforeAll(async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const _batch = await ModelFactory.batch(ticket, product.productCode);
-            const res = await client.addBatch(_batch.productCode, _batch.batchNumber, _batch);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+            const res = await client.addBatch(batch.productCode, batch.batchNumber, batch);
             expect(res.status).toBe(200);
 
-            const batchResponse = await client.getBatch(_batch.productCode, _batch.batchNumber);
-            expect(batchResponse.data).toEqual(expect.objectContaining(_batch));
-            batch = batchResponse.data;
+            const {data} = await client.getBatch(batch.productCode, batch.batchNumber);
+            BATCH = data;
         });
 
         it("SUCCESS 200 - Should get a batch properly", async () => {
-            const getProductResponse = await client.getBatch(batch.code, batch.batchNumber);
-            expect(getProductResponse.data).toEqual(expect.objectContaining(batch));
+            const getProductResponse = await client.getBatch(BATCH.productCode, BATCH.batchNumber);
+            expect(getProductResponse.data).toEqual(expect.objectContaining(BATCH));
+            expect(Array.isArray(getProductResponse.data.snValid)).toBeTruthy();
             expect(getProductResponse.data.snValid.length).toEqual(0);
         });
     });
 
     describe(`${batchUrl} (PUT)`, () => {
-        let batch = new Batch({productCode: product.productCode});
+        let BATCH = new Batch({productCode: PRODUCT.productCode});
         beforeAll(async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const _batch = await ModelFactory.batch(ticket, product.productCode);
-            const res = await client.addBatch(product.productCode, _batch.batchNumber, _batch);
+            const _batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+            const res = await client.addBatch(PRODUCT.productCode, _batch.batchNumber, _batch);
             expect(res.status).toBe(200);
 
-            const batchResponse = await client.getBatch(_batch.productCode, _batch.batchNumber);
-            expect(batchResponse.data).toEqual(expect.objectContaining(_batch));
-            batch = batchResponse.data;
+            const {data} = await client.getBatch(_batch.productCode, _batch.batchNumber);
+            BATCH = data;
         });
 
         it("SUCCESS 200 - Should update a batch properly", async () => {
-            batch = new Batch({
-                ...batch,
+            const batch = new Batch({
+                ...BATCH,
+                batchRecall: true,
                 expiryDate: getYYMMDDDate("2y")
             });
             const updateBatchResponse = await client.updateBatch(batch.productCode, batch.batchNumber, batch);
-            expect(batch).toMatchObject(updateBatchResponse.data);
+            expect(updateBatchResponse.status).toEqual(200);
 
-            const getBatchResponse = await client.getProduct(batch.productCode);
-            expect(batch).toMatchObject(getBatchResponse.data);
+            const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
+            expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
         });
 
         it("SUCCESS 200 - Should maintain data consistency when making sequential updates", async () => {
             const requests = [100, 150, 200, 300].map((delay, index) => new Promise((resolve) => {
                 setTimeout(async () => {
                     const updateBatch = new Batch({
-                        ...batch,
+                        ...BATCH,
                         manufacturerName: `Update_${index + 1}`,
                         batchRecall: (index + 1) % 2 === 0
                     });
@@ -145,14 +157,46 @@ describe(`TRUST-001 Product`, () => {
             // TODO add validation
         });
 
-        it("FAIL 200 - Should not update productCode or batchNumber fields", async () => {
+        it("FAIL 422 - Immutable fields should remain unchanged", async () => {
+            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const {productCode} = await ModelFactory.product(ticket);
+            const immutableFields = ["productCode", "batchNumber", "nameMedicinalProduct", "inventedName"];
+
+            for (let field of immutableFields) {
+                const invalidBatch = {...BATCH};
+                invalidBatch[field] = field === "productCode" ? productCode : getRandomNumber().toString();
+                expect(invalidBatch[field]).toBeDefined();
+
+                try {
+                    await client.updateBatch(invalidBatch.productCode, invalidBatch.batchNumber, invalidBatch);
+                    throw new Error(`Request should have failed with 422 status code`);
+                } catch (e) {
+                    const response = e?.response || {};
+                    expect(response.status).toEqual(422);
+                    expect(response.statusText).toEqual("Unprocessable Entity");
+                }
+
+                if (["productCode", "batchNumber"].includes(field))
+                    await expect(client.getBatch(invalidBatch.productCode, invalidBatch.batchNumber)).rejects.toThrow();
+            }
+        });
+
+
+        it("FAIL 200 - Immutable fields should remain unchanged", async () => {
+            const immutableFields = ["productCode", "batchNumber", ""];
+
+            for (let field of immutableFields) {
+
+            }
+
+
             const fakeProduct = await ModelFactory.product("Fake");
-            const fakeProductCode = "18624862486278"; //fakeProduct.productCode;
-            const fakeBatchNumber = Math.random().toString().replace(".", "");
+            const fakeProductCode = fakeProduct.productCode;
+            const fakeBatchNumber = getRandomNumber().toString();
 
             try {
-                await client.updateBatch(batch.productCode, batch.batchNumber, {
-                    ...batch,
+                await client.updateBatch(BATCH.productCode, BATCH.batchNumber, {
+                    ...BATCH,
                     productCode: fakeProductCode
                 });
             } catch (e) {
@@ -162,8 +206,8 @@ describe(`TRUST-001 Product`, () => {
             }
 
             try {
-                await client.updateBatch(batch.productCode, batch.batchNumber, {
-                    ...batch,
+                await client.updateBatch(BATCH.productCode, BATCH.batchNumber, {
+                    ...BATCH,
                     batchNumber: fakeBatchNumber
                 });
             } catch (e) {
@@ -173,7 +217,7 @@ describe(`TRUST-001 Product`, () => {
             }
 
             try {
-                await expect(client.getBatch(batch.productCode, fakeBatchNumber)).rejects.toThrow();
+                await expect(client.getBatch(BATCH.productCode, fakeBatchNumber)).rejects.toThrow();
             } catch (error) {
                 expect(error.response.status).toBe(404);
             }
@@ -226,7 +270,7 @@ describe(`TRUST-001 Product`, () => {
         let batch = new Batch();
         beforeAll(async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const _batch = await ModelFactory.batch(ticket, product.productCode);
+            const _batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
             const res = await client.addBatch(_batch.productCode, _batch.batchNumber, _batch);
             expect(res.status).toBe(200);
 

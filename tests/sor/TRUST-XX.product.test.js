@@ -6,21 +6,20 @@ const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const {FixedUrls} = require("../clients/FixedUrls");
+const {getRandomNumber} = require("../utils");
 
 jest.setTimeout(60000);
 
 describe(`TRUST-001 Product`, () => {
-    let client = new IntegrationClient({});
+    // retrieve integration api client
+    const client = new IntegrationClient(config);
+    const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const productUrl = "/product";
     const listProductsUrl = "/listProducts";
 
     beforeAll(async () => {
-        const oauth = new OAuth(config);
-        // log in to SSO
-        const token = await oauth.getAccessToken();
-        // retrieve integration api client
-        client = new IntegrationClient(config);
+        const token = await oauth.getAccessToken(); // log in to SSO
         // store auth SSO token
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
@@ -77,7 +76,7 @@ describe(`TRUST-001 Product`, () => {
 
             for (const field of mandatoryFields) {
                 const invalidProduct = {...product};
-                invalidProduct[field] = undefined;
+                invalidProduct[field] = getRandomNumber().toString();
 
                 try {
                     await client.addProduct(invalidProduct.productCode, invalidProduct);

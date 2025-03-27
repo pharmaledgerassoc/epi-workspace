@@ -50,6 +50,14 @@ class IntegrationClient extends ApiClient {
         return this.send(`${this.getBaseURL()}/listProducts?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
     };
 
+    async listProductLangs(gtin, epiType){
+        return this.send(`${this.getBaseURL()}/listProductLangs/${gtin}/${epiType}`, 'GET');
+    };
+
+    async listProductMarkets(gtin, epiType){
+        return this.send(`${this.getBaseURL()}/listProductMarkets/${gtin}/${epiType}`, 'GET');
+    };
+
     async listBatches(number = 100, sort = "desc"){
         return this.send(`${this.getBaseURL()}/listBatches?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
     };
