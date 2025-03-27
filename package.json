@@ -30,8 +30,11 @@
     "freeze": "node ./node_modules/octopus/scripts/freeze dependencies",
     "tag-freeze": "node ./node_modules/octopus/scripts/tagFreeze dependencies",
     "uml": "cd workdocs/uml && for FILE in ./*.puml; do docker run --rm -v $(pwd):/work -w /work miy4/plantuml -DPLANTUML_LIMIT_SIZE=8192 -tpng $FILE; done",
-    "patch-lwa-xml-parser": "node bin/patch/lwaXmlParser.js"
-  },
+    "patch-lwa-xml-parser": "node bin/patch/lwaXmlParser.js",
+    "test-playwright": "npx playwright test --config=./playwright.config.js",
+    "test-playwright-ui": "npx playwright test --config=./playwright.config.js --ui",
+    "test-playwright-setup": "npx playwright install --with-deps"
+  },  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pharmaledgerassoc/epi-workspace.git"
@@ -46,7 +49,10 @@
     "octopus": "git+http://github.com/opendsu/octopus.git"
   },
   "devDependencies": {
+    "playwright": "^1.51.1",
+    "@playwright/test": "^1.51.1",
     "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.14",
     "add": "^2.0.6",
     "axios": "^1.8.4",
     "browserstack-local": "^1.5.6",

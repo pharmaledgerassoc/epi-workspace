@@ -64,3 +64,9 @@ tests/config/test.config.json
 .browserstack
 browserstack.yml
 .gtin-counter.lock
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
