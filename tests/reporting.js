@@ -13,7 +13,7 @@ const fs = require('fs');
  * @property {string} testCase - @description The name or identifier of the test case.
  * @property {string} _basePath - @description The base path for storing reports.
  */
-export class Reporter {
+class Reporter {
     testCase;
     _basePath;
 
@@ -24,7 +24,7 @@ export class Reporter {
      * @param {string} testCase - The name or identifier of the test case.
      * @param {string} [basePath=process.cwd()] - The base path for storing reports.
      */
-    constructor(testCase, basePath = path.join(process.cwd(), "workdocs", "reports", "evidences")) {
+    constructor(testCase = "tests", basePath = path.join(process.cwd(), "workdocs", "reports", "evidences")) {
         this.testCase = testCase;
         this._basePath = path.join(basePath, testCase);
         if (!fs.existsSync(basePath)) {

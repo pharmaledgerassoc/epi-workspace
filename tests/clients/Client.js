@@ -1,7 +1,7 @@
 const path = require('path');
 
 const axios = require('axios');
-const {Reporter} = require('./reporter');
+const {Reporter} = require('../reporting');
 // const jestOpenAPI = require('jest-openapi').default;
 // jestOpenAPI(path.join(process.cwd(),"gtin-resolver", "ePI-SOR.json"));
 
