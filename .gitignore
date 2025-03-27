@@ -58,6 +58,8 @@ apihub-root/external-volume/metadata/
 workdocs/uml/*.png
 workdocs/coverage/**/*
 workdocs/reports/**/*
+!workdocs/reports/html/.gitkeep
+workdocs/reports/junit/.gitkeep
 tests/config/test.config.json
 .browserstack
 browserstack.yml

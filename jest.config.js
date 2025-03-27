@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   verbose: true,
   // transform: { "^.+\\.[jt]s?$": "ts-jest" },
   // transformIgnorePatterns: [
@@ -36,12 +36,16 @@ export default {
   // },
   coverageReporters: [
     "json-summary",
-    "text-summary",
-    "text",
+    // "text-summary",
+    // "text",
     "html"
   ],
   reporters: [
     "default",
-    ["jest-junit", {outputDirectory: './workdocs/coverage', outputName: "junit-report.xml"}]
-  ]
+    ["jest-junit", {outputDirectory: './workdocs/reports/junit', outputName: "junit-report.xml"}],
+    ["./node_modules/jest-html-reporter", {
+      "pageTitle": "ePI e2e tests",
+      "outputPath": "./workdocs/reports/html/test-results.html"
+    }]
+  ],
 };

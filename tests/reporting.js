@@ -13,7 +13,7 @@ const fs = require('fs');
  * @property {string} testCase - @description The name or identifier of the test case.
  * @property {string} _basePath - @description The base path for storing reports.
  */
-export class Reporter {
+class Reporter {
     testCase;
     _basePath;
 
@@ -24,9 +24,12 @@ export class Reporter {
      * @param {string} testCase - The name or identifier of the test case.
      * @param {string} [basePath=process.cwd()] - The base path for storing reports.
      */
-    constructor(testCase, basePath = process.cwd()) {
+    constructor(testCase = "tests", basePath = path.join(process.cwd(), "workdocs", "reports", "evidences")) {
         this.testCase = testCase;
-        this._basePath = basePath;
+        this._basePath = path.join(basePath, testCase);
+        if (!fs.existsSync(basePath)) {
+            fs.mkdirSync(basePath, {recursive: true});
+        }
     }
 
     /**
@@ -35,7 +38,8 @@ export class Reporter {
      *
      * @param {string} step - The step identifier within the test case.
      * @param {string} reference - The reference name for the file.
-     * @param {Buffer|string} data - The data to be saved.
+     * @param {Buffer|string|Object} data - The data to be saved.
+     * @param {"json" | "image" | "text"} type
      * @throws {Error} If directory creation or file writing fails.
      *
      * @mermaid
@@ -48,20 +52,31 @@ export class Reporter {
      *   end
      *   S->>FS: Write file
      */
-     _save(step, reference, data) {
-        const dir = path.join(this._basePath, 'workdocs', 'reports', this.testCase, step);
-        if(!fs.existsSync(dir)) {
-            try {
-                fs.mkdirSync(dir, {recursive: true})
-            } catch (e){
-                throw new Error(`Could not create Reporting directory: ${dir} - ${e.message}`);
-            }
-        }
+     _save(step, reference, data, type) {
+        const dir = path.join(this._basePath, step);
         try {
-            fs.writeFileSync(path.join(dir, `${reference}`), data, 'utf8');
+            const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : ".json");
+            logger.info(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
+            switch (type) {
+                case "image":
+                    data = Buffer.from(data);
+                    break;
+                case "json":
+                    data = JSON.stringify(data, null, 2);
+                    break;
+                case "text":
+                    break
+                default:
+                    logger.info(`Unsupported type ${type}. assuming text`);
+            }
+            fs.writeFileSync(path.join(dir, `${reference}${extension}`), data, 'utf8');
         } catch (e){
-            throw new Error(`Could store Reporting artifact ${reference} under ${dir} - ${e.message}`);
+            throw new Error(`Could not store Reporting artifact ${reference} under ${dir} - ${e.message}`);
         }
+    }
+
+    async outputPayload(step, reference, data, type = "json"){
+         return this._save(step, reference, data, type);
     }
 
     /**
@@ -80,7 +95,7 @@ export class Reporter {
      *   O->>S: Call _save with JSON string
      */
     outputJSON(step, reference, json){
-        this._save(step, `${reference}.json`, Buffer.from(JSON.stringify(json, null, 2)));
+        this._save(step, reference, json, "json");
     }
 
     /**
@@ -98,6 +113,10 @@ export class Reporter {
      *   O->>S: Call _save with image buffer
      */
     outputImage(step, reference, buffer){
-        this._save(step, `${reference}.png`, buffer);
+        this._save(step, reference, buffer, "image");
     }
 }
+
+module.exports = {
+    Reporter
+};
