@@ -13,7 +13,7 @@ class Leaflet extends Model {
         super();
         Model.fromObject(this, product);
         if (this.otherFilesContent && this.otherFilesContent.length) {
-            this.otherFilesContent = this.otherFilesContent.map(f => new LeafletFile(f));
+            this.otherFilesContent = this.otherFilesContent.map(f => new LeafletFile(f.filename, f.fileContent));
         }
     }
 }
