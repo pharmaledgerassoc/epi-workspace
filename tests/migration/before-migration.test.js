@@ -179,7 +179,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     //TODO: validate audit
   });
 
-  it("SUCCESS 200 - Should create a basic batch properly", async () => {
+  it("SUCCESS 200 - Should create a leaflet batch properly", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
