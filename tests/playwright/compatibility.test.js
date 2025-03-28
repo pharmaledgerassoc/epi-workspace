@@ -1,25 +1,32 @@
 // https://playwright.dev/docs/library
 // https://playwright.dev/docs/best-practices
 import { test, expect, chromium } from '@playwright/test';
+const { getConfig } = require("../conf");
+const { OAuth } = require("../clients/Oauth");
 
 test.use({
     permissions: ['camera']
 });
 
-let browser;
-let context;
-let page;
-let home = "http://localhost:8080/lwa";
+
 
 
 test.describe("LWA compatibility testing", () => {
+
+    let browser;
+    let context;
+    let page;
+    let home;
+    let config = getConfig();
+    const videoDatamatrix = `${process.cwd()}/tests/playwright/gtin_valid.y4m`;
     
     test.beforeAll(async() => {
-        const path = `${process.cwd()}/tests/playwright/gtin_datamatrix.y4m`;
+        home = config['lwa_endpoint'];
         browser = await chromium.launch({
             args: [
+              '--incognito',
               '--use-fake-device-for-media-stream',
-              `--use-file-for-fake-video-capture=/${path}`
+              `--use-file-for-fake-video-capture=/${videoDatamatrix}`
             ]
           });
         context = await browser.newContext({
@@ -27,7 +34,16 @@ test.describe("LWA compatibility testing", () => {
         });
         page = await context.newPage();
         await context.grantPermissions(['camera']);
-     
+
+        // login when running in localhost
+        // if(home.includes("localhost")) {
+        //     const oauth = new OAuth(config);
+        //     const token = await oauth.getAccessToken();
+        //     oauth.setSharedToken(token);
+        //     await page.setExtraHTTPHeaders({
+        //         Authorization: `Bearer ${token}`,
+        //     });
+        // }
     })
     
     test.afterAll(async() => {
@@ -35,6 +51,7 @@ test.describe("LWA compatibility testing", () => {
             await browser.close();
     })
     
+  
     test("Loads first page", async () => {
         await page.goto(home);
         await expect(page).toHaveTitle(/PharmaLedger/i);
@@ -55,7 +72,7 @@ test.describe("LWA compatibility testing", () => {
         
     }) 
 
-    test("Trigger Scanner", async () => {
+    test("Scan Datamatrix", async () => {
         const scanButton = page.locator("#scan-button");
         await expect(scanButton).toBeVisible();
     
@@ -64,11 +81,8 @@ test.describe("LWA compatibility testing", () => {
     
         const scannerPlaceholder = page.locator("#scanner-placeholder");
         await expect(scannerPlaceholder).toBeVisible();
-    
-        // await page.evaluate(() => {});
-    
-        // Aguarda tempo suficiente para execução do intervalo
-        await page.waitForTimeout(500);
+        
+        await page.waitForTimeout(2000);
 
         await expect(page).toHaveURL(/leaflet/i);
 

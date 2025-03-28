@@ -23,24 +23,24 @@ module.exports =  defineConfig({
             },
         },
 
-        // {
-        //     name: 'Mobile Chrome',
-        //     use: {
-        //         ...devices['Pixel 5'],
-        //         launchOptions: {
-        //             args: [],
-        //         }
-        //     },
-        // },
+        {
+            name: 'Mobile Chrome',
+            use: {
+                ...devices['Pixel 5'],
+                launchOptions: {
+                    args: [],
+                }
+            },  
+        },
 
-        // {
-        //     name: 'Mobile Safari',
-        //     use: {
-        //         ...devices['iPhone 13'],
-        //         launchOptions: {
-        //             args: [],
-        //         }
-        //     },
-        // },
+        {
+            name: 'Mobile Safari',
+            use: {
+                ...devices['iPhone 13'],
+                launchOptions: {
+                    args: [],
+                }
+            },
+        },
     ],
 })

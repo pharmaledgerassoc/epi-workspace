@@ -20,7 +20,7 @@ const localValues = {
     issuer: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/oauth2/v2.0/",
     oauth_jwks_endpoint: "https://login.microsoftonline.com/cbfd70ab-7873-4375-bf63-334828046900/discovery/v2.0/keys",
     scope: "api://e65a2002-324f-48f2-b32f-a40b76d5f821/.default",
-    lwa_endpoint: "http://localhost:8080/lwa",
+    lwa_endpoint: "http://localhost:8080/lwa/",
     gtin_persistence: true,
     senderId: "auto-tester@pdmfc.com",
     sor_endpoint: "http://localhost:8080",
