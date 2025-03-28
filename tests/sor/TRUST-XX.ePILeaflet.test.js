@@ -84,6 +84,25 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
+        it("SUCCESS 200 - Should kept existing leaflets when adding a new one", async () => {
+            const res1 = await client.addLeaflet(GTIN, undefined, "mk", API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
+                productCode: GTIN,
+                language: "mk",
+                xmlFileContent: XML_FILE_CONTENT
+            }));
+            expect(res1.status).toBe(200);
+
+            const res2 = await client.addLeaflet(GTIN, undefined, "no", API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
+                productCode: GTIN,
+                language: "no",
+                xmlFileContent: XML_FILE_CONTENT
+            }));
+            expect(res2.status).toBe(200);
+
+            const getResponse = await client.getLeaflet(GTIN, undefined, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
+            expect(getResponse.status).toBe(200);
+        });
+
         it("SUCCESS 200 - Should add a leaflet for a PRODUCT in different markets", async () => {
             const markets = ["DE", "PT"];
             const leaflet = new Leaflet({

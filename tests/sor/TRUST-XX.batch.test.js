@@ -83,7 +83,22 @@ describe(`TRUST-002 Batch`, () => {
                     ...batch,
                     dummyProperty: "No matter value"
                 });
-                throw new Error("Request should have failed with 422 status code");
+                throw new Error("Request should have failed");
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
+            }
+        });
+
+        it("FAIL 422 - Should throw when create a batch for a non existing product", async () => {
+            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const {productCode} = await ModelFactory.product(ticket);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+
+            try {
+                await client.addBatch(productCode, batch.batchNumber, batch);
+                throw new Error(`Request should have failed`);
             } catch (e) {
                 const response = e?.response || {};
                 expect(response.status).toEqual(422);
@@ -112,6 +127,20 @@ describe(`TRUST-002 Batch`, () => {
                     packagingSiteName: "<html>Invalid</html>",
                 }));
                 throw new Error("Request should have failed with 422 status code");
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
+            }
+        });
+
+        it("FAIL 422 - Should throw if batchNumber in parameter and body mismatch on create", async () => {
+            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+
+            try {
+                await client.addBatch(PRODUCT.productCode, getRandomNumber().toString(), batch);
+                throw new Error(`Request should have failed`);
             } catch (e) {
                 const response = e?.response || {};
                 expect(response.status).toEqual(422);
@@ -247,6 +276,20 @@ describe(`TRUST-002 Batch`, () => {
                     expect(response.status).toEqual(422);
                     expect(response.statusText).toEqual("Unprocessable Entity");
                 }
+            }
+        });
+
+        it("FAIL 422 - Should throw if batchNumber in parameter and body mismatch on update", async () => {
+            try {
+                await client.updateBatch(PRODUCT.productCode, BATCH.batchNumber, {
+                    ...BATCH,
+                    batchNumber: getRandomNumber().toString()
+                });
+                throw new Error(`Request should have failed`);
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
             }
         });
     });
