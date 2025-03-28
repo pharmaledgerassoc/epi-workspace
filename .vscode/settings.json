@@ -1,7 +1,15 @@
 {
-    "jest.jestCommandLine": "npm run test --",
-    "jest.runMode": "on-demand",
-    "jest.coverageColors": {"uncovered": "rgba(255,99,71, 0.6)", "partially-covered": "rgba(255,215,0, 0.6)"},
-    "jest.coverageFormatter": "GutterFormatter",
-    "editor.renderWhitespace": "none"
+  "jest.jestCommandLine": "npm run test --",
+  "jest.runMode": "on-demand",
+  "jest.coverageColors": {
+    "uncovered": "rgba(255,99,71, 0.6)",
+    "partially-covered": "rgba(255,215,0, 0.6)"
+  },
+  "jest.coverageFormatter": "GutterFormatter",
+  "editor.renderWhitespace": "none",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
