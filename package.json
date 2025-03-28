@@ -17,6 +17,7 @@
     "server": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd opendsu-sdk && npm run start\"",
     "apihub": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"cd opendsu-sdk && npm run start\"",
     "watch": "node ./bin/watcher/watcher.js",
+    "test": "jest --runInBand --coverage --testPathPattern=\"/tests\" --detectOpenHandles",
     "test-release": "jest --runInBand --coverage --testPathPattern=\"/tests/setup\" --detectOpenHandles",
     "test:all": "jest --runInBand --coverage --testPathPattern=\"/tests\" --detectOpenHandles",
     "test:sor": "jest --runInBand --coverage --testPathPattern=\"/tests/sor\" --detectOpenHandles",
