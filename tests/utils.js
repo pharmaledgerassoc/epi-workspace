@@ -34,4 +34,8 @@ function getYYMMDDDate(period) {
     return year + month + day;
 }
 
-module.exports = {getYYMMDDDate}
+function getRandomNumber() {
+    return parseInt(Math.random().toString().replace(".", ""));
+}
+
+module.exports = {getYYMMDDDate, getRandomNumber}

@@ -17,7 +17,7 @@ const {Model} = require("./Model");
  * @property {string} [manufacturerAddress3] - 3rd manufacturer address line.
  * @property {string} [manufacturerAddress4] - 4th manufacturer address line.
  * @property {string} [manufacturerAddress5] - 5th manufacturer address line.
- * @property {string} [batchRecall] - Indicates if the batch is under recall.
+ * @property {boolean} [batchRecall] - Indicates if the batch is under recall.
  * @property {string} [packagingSiteName] - Name of the packaging site.
  * @property {boolean} [flagEnableEXPVerification=false] - Enables expiration date verification.
  * @property {boolean} [flagEnableExpiredEXPCheck=false] - Enables expired product check.
@@ -38,7 +38,9 @@ class Batch extends Model {
     // epiProtocol = "";
     // lockId = "";
     expiryDate = "";
-    importLicenseNumber = "";
+    // inventedName = "";
+    // nameMedicinalProduct = "";
+    // importLicenseNumber = "";
     dateOfManufacturing = "";
     manufacturerName = "";
     manufacturerAddress1 = "";
@@ -46,19 +48,8 @@ class Batch extends Model {
     manufacturerAddress3 = "";
     manufacturerAddress4 = "";
     manufacturerAddress5 = "";
-    batchRecall = "";
+    batchRecall = false;
     packagingSiteName = "";
-    flagEnableEXPVerification = false;
-    flagEnableExpiredEXPCheck = false;
-    batchMessage = "";
-    flagEnableBatchRecallMessage = false;
-    recallMessage = "";
-    flagEnableACFBatchCheck = false;
-    acfBatchCheckURL = "";
-    flagEnableSNVerification = false;
-    acdcAuthFeatureSSI = "";
-    snValidReset = false;
-    snValid = [];
     // version = 1;
 
     constructor(batch) {

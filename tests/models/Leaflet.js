@@ -4,6 +4,7 @@ const {LeafletFile} = require("./LeafletFile");
 class Leaflet extends Model {
 
     productCode = "";
+    batchNumber = "";
     language = "";
     xmlFileContent = "";
     otherFilesContent = [];
