@@ -25,7 +25,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     const XML_FILE_CONTENT_FR = (fs.readFileSync(path.join(__dirname, "..", "resources", "xml_content_example_fr.txt"), {encoding: 'utf-8'})).trim();
     const XML_FILE_WITH_IMG = (fs.readFileSync(path.join(__dirname, "..", "resources", "xml_content_with_img.txt"), {encoding: 'utf-8'})).trim();
     const IMG_FILE_NAME = "figure_010_1295_1485_3620_1050.png";
-    const IMG_FILE = (fs.readFileSync(path.join(__dirname, "..", "resources", "figure_010_1295_1485_3620_1050.png.txt"), {encoding: 'utf-8'})).trim();
+    const IMG_FILE_CONTENT = (fs.readFileSync(path.join(__dirname, "..", "resources", "figure_010_1295_1485_3620_1050.png.txt"), {encoding: 'utf-8'})).trim();
 
     const ePIBaseURL = "/epi";
 
@@ -73,8 +73,8 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                 language: LANG,
                 xmlFileContent: XML_FILE_WITH_IMG,
                 otherFilesContent: [{
-                    fileName: IMG_FILE_NAME,
-                    fileContent: IMG_FILE,
+                    filename: IMG_FILE_NAME,
+                    fileContent: IMG_FILE_CONTENT
                 }]
             });
 
@@ -105,9 +105,10 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
                 language: LANG,
+                xmlFileContent: XML_FILE_WITH_IMG,
                 otherFilesContent: [{
-                    fileName: IMG_FILE_NAME,
-                    fileContent: IMG_FILE,
+                    filename: IMG_FILE_NAME,
+                    fileContent: IMG_FILE_CONTENT
                 }]
             });
 
@@ -149,7 +150,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("FAIL 400 - Should fail when try to add a leaflet without image", async () => {
+        it("FAIL 422 - Should fail when try to add a leaflet without image", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "it",
@@ -158,15 +159,15 @@ describe(`TRUST-003 ePI Leaflet`, () => {
 
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
-                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, leaflet);
+                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(415);
+                    expect(e.status).toBe(422);
                 }
             }
         });
 
-        it("FAIL 400 - Should fail when try to add a invalid XML content", async () => {
+        it("FAIL 422 - Should fail when try to add a invalid XML content", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "it",
@@ -175,31 +176,31 @@ describe(`TRUST-003 ePI Leaflet`, () => {
 
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
-                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, leaflet);
+                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(415);
+                    expect(e.status).toBe(422);
                 }
             }
         });
 
-        it("FAIL 400 - Should fail when try to add a invalid otherFiles content", async () => {
+        it("FAIL 422 - Should fail when try to add a invalid otherFiles content", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "pl",
                 xmlFileContent: XML_FILE_CONTENT,
                 otherFilesContent: [{
                     fileName: "image.jpg",
-                    fileContent: IMG_FILE + "INVALID"
+                    fileContent: IMG_FILE_CONTENT + "INVALID"
                 }]
             });
 
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
-                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, leaflet);
+                    await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(415);
+                    expect(e.status).toBe(422);
                 }
             }
         });

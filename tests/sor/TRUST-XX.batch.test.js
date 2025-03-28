@@ -178,13 +178,13 @@ describe(`TRUST-002 Batch`, () => {
 
             const getAfterUpdateTrueRes = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getAfterUpdateTrueRes.data.productCode).toEqual(batch.productCode);
-            expect(getAfterUpdateTrueRes.data.productCode).toEqual(batch.batchNumber);
+            expect(getAfterUpdateTrueRes.data.batchNumber).toEqual(batch.batchNumber);
             expect(getAfterUpdateTrueRes.data.batchRecall).toBeTruthy();
 
             await client.updateBatch(batch.productCode, batch.batchNumber, {...batch, batchRecall: false});
             const getAfterUpdateFalseRes = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getAfterUpdateFalseRes.data.productCode).toEqual(batch.productCode);
-            expect(getAfterUpdateFalseRes.data.productCode).toEqual(batch.batchNumber);
+            expect(getAfterUpdateFalseRes.data.batchNumber).toEqual(batch.batchNumber);
             expect(getAfterUpdateFalseRes.data.batchRecall).toBeFalsy();
         });
 

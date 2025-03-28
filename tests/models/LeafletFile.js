@@ -2,12 +2,12 @@ const {Model} = require("./Model");
 
 class LeafletFile extends Model {
 
-    fileName = "";
+    filename = "";
     fileContent = "";
 
-    constructor(fileName, fileContent) {
+    constructor(filename, fileContent) {
         super();
-        Model.fromObject(this, {fileName, fileContent});
+        Model.fromObject(this, {filename, fileContent});
     }
 }
 
