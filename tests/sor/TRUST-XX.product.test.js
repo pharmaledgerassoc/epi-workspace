@@ -25,9 +25,9 @@ describe(`TRUST-001 Product`, () => {
         fixedUrl.setSharedToken(token);
     });
 
-    beforeEach(async () => {
-        await fixedUrl.waitForCompletion();
-    });
+    // beforeEach(async () => {
+    //     await fixedUrl.waitForCompletion();
+    // });
 
     describe(`${productUrl} (POST)`, () => {
 
@@ -76,7 +76,7 @@ describe(`TRUST-001 Product`, () => {
 
             for (const field of mandatoryFields) {
                 const invalidProduct = {...product};
-                invalidProduct[field] = getRandomNumber().toString();
+                invalidProduct[field] = undefined; // getRandomNumber().toString();
 
                 try {
                     await client.addProduct(invalidProduct.productCode, invalidProduct);
