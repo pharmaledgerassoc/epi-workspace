@@ -80,12 +80,13 @@ describe(`TRUST-001 Product`, () => {
 
                 try {
                     await client.addProduct(invalidProduct.productCode, invalidProduct);
-                    throw new Error(`Request should have failed with 422 status code when ${field} is empty`);
                 } catch (e) {
                     const response = e?.response || {};
                     expect(response.status).toEqual(422);
                     expect(response.statusText).toEqual("Unprocessable Entity");
+                    continue;
                 }
+                throw new Error(`Request should have failed with 422 status code when ${field} is empty`);
             }
         });
 
