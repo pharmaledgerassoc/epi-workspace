@@ -45,7 +45,7 @@ describe(`TRUST-002 Batch`, () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const batch = await ModelFactory.batch(ticket, PRODUCT.productCode, {
                 packagingSiteName: ticket,
-                manufacturerAddress1: "1313, Burrito Boulevard, Taco City - Mexico",
+                manufacturerAddress1: "1313, Burrito Boulevard, Tao City - Mexico",
                 manufacturerAddress2: "411, Bakon Street"
             });
             const res = await client.addBatch(batch.productCode, batch.batchNumber, batch);

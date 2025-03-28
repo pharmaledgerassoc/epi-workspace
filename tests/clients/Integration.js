@@ -70,14 +70,16 @@ class IntegrationClient extends ApiClient {
         return this.processAndSend(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
     }
 
-    async addLeaflet(gtin, batchNumber, epiLang, epiType, leafletPayload) {
+    async addLeaflet(gtin, batchNumber, epiLang, epiType, epiMarket, leafletPayload) {
         const epiMessage = this.utils.initMessage(leafletPayload, API_MESSAGE_TYPES.EPI.LEAFLET)
-        const path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`
+        let path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`
+        path = epiMarket ? path + `/${epiMarket}` : path;
         return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'POST', epiMessage);
     }
 
-    async getLeaflet(gtin, batchNumber, epiLang, epiType) {
-        const path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`;
+    async getLeaflet(gtin, batchNumber, epiLang, epiType, epiMarket) {
+        let path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`;
+        path = epiMarket ? path + `/${epiMarket}` : path;
         return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'GET');
     }
 
