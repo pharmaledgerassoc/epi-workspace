@@ -10,5 +10,5 @@
   "domain": "${domain}",
   "subdomain": "${subdomain}",
   "appName": "${app_name}",
-  "gtin_persistence": ${gtin_persistence}
+  "gtin_persistence": "${gtin_persistence}"
 }

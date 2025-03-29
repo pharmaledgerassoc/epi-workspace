@@ -1,5 +1,7 @@
 userName: tiagovenceslau_w5srmK
 accessKey: ${browserstack_token}
+# cameraInjection: true
+# cameraInjectionUrl: media://dc7a3b57602e608c80cda4debae7f6eb29d41151
 platforms:
   - deviceName: iPhone 16 Pro
     osVersion: 18
@@ -13,6 +15,18 @@ platforms:
     osVersion: 16
     browserName: safari
     deviceOrientation: portrait
+  - deviceName: Samsung Galaxy S22 Ultra
+    browserName: chrome
+    browserVersion: latest
+    osVersion: 12.0
+  - deviceName: Samsung Galaxy S22 Ultra
+    browserName: chrome
+    browserVersion: latest-1
+    osVersion: 12.0
+  - deviceName: Samsung Galaxy S22 Ultra
+    browserName: chrome
+    browserVersion: latest-2
+    osVersion: 12.0
 parallelsPerPlatform: 1
 browserstackLocal: true
 buildName: 3.0.0

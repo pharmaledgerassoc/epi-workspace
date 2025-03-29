@@ -1,39 +1,48 @@
 // https://playwright.dev/docs/library
 // https://playwright.dev/docs/best-practices
+// gtin=12458796325688&batch=Batch1&expiry=28%20-%20Mar%20-%202025
 import { test, expect, chromium } from '@playwright/test';
 const { getConfig } = require("../conf");
 const { OAuth } = require("../clients/Oauth");
 
+
 test.use({
-    permissions: ['camera']
+    permissions: ['camera'],
+    launchOptions: {
+        args: [
+            // '--incognito',
+            '--use-fake-device-for-media-stream',
+            `--use-file-for-fake-video-capture=/${process.cwd()}/tests/playwright/gtin_dev.3gp`
+        ]
+    }  
 });
-
-
-
 
 test.describe("LWA compatibility testing", () => {
 
-    let browser;
-    let context;
     let page;
+    let context;
     let home;
     let config = getConfig();
-    const videoDatamatrix = `${process.cwd()}/tests/playwright/gtin_valid.y4m`;
     
-    test.beforeAll(async() => {
-        home = config['lwa_endpoint'];
-        browser = await chromium.launch({
-            args: [
-              '--incognito',
-              '--use-fake-device-for-media-stream',
-              `--use-file-for-fake-video-capture=/${videoDatamatrix}`
-            ]
-          });
+    test.beforeAll(async({browser}) => {
+        home = "https://lwa.dev.pladevs.com/"; //config['lwa_endpoint'];
         context = await browser.newContext({
             permissions: ['camera'] 
         });
         page = await context.newPage();
-        await context.grantPermissions(['camera']);
+
+        // browser = await chromium.launch({
+        //     args: [
+        //       '--incognito',
+        //       '--use-fake-device-for-media-stream',
+        //       `--use-file-for-fake-video-capture=/${videoDatamatrix}`
+        //     ]
+        //   });
+        // context = await browser.newContext({
+        //     permissions: ['camera'] 
+        // });
+        // page = await context.newPage();
+        // await context.grantPermissions(['camera']);
 
         // login when running in localhost
         // if(home.includes("localhost")) {
@@ -46,7 +55,7 @@ test.describe("LWA compatibility testing", () => {
         // }
     })
     
-    test.afterAll(async() => {
+    test.afterAll(async({browser}) => {
         if(browser)
             await browser.close();
     })
@@ -81,10 +90,13 @@ test.describe("LWA compatibility testing", () => {
     
         const scannerPlaceholder = page.locator("#scanner-placeholder");
         await expect(scannerPlaceholder).toBeVisible();
-        
-        await page.waitForTimeout(2000);
-
+    
         await expect(page).toHaveURL(/leaflet/i);
+        console.log(`Test Awaiting for 10 seconds for request response...`);
+        await page.waitForTimeout(10000);
+
+        // if (page.url().includes('error'))
+        //     throw new Error('Error on scan datamatrix');
 
     }) 
 })
