@@ -11,6 +11,9 @@ const {FixedUrls} = require("../clients/FixedUrls");
 
 jest.setTimeout(60000);
 
+const timeoutBetweenTests = 5000;
+
+
 describe(`TRUST-002 Batch`, () => {
     let PRODUCT = new Product();
 
@@ -36,9 +39,12 @@ describe(`TRUST-002 Batch`, () => {
         PRODUCT = data;
     });
 
-    // beforeEach(async () => {
-    //     await fixedUrl.waitForCompletion();
-    // });
+    afterEach((cb) => {
+        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+        setTimeout(() => {
+            cb()
+        }, timeoutBetweenTests)
+    });
 
     describe(`${batchUrl} (POST)`, () => {
         it("SUCCESS 200 - Should create a batch properly", async () => {

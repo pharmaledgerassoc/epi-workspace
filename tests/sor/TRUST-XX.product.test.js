@@ -10,6 +10,8 @@ const {getRandomNumber} = require("../utils");
 
 jest.setTimeout(60000);
 
+const timeoutBetweenTests = 5000;
+
 describe(`TRUST-001 Product`, () => {
     // retrieve integration api client
     const client = new IntegrationClient(config);
@@ -25,9 +27,12 @@ describe(`TRUST-001 Product`, () => {
         fixedUrl.setSharedToken(token);
     });
 
-    // beforeEach(async () => {
-    //     await fixedUrl.waitForCompletion();
-    // });
+    afterEach((cb) => {
+        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+        setTimeout(() => {
+            cb()
+        }, timeoutBetweenTests)
+    });
 
     describe(`${productUrl} (POST)`, () => {
 

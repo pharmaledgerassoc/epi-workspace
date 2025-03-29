@@ -11,6 +11,9 @@ const {FixedUrls} = require("../clients/FixedUrls");
 
 jest.setTimeout(60000);
 
+const timeoutBetweenTests = 10000;
+
+
 describe(`TRUST-003 ePI Leaflet`, () => {
 
     // retrieve integration api client
@@ -66,6 +69,14 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     });
 
     describe(`${ePIBaseURL} (POST)`, () => {
+
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
+        });
+
         const LANG = "de";
         it("SUCCESS 200 - Should add a leaflet for a PRODUCT", async () => {
             const leaflet = new Leaflet({
@@ -227,6 +238,14 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     });
 
     describe(`${ePIBaseURL} (GET)`, () => {
+
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
+        });
+
         const LANG = "fr";
         beforeAll(async () => {
             // add for product
@@ -273,6 +292,14 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     });
 
     describe(`${ePIBaseURL} (PUT)`, () => {
+
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
+        });
+
         const LANG = "ar";
         beforeAll(async () => {
             // add for product
