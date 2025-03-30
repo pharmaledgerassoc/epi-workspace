@@ -1,3 +1,6 @@
+
+local.log
+log/
 .idea
 mobile/scan-app
 ethadapter
@@ -61,7 +64,7 @@ workdocs/reports/**/*
 !workdocs/reports/html/.gitkeep
 workdocs/reports/junit/.gitkeep
 tests/config/test.config.json
-.browserstack
+.browserstack*
 browserstack.yml
 .gtin-counter.lock
 
@@ -70,3 +73,5 @@ browserstack.yml
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+*ob_test_*
+jest_browserstack.config.js
