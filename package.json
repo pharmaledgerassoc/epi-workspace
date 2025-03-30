@@ -1,6 +1,6 @@
 {
   "name": "ePI-workspace",
-  "version": "v4.0.0-rc2",
+  "version": "4.0.0-rc4",
   "description": "",
   "scripts": {
     "init": "git submodule update --init --remote --merge --recursive",
@@ -35,7 +35,7 @@
     "test-playwright": "npx playwright test --config=./playwright.config.js",
     "test-playwright-ui": "npx playwright test --config=./playwright.config.js --ui",
     "test-playwright-setup": "npx playwright install --with-deps"
-  },  
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pharmaledgerassoc/epi-workspace.git"
