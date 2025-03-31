@@ -6,7 +6,7 @@ const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const {FixedUrls} = require("../clients/FixedUrls");
-const {getRandomNumber} = require("../utils");
+const {getRandomNumber,userActionAuditTest} = require("../utils");
 
 jest.setTimeout(60000);
 
@@ -56,6 +56,8 @@ describe(`TRUST-001 Product`, () => {
             const productResponse = await client.getProduct(product.productCode);
             expect(productResponse.data).toEqual(expect.objectContaining(product));
             expect(productResponse.data.version).toEqual(1);
+
+            await userActionAuditTest(client, undefined, product);
         });
 
         it("SUCCESS 200 - Should create a product with no duplicate strengths", async () => {

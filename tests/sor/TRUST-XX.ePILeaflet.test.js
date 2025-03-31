@@ -20,6 +20,9 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     const client = new IntegrationClient(config);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
+    const listProductLangsUrl = "/listProductLangs";
+    const listProductMarketsUrl = "/listProductMarkets";
+    const listBatchLangsUrl = "/listBatchLangs";
 
     let GTIN = "";
     let BATCH_NUMBER = "";
@@ -71,7 +74,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     describe(`${ePIBaseURL} (POST)`, () => {
 
         afterEach((cb) => {
-            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
             setTimeout(() => {
                 cb()
             }, timeoutBetweenTests)
@@ -240,7 +243,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     describe(`${ePIBaseURL} (GET)`, () => {
 
         afterEach((cb) => {
-            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
             setTimeout(() => {
                 cb()
             }, timeoutBetweenTests)
@@ -294,7 +297,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
     describe(`${ePIBaseURL} (PUT)`, () => {
 
         afterEach((cb) => {
-            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
             setTimeout(() => {
                 cb()
             }, timeoutBetweenTests)
@@ -395,25 +398,134 @@ describe(`TRUST-003 ePI Leaflet`, () => {
         });
     });
 
-    // describe(`${listBatchLangsUrl} (GET)`, () => {
-    //     let batch = new Batch();
-    //     beforeAll(async () => {
-    //         const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-    //         const _batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
-    //         const res = await client.addBatch(_batch.productCode, _batch.batchNumber, _batch);
-    //         expect(res.status).toBe(200);
-    //
-    //         const batchResponse = await client.getBatch(_batch.productCode, _batch.batchNumber);
-    //         expect(batchResponse.data).toEqual(expect.objectContaining(_batch));
-    //         batch = batchResponse.data;
-    //     });
-    //
-    //     it("SUCCESS 200 - Should list batches langs", async () => {
-    //         const response = await client.listBatchesLang(batch.productCode, batch.batchNumber, "leaflet");
-    //         expect(response.status).toEqual(200);
-    //         expect(Array.isArray(response.data)).toBeTruthy();
-    //         expect(response.data.length).toBeGreaterThan(0);
-    //     });
-    // });
+    describe(`${listProductLangsUrl} (GET)`, () => {
+        let GTIN = "";
+
+        beforeAll(async () => {
+            const ticket = "TRUST-XX ePI";
+            const product = await ModelFactory.product(ticket);
+            const addProductRes = await client.addProduct(product.productCode, product);
+            expect(addProductRes.status).toBe(200);
+            GTIN = product.productCode;
+
+            for (let leafletType of EPI_TYPES) {
+                const leaflet = new Leaflet({
+                    productCode: GTIN,
+                    language: "sk",
+                    xmlFileContent: XML_FILE_CONTENT
+                });
+
+                const res1 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
+                expect(res1.status).toBe(200);
+
+                leaflet.language = "pl";
+                const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
+                expect(res2.status).toBe(200);
+            }
+        });
+
+        it("SUCCESS 200 - Should list product langs", async () => {
+            for (let leafletType of EPI_TYPES) {
+                const response = await client.listProductLangs(GTIN, leafletType);
+                expect(response.status).toEqual(200);
+                expect(Array.isArray(response.data)).toBeTruthy();
+                expect(response.data.length).toBeGreaterThan(1);
+                expect(response.data).toMatchObject(["sk", "pl"]);
+            }
+        });
+    });
+
+    describe(`${listProductMarketsUrl} (GET)`, () => {
+        let GTIN = "";
+        const MARKETS = ["AF", "AL"];
+
+        beforeAll(async () => {
+            const ticket = "TRUST-XX ePI Market";
+            const product = await ModelFactory.product(ticket);
+            const addProductRes = await client.addProduct(product.productCode, product);
+            expect(addProductRes.status).toBe(200);
+            GTIN = product.productCode;
+
+            for (let leafletType of EPI_TYPES) {
+                for (let epiMarket of MARKETS) {
+                    const leaflet = new Leaflet({
+                        productCode: GTIN,
+                        language: "el",
+                        xmlFileContent: XML_FILE_CONTENT
+                    });
+
+                    const res1 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, epiMarket, leaflet);
+                    expect(res1.status).toBe(200);
+
+
+                    leaflet.language = "pl";
+                    const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, epiMarket, leaflet);
+                    expect(res2.status).toBe(200);
+                }
+            }
+        });
+
+        beforeEach(async () => {
+            await fixedUrl.waitForCompletion();
+        });
+
+        it("SUCCESS 200 - Should list product markets", async () => {
+            for (let leafletType of EPI_TYPES) {
+                for (const epiMarket of MARKETS) {
+                    const response = await client.listProductMarkets(GTIN, leafletType);
+                    expect(response.status).toEqual(200);
+                    expect(Object.keys(response.data)).toMatchObject(["el", "pl"]);
+                    expect(response.data["el"]).toMatchObject(["AF", "AL"]);
+                    expect(response.data["pl"]).toMatchObject(["AF", "AL"]);
+                }
+            }
+        });
+    });
+
+    describe(`${listBatchLangsUrl} (GET)`, () => {
+        let GTIN = "";
+        let BATCH_NUMBER = "";
+        beforeAll(async () => {
+            const ticket = "TRUST-XX ePI";
+            const product = await ModelFactory.product(ticket);
+            const addProductRes = await client.addProduct(product.productCode, product);
+            expect(addProductRes.status).toBe(200);
+
+            const productResponse = await client.getProduct(product.productCode);
+            expect(productResponse.status).toBe(200);
+            GTIN = productResponse.data.productCode;
+
+
+            const batch = await ModelFactory.batch(ticket, GTIN);
+            const addBatchRes = await client.addBatch(batch.productCode, batch.batchNumber, batch);
+            expect(addBatchRes.status).toBe(200);
+
+            const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
+            expect(batchResponse.status).toBe(200);
+            BATCH_NUMBER = batchResponse.data.batchNumber;
+
+            const leaflet = new Leaflet({
+                productCode: GTIN,
+                language: "tr",
+                batchNumber: BATCH_NUMBER,
+                xmlFileContent: XML_FILE_CONTENT
+            });
+
+            const res1 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
+            expect(res1.status).toBe(200);
+
+            leaflet.language = "ja";
+            const res2 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
+            expect(res2.status).toBe(200);
+        });
+
+        it("SUCCESS 200 - Should list batches langs", async () => {
+            const response = await client.listBatchesLang(GTIN, BATCH_NUMBER, API_MESSAGE_TYPES.EPI.LEAFLET);
+            expect(response.status).toEqual(200);
+            expect(Array.isArray(response.data)).toBeTruthy();
+            expect(response.data.length).toBeGreaterThan(1);
+            expect(response.data).toEqual(["tr", "ja"]);
+        });
+    });
 
 });
