@@ -191,6 +191,7 @@ describe(`TRUST-002 Batch`, () => {
             const batch = new Batch({
                 ...BATCH,
                 batchRecall: false,
+                packagingSiteName: "www.product.com",
                 expiryDate: getYYMMDDDate("2y")
             });
             const updateBatchResponse = await client.updateBatch(batch.productCode, batch.batchNumber, batch);
