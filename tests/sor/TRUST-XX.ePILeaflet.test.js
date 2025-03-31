@@ -54,21 +54,21 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                 substance: "Debugium", strength: "1500mg"
             }]
         });
-        // const addProductRes = await client.addProduct(product.productCode, product);
-        // expect(addProductRes.status).toBe(200);
-        //
-        // const productResponse = await client.getProduct(product.productCode);
-        // expect(productResponse.status).toBe(200);
-        // GTIN = productResponse.data.productCode;
-        //
-        //
-        // const batch = await ModelFactory.batch(ticket, GTIN);
-        // const addBatchRes = await client.addBatch(batch.productCode, batch.batchNumber, batch);
-        // expect(addBatchRes.status).toBe(200);
-        //
-        // const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
-        // expect(batchResponse.status).toBe(200);
-        // BATCH_NUMBER = batchResponse.data.batchNumber;
+        const addProductRes = await client.addProduct(product.productCode, product);
+        expect(addProductRes.status).toBe(200);
+
+        const productResponse = await client.getProduct(product.productCode);
+        expect(productResponse.status).toBe(200);
+        GTIN = productResponse.data.productCode;
+
+
+        const batch = await ModelFactory.batch(ticket, GTIN);
+        const addBatchRes = await client.addBatch(batch.productCode, batch.batchNumber, batch);
+        expect(addBatchRes.status).toBe(200);
+
+        const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
+        expect(batchResponse.status).toBe(200);
+        BATCH_NUMBER = batchResponse.data.batchNumber;
     });
 
     describe(`${ePIBaseURL} (POST)`, () => {
