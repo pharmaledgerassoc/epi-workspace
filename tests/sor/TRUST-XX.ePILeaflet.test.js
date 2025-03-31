@@ -398,6 +398,90 @@ describe(`TRUST-003 ePI Leaflet`, () => {
         });
     });
 
+    describe(`${ePIBaseURL} (DELETE)`, () => {
+
+        const LANG = "hi";
+        const MARKET = "BR";
+        beforeAll(async () => {
+            // add for product
+            for (let leafletType of EPI_TYPES) {
+                const leafetProductResponse = await client.addLeaflet(GTIN, undefined, LANG, leafletType, undefined, new Leaflet({
+                    productCode: GTIN,
+                    language: LANG,
+                    xmlFileContent: XML_FILE_CONTENT
+                }));
+                expect(leafetProductResponse.status).toBe(200);
+
+                const leafetMarketResponse = await client.addLeaflet(GTIN, undefined, LANG, leafletType, MARKET, new Leaflet({
+                    productCode: GTIN,
+                    language: LANG,
+                    xmlFileContent: XML_FILE_CONTENT
+                }));
+                expect(leafetMarketResponse.status).toBe(200);
+
+                // add for batch
+                const leafletBatchResponse = await client.addLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
+                    productCode: GTIN,
+                    batchNumber: BATCH_NUMBER,
+                    language: LANG,
+                    xmlFileContent: XML_FILE_CONTENT
+                }));
+                expect(leafletBatchResponse.status).toBe(200);
+            }
+        });
+
+        // beforeEach(async () => {
+        //     await fixedUrl.waitForCompletion();
+        // });
+
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
+        });
+
+        it("SUCCESS 200 - Should delete a leaflet from a PRODUCT properly", async () => {
+            for (let leafletType of EPI_TYPES) {
+                const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType);
+                expect(res.status).toBe(200);
+
+                try {
+                    await client.getLeaflet(GTIN, undefined, LANG, leafletType);
+                    throw new Error(`Should throw for /${GTIN}/${LANG}/${leafletType}`)
+                } catch (e) {
+                    expect(e.status).toEqual(404);
+                }
+            }
+        });
+
+        it("SUCCESS 200 - Should delete a leaflet market from a PRODUCT properly", async () => {
+            for (let leafletType of EPI_TYPES) {
+                const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType, MARKET);
+                expect(res.status).toBe(200);
+
+                try {
+                    await client.getLeaflet(GTIN, undefined, LANG, leafletType);
+                    throw new Error(`Should throw for /${GTIN}/${LANG}/${leafletType}/${MARKET}`)
+                } catch (e) {
+                    expect(e.status).toEqual(404);
+                }
+            }
+        });
+
+        it("SUCCESS 200 - Should delete a leaflet from a BATCH properly", async () => {
+            const res = await client.deleteLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
+            expect(res.status).toBe(200);
+
+            try {
+                await client.getLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
+                throw new Error(`Should throw for /${GTIN}/${BATCH_NUMBER}/${LANG}/${API_MESSAGE_TYPES.EPI.LEAFLET}`)
+            } catch (e) {
+                expect(e.status).toEqual(404);
+            }
+        });
+    });
+
     describe(`${listProductLangsUrl} (GET)`, () => {
         let GTIN = "";
 
