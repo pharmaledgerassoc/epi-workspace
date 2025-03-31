@@ -38,4 +38,39 @@ function getRandomNumber() {
     return parseInt(Math.random().toString().replace(".", ""));
 }
 
-module.exports = {getYYMMDDDate, getRandomNumber}
+const convertLeafletFolderToObject = (folderPath) => {
+    const leafletObject = {
+        "messageTypeVersion": 1,
+        "senderId": "devuser",
+        "receiverId": "",
+        "messageId": "6628938783353",
+        "messageDateTime": "2022-06-29T09:40:15.583Z",
+        "messageType": "leaflet",
+        "payload": {
+            // "status": "new",
+            "language": "en",
+            "xmlFileContent": "",
+            "otherFilesContent": []
+        }
+    }
+
+    const fs = require('fs');
+    const path = require('path');
+    const files = fs.readdirSync(folderPath);
+    for (const file of files) {
+        const filePath = path.join(folderPath, file);
+        const fileData = fs.readFileSync(filePath);
+        // if file is xml update xmlFileContent else add to otherFileContent
+        if (file.endsWith('.xml')) {
+            leafletObject.payload.xmlFileContent = fileData.toString('base64');
+        } else {
+            leafletObject.payload.otherFilesContent.push({
+                "filename": file,
+                "fileContent": fileData.toString('base64')
+            });
+        }
+    }
+    return leafletObject;
+}
+
+module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject}
