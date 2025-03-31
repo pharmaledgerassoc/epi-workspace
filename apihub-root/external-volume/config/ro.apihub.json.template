@@ -1,0 +1,54 @@
+{
+   "storage": "../apihub-root",
+   "port": 8080,
+   "preventRateLimit": true,
+   "activeComponents": [
+      "bdns",
+      "bricking",
+      "anchoring",
+      "leaflet-web-api",
+      "metadata",
+      "get-gtin-owner",
+      "debugLogger",
+      "staticServer"
+   ],
+   "componentsConfig": {
+      "leaflet-web-api": {
+         "module": "./../../gtin-resolver",
+         "function": "getWebLeaflet"
+      },
+      "get-gtin-owner": {
+         "module": "./../../gtin-resolver",
+         "function": "getGTINOwner"
+      },
+      "metadata": {
+         "module": "./../../gtin-resolver",
+         "function": "getMetadata"
+      },
+      "staticServer": {
+         "excludedFiles": [
+            ".*.secret"
+         ]
+      },
+      "bricking": {
+
+      },
+      "anchoring": {
+
+      }
+   },
+   "responseHeaders": {
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-XSS-Protection": "1; mode=block"
+   },
+   "enableRequestLogger": true,
+   "enableJWTAuthorisation": false,
+   "enableOAuth": false,
+   "enableLocalhostAuthorization": false,
+   "db": {
+      "uri": "${db_uri}",
+      "user": "reader",
+      "secret": "${db_secret}",
+      "debug": ${db_debug}
+   }
+}

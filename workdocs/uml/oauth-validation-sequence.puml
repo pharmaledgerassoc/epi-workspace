@@ -1,0 +1,47 @@
+@startuml
+hide footbox
+autonumber
+hide unlinked
+
+box  #E6F3FF
+participant Input as i #FFD1DC
+
+participant System as s #A7C7E7
+
+participant "SSO Provider" as p
+
+title "Sequence diagram for opendsu-sdk/modules/apihub/middlewares/oauth/lib/util.js#validateAccessToken"
+
+activate i #FFD1DC
+i -> s: (jwksEndpoint, token)
+deactivate i
+
+activate s #A7C7E7
+
+s -> s: verify token against (cached) public key
+activate s #A7C7E7
+deactivate s
+alt verifies
+s -> i: return true
+else fails verification
+    s -> p: GET (jwksEndpoint)
+    deactivate s
+
+    activate p
+    return publicKey
+    deactivate p
+
+    activate s #A7C7E7
+    s -> s: verify token against public key
+    activate s #A7C7E7
+    deactivate s
+    s -> i: return result
+    deactivate s
+
+    activate i #FFD1DC
+end
+
+
+end box
+
+@enduml

@@ -2,22 +2,6 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "opendsu-sdk",
-            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false,
-                    "commit": "240f52715b1e758480b6b03bfc9b2c3ea7b187c7"
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
-                }
-            ]
-        },
-        {
             "name": "apihub-root/lwa",
             "src": "https://github.com/${GITHUB_ORGANIZATION}/LWA.git",
             "actions": [
@@ -112,15 +96,6 @@
                 "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
               }
             ]
-        },
-        {
-            "name": "Patch OpenDsu",
-            "actions":[
-                {
-                    "type": "execute",
-                    "cmd": "node ./bin/patch/replaceFunctions.js"
-                }
-            ]
         }
     ],
     "patch": [
@@ -168,6 +143,31 @@
                 {
                     "type": "execute",
                     "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js buildApps\""
+                }
+            ]
+        },
+        {
+            "name": "configure-testing",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./tests/config/browserstack.template.yml",
+                    "target": "./browserstack.yml",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./tests/config/test.config.template.json",
+                    "target": "./tests/config/test.config.json",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "execute",
+                    "cmd": "if [ -f .ssotoken ]; then node ./bin/patchTestConfigs.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
                 }
             ]
         }

@@ -2,22 +2,6 @@
     "workDir": ".",
     "dependencies": [
         {
-            "name": "opendsu-sdk",
-            "src": "http://github.com/pdmfcsa/opendsu-sdk.git",
-            "actions": [
-                {
-                    "type": "smartClone",
-                    "target": ".",
-                    "collectLog": false,
-                    "commit": "240f52715b1e758480b6b03bfc9b2c3ea7b187c7"
-                },
-                {
-                    "type": "execute",
-                    "cmd": "cd opendsu-sdk && npm run pre-freeze-install"
-                }
-            ]
-        },
-        {
             "name": "apihub-root/lwa",
             "src": "https://github.com/${GITHUB_ORGANIZATION}/LWA.git",
             "actions": [
@@ -25,7 +9,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "5062e42efa3a89743d69e861dcd8d01f2a0b193b"
+                    "commit": "e5b4fc355f06294cd5bb30474cb731e6bde965d5"
                 },
                 {
                     "type": "execute",
@@ -41,7 +25,7 @@
                     "type": "smartClone",
                     "target": ".",
                     "collectLog": false,
-                    "commit": "108c7fd84e8ed4a5dd0e937cda4f1faeb4ecdb4c"
+                    "commit": "1d88253fad412937ae3c88017bfc74bcc54582d0"
                 },
                 {
                     "type": "execute",
@@ -85,7 +69,7 @@
                     "type": "smartClone",
                     "target": "./apihub-root/dsu-fabric",
                     "collectLog": false,
-                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
+                    "commit": "deb7ec3baaf578d65a34ff0f41cc20bcde69de0a"
                 }
             ]
         },
@@ -97,7 +81,7 @@
                     "type": "smartClone",
                     "target": "./apihub-root/demiurge",
                     "collectLog": false,
-                    "commit": "575551a1b7f808f2697ff317c8ddbe56e9ac0847"
+                    "commit": "deb7ec3baaf578d65a34ff0f41cc20bcde69de0a"
                 }
             ]
         },
@@ -115,15 +99,6 @@
                 {
                     "type": "execute",
                     "cmd": "if [ -f .ssotoken ]; then node ./bin/configureApihubJson.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
-                }
-            ]
-        },
-        {
-            "name": "Patch OpenDsu",
-            "actions": [
-                {
-                    "type": "execute",
-                    "cmd": "node ./bin/patch/replaceFunctions.js"
                 }
             ]
         }
@@ -175,6 +150,31 @@
                     "cmd": "node ./node_modules/octopus/scripts/setEnv --file=../../../env.json \"node ./bin/octopusRun.js buildApps\""
                 }
             ]
+        },
+        {
+            "name": "configure-testing",
+            "actions": [
+                {
+                    "type": "copy",
+                    "src": "./tests/config/browserstack.template.yml",
+                    "target": "./browserstack.yml",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "copy",
+                    "src": "./tests/config/test.config.template.json",
+                    "target": "./tests/config/test.config.json",
+                    "options": {
+                        "overwrite": true
+                    }
+                },
+                {
+                    "type": "execute",
+                    "cmd": "if [ -f .ssotoken ]; then node ./bin/patchTestConfigs.js || echo \"Error: Script execution failed.\"; else echo \"Token not found: .ssotoken file is missing.\"; fi"
+                }
+            ]
         }
     ],
     "buildApps": [
@@ -222,8 +222,6 @@
         }
     ]
 }
-
-
 
 
 

@@ -7,6 +7,43 @@
     margin: 0;
 }
 
+#leaflet-content .table-container {
+    display: block;
+    overflow-x: auto !important;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+}
+
+#leaflet-content .table-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+#leaflet-content table {
+    display: table;  
+    width: 100%;
+}
+
+@media(max-width: 768px) {
+    #leaflet-content table {
+        min-width: 768px !important;
+    } 
+}
+
+#leaflet-content figure {
+    display: block;
+    margin: 0 auto;
+}
+
+video {
+    display: block;
+    margin: 0 auto;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
 /*.product-description {
     font-size: var(--font-size--L);
 }*/
@@ -54,10 +91,12 @@
 }
 
 #leaflet-content img {
+    width: 100%;
+    height: auto !important;
     min-width: 100%;
-    min-width: -moz-available; /* WebKit-based browsers will ignore this. */
-    min-width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    min-width: fill-available;
+    min-width: -webkit-fill-available; /* For WebKit-based browsers (Chrome, Safari) */
+    min-width: -moz-available; /* For Mozilla-based browsers (Firefox) */
+    min-width: fill-available; /* For compatibility */
 }
 
 .leaflet-link {
@@ -108,6 +147,14 @@
     margin-block-end: 0;
     margin-block-start: 0;
 }
+
+.leaflet-accordion-item-content {
+    display: none;
+    margin-right: 5px;
+    height: fit-content;
+    scrollbar-width: thin !important;
+}
+
 
 .leaflet-accordion-item.active:before {
     background-image: url("./assets/images/accordion-close.svg");
@@ -303,4 +350,8 @@ preview-epi-modal {
 
 .leaflet-accordion-item:before {
     margin-top: 1.2em;
+}
+video {
+    display: block;
+    margin: 0 auto;
 }

@@ -28,7 +28,7 @@ export class ActionLogs {
 
             });
         };
-        this.loadLogs(["__timestamp > 0"]);
+        this.loadLogs(["timestamp > 0"]);
     }
 
     beforeRender() {
@@ -79,7 +79,7 @@ export class ActionLogs {
             this.inputValue = formData.data.productCode;
             this.setPaginationDefaultValues();
             this.focusInput = "true";
-            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, this.logsNumber, ["__timestamp > 0", `itemCode == ${this.inputValue}`], "desc");
+            let logs = await $$.promisify(webSkel.client.filterAuditLogs)(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, this.logsNumber, ["timestamp > 0", `itemCode == ${this.inputValue}`], "desc");
             if (logs && logs.length > 0) {
                 this.logs = logs;
                 this.gtinFilter = `itemCode == ${this.inputValue}`;
@@ -105,7 +105,7 @@ export class ActionLogs {
         this.inputValue = "";
         this.focusInput = "";
         delete this.gtinFilter;
-        this.loadLogs(["__timestamp > 0"]);
+        this.loadLogs(["timestamp > 0"]);
     }
 
     async openAuditEntryModal(_target, pk) {
@@ -128,7 +128,7 @@ export class ActionLogs {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp <= ${this.firstElementTimestamp}`];
+            let query = [`timestamp <= ${this.firstElementTimestamp}`];
             if (this.gtinFilter) {
                 query.push(this.gtinFilter);
             }
@@ -141,7 +141,7 @@ export class ActionLogs {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            let query = [`__timestamp < ${this.firstElementTimestamp}`];
+            let query = [`timestamp < ${this.firstElementTimestamp}`];
             if (this.gtinFilter) {
                 query.push(this.gtinFilter);
             }

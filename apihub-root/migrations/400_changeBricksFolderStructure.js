@@ -12,7 +12,12 @@ async function moveBricksForDomain(domain) {
     const BRICK_STORAGE_PATH = getBricksStoragePathForDomain(domain);
     console.log("Starting to move bricks from", BRICK_STORAGE_PATH, "for domain", domain)
     try {
-        const subfolders = await fs.readdir(BRICK_STORAGE_PATH);
+        let subfolders;
+        try {
+            subfolders = await fs.readdir(BRICK_STORAGE_PATH);
+        } catch (e){
+            return console.log(`Brick storage folder not found for domain ${domain}: no need to perform migration`);
+        }
 
         for (const subfolder of subfolders) {
             if(subfolder.length > 2) {

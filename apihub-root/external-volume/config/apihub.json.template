@@ -6,7 +6,6 @@
     "bdns",
     "bricking",
     "anchoring",
-    "get-fixed-url",
     "epi-mapping-engine",
     "epi-mapping-engine-results",
     "get-gtin-owner",
@@ -40,10 +39,6 @@
     "get-gtin-owner": {
       "module": "./../../gtin-resolver",
       "function": "getGTINOwner"
-    },
-    "get-fixed-url": {
-      "module": "./../../gtin-resolver",
-      "function": "getFixedUrl"
     },
     "integration-api": {
       "module": "./../../gtin-resolver",
@@ -85,7 +80,8 @@
     "/bundles",
     "/gtinOwner/",
     "/leaflets/",
-    "/metadata/"
+    "/metadata/",
+    "/lwa/"
   ],
   "oauthConfig": {
     "whitelist": ["${whitelist}"],
@@ -105,7 +101,13 @@
     },
     "sessionTimeout": 1800000,
     "keyTTL": 3600000,
-    "debugLogEnabled": false
+    "debugLogEnabled": ${oauth_logging}
   },
-  "serverAuthentication": ${server_authentication}
+  "serverAuthentication": ${server_authentication},
+  "db": {
+    "uri": "${db_uri}",
+    "user": "admin",
+    "secret": "${db_secret}",
+    "debug": ${db_debug}
+  }
 }

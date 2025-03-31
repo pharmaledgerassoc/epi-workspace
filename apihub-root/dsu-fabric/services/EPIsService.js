@@ -71,7 +71,7 @@ export class EPIsService {
     }
 
     async validateEPIFilesContent(epiFiles) {
-        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp","video/mp4"];
         let returnMsg = "";
         let toastMessage = "Uploaded XML file contains unknown image reference";
         try {
@@ -99,13 +99,13 @@ export class EPIsService {
                 return {isValid: false, message: returnMsg};
             }
 
-            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img");
+            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img, source");
             let uploadedImageNames = Object.keys(epiImages);
             let differentCaseImgFiles = [];
             let missingImgFiles = [];
             let htmlImageNames = Array.from(leafletHtmlImages).map(img => img.getAttribute("src"));
 
-            let dataUrlRegex = new RegExp(/^\s*data:([a-z]+\/[a-z]+(;[a-z-]+=[a-z-]+)?)?(;base64)?,[a-z0-9!$&',()*+;=\-._~:@/?%\s]*\s*$/i);
+            let dataUrlRegex = gtinResolver.mediaUrlRegex;
             let hasUnsupportedEmbeddedImage = false;
 
             htmlImageNames.forEach(imgName => {
