@@ -80,9 +80,11 @@ const convertLeafletFolderToObject = (folderPath) => {
  * @param {Object} oldObject  - original object to compare (if undefined it means it is a creation)
  * @param {Object} newObject  - new object to compare after the action
  */
-async function userActionAuditTest(client, oldObject, newObject) {
+async function userActionAuditTest(client, reason, oldObject, newObject) {
     const auditResponse = await client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
     const audit = auditResponse.data[0];
+    expect(audit.reason).toEqual(reason);
+    
     const {diffs} = audit.details[0]
     
     Object.entries(diffs).forEach(([key, value]) => {
