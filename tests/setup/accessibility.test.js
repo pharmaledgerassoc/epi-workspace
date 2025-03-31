@@ -1,7 +1,6 @@
 const {IntegrationClient} = require("../clients/Integration");
 const {OAuth} = require("../clients/Oauth");
 const {FixedUrls} = require("../clients/FixedUrls");
-const data = require("./accessibility-data.json");
 const {ModelFactory} = require("../models/factory");
 const {convertLeafletFolderToObject, getYYMMDDDate} = require("../utils");
 const path = require("path")
@@ -9,6 +8,9 @@ const {Leaflet} = require("../models/Leaflet");
 const {API_MESSAGE_TYPES} = require("../constants");
 const {Product} = require("../models/Product");
 const {Batch} = require("../models/Batch");
+const {getConfig} = require("../conf");
+const config = getConfig();
+const data = require("./accessibility-data.json");
 
 jest.setTimeout(60000);
 
@@ -28,9 +30,11 @@ describe(`Accessibility`, () => {
         fixedUrl.setSharedToken(token);
     });
 
-    data.forEach(((item, i) => {
-        const {code, batch, expiry} = item;
+    data.forEach(async (item, i) => {
+
         it(`should create a product ${item.code}`, async () => {
+            let {code} = item;
+
             const product = await ModelFactory.product(code, {
                 inventedName: `Accessibility Test Product ${i}`,
                 nameMedicinalProduct: `Accessibility Test Product ${i} - extra info`,
@@ -54,7 +58,10 @@ describe(`Accessibility`, () => {
             products.push(productResponse.data);
         });
 
-        it(`should create batch ${batch} for product ${item.code}`, async () => {
+        it(`should create batch ${item.batch} for product ${item.code}`, async () => {
+            let {code, batch, expiry} = item;
+
+            code = products[i].productCode
             const createdBatch = await ModelFactory.batch(batch, code, {
                 batchNumber: batch,
                 expiryDate: expiry,
@@ -70,12 +77,12 @@ describe(`Accessibility`, () => {
             batches[code] = batchResponse.data;
         });
 
-    }));
+    });
 
     describe("screen 1 - creates leaflet and HCP for india screen popup", () => {
-        const {code} = data[0]
 
-        it(`should add a default leaflet for product ${code}`, async () => {
+        it(`should add a default leaflet for product ${data[0].code}`, async () => {
+            const code = products[0].productCode;
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -88,7 +95,8 @@ describe(`Accessibility`, () => {
             expect(res.status).toBe(200);
         })
 
-        it(`should add a default HCP for product ${code}`, async () => {
+        it(`should add a default HCP for product ${data[0].code}`, async () => {
+            const code = products[0].productCode;
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/hcp"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -107,9 +115,9 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 3 - adds 3 leaflets. no country, Brazil and France", () => {
-        const {code} = data[2]
 
-        it(`should add a default leaflet for product ${code} - no market`, async () => {
+        it(`should add a default leaflet for product ${data[2].code} - no market`, async () => {
+            const {code} = data[2]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -122,7 +130,8 @@ describe(`Accessibility`, () => {
             expect(res.status).toBe(200);
         })
 
-        it(`should add a default leaflet for product ${code} - brazil market`, async () => {
+        it(`should add a default leaflet for product ${data[2].code} - brazil market`, async () => {
+            const {code} = data[2]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -135,7 +144,8 @@ describe(`Accessibility`, () => {
             expect(res.status).toBe(200);
         })
 
-        it(`should add a default leaflet for product ${code} - france market`, async () => {
+        it(`should add a default leaflet for product ${data[2].code} - france market`, async () => {
+            const {code} = data[2]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -150,9 +160,9 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 4 - adds leaflet. marks product as recalled", () => {
-        const {code} = data[3]
 
-        it(`should add a default leaflet for product ${code}`, async () => {
+        it(`should add a default leaflet for product ${data[3].code}`, async () => {
+            const {code} = data[3]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -177,10 +187,10 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 5 - adds leaflet. marks batch as recalled", () => {
-        const {code} = data[4]
-        let batch = batches[code];
 
-        it(`should add a default leaflet for product ${code}`, async () => {
+
+        it(`should add a default leaflet for product ${data[4].code}`, async () => {
+            const {code} = data[4]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -194,6 +204,8 @@ describe(`Accessibility`, () => {
         })
 
         it("should recall the batch", async () => {
+            const {code} = data[4]
+            let batch = batches[code];
             batch = new Batch({
                 ...batch,
                 batchRecall: true
@@ -208,10 +220,9 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 7 - adds 3 leaflets. spanish, korean, portuguese", () => {
-        const {code} = data[6]
-
         ["es", "pt", "ko"].forEach((language) => {
-            it(`should add a default leaflet for product ${code} - spanish`, async () => {
+            it(`should add a default leaflet for product ${data[6].code} - spanish`, async () => {
+                const {code} = data[6];
                 const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
                 const leaflet = new Leaflet({
                     productCode: code,
@@ -227,10 +238,9 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 8 - creates leaflet and marks batch expiry to yesterday", () => {
-        const {code} = data[7]
-        let batch = batches[code];
 
-        it(`should add a default leaflet for product ${code}`, async () => {
+        it(`should add a default leaflet for product ${data[7].code}`, async () => {
+            const {code} = data[7]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
             const leaflet = new Leaflet({
                 productCode: code,
@@ -244,6 +254,8 @@ describe(`Accessibility`, () => {
         })
 
         it("should mark the batch as expired", async () => {
+            const {code} = data[7]
+            let batch = batches[code];
             batch = new Batch({
                 ...batch,
                 expiryDate: "250329"

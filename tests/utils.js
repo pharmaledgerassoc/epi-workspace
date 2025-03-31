@@ -1,3 +1,4 @@
+const constants = require("./constants")
 /**
  * Generates a date string in YYMMDD format adjusted by a time period
  * @param {string} period - Time period to adjust (e.g. "1y", "-2m", "3d")
@@ -73,4 +74,26 @@ const convertLeafletFolderToObject = (folderPath) => {
     return leafletObject;
 }
 
-module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject}
+/**
+ * Test the audit logs 
+ * @param {IntegrationClient} client  - IntegrationClient instance
+ * @param {Object} oldObject  - original object to compare (if undefined it means it is a creation)
+ * @param {Object} newObject  - new object to compare after the action
+ */
+async function userActionAuditTest(client, reason, oldObject, newObject) {
+    const auditResponse = await client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
+    const audit = auditResponse.data[0];
+    expect(audit.reason).toEqual(reason);
+    
+    const {diffs} = audit.details[0]
+    
+    Object.entries(diffs).forEach(([key, value]) => {
+        if (key === "epiProtocol")
+            return true
+        expect(value.oldValue).toEqual(oldObject ? oldObject[key]: "");
+        expect(value.newValue).toEqual(newObject[key]);
+    })
+}
+
+
+module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject, userActionAuditTest}
