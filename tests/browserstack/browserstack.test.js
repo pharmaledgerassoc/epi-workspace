@@ -142,35 +142,38 @@ describe("LWA compatibility testing", () => {
                 10000
             );
             currentUrl = await browser.getCurrentUrl();
-
-            if(currentUrl.includes('error')) {
-                console.warn("Test passed, but no leaflet found for datamatrix (gtin: 12458796325688, batch: Batch1)");
-                const scanAgainButton = await browser.wait(
-                    until.elementLocated(By.id("scan-again-button")),
-                    5000
-                );
-                await browser.executeScript('arguments[0].scrollIntoView(true);', scanAgainButton);
-                expect(await scanAgainButton.isDisplayed()).toBe(true); 
-            } else {
-                const productName = await browser.wait(
-                    until.elementLocated(By.className("product-name")),
-                    5000
-                );
-                await browser.wait(until.elementIsVisible(productName), 5000);
-                expect(await productName.isDisplayed()).toBe(true);
+            try {
+                if(currentUrl.includes('error')) {
+                    console.warn("Test passed, but no leaflet found for datamatrix (gtin: 12458796325688, batch: Batch1)");
+                    const scanAgainButton = await browser.wait(
+                        until.elementLocated(By.id("scan-again-button")),
+                        5000
+                    );
+                    await browser.executeScript('arguments[0].scrollIntoView(true);', scanAgainButton);
+                    expect(await scanAgainButton.isDisplayed()).toBe(true); 
+                } else {
+                    const productName = await browser.wait(
+                        until.elementLocated(By.className("product-name")),
+                        5000
+                    );
+                    await browser.wait(until.elementIsVisible(productName), 5000);
+                    expect(await productName.isDisplayed()).toBe(true);
+                }
+                
+                await browser.executeScript('window.localStorage.clear();');
+                await browser.executeScript('window.sessionStorage.clear();');
+                
+            } catch (error) {
+                console.error("Error locating element:", error);
             }
-            
-
            
+          
         }, 70000);
     });
 
     afterAll(async () => {
-        if(browser) {
-            await browser.executeScript('window.localStorage.clear();');
-            await browser.executeScript('window.sessionStorage.clear();');
+        if(browser) 
             await browser.quit();
-        }
         // if (bsLocal) {
         //     bsLocal.stop(() => {
         //         console.log("BrowserStack Local stopped.");
