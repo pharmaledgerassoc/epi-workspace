@@ -1,12 +1,15 @@
 const { getConfig } = require("../conf");
 const config = getConfig();
 const { ModelFactory } = require("../models/factory");
-const { Product } = require("../models/Product");
+// const { Product } = require("../models/Product");
 const { OAuth } = require("../clients/Oauth");
 const { IntegrationClient } = require("../clients/Integration");
 const { UtilsService } = require("../clients/utils");
 const { FixedUrls } = require("../clients/FixedUrls");
-const { getRandomNumber } = require("../utils");
+const {Leaflet} = require("../models/Leaflet");
+// const { getRandomNumber } = require("../utils");
+const fs = require("node:fs");
+const path = require("path");
 
 jest.setTimeout(60000);
 
@@ -15,8 +18,8 @@ describe(`TRUST-125 Before Migration Test`, () => {
   const client = new IntegrationClient(config);
   const oauth = new OAuth(config);
   const fixedUrl = new FixedUrls(config);
-  const productUrl = "/product";
-  const listProductsUrl = "/listProducts";
+  // const productUrl = "/product";
+  // const listProductsUrl = "/listProducts";
 
   beforeAll(async () => {
     const token = await oauth.getAccessToken(); // log in to SSO
@@ -251,4 +254,5 @@ describe(`TRUST-125 Before Migration Test`, () => {
     expect(resleaflet.status).toBe(200);
     
   });
+  
 });

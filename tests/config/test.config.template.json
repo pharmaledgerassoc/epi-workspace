@@ -6,6 +6,7 @@
   "senderId": "${sender_id}",
 
   "lwa_endpoint": "${lwa_endpoint}",
+  "lwa_env": "${lwa_env}",
   "sor_endpoint": "${sor_endpoint}",
   "domain": "${domain}",
   "subdomain": "${subdomain}",
