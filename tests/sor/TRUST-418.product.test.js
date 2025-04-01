@@ -10,9 +10,7 @@ const {getRandomNumber, ProductAndBatchAuditTest} = require("../utils");
 const {constants} = require("../constants");
 
 jest.setTimeout(60000);
-
 const timeoutBetweenTests = 500;
-
 const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
