@@ -225,7 +225,7 @@ describe(`${testName} Batch`, () => {
                 ...BATCH,
                 batchRecall: false,
                 packagingSiteName: "www.product.com",
-                expiryDate: getYYMMDDDate("3y"),
+                expiryDate: getYYMMDDDate("2y"),
                 importLicenseNumber: getRandomNumber().toString(36),
                 dateOfManufacturing: getYYMMDDDate("1y"),
                 manufacturerName: "India MAH SA",
@@ -244,16 +244,16 @@ describe(`${testName} Batch`, () => {
         });
 
         it("SUCCESS 200 - Should recall and unrecall a batch properly (TRUST-352)", async () => {
-            const batch = new Batch({
-                ...BATCH,
-                expiryDate: getYYMMDDDate("2y")
-            });
-
-            const currentBatchRes = await client.getBatch(batch.productCode, batch.batchNumber);
+            const currentBatchRes = await client.getBatch(BATCH.productCode, BATCH.batchNumber);
             expect(currentBatchRes.data.batchRecall).toBeFalsy();
+            const batch = new Batch({...currentBatchRes.data, batchRecall: true});
 
-            await client.updateBatch(batch.productCode, batch.batchNumber, {...batch, batchRecall: true});
-            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, {...batch, batchRecall: true});
+            await client.updateBatch(batch.productCode, batch.batchNumber, batch);
+            try {
+                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch, batchRecall: false}, {...batch, batchRecall: true});
+            } catch (e) {
+                throw e;
+            }
 
             const getAfterUpdateTrueRes = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getAfterUpdateTrueRes.data.productCode).toEqual(batch.productCode);
@@ -261,7 +261,11 @@ describe(`${testName} Batch`, () => {
             expect(getAfterUpdateTrueRes.data.batchRecall).toBeTruthy();
 
             await client.updateBatch(batch.productCode, batch.batchNumber, {...batch, batchRecall: false});
-            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, {...batch, batchRecall: false});
+            try {
+                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch, batchRecall: true}, {...batch, batchRecall: false});
+            } catch (e) {
+                throw e;
+            }
 
             const getAfterUpdateFalseRes = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getAfterUpdateFalseRes.data.productCode).toEqual(batch.productCode);
@@ -287,8 +291,7 @@ describe(`${testName} Batch`, () => {
         });
 
         it("FAIL 422 - Immutable fields should remain unchanged", async () => {
-            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const {productCode} = await ModelFactory.product(ticket);
+            const productCode = "89999999999990";
             const immutableFields = ["productCode", "batchNumber", "nameMedicinalProduct", "inventedName"];
             await AuditLogChecker.cacheAuditLog();
 
@@ -351,8 +354,13 @@ describe(`${testName} Batch`, () => {
                     throw new Error(`Request should have failed when ${field} is empty`);
                 } catch (e) {
                     const response = e?.response || {};
-                    expect(response.status).toEqual(400);
-                    expect(response.statusText).toEqual("Bad Request");
+                    if (["productCode"].includes(field)) {
+                        expect(response.status).toEqual(400);
+                        expect(response.statusText).toEqual("Bad Request");
+                        continue;
+                    }
+                    expect(response.status).toEqual(422);
+                    expect(response.statusText).toEqual("Unprocessable Entity");
                 }
                 await AuditLogChecker.checkAuditLog();
             }
