@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TRUST-418.product.test.js" type="JavaScriptTestRunnerJest" folderName="SOR" nameIsGenerated="true">
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$" />
+    <jest-options value="--runInBand --coverage  --detectOpenHandles" />
+    <envs />
+    <scope-kind value="TEST_FILE" />
+    <test-file value="$PROJECT_DIR$/tests/sor/TRUST-418.product.test.js" />
+    <method v="2" />
+  </configuration>
+</component>
