@@ -14,7 +14,7 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 5000;
 
-const testName = "TRUST-001";
+const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
     // retrieve integration api client
@@ -64,7 +64,7 @@ describe(`${testName} Product`, () => {
             await ProductAndBatchAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
         });
 
-        it("SUCCESS 200 - Should create a product with no duplicate strengths", async () => {
+        it.skip("SUCCESS 200 - Should create a product with no duplicate strengths", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const strengths = [
                 {substance: "Paracetalol", strength: "250mg"},

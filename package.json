@@ -21,6 +21,7 @@
     "test-release": "jest --runInBand --coverage --testPathPattern=\"/tests/setup\" --detectOpenHandles",
     "test:all": "jest --runInBand --coverage --testPathPattern=\"/tests\" --detectOpenHandles",
     "test:sor": "jest --runInBand --coverage --testPathPattern=\"/tests/sor\" --detectOpenHandles",
+    "test:sor:product": "jest --runInBand --coverage --testPathPattern=\"/tests/sor/TRUST-418.product.test.js\" --detectOpenHandles",
     "test:unit": "jest --coverage --testPathPattern=\"/tests/unit\" --detectOpenHandles",
     "test-browserstack": "browserstack-node-sdk jest tests/browserstack/browserstack.test.js",
     "test-browserstack-local": "browserstack-node-sdk jest tests/browserstack/browserstack.test.js",
