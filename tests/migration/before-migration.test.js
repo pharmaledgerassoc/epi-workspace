@@ -146,7 +146,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "strengths-prod", product);
   });
 
-  it("STEP 3 - Creates a product with Market", async () => {
+  it("STEP 3 - Creates a product with markets", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
