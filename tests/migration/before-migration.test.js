@@ -153,7 +153,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
     // Set up reporter
     const reporter = new Reporter(ticket);
-    const step = "STEP2";
+    const step = "STEP3";
 
     // Generate Product
     const product = await ModelFactory.product(ticket, {
