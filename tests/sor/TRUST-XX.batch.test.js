@@ -44,7 +44,7 @@ describe(`${testName} Batch`, () => {
     });
 
     afterEach((cb) => {
-        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests/1000}s...`);
+        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
         setTimeout(() => {
             cb()
         }, timeoutBetweenTests)
@@ -250,7 +250,10 @@ describe(`${testName} Batch`, () => {
 
             await client.updateBatch(batch.productCode, batch.batchNumber, batch);
             try {
-                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch, batchRecall: false}, {...batch, batchRecall: true});
+                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {
+                    ...batch,
+                    batchRecall: false
+                }, {...batch, batchRecall: true});
             } catch (e) {
                 throw e;
             }
@@ -262,7 +265,10 @@ describe(`${testName} Batch`, () => {
 
             await client.updateBatch(batch.productCode, batch.batchNumber, {...batch, batchRecall: false});
             try {
-                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch, batchRecall: true}, {...batch, batchRecall: false});
+                await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {
+                    ...batch,
+                    batchRecall: true
+                }, {...batch, batchRecall: false});
             } catch (e) {
                 throw e;
             }
@@ -273,21 +279,38 @@ describe(`${testName} Batch`, () => {
             expect(getAfterUpdateFalseRes.data.batchRecall).toBeFalsy();
         });
 
-        it.skip("SUCCESS 200 - Should maintain data consistency when making sequential updates", async () => {
-            const requests = [100, 150, 200, 300].map((delay, index) => new Promise((resolve) => {
-                setTimeout(async () => {
-                    const updateBatch = new Batch({
-                        ...BATCH,
-                        manufacturerName: `Update_${index + 1}`,
-                        batchRecall: (index + 1) % 2 === 0
-                    });
+        it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
+            const timeBetweenRequests = [100, 100, 100];
+            const expectedUpdates = timeBetweenRequests.map((delay, index) => {
+                return new Batch({
+                    ...BATCH,
+                    manufacturerName: `Update_${index + 1}`,
+                    batchRecall: (index + 1) % 2 === 0
+                });
+            });
 
-                    const response = await client.updateBatch(updateBatch.productCode, updateBatch.batchNumber, updateBatch);
-                    resolve(response);
-                }, delay);
-            }));
-            await Promise.all(requests);
-            // TODO add validation
+            const requests = expectedUpdates.map((updateBatch, index) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(async () => {
+                        try {
+                            await client.updateBatch(updateBatch.productCode, updateBatch.batchNumber, updateBatch);
+                        } catch (e) {
+                            return reject(e);
+                        }
+                        const response = await client.getBatch(updateBatch.productCode, updateBatch.batchNumber); // Fetch the updated batch
+                        resolve(response.data);
+                    }, timeBetweenRequests[index]);
+                })
+            });
+
+            const responses = await Promise.allSettled(requests);
+            const successReq = responses.filter(({status}) => status === "fulfilled");
+            expect(successReq.length).toEqual(1);
+            responses.forEach((response, index) => {
+                if (response.status === "fulfilled") {
+                    expect(response.value).toEqual(expect.objectContaining(expectedUpdates[index]));
+                }
+            });
         });
 
         it("FAIL 422 - Immutable fields should remain unchanged", async () => {

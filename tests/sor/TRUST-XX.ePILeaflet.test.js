@@ -222,7 +222,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
                 }
             }
@@ -240,7 +240,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
                 }
             }
@@ -262,7 +262,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
                 }
             }
