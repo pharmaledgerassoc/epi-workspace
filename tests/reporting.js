@@ -56,7 +56,7 @@ class Reporter {
         const dir = path.join(this._basePath, step);
         try {
             const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : ".json");
-            logger.info(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
+            console.log(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
             switch (type) {
                 case "image":
                     data = Buffer.from(data);
@@ -67,12 +67,16 @@ class Reporter {
                 case "text":
                     break
                 default:
-                    logger.info(`Unsupported type ${type}. assuming text`);
+                    console.log(`Unsupported type ${type}. assuming text`);
             }
             fs.writeFileSync(path.join(dir, `${reference}${extension}`), data, 'utf8');
         } catch (e){
             throw new Error(`Could not store Reporting artifact ${reference} under ${dir} - ${e.message}`);
         }
+    }
+
+    generatePath(step) {
+        return path.join(this._basePath, step);
     }
 
     async outputPayload(step, reference, data, type = "json"){
