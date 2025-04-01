@@ -90,9 +90,9 @@ class Reporter {
     }
 
     retrievePayload(step, reference, extension = ".json") {
-        const path = path.join(this._basePath, step, `${reference}${extension}`);
+        const p = path.join(this._basePath, step, `${reference}${extension}`);
 
-        const data = fs.readFileSync(path, "utf8"); // Read file
+        const data = fs.readFileSync(p, "utf8"); // Read file
         const jsonData = JSON.parse(data); // Parse JSON
 
         return jsonData;
