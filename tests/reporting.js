@@ -89,6 +89,15 @@ class Reporter {
         return path.join(this._basePath, step);
     }
 
+    retrievePayload(step, reference, extension = ".json") {
+        const path = path.join(this._basePath, step, `${reference}${extension}`);
+
+        const data = fs.readFileSync(path, "utf8"); // Read file
+        const jsonData = JSON.parse(data); // Parse JSON
+
+        return jsonData;
+    }
+
     async outputPayload(step, reference, data, type = "json", trim = false) {
          return this._save(step, reference, data, type, trim);
     }
