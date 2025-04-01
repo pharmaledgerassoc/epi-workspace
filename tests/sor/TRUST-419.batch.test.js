@@ -15,7 +15,7 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 5000;
 
-const testName = "TRUST-002";
+const testName = "TRUST-419";
 
 describe(`${testName} Batch`, () => {
     let PRODUCT = new Product();
@@ -35,7 +35,7 @@ describe(`${testName} Batch`, () => {
         fixedUrl.setSharedToken(token);
         AuditLogChecker.setApiClient(client);
 
-        const _product = await ModelFactory.product("TRUST-002");
+        const _product = await ModelFactory.product(testName);
         const res = await client.addProduct(_product.productCode, _product);
         expect(res.status).toBe(200);
 
