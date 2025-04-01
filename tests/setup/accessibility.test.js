@@ -14,9 +14,12 @@ const data = require("./accessibility-data.json");
 
 jest.setTimeout(60000);
 
-describe(`Accessibility Setup`, () => {
+
+const testName = "TECHOPS-382";
+
+describe(`${testName} Accessibility Setup`, () => {
     // retrieve integration api client
-    const client = new IntegrationClient(config);
+    const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const timeoutBetweenTests = 3000; // 3 seconds

@@ -5,14 +5,22 @@ const axios = require("axios")
 const {UtilsService} = require("./utils");
 const {API_MESSAGE_TYPES} = require("../constants");
 const {ApiClient} = require("./Client.js");
+const {Reporter} = require("../reporting");
 
 
 
 class IntegrationClient extends ApiClient {
 
-    constructor(config) {
+    constructor(config, testName) {
         super(config);
         this.utils = new UtilsService(this.config);
+        this.testName = testName;
+        this.reporter = new Reporter(this.testName);
+        this.step = undefined;
+    }
+    
+    setStep(step){
+        this.step = step;
     }
 
     getEpiProductUrl(gtin, language, epiType, ePIMarket){
@@ -146,16 +154,39 @@ class IntegrationClient extends ApiClient {
 
                 return response
             } else {
+
+                const self = this;
+                function referenceFromUrl(url, response = false){
+                    const name = [method, response ? "response" : "payload",...url.split('/')].join('-');
+                    const cached = Object.keys(self.cached)
+                        .filter(k => k.includes(name));
+
+                    if (cached.length){
+                        const arr = cached.pop().split('-');
+                        const last = parseInt(arr[arr.length - 1]);
+
+                        self.cached[`${name}-${last + 1}`] = response.data;
+                        return name;
+                    }
+
+                    self.cached[`${name}-0`] = response.data;
+                    return name;
+                }
+
                 let body;
                 if (method !== 'DELETE' && data) {
                     body = data ? JSON.stringify(data) : undefined;
                 }
                 switch (method) {
                     case 'POST':
-                        response = await axios.post(endpoint, body, {headers: this.getHeaders()});
+                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint), data, "json")
+                        response = await axios.post(endpoint, data, {headers: this.getHeaders()});
+                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint, true), response, "json", true)
                         break;
                     case 'PUT':
-                        response = await axios.put(endpoint, body, {headers: this.getHeaders()});
+                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint), data, "json")
+                        response = await axios.put(endpoint, data, {headers: this.getHeaders()});
+                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint,true), response, "json", true)
                         break;
                     case 'DELETE':
                         response = await axios.delete(endpoint, {headers: this.getHeaders()});
