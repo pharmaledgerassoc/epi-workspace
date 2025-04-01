@@ -14,7 +14,7 @@ const data = require("./accessibility-data.json");
 
 jest.setTimeout(60000);
 
-describe(`Accessibility`, () => {
+describe(`Accessibility Setup`, () => {
     // retrieve integration api client
     const client = new IntegrationClient(config);
     const oauth = new OAuth(config);
