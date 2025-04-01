@@ -40,6 +40,7 @@ class Reporter {
      * @param {string} reference - The reference name for the file.
      * @param {Buffer|string|Object} data - The data to be saved.
      * @param {"json" | "image" | "text"} type
+     * @param trim
      * @throws {Error} If directory creation or file writing fails.
      *
      * @mermaid
@@ -52,22 +53,31 @@ class Reporter {
      *   end
      *   S->>FS: Write file
      */
-     _save(step, reference, data, type) {
+     _save(step, reference, data, type, trim = false) {
         const dir = path.join(this._basePath, step);
         try {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
             const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : ".json");
-            logger.info(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
+            console.log(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
             switch (type) {
                 case "image":
                     data = Buffer.from(data);
                     break;
                 case "json":
+                    if (trim){
+                        if (data.request)
+                            delete data["request"];
+                        if (data.config)
+                            delete data["config"];
+                    }
                     data = JSON.stringify(data, null, 2);
                     break;
                 case "text":
                     break
                 default:
-                    logger.info(`Unsupported type ${type}. assuming text`);
+                    console.log(`Unsupported type ${type}. assuming text`);
             }
             fs.writeFileSync(path.join(dir, `${reference}${extension}`), data, 'utf8');
         } catch (e){
@@ -75,8 +85,12 @@ class Reporter {
         }
     }
 
-    async outputPayload(step, reference, data, type = "json"){
-         return this._save(step, reference, data, type);
+    generatePath(step) {
+        return path.join(this._basePath, step);
+    }
+
+    async outputPayload(step, reference, data, type = "json", trim = false) {
+         return this._save(step, reference, data, type, trim);
     }
 
     /**
@@ -87,6 +101,7 @@ class Reporter {
      * @param {string} reference - The reference name for the file (without extension).
      * @param {Object} json - The JSON object to be saved.
      *
+     * @param trim
      * @mermaid
      * sequenceDiagram
      *   participant O as outputJSON
@@ -94,8 +109,8 @@ class Reporter {
      *   O->>O: Stringify JSON
      *   O->>S: Call _save with JSON string
      */
-    outputJSON(step, reference, json){
-        this._save(step, reference, json, "json");
+    outputJSON(step, reference, json, trim = false){
+        this._save(step, reference, json, "json", trim);
     }
 
     /**

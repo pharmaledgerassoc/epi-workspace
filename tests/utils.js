@@ -77,13 +77,18 @@ const convertLeafletFolderToObject = (folderPath) => {
 /**
  * Test the audit logs 
  * @param {IntegrationClient} client  - IntegrationClient instance
- * @param {Object} oldObject  - original object to compare (if undefined it means it is a creation)
- * @param {Object} newObject  - new object to compare after the action
+ * @param {string} reason - audit expected reason
+ * @param {Object | undefined} [oldObject]  - original object to compare (if undefined it means it is a creation)
+ * @param {Object | undefined} [newObject]  - new object to compare after the action
+ * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
  */
-async function userActionAuditTest(client, reason, oldObject, newObject) {
+async function ProductAndBatchAuditTest(client, reason, oldObject, newObject, itFailed = false) {
     const auditResponse = await client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
     const audit = auditResponse.data[0];
     expect(audit.reason).toEqual(reason);
+
+    if(itFailed)
+        return audit;
     
     const {diffs} = audit.details[0]
     
@@ -93,7 +98,34 @@ async function userActionAuditTest(client, reason, oldObject, newObject) {
         expect(value.oldValue).toEqual(oldObject ? oldObject[key]: "");
         expect(value.newValue).toEqual(newObject[key]);
     })
+
+    return audit;
+}
+
+/**
+ * Test the leaflets audit logs 
+ * @param {IntegrationClient} client  - IntegrationClient instance
+ * @param {string} reason - audit expected reason
+ * @param {string} epiLanguage  - leaflet's expected language
+ * @param {string} epiType  - leaflets's expected type
+ * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
+ */
+async function EPiAuditTest(client, reason, epiLanguage, epiType, itFailed = false) {
+    const auditResponse = await client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
+    const audit = auditResponse.data[0];
+    expect(audit.reason).toEqual(reason);
+
+    if(itFailed)
+        return audit;
+    
+    const details = audit.details[0]
+    
+    expect(details.epiLanguage).toEqual(epiLanguage);
+    expect(details.epiType).toEqual(epiType);
+
+    return audit;
 }
 
 
-module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject, userActionAuditTest}
+
+module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject, ProductAndBatchAuditTest, EPiAuditTest}

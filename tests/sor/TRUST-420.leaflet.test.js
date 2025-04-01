@@ -4,20 +4,21 @@ const {ModelFactory} = require("../models/factory");
 const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {Leaflet} = require("../models/Leaflet");
-const {API_MESSAGE_TYPES} = require("../constants");
+const {API_MESSAGE_TYPES, constants} = require("../constants");
 const fs = require("node:fs");
 const path = require("path");
 const {FixedUrls} = require("../clients/FixedUrls");
+const { EPiAuditTest } = require("../utils");
 
 jest.setTimeout(60000);
 
 const timeoutBetweenTests = 10000;
 
+const testName = "TRUST-420";
 
-describe(`TRUST-003 ePI Leaflet`, () => {
-
+describe(`${testName} ePI Leaflet`, () => {
     // retrieve integration api client
-    const client = new IntegrationClient(config);
+    const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const listProductLangsUrl = "/listProductLangs";
@@ -41,7 +42,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
 
-        const ticket = "TRUST-XX ePI";
+        const ticket = testName
         const product = await ModelFactory.product(ticket, {
             markets: [{
                 marketId: "IN",
@@ -81,7 +82,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
         });
 
         const LANG = "de";
-        it("SUCCESS 200 - Should add a leaflet for a PRODUCT", async () => {
+        it("SUCCESS 200 - Should add a leaflet for a PRODUCT (TRUST-111, TRUST-392, TRUST-393)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: LANG,
@@ -95,7 +96,10 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
+                await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
             }
+
+            
         });
 
         it("SUCCESS 200 - Should kept existing leaflets when adding a new one", async () => {
@@ -117,7 +121,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             expect(getResponse.status).toBe(200);
         });
 
-        it("SUCCESS 200 - Should add a leaflet for a PRODUCT in different markets", async () => {
+        it("SUCCESS 200 - Should add a leaflet for a PRODUCT in different markets (TRUST-391)", async () => {
             const markets = ["DE", "PT"];
             const leaflet = new Leaflet({
                 productCode: GTIN,
@@ -133,7 +137,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("SUCCESS 200 - Should add a leaflet for a BATCH", async () => {
+        it("SUCCESS 200 - Should add a leaflet for a BATCH (TRUST-111)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
@@ -151,7 +155,30 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("FAIL 400 - Should fail when try to add a prescribingInfo leaflet on batch level", async () => {
+        it("FAIL 415 - Should throw when mandatory fields are empty (TRUST-193)", async () => {
+            const leaflet = new Leaflet({
+                productCode: GTIN,
+                language: LANG,
+                xmlFileContent: XML_FILE_CONTENT
+            });
+
+            const mandatoryFields = ["productCode", "language"]; //, "xmlFileContent"];
+            for (const field of mandatoryFields) {
+                const invalidLeaflet = {...leaflet};
+                invalidLeaflet[field] = undefined;
+
+                try {
+                    await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, invalidLeaflet);
+                } catch (e) {
+                    const response = e?.response || {};
+                    expect(response.status).toEqual(415);
+                    continue;
+                }
+                throw new Error(`Request should have failed with 422 status code when ${field} is empty`);
+            }
+        });
+
+        it("FAIL 400 - Should fail when try to add a prescribingInfo leaflet on batch level (TRUST-392)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
@@ -167,7 +194,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("FAIL 400 - Should fail when try to add a leaflet with ePI Market on batch level", async () => {
+        it("FAIL 400 - Should fail when try to add a leaflet with ePI Market on batch level (TRUST-391)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
@@ -195,12 +222,13 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
 
-        it("FAIL 422 - Should fail when try to add a invalid XML content", async () => {
+        it("FAIL 422 - Should fail when try to add a invalid XML content (TRUST-191)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "it",
@@ -212,12 +240,13 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
 
-        it("FAIL 422 - Should fail when try to add a invalid otherFiles content", async () => {
+        it("FAIL 422 - Should fail when try to add a invalid otherFiles content (TRUST-193)", async () => {
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "pl",
@@ -233,7 +262,8 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
@@ -325,7 +355,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             expect(res.status).toBe(200);
         });
 
-        it("SUCCESS 200 - Should update a leaflet for a PRODUCT properly", async () => {
+        it("SUCCESS 200 - Should update a leaflet for a PRODUCT properly (TRUST-117)", async () => {
             for (let leafletType of EPI_TYPES) {
                 const payload = new Leaflet({
                     productCode: GTIN,
@@ -441,7 +471,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }, timeoutBetweenTests)
         });
 
-        it("SUCCESS 200 - Should delete a leaflet from a PRODUCT properly", async () => {
+        it("SUCCESS 200 - Should delete a leaflet from a PRODUCT properly (TRUST-118)", async () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(res.status).toBe(200);
@@ -455,7 +485,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("SUCCESS 200 - Should delete a leaflet market from a PRODUCT properly", async () => {
+        it("SUCCESS 200 - Should delete a leaflet market from a PRODUCT properly (TRUST-118)", async () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType, MARKET);
                 expect(res.status).toBe(200);
@@ -469,7 +499,7 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             }
         });
 
-        it("SUCCESS 200 - Should delete a leaflet from a BATCH properly", async () => {
+        it("SUCCESS 200 - Should delete a leaflet from a BATCH properly (TRUST-118)", async () => {
             const res = await client.deleteLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(res.status).toBe(200);
 

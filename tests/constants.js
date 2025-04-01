@@ -121,7 +121,7 @@ const constants = {
     },
     AUDIT_OPERATIONS: {
         EPI: ['Added Leaflet', 'Updated Leaflet'],
-            PHOTO: ['Added ProductPhoto', 'Updated ProductPhoto']
+        PHOTO: ['Added ProductPhoto', 'Updated ProductPhoto']
     },
     MODEL_LABELS_MAP: {
         PRODUCT: {

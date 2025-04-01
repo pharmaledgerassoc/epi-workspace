@@ -23,7 +23,7 @@ describe("gtin-utils", () => {
 
     it(`generates ${sequenceTest} valid GTINS sequentially`, async() => {
         require('fs').rmSync(require("path").join(process.cwd(), GTIN_LOCK), { force: true });
-        const generator = new GTINGenerator(false);
+        const generator = new GTINGenerator(true);
         const testScope = Object.keys(new Array(sequenceTest).fill(0))
         let padded;
         let gtin;
