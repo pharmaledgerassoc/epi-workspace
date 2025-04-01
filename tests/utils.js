@@ -80,7 +80,7 @@ const convertLeafletFolderToObject = (folderPath) => {
 }
 
 /**
- * Test the audit logs 
+ * Test the audit logs
  * @param {IntegrationClient} client  - IntegrationClient instance
  * @param {string} reason - audit expected reason
  * @param {Object | undefined} [oldObject]  - original object to compare (if undefined it means it is a creation)
@@ -94,9 +94,8 @@ async function ProductAndBatchAuditTest(client, reason, oldObject, newObject, it
 
     if(itFailed)
         return audit;
-    
+
     const {diffs} = audit.details[0]
-    
     Object.entries(diffs).forEach(([key, value]) => {
         if (key === "epiProtocol")
             return true
@@ -107,43 +106,4 @@ async function ProductAndBatchAuditTest(client, reason, oldObject, newObject, it
     return audit;
 }
 
-/**
- * Test the leaflets audit logs 
- * @param {IntegrationClient} client  - IntegrationClient instance
- * @param {string} gtin  - leaflet gtin
- * @param {string} reason - audit expected reason
- * @param {string} epiLanguage  - leaflet's expected language
- * @param {string} epiType  - leaflets's expected type
- * @param {string | undefined} [epiMarket]  - leaflets's market
- * @param {string | undefined} [batch=undefined]  - leaflets's batch
- * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
- */
-async function EPiAuditTest(client, gtin, reason, epiLanguage, epiType, epiMarket, batch = undefined, itFailed = false) {
-    const auditResponse = await client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
-    const audit = auditResponse.data[0];
-    expect(audit.itemCode).toEqual(gtin);
-    expect(audit.reason).toEqual(reason);
-
-    if(itFailed)
-        return audit;
-    
-    const details = audit.details[0]
-    
-    expect(details.epiLanguage).toEqual(epiLanguage);
-    expect(details.epiType).toEqual(epiType);
-
-    if(epiMarket)
-        expect(details.epiMarket).toEqual(epiMarket);
-
-    if(batch){
-        expect(audit.batchNumber).toEqual(batch);
-        if(reason !== constants.constants.OPERATIONS.DELETE_LEAFLET)
-            expect(details.epiMarket).toEqual(null);
-    }
-
-    return audit;
-}
-
-
-
-module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject, ProductAndBatchAuditTest, EPiAuditTest}
+module.exports = {getYYMMDDDate, getRandomNumber, convertLeafletFolderToObject, ProductAndBatchAuditTest}
