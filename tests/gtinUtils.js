@@ -96,22 +96,24 @@ class GTINGenerator {
     _reload(){
         if (this.persistence){
             try {
-                this._last = parseInt(fs.readFileSync(path.join(process.cwd(), GTIN_LOCK), "utf8")) || 1;
+                this._last = parseInt(fs.readFileSync(path.join(process.cwd(), GTIN_LOCK), "utf8")) || 0;
             } catch (e){
                 console.debug("Could not load last GTIN from file: " + e.message);
-                this.last = 1;
+                this._last = 0;
             }
         }
+        if (isNaN(this._last))
+            this._last = 0;
     }
 
     /**
      * @description Persists the given GTIN to storage.
      * @summary Writes the provided GTIN to a file for persistence.
      * 
-     * @param {string} gtin - The GTIN to persist.
+     * @param {string} last - The base used to generate the gtin
      */
-    _persist(gtin){
-        fs.writeFileSync(path.join(process.cwd(), GTIN_LOCK), gtin)
+    _persist(last){
+        fs.writeFileSync(path.join(process.cwd(), GTIN_LOCK), last.toString())
     }
 
     /**
@@ -141,7 +143,7 @@ class GTINGenerator {
         const base = typeof this._last === 'undefined'? 1 : ++this._last;
         const gtin = generateGTIN(base);
         if (this.persistence){
-            this._persist(gtin)
+            this._persist(this._last)
         }
         this._last = base
         this._lock.release()

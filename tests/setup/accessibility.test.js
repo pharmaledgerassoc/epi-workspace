@@ -115,7 +115,7 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 3 - adds 3 leaflets. no country, Brazil and France", () => {
-
+// product 2
         it(`should add a default leaflet for product ${data[2].code} - no market`, async () => {
             const {code} = data[2]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
@@ -160,7 +160,7 @@ describe(`Accessibility`, () => {
     })
 
     describe("screen 4 - adds leaflet. marks product as recalled", () => {
-
+// product 3
         it(`should add a default leaflet for product ${data[3].code}`, async () => {
             const {code} = data[3]
             const payload = convertLeafletFolderToObject(path.join(process.cwd(), "tests/resources/accessibility"));
