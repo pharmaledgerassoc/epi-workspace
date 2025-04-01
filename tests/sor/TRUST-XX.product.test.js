@@ -6,7 +6,7 @@ const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const {FixedUrls} = require("../clients/FixedUrls");
-const {getRandomNumber, userActionAuditTest, getYYMMDDDate} = require("../utils");
+const {getRandomNumber, ProductAndBatchAuditTest, getYYMMDDDate} = require("../utils");
 const {constants} = require("../constants");
 const {Batch} = require("../models/Batch");
 
@@ -59,7 +59,7 @@ describe(`TRUST-001 Product`, () => {
             expect(productResponse.data).toEqual(expect.objectContaining(product));
             expect(productResponse.data.version).toEqual(1);
 
-            await userActionAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
+            await ProductAndBatchAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
         });
 
         it("SUCCESS 200 - Should create a product with no duplicate strengths", async () => {
