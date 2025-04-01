@@ -14,9 +14,9 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 10000;
 
-const testName = "TRUST-003";
+const testName = "TRUST-420";
 
-describe(`${testName} ePI Leaflet`, () => {
+describe(`${testName} Product`, () => {
     // retrieve integration api client
     const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
@@ -42,7 +42,7 @@ describe(`${testName} ePI Leaflet`, () => {
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
 
-        const ticket = "TRUST-XX ePI";
+        const ticket = testName
         const product = await ModelFactory.product(ticket, {
             markets: [{
                 marketId: "IN",
@@ -222,8 +222,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
-                    expect(e.status).toBeLessThan(500);
+                    expect(e.status).toBe(422);
                 }
             }
         });
@@ -240,8 +239,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
-                    expect(e.status).toBeLessThan(500);
+                    expect(e.status).toBe(422);
                 }
             }
         });
@@ -262,8 +260,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBeGreaterThan(400);
-                    expect(e.status).toBeLessThan(500);
+                    expect(e.status).toBe(422);
                 }
             }
         });
