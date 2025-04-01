@@ -6,13 +6,13 @@ const { OAuth } = require("../clients/Oauth");
 const { IntegrationClient } = require("../clients/Integration");
 const { UtilsService } = require("../clients/utils");
 const { FixedUrls } = require("../clients/FixedUrls");
-const {Leaflet} = require("../models/Leaflet");
-const {Reporter} = require("../reporting");
-const {userActionAuditTest} = require("../utils");
+const { Leaflet } = require("../models/Leaflet");
+const { Reporter } = require("../reporting");
+const { userActionAuditTest } = require("../utils");
 // const { getRandomNumber } = require("../utils");
 const fs = require("node:fs");
 const path = require("path");
-const {constants} = require("../constants");
+const { constants } = require("../constants");
 
 jest.setTimeout(60000);
 
@@ -29,9 +29,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // store auth SSO token
     client.setSharedToken(token);
     fixedUrl.setSharedToken(token);
-
   });
-
 
   it("STEP 1 - Creates and updates a base product", async () => {
     const { ticket } = UtilsService.getTicketId(
@@ -40,12 +38,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
     // Set up reporter
     const reporter = new Reporter(ticket);
-
-    // Create Report
-    const step = "STEP1"
-    const p = reporter.generatePath(step);
-
-    fs.mkdirSync(p, { recursive: true });
+    const step = "STEP1";
 
     // Generate Product
     const product = await ModelFactory.product(ticket, {
@@ -60,16 +53,21 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // Get Product and compare
     let productResponse = await client.getProduct(product.productCode);
     expect(productResponse.data).toEqual(expect.objectContaining(product));
-    
+
     const oldProd = productResponse.data;
 
     // Get Audit and validate
-    let audit = await userActionAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, undefined, productResponse.data);
-    
+    let audit = await userActionAuditTest(
+      client,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      productResponse.data
+    );
+
     // Save audit information
     reporter.outputJSON(step, "base-prod-created-audit", audit);
 
-    const updatedMedicalName = "Updated Medical Name"
+    const updatedMedicalName = "Updated Medical Name";
     product.nameMedicinalProduct = updatedMedicalName;
 
     // Update Product
@@ -79,10 +77,17 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // Get Product and compare
     productResponse = await client.getProduct(product.productCode);
     expect(productResponse.data).toEqual(expect.objectContaining(product));
-    expect(productResponse.data.nameMedicinalProduct).toEqual(updatedMedicalName);
+    expect(productResponse.data.nameMedicinalProduct).toEqual(
+      updatedMedicalName
+    );
 
     // Get Audit and validate
-    audit = await userActionAuditTest(client, constants.OPERATIONS.UPDATE_PRODUCT, oldProd, productResponse.data);
+    audit = await userActionAuditTest(
+      client,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      oldProd,
+      productResponse.data
+    );
 
     // Save audit information
     reporter.outputJSON(step, "base-prod-updated-audit", audit);
@@ -91,80 +96,103 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "base-prod", product);
   });
 
-  // it("STEP 2 - Creates a product strengths", async () => {
-  //   const { ticket } = UtilsService.getTicketId(
-  //     expect.getState().currentTestName
-  //   );
+  it("STEP 2 - Creates a product with strengths", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
 
-  //   // Set up reporter
-  //   const reporter = new Reporter(ticket);
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP2";
 
-  //   // Generate Product
-  //   const product = await ModelFactory.product(ticket, {
-  //     markets: [],
-  //     strengths: [
-  //       {
-  //         substance: "Dipiloma",
-  //         strength: "500mg",
-  //       },
-  //       {
-  //         substance: "Paracetomol",
-  //         strength: "200mg",
-  //       }
-  //     ],
-  //   });
+    // Generate Product
+    const product = await ModelFactory.product(ticket, {
+      markets: [],
+      strengths: [
+        {
+          substance: "Dipiloma",
+          strength: "500mg",
+        },
+        {
+          substance: "Paracetomol",
+          strength: "200mg",
+        },
+      ],
+    });
 
-  //   // Create Product
-  //   const res = await client.addProduct(product.productCode, product);
-  //   expect(res.status).toBe(200);
+    // Create Product
+    const res = await client.addProduct(product.productCode, product);
+    expect(res.status).toBe(200);
 
-  //   // Get Product and compare
-  //   const productResponse = await client.getProduct(product.productCode);
-  //   expect(productResponse.data).toEqual(expect.objectContaining(product));
-  //   expect(productResponse.data.strengths.length).toEqual(2);
-  //   expect(productResponse.data.strengths[0]).toEqual(product.strengths[0]);
-  //   expect(productResponse.data.strengths[1]).toEqual(product.strengths[1]);
+    // Get Product and compare
+    const productResponse = await client.getProduct(product.productCode);
+    expect(productResponse.data).toEqual(expect.objectContaining(product));
+    expect(productResponse.data.strengths.length).toEqual(2);
+    expect(productResponse.data.strengths[0]).toEqual(product.strengths[0]);
+    expect(productResponse.data.strengths[1]).toEqual(product.strengths[1]);
 
+    // Get Audit and validate
+    let audit = await userActionAuditTest(
+      client,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      productResponse.data
+    );
 
+    // Save audit information
+    reporter.outputJSON(step, "strengths-prod-created-audit", audit);
 
-  //   //TODO: Check audit validate
+    // Create Report
+    reporter.outputJSON(step, "strengths-prod", product);
+  });
 
-  //   // Create Report
-  //   const step = "STEP2"
-  //   const p = reporter.generatePath(step);
+  it("STEP 3 - Creates a product with markets", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
 
-  //   fs.mkdirSync(p, { recursive: true });
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP2";
 
-  //   reporter.outputJSON(step, "strengths-prod", product);
-  // });
+    // Generate Product
+    const product = await ModelFactory.product(ticket, {
+      markets: [
+        {
+          marketId: "IN",
+          nationalCode: "NC001",
+          mahAddress: "221B Baker Street",
+          mahName: `${ticket} MAH`,
+          legalEntityName: `${ticket} Legal Entity`,
+        },
+      ],
+      strengths: [],
+    });
 
-  // it("SUCCESS 200 - Should create a market product properly", async () => {
-  //   const { ticket } = UtilsService.getTicketId(
-  //     expect.getState().currentTestName
-  //   );
-  //   const product = await ModelFactory.product(ticket, {
-  //     markets: [
-  //       {
-  //         marketId: "IN",
-  //         nationalCode: "NC001",
-  //         mahAddress: "221B Baker Street",
-  //         mahName: `${ticket} MAH`,
-  //         legalEntityName: `${ticket} Legal Entity`,
-  //       },
-  //     ],
-  //     strengths: [],
-  //   });
+    // Create Product
+    const res = await client.addProduct(product.productCode, product);
+    expect(res.status).toBe(200);
 
-  //   report.marketProduct = product;
+    // Get Product and compare
+    const productResponse = await client.getProduct(product.productCode);
+    expect(productResponse.data).toEqual(expect.objectContaining(product));
+    expect(productResponse.data.markets.length).toEqual(1);
+    expect(productResponse.data.markets[0]).toEqual(product.markets[0]);
 
-  //   const res = await client.addProduct(product.productCode, product);
-  //   expect(res.status).toBe(200);
+    // Get Audit and validate
+    let audit = await userActionAuditTest(
+      client,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      productResponse.data
+    );
 
-  //   const productResponse = await client.getProduct(product.productCode);
-  //   expect(productResponse.data).toEqual(expect.objectContaining(product));
+    // Save audit information
+    reporter.outputJSON(step, "market-prod-created-audit", audit);
 
-  //   //TODO: Check audit validate
-  // });
+    // Create Report
+    reporter.outputJSON(step, "market-prod", product);
+  });
 
   // it("SUCCESS 200 - Should create a photo product properly", async () => {
   //   const { ticket } = UtilsService.getTicketId(
@@ -209,7 +237,6 @@ describe(`TRUST-125 Before Migration Test`, () => {
   //   const XML_FILE_WITH_IMG = (fs.readFileSync(path.join(__dirname, "..", "resources", "xml_content_with_img.txt"), {encoding: 'utf-8'})).trim();
   //   const IMG_FILE_NAME = "figure_010_1295_1485_3620_1050.png";
   //   const IMG_FILE_CONTENT = (fs.readFileSync(path.join(__dirname, "..", "resources", "figure_010_1295_1485_3620_1050.png.txt"), {encoding: 'utf-8'})).trim();
-    
 
   //   const leaflet = new Leaflet({
   //     productCode: product.productCode,
@@ -223,8 +250,6 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
   //   const resleaf = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, "leaflet", undefined, leaflet);
   //   expect(resleaf.status).toBe(200);
-    
-
 
   // });
 
@@ -304,20 +329,18 @@ describe(`TRUST-125 Before Migration Test`, () => {
   //         fileContent: IMG_FILE_CONTENT
   //     }]
   //   });
-    
+
   //   const resleaflet = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, "leaflet", undefined, leaflet);
   //   expect(resleaflet.status).toBe(200);
-    
+
   // });
 
   // it("SUCCESS 200 - Should create a base product properly", async () => {
 
+  // const p = reporter.generatePath("step1");
 
-    // const p = reporter.generatePath("step1");
+  // fs.mkdirSync(p, { recursive: true });
 
-    // fs.mkdirSync(p, { recursive: true });
-
-    // reporter.outputJSON("step1", "report", report);
+  // reporter.outputJSON("step1", "report", report);
   // });
-  
 });
