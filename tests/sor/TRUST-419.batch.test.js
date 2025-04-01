@@ -63,6 +63,7 @@ describe(`${testName} Batch`, () => {
 
             const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(batchResponse.data).toEqual(expect.objectContaining(batch));
+            expect(batchResponse.data.version).toEqual(1);
 
             await ProductAndBatchAuditTest(client, constants.OPERATIONS.CREATE_BATCH, undefined, batch);
         });
@@ -217,6 +218,7 @@ describe(`${testName} Batch`, () => {
 
             const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
+            expect(getBatchResponse.data.version).toBeGreaterThan(1);
             await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, batch);
         });
 
@@ -280,10 +282,12 @@ describe(`${testName} Batch`, () => {
         });
 
         it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
+            const {data} = await client.getBatch(BATCH.productCode, BATCH.batchNumber);
+
             const timeBetweenRequests = [100, 100, 100];
             const expectedUpdates = timeBetweenRequests.map((delay, index) => {
                 return new Batch({
-                    ...BATCH,
+                    ...data,
                     manufacturerName: `Update_${index + 1}`,
                     batchRecall: (index + 1) % 2 === 0
                 });
