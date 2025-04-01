@@ -13,7 +13,7 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 500;
 
-const testName = "TRUST-001";
+const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
     // retrieve integration api client

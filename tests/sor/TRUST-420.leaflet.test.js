@@ -14,7 +14,7 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 10000;
 
-const testName = "TRUST-003";
+const testName = "TRUST-420";
 
 describe(`${testName} ePI Leaflet`, () => {
     // retrieve integration api client
@@ -42,7 +42,7 @@ describe(`${testName} ePI Leaflet`, () => {
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
 
-        const ticket = "TRUST-XX ePI";
+        const ticket = testName
         const product = await ModelFactory.product(ticket, {
             markets: [{
                 marketId: "IN",
