@@ -8,7 +8,7 @@ const { UtilsService } = require("../clients/utils");
 const { FixedUrls } = require("../clients/FixedUrls");
 const { Leaflet } = require("../models/Leaflet");
 const { Reporter } = require("../reporting");
-const { userActionAuditTest } = require("../utils");
+const { ProductAndBatchAuditTest } = require("../utils");
 // const { getRandomNumber } = require("../utils");
 const fs = require("node:fs");
 const path = require("path");
@@ -57,7 +57,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     const oldProd = productResponse.data;
 
     // Get Audit and validate
-    let audit = await userActionAuditTest(
+    let audit = await ProductAndBatchAuditTest(
       client,
       constants.OPERATIONS.CREATE_PRODUCT,
       undefined,
@@ -82,7 +82,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     );
 
     // Get Audit and validate
-    audit = await userActionAuditTest(
+    audit = await ProductAndBatchAuditTest(
       client,
       constants.OPERATIONS.UPDATE_PRODUCT,
       oldProd,
@@ -132,7 +132,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     expect(productResponse.data.strengths[1]).toEqual(product.strengths[1]);
 
     // Get Audit and validate
-    let audit = await userActionAuditTest(
+    let audit = await ProductAndBatchAuditTest(
       client,
       constants.OPERATIONS.CREATE_PRODUCT,
       undefined,
@@ -180,7 +180,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     expect(productResponse.data.markets[0]).toEqual(product.markets[0]);
 
     // Get Audit and validate
-    let audit = await userActionAuditTest(
+    let audit = await ProductAndBatchAuditTest(
       client,
       constants.OPERATIONS.CREATE_PRODUCT,
       undefined,
