@@ -93,6 +93,8 @@ async function userActionAuditTest(client, reason, oldObject, newObject) {
         expect(value.oldValue).toEqual(oldObject ? oldObject[key]: "");
         expect(value.newValue).toEqual(newObject[key]);
     })
+
+    return audit;
 }
 
 
