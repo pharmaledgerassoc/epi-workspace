@@ -42,7 +42,7 @@ class ModelFactory {
      */
     async product(test, props) {
         const p = new Product(Object.assign({}, {
-            productCode: await this._gtinGenerator.next(),
+            productCode: props.productCode || await this._gtinGenerator.next(),
             inventedName: `Test Product ${test}`,
             nameMedicinalProduct: `Test Product ${test} - extra info`
         }, props || {}));
