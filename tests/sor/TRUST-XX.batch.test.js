@@ -241,7 +241,7 @@ describe(`${testName} Batch`, () => {
 
             const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
-            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, batch);
+            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch}, getBatchResponse.data);
         });
 
         it("SUCCESS 200 - Should recall and unrecall a batch properly (TRUST-352)", async () => {
