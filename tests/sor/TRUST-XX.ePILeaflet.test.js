@@ -14,11 +14,11 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 10000;
 
+const testName = "TRUST-003";
 
-describe(`TRUST-003 ePI Leaflet`, () => {
-
+describe(`${testName} Product`, () => {
     // retrieve integration api client
-    const client = new IntegrationClient(config);
+    const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const listProductLangsUrl = "/listProductLangs";

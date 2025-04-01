@@ -65,7 +65,7 @@ class ApiClient {
                 .filter(k => k.includes(name));
 
             if (cached.length){
-                const arr = self.cached.pop().split('-');
+                const arr = cached.pop().split('-');
                 const last = parseInt(arr[arr.length - 1]);
 
                 self.cached[`${name}-${last + 1}`] = response.data;
@@ -85,12 +85,12 @@ class ApiClient {
             case 'POST':
                 await this.reporter.outputPayload(step, referenceFromUrl(url), data, "json")
                 response = await axios.post(url, data, {headers: this.getHeaders()});
-                await this.reporter.outputPayload(step, referenceFromUrl(url, true), response, "json")
+                await this.reporter.outputPayload(step, referenceFromUrl(url, true), response, "json", true)
                 break;
             case 'PUT':
                 await this.reporter.outputPayload(step, referenceFromUrl(url), data, "json")
                 response = await axios.put(url, data, {headers: this.getHeaders()});
-                await this.reporter.outputPayload(step, referenceFromUrl(url,true), response, "json")
+                await this.reporter.outputPayload(step, referenceFromUrl(url,true), response, "json", true)
                 break;
             case 'DELETE':
                 response = await axios.delete(url, {headers: this.getHeaders()});

@@ -14,9 +14,11 @@ jest.setTimeout(60000);
 
 const timeoutBetweenTests = 5000;
 
-describe(`TRUST-001 Product`, () => {
+const testName = "TRUST-001";
+
+describe(`${testName} Product`, () => {
     // retrieve integration api client
-    const client = new IntegrationClient(config);
+    const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const productUrl = "/product";
