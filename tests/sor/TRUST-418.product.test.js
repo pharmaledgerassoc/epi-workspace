@@ -346,10 +346,11 @@ describe(`${testName} Product`, () => {
         });
 
         it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
+            const {data} = await client.getProduct(product.productCode);
             const timeBetweenRequests = [100, 100, 100];
             const expectedUpdates = timeBetweenRequests.map((delay, index) => {
                 return new Product({
-                    ...product,
+                    ...data,
                     internalMaterialCode: getRandomNumber().toString(),
                     productRecall: (index + 1) % 2 === 0,
                     markets: (index + 1) % 2 === 0 ? [] : [{
@@ -379,11 +380,12 @@ describe(`${testName} Product`, () => {
             const responses = await Promise.allSettled(requests);
             const successReq = responses.filter(({status}) => status === "fulfilled");
             expect(successReq.length).toEqual(1);
-            responses.forEach((response, index) => {
+            for (const [index, response] of responses.entries()) {
                 if (response.status === "fulfilled") {
                     expect(response.value).toEqual(expect.objectContaining(expectedUpdates[index]));
+                    await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_PRODUCT, data, expectedUpdates[index]);
                 }
-            });
+            }
         });
 
     });

@@ -8,7 +8,6 @@ const {ApiClient} = require("./Client.js");
 const {Reporter} = require("../reporting");
 
 
-
 class IntegrationClient extends ApiClient {
 
     constructor(config, testName) {
@@ -18,63 +17,99 @@ class IntegrationClient extends ApiClient {
         this.reporter = new Reporter(this.testName);
         this.step = undefined;
     }
-    
-    setStep(step){
+
+    setStep(step) {
         this.step = step;
     }
 
-    getEpiProductUrl(gtin, language, epiType, ePIMarket){
+    getEpiProductUrl(gtin, language, epiType, ePIMarket) {
         const baseEndpoint = `${this.getBaseURL()}/epi/${gtin}/${language}/${epiType}`;
         return ePIMarket ? `${baseEndpoint}/${ePIMarket}` : baseEndpoint;
     };
 
-    async addProduct(gtin, product){
+    async addProduct(gtin, product) {
         const productMessage = this.utils.initMessage(product, API_MESSAGE_TYPES.PRODUCT);
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'POST', productMessage);
     };
 
-    async updateProduct(gtin, payload){
+    async updateProduct(gtin, payload) {
         const productMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.PRODUCT);
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'PUT', productMessage);
     };
 
-    async getProductMetadata(gtin){
+    async getProductMetadata(gtin) {
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'GET');
     };
 
-    async addImage(gtin, productPhotoMessage){
+    async addImage(gtin, productPhotoMessage) {
         return this.send(`${this.getBaseURL()}/image/${gtin}`, 'POST', productPhotoMessage);
     };
 
-    async updateImage(gtin, productPhotoMessage){
+    async updateImage(gtin, productPhotoMessage) {
         return this.send(`${this.getBaseURL()}/image/${gtin}`, 'PUT', productPhotoMessage);
     };
 
-    async getProduct(gtin){
+    async getProduct(gtin) {
         return this.send(`${this.getBaseURL()}/product/${gtin}`, 'GET');
     };
 
-    async listProducts(number = 100, sort = "desc"){
+    /**
+     * Retrieves a list of products with optional sorting and limit.
+     *
+     * @param {number} [number=100] - The number of products to retrieve.
+     * @param {"asc" | "desc"} [sort="desc"] - Sorting order
+     * @returns {Promise<any>} A promise resolving with the list of products.
+     */
+    async listProducts(number = 100, sort = "desc") {
         return this.send(`${this.getBaseURL()}/listProducts?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
-    };
+    }
 
-    async listProductLangs(gtin, epiType){
+    /**
+     * Retrieves product language details by GTIN and EPI type.
+     *
+     * @param {string} gtin - The GTIN of the product.
+     * @param {string} epiType - The type of ePI.
+     * @returns {Promise<any>} A promise resolving with the list of ePI product languages
+     */
+    async listProductLangs(gtin, epiType) {
         return this.send(`${this.getBaseURL()}/listProductLangs/${gtin}/${epiType}`, 'GET');
-    };
+    }
 
-    async listProductMarkets(gtin, epiType){
+    /**
+     * Retrieves product market details by GTIN and EPI type.
+     *
+     * @param {string} gtin - The GTIN of the product.
+     * @param {string} epiType - The type of ePI.
+     * @returns {Promise<any>} A promise resolving with the list of ePI product markets
+     */
+    async listProductMarkets(gtin, epiType) {
         return this.send(`${this.getBaseURL()}/listProductMarkets/${gtin}/${epiType}`, 'GET');
-    };
+    }
 
-    async listBatches(number = 100, sort = "desc"){
+    /**
+     * Retrieves a list of batches with optional sorting and limit.
+     *
+     * @param {number} [number=100] - The number of batches to retrieve.
+     * @param {"asc" | "desc"} [sort="desc"] - Sorting order
+     * @returns {Promise<any>} A promise resolving with the list of batches.
+     */
+    async listBatches(number = 100, sort = "desc") {
         return this.send(`${this.getBaseURL()}/listBatches?query=__timestamp%20%3E%200&number=${number}&sort=${sort}`, 'GET');
-    };
+    }
 
-    async listBatchesLang(gtin, batchNumber, epiType){
+    /**
+     * Retrieves batch language details by GTIN, batch number, and EPI type.
+     *
+     * @param {string} gtin - The GTIN of the product.
+     * @param {string} batchNumber - The batch number of the product.
+     * @param {string} epiType - The type of ePI.
+     * @returns {Promise<any>} A promise resolving with the batch language details.
+     */
+    async listBatchesLang(gtin, batchNumber, epiType) {
         return this.send(`${this.getBaseURL()}/listBatchLangs/${gtin}/${batchNumber}/${epiType}`, 'GET');
-    };
+    }
 
-    async filterAuditLogs(logType, start, number, query, sort){
+    async filterAuditLogs(logType, start, number, query, sort) {
         return this.processAndSend(this.getBaseURL(), `audit/${logType}`, start, number, query, sort);
     }
 
@@ -103,25 +138,25 @@ class IntegrationClient extends ApiClient {
         return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'DELETE');
     }
 
-    async addBatch(gtin, batchNumber, payload){
+    async addBatch(gtin, batchNumber, payload) {
         const batchMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.BATCH)
         return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'POST', batchMessage);
     };
 
-    async updateBatch(gtin, batchNumber, payload){
+    async updateBatch(gtin, batchNumber, payload) {
         const batchMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.BATCH)
         return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'PUT', batchMessage);
     };
 
-    async getBatch(gtin, batchNumber){
+    async getBatch(gtin, batchNumber) {
         return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'GET');
     };
 
-    getBaseURL(){
+    getBaseURL() {
         return `${this.config.sor_endpoint}/integration`;
     }
 
-    async send(endpoint, method, data, responseType = "json"){
+    async send(endpoint, method, data, responseType = "json") {
         //add domain and subdomain as query parameters
         //check if the endpoint already has query parameters
 
@@ -156,12 +191,13 @@ class IntegrationClient extends ApiClient {
             } else {
 
                 const self = this;
-                function referenceFromUrl(url, response = false){
-                    const name = [method, response ? "response" : "payload",...url.split('/')].join('-');
+
+                function referenceFromUrl(url, response = false) {
+                    const name = [method, response ? "response" : "payload", ...url.split('/')].join('-');
                     const cached = Object.keys(self.cached)
                         .filter(k => k.includes(name));
 
-                    if (cached.length){
+                    if (cached.length) {
                         const arr = cached.pop().split('-');
                         const last = parseInt(arr[arr.length - 1]);
 
@@ -186,7 +222,7 @@ class IntegrationClient extends ApiClient {
                     case 'PUT':
                         await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint), data, "json")
                         response = await axios.put(endpoint, data, {headers: this.getHeaders()});
-                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint,true), response, "json", true)
+                        await this.reporter.outputPayload(this.step || "", referenceFromUrl(endpoint, true), response, "json", true)
                         break;
                     case 'DELETE':
                         response = await axios.delete(endpoint, {headers: this.getHeaders()});
@@ -201,7 +237,7 @@ class IntegrationClient extends ApiClient {
 
                 return response
             }
-        } catch (e){
+        } catch (e) {
             // if (e instanceof Error) {
             //     throw new Error(`Error sending ${method} request to ${endpoint} - ${e.message}`)
             // }
