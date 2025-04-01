@@ -60,9 +60,11 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // Get Product and compare
     let productResponse = await client.getProduct(product.productCode);
     expect(productResponse.data).toEqual(expect.objectContaining(product));
+    
+    const oldProd = productResponse.data;
 
     // Get Audit and validate
-    let audit = await userActionAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, {}, productResponse.data);
+    let audit = await userActionAuditTest(client, constants.OPERATIONS.CREATE_PRODUCT, undefined, productResponse.data);
     
     // Save audit information
     reporter.outputJSON(step, "base-prod-created-audit", audit);
@@ -80,7 +82,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     expect(productResponse.data.nameMedicinalProduct).toEqual(updatedMedicalName);
 
     // Get Audit and validate
-    audit = await userActionAuditTest(client, constants.OPERATIONS.UPDATE_PRODUCT, {}, productResponse.data);
+    audit = await userActionAuditTest(client, constants.OPERATIONS.UPDATE_PRODUCT, oldProd, productResponse.data);
 
     // Save audit information
     reporter.outputJSON(step, "base-prod-updated-audit", audit);
