@@ -89,6 +89,12 @@ class IntegrationClient extends ApiClient {
         return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'PUT', epiMessage);
     }
 
+    async deleteLeaflet(gtin, batchNumber, epiLang, epiType, epiMarket) {
+        let path = batchNumber ? `${batchNumber}/${epiLang}/${epiType}` : `${epiLang}/${epiType}`;
+        path = epiMarket ? path + `/${epiMarket}` : path;
+        return this.send(`${this.getBaseURL()}/epi/${gtin}/${path}`, 'DELETE');
+    }
+
     async addBatch(gtin, batchNumber, payload){
         const batchMessage = this.utils.initMessage(payload, API_MESSAGE_TYPES.BATCH)
         return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'POST', batchMessage);
