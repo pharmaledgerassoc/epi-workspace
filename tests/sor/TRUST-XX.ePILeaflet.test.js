@@ -110,12 +110,16 @@ describe(`${testName} Product`, () => {
             }));
             expect(res1.status).toBe(200);
 
+            await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
+
             const res2 = await client.addLeaflet(GTIN, undefined, "no", API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
                 productCode: GTIN,
                 language: "no",
                 xmlFileContent: XML_FILE_CONTENT
             }));
             expect(res2.status).toBe(200);
+
+            await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, "no", API_MESSAGE_TYPES.EPI.LEAFLET);
 
             const getResponse = await client.getLeaflet(GTIN, undefined, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(getResponse.status).toBe(200);
@@ -133,6 +137,7 @@ describe(`${testName} Product`, () => {
                 for (let market of markets) {
                     const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, market, leaflet);
                     expect(res.status).toBe(200);
+                    await EPiAuditTest(client,constants.OPERATIONS.ADD_LEAFLET,leaflet.language, leafletType, market)
                 }
             }
         });
@@ -152,6 +157,7 @@ describe(`${testName} Product`, () => {
             for (let leafletType of [API_MESSAGE_TYPES.EPI.LEAFLET]) {
                 const res = await client.addLeaflet(leaflet.productCode, BATCH_NUMBER, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
+                await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, undefined, true);
             }
         });
 
