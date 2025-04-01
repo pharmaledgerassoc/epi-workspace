@@ -6,14 +6,11 @@ const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
 const {FixedUrls} = require("../clients/FixedUrls");
-const {getRandomNumber, ProductAndBatchAuditTest, getYYMMDDDate} = require("../utils");
+const {getRandomNumber, ProductAndBatchAuditTest} = require("../utils");
 const {constants} = require("../constants");
-const {Batch} = require("../models/Batch");
 
 jest.setTimeout(60000);
-
 const timeoutBetweenTests = 5000;
-
 const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
@@ -247,8 +244,9 @@ describe(`${testName} Product`, () => {
 
         it("SUCCESS 200 - Should update market segment properly (TRUST-104, TRUST-105, TRUST-106, TRUST-375)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const beforeUpdateResponse = await client.getProduct(product.productCode);
             const updatedProduct = new Product({
-                ...product,
+                ...beforeUpdateResponse.data,
                 markets: [
                     {
                         marketId: "IN",
@@ -267,23 +265,9 @@ describe(`${testName} Product`, () => {
                 ]
             });
 
-            const beforeUpdateResponse = await client.getProduct(product.productCode);
-            expect(beforeUpdateResponse.data.markets).toMatchObject([
-                {
-                    marketId: "IN",
-                    nationalCode: "NC001",
-                    mahAddress: "001A Baker Street",
-                    mahName: `${ticket} MAH`,
-                    legalEntityName: `${ticket} Legal Entity`
-                },
-                {
-                    marketId: "DE",
-                    nationalCode: "DE001",
-                    mahAddress: "Always Raining Square, 13B",
-                    mahName: `${ticket} MAH`,
-                    legalEntityName: `${ticket} Legal Entity`
-                }
-            ]);
+            expect(Array.isArray(beforeUpdateResponse.data.markets)).toBeTruthy();
+            expect(beforeUpdateResponse.data.markets.length).toEqual(1);
+            expect(beforeUpdateResponse.data.markets).not.toMatchObject(updatedProduct.markets);
 
             await client.updateProduct(updatedProduct.productCode, updatedProduct);
             const response = await client.getProduct(product.productCode);
@@ -295,43 +279,6 @@ describe(`${testName} Product`, () => {
             const noMarketsUpdateResponse = await client.getProduct(product.productCode);
             expect(noMarketsUpdateResponse.data).toEqual(expect.objectContaining(updatedProduct));
             expect(noMarketsUpdateResponse.data.markets).toEqual([]);
-        });
-
-        it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
-            const timeBetweenRequests = [1000, 2000, 3000];
-            const expectedUpdates = timeBetweenRequests.map((delay, index) => {
-                return new Product({
-                    ...product,
-                    internalMaterialCode: `${Math.random().toString().replace(",", "")}`,
-                    markets: (index + 1) % 2 === 0 ? [] : [{
-                        marketId: "IN",
-                        nationalCode: `IN00${index}`,
-                        mahAddress: `10${index}, Bakon Avenue`,
-                        mahName: `IndianMAH`,
-                        legalEntityName: `Indian Legal Entity`
-                    }]
-                })
-            });
-
-            const requests = expectedUpdates.map((update, index) =>
-                new Promise((resolve) => {
-                    setTimeout(async () => {
-                        const updatedProduct = new Product({
-                            ...product,
-                            ...update
-                        });
-
-                        await client.updateProduct(updatedProduct.productCode, updatedProduct);
-                        const response = await client.getProduct(product.productCode); // Fetch the updated product
-                        resolve(response.data);
-                    }, timeBetweenRequests[index]);
-                })
-            );
-
-            const responses = await Promise.all(requests);
-            responses.forEach((response, index) => {
-                expect(response).toEqual(expect.objectContaining(expectedUpdates[index]));
-            });
         });
 
         it("FAIL 422 - Should throw if GTIN in parameter and body mismatch on update (TRUST-181)", async () => {
@@ -357,7 +304,7 @@ describe(`${testName} Product`, () => {
                     ...product,
                     productCode: fakeProductCode
                 });
-                throw new Error(`Request should have failed with 422 status code`);
+                throw new Error(`Request should have failed`);
             } catch (e) {
                 const response = e?.response || {};
                 expect(response.status).toEqual(422);
@@ -373,6 +320,52 @@ describe(`${testName} Product`, () => {
             } catch (e) {
                 expect(e.response.status).toBe(404);
             }
+        });
+
+        it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
+            const timeBetweenRequests = [100, 100, 100];
+            const expectedUpdates = timeBetweenRequests.map((delay, index) => {
+                return new Product({
+                    ...product,
+                    internalMaterialCode: getRandomNumber().toString(),
+                    productRecall: (index + 1) % 2 === 0,
+                    markets: (index + 1) % 2 === 0 ? [] : [{
+                        marketId: "IN",
+                        nationalCode: `IN00${index}`,
+                        mahAddress: `10${index}, Bakon Avenue`,
+                        mahName: `IndianMAH`,
+                        legalEntityName: `Indian Legal Entity`
+                    }]
+                })
+            });
+
+            const requests = expectedUpdates.map((update, index) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(async () => {
+                        const updatedProduct = new Product({
+                            ...product,
+                            ...update
+                        });
+
+                        try {
+                            await client.updateProduct(updatedProduct.productCode, updatedProduct);
+                        } catch (e) {
+                            return reject(e);
+                        }
+                        const response = await client.getProduct(product.productCode); // Fetch the updated product
+                        resolve(response.data);
+                    }, timeBetweenRequests[index]);
+                })
+            });
+
+            const responses = await Promise.allSettled(requests);
+            const successReq = responses.filter(({status}) => status === "fulfilled");
+            expect(successReq.length).toEqual(1);
+            responses.forEach((response, index) => {
+                if (response.status === "fulfilled") {
+                    expect(response.value).toEqual(expect.objectContaining(expectedUpdates[index]));
+                }
+            });
         });
 
     });

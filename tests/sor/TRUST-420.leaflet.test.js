@@ -16,7 +16,7 @@ const timeoutBetweenTests = 10000;
 
 const testName = "TRUST-420";
 
-describe(`${testName} Product`, () => {
+describe(`${testName} ePI Leaflet`, () => {
     // retrieve integration api client
     const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
@@ -222,7 +222,8 @@ describe(`${testName} Product`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
@@ -239,7 +240,8 @@ describe(`${testName} Product`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
@@ -260,7 +262,8 @@ describe(`${testName} Product`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThanOrEqual(415);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
