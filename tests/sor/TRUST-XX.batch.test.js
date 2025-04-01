@@ -6,8 +6,10 @@ const {Batch} = require("../models/Batch");
 const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {UtilsService} = require("../clients/utils");
-const {getYYMMDDDate, getRandomNumber} = require("../utils");
+const {getYYMMDDDate, getRandomNumber, ProductAndBatchAuditTest} = require("../utils");
 const {FixedUrls} = require("../clients/FixedUrls");
+const {constants} = require("../constants");
+const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 jest.setTimeout(60000);
 
@@ -30,6 +32,7 @@ describe(`TRUST-002 Batch`, () => {
         // store auth SSO token
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
+        AuditLogChecker.setApiClient(client);
 
         const _product = await ModelFactory.product("TRUST-002");
         const res = await client.addProduct(_product.productCode, _product);
@@ -59,6 +62,8 @@ describe(`TRUST-002 Batch`, () => {
 
             const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(batchResponse.data).toEqual(expect.objectContaining(batch));
+
+            await ProductAndBatchAuditTest(client, constants.OPERATIONS.CREATE_BATCH, undefined, batch);
         });
 
         it("FAIL 422 - Should throw Unprocessable Entity when mandatory fields are empty (TRUST-110)", async () => {
@@ -66,6 +71,7 @@ describe(`TRUST-002 Batch`, () => {
             const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
 
             const mandatoryFields = ["productCode", "batchNumber", "expiryDate"];
+            await AuditLogChecker.cacheAuditLog();
             for (const field of mandatoryFields) {
                 const invalidBatch = {...batch};
                 invalidBatch[field] = undefined;
@@ -77,6 +83,7 @@ describe(`TRUST-002 Batch`, () => {
                     const response = e?.response || {};
                     expect(response.status).toEqual(422);
                     expect(response.statusText).toEqual("Unprocessable Entity");
+                    await AuditLogChecker.checkAuditLog();
                 }
             }
         });
