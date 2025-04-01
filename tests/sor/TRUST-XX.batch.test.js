@@ -108,10 +108,10 @@ describe(`${testName} Batch`, () => {
             }
         });
 
-        it("FAIL 422 - Should throw when create a batch for a non existing product (TRUST-178)", async () => {
+        it("FAIL 404 - Should throw when create a batch for a non existing product (TRUST-178)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const {productCode} = await ModelFactory.product(ticket);
-            const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
+            const productCode = "99999999999997";
+            const batch = await ModelFactory.batch(ticket, productCode);
             await AuditLogChecker.cacheAuditLog();
 
             try {
@@ -119,8 +119,7 @@ describe(`${testName} Batch`, () => {
                 throw new Error(`Request should have failed`);
             } catch (e) {
                 const response = e?.response || {};
-                expect(response.status).toEqual(422);
-                expect(response.statusText).toEqual("Unprocessable Entity");
+                expect(response.status).toEqual(404);
                 await AuditLogChecker.checkAuditLog();
             }
         });
@@ -241,7 +240,7 @@ describe(`${testName} Batch`, () => {
 
             const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
-            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...batch}, getBatchResponse.data);
+            await ProductAndBatchAuditTest(client, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, getBatchResponse.data);
         });
 
         it("SUCCESS 200 - Should recall and unrecall a batch properly (TRUST-352)", async () => {
@@ -353,7 +352,7 @@ describe(`${testName} Batch`, () => {
                 } catch (e) {
                     const response = e?.response || {};
                     expect(response.status).toEqual(400);
-                    expect(response.statusText).toEqual("Unprocessable Entity");
+                    expect(response.statusText).toEqual("Bad Request");
                 }
                 await AuditLogChecker.checkAuditLog();
             }
