@@ -35,6 +35,11 @@ function getYYMMDDDate(period) {
     return year + month + day;
 }
 
+/**
+ * Generates a random integer.
+ *
+ * @returns {number} A random integer generated from Math.random()
+ */
 function getRandomNumber() {
     return parseInt(Math.random().toString().replace(".", ""));
 }
