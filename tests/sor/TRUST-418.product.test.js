@@ -10,7 +10,7 @@ const {getRandomNumber, ProductAndBatchAuditTest} = require("../utils");
 const {constants} = require("../constants");
 
 jest.setTimeout(60000);
-const timeoutBetweenTests = 500;
+const timeoutBetweenTests = 5000;
 const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
@@ -281,6 +281,47 @@ describe(`${testName} Product`, () => {
             expect(noMarketsUpdateResponse.data.markets).toEqual([]);
         });
 
+        it("FAIL 422 - Should throw if GTIN in parameter and body mismatch on update (TRUST-181)", async () => {
+            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
+            const diffProductPayload = await ModelFactory.product(ticket);
+
+            try {
+                await client.updateProduct(product.productCode, diffProductPayload);
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
+            }
+        });
+
+        it("FAIL 422 - Should not update productCode field", async () => {
+            const originalProductCode = product.productCode;
+            const fakeProduct = await ModelFactory.product("Fake");
+            const fakeProductCode = fakeProduct.productCode;
+
+            try {
+                await client.updateProduct(originalProductCode, {
+                    ...product,
+                    productCode: fakeProductCode
+                });
+                throw new Error(`Request should have failed`);
+            } catch (e) {
+                const response = e?.response || {};
+                expect(response.status).toEqual(422);
+                expect(response.statusText).toEqual("Unprocessable Entity");
+            }
+
+            const updatedProduct = await client.getProduct(originalProductCode);
+            expect(updatedProduct.data.productCode).toEqual(originalProductCode);
+
+            try {
+                await client.getProduct(fakeProductCode);
+                throw new Error(`Request should have failed with 404 status code`);
+            } catch (e) {
+                expect(e.response.status).toBe(404);
+            }
+        });
+
         it("SUCCESS 200 - Should maintain data consistency when making sequential updates (TRUST-375)", async () => {
             const timeBetweenRequests = [100, 100, 100];
             const expectedUpdates = timeBetweenRequests.map((delay, index) => {
@@ -325,47 +366,6 @@ describe(`${testName} Product`, () => {
                     expect(response.value).toEqual(expect.objectContaining(expectedUpdates[index]));
                 }
             });
-        });
-
-        it("FAIL 422 - Should throw if GTIN in parameter and body mismatch on update (TRUST-181)", async () => {
-            const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-            const diffProductPayload = await ModelFactory.product(ticket);
-
-            try {
-                await client.updateProduct(product.productCode, diffProductPayload);
-            } catch (e) {
-                const response = e?.response || {};
-                expect(response.status).toEqual(422);
-                expect(response.statusText).toEqual("Unprocessable Entity");
-            }
-        });
-
-        it("FAIL 422 - Should not update productCode field", async () => {
-            const originalProductCode = product.productCode;
-            const fakeProduct = await ModelFactory.product("Fake");
-            const fakeProductCode = fakeProduct.productCode;
-
-            try {
-                await client.updateProduct(originalProductCode, {
-                    ...product,
-                    productCode: fakeProductCode
-                });
-                throw new Error(`Request should have failed`);
-            } catch (e) {
-                const response = e?.response || {};
-                expect(response.status).toEqual(422);
-                expect(response.statusText).toEqual("Unprocessable Entity");
-            }
-
-            const updatedProduct = await client.getProduct(originalProductCode);
-            expect(updatedProduct.data.productCode).toEqual(originalProductCode);
-
-            try {
-                await client.getProduct(fakeProductCode);
-                throw new Error(`Request should have failed with 404 status code`);
-            } catch (e) {
-                expect(e.response.status).toBe(404);
-            }
         });
 
     });

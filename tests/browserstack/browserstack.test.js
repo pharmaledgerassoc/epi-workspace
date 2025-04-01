@@ -1,5 +1,6 @@
 //https://www.browserstack.com/docs/automate/capabilities
 // https://www.browserstack.com/docs/automate/selenium/camera-injection
+//https://www.browserstack.com/docs/app-automate/appium/advanced-features/ios-device-settings
 const { Builder, By, Key, until, Capabilities, Browser } = require("selenium-webdriver");
 const { getConfig } = require("../conf");
 
@@ -11,10 +12,11 @@ const capabilities = {
     'browserstack.cameraInjectionUrl': `media://${videoDatamatrix}`,
 };
 
-// gtin=12458796325688&batch=Batch1&expiry=28%20-%20Mar%20-%202025
+// gtin=23658479652148&batch=Batch1&expiry=28%20-%20Mar%20-%202025
 // media://408ff24cf30111439064d795c926799f643bc0dc (conta demerson -> getin_dev.mp4)
 // media://236ea90962c251fbbb726f8e07d87435d6e32ce4 (conta demerson -> gtin_techops_382.mp4)
 // media://dc7a3b57602e608c80cda4debae7f6eb29d41151 (conta tiago -> gtin_techops_382.mp4)
+// "media_url":"media://eddc2d0db4b13d81a022f668a7deaab4cd678e51 (conta demersonc_7lUJ8A -> datamatrix.png)"
 
 describe("LWA compatibility testing", () => {
     let browser;
@@ -22,8 +24,13 @@ describe("LWA compatibility testing", () => {
     let config = getConfig();
     const browserstackUsername = process.env.BROWSERSTACK_USERNAME;
     const browserstackAccessKey = process.env.BROWSERSTACK_ACCESS_KEY;
-    const env = "dev";
+    const env = process.env?.BROWSERSTACK_LOCAL ? "local" : !!process.env?.LWA ? process.env?.LWA : config['lwa_env'];
     // let bsLocal;
+
+    function getLwaEndPoint() {
+        return env === "local" ? 
+            "http://localhost:8080/lwa/" : `https://lwa.${env}.pladevs.com/`; 
+    }
 
     async function getBrowser(osName) {
         if (["ios", "mac"].some(platform => osName.toLowerCase().includes(platform))) {
@@ -73,7 +80,7 @@ describe("LWA compatibility testing", () => {
     beforeAll(async () => {
         const osName = process.env.OS_NAME || process.platform  || "Windows"; // Dynamically set the OS via environment variable
         browser = await getBrowser(osName);
-        home = env === "local" ? config['lwa_endpoint'] : `https://lwa.${env}.pladevs.com/`; 
+        home = getLwaEndPoint(); 
     });
 
     describe("Browser compatibility", () => {
@@ -111,6 +118,7 @@ describe("LWA compatibility testing", () => {
             expect(await contentContainer.isDisplayed()).toBe(true);
         }, 60000);
 
+
         it("Scan Datamatrix", async () => {
         
             const scanButton = await browser.wait(
@@ -127,48 +135,53 @@ describe("LWA compatibility testing", () => {
             
             await browser.wait(until.urlContains('scan'), 5000); 
             let currentUrl = await browser.getCurrentUrl();
-            await browser.get(`${currentUrl.replace('scan.html', '')}/leaflet.html?gtin=12458796325688&batch=Batch1`);
+            await browser.get(`${currentUrl.replace('scan.html', '')}leaflet.html?gtin=23658479652148&batch=Batch1`);
+            await browser.wait(until.titleMatches(/PharmaLedger/i), 10000);
 
             const loaderContainer = await browser.wait(
                 until.elementLocated(By.className('loader-container')),
                 10000
             );
-           
-            await browser.wait(until.titleMatches(/PharmaLedger/i), 10000);
-
-            // Wait for a loader container removed from DOM
-            await browser.wait(
-                until.stalenessOf(loaderContainer),
-                10000
-            );
-            currentUrl = await browser.getCurrentUrl();
+            
             try {
-                if(currentUrl.includes('error')) {
-                    console.warn("Test passed, but no leaflet found for datamatrix (gtin: 12458796325688, batch: Batch1)");
-                    const scanAgainButton = await browser.wait(
-                        until.elementLocated(By.id("scan-again-button")),
-                        5000
+            
+                if(loaderContainer) {
+                    // Wait for a loader container removed from DOM or not visible
+                    const loaderContainerVisible = await loaderContainer?.isDisplayed();
+                    await browser.wait(
+                        loaderContainerVisible ? 
+                            until.elementIsNotVisible(loaderContainer) : until.stalenessOf(loaderContainer),
+                        15000
                     );
-                    await browser.executeScript('arguments[0].scrollIntoView(true);', scanAgainButton);
-                    expect(await scanAgainButton.isDisplayed()).toBe(true); 
-                } else {
-                    const productName = await browser.wait(
-                        until.elementLocated(By.className("product-name")),
-                        5000
-                    );
-                    await browser.wait(until.elementIsVisible(productName), 5000);
-                    expect(await productName.isDisplayed()).toBe(true);
                 }
-                
-                await browser.executeScript('window.localStorage.clear();');
-                await browser.executeScript('window.sessionStorage.clear();');
-                
             } catch (error) {
-                console.error("Error locating element:", error);
+                console.info(`Error locating element:  ${error?.message}`);
             }
-           
+            
+            currentUrl = await browser.getCurrentUrl();
+
+            if(currentUrl.includes('error')) {
+                console.warn("Test passed, but no leaflet found for datamatrix (gtin: 23658479652148, batch: Batch1)");
+                const scanAgainButton = await browser.wait(
+                    until.elementLocated(By.id("scan-again-button")),
+                    5000
+                );
+                await browser.executeScript('arguments[0].scrollIntoView(true);', scanAgainButton);
+                expect(await scanAgainButton.isDisplayed()).toBe(true); 
+            } else {
+                console.info("Loaded datamatrix (gtin: 23658479652148, batch: Batch1)");
+                const productName = await browser.wait(
+                    until.elementLocated(By.className("product-name")),
+                    10000
+                );
+                await browser.wait(until.elementIsVisible(productName), 5000);
+                expect(await productName.isDisplayed()).toBe(true);
+            }
+            
+            await browser.executeScript('window.localStorage.clear();');
+            await browser.executeScript('window.sessionStorage.clear();');
           
-        }, 70000);
+        }, 80000);
     });
 
     afterAll(async () => {

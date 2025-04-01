@@ -246,8 +246,9 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
     reporter.outputJSON(step, "photo-prod-photo", imageMessage);
 
-    audit = await client.filterAuditLogs(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
-
+    let auditRes = await client.filterAuditLogs(constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
+    audit = auditRes.data[0];
+    reporter.outputJSON(step, "photo-prod-photo-audit", audit);
   });
   // it("SUCCESS 200 - Should create a photo product properly", async () => {
   //   const { ticket } = UtilsService.getTicketId(
