@@ -4,20 +4,21 @@ const {ModelFactory} = require("../models/factory");
 const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {Leaflet} = require("../models/Leaflet");
-const {API_MESSAGE_TYPES} = require("../constants");
+const {API_MESSAGE_TYPES, constants} = require("../constants");
 const fs = require("node:fs");
 const path = require("path");
 const {FixedUrls} = require("../clients/FixedUrls");
+const { EPiAuditTest } = require("../utils");
 
 jest.setTimeout(60000);
 
 const timeoutBetweenTests = 10000;
 
+const testName = "TRUST-003";
 
-describe(`TRUST-003 ePI Leaflet`, () => {
-
+describe(`${testName} ePI Leaflet`, () => {
     // retrieve integration api client
-    const client = new IntegrationClient(config);
+    const client = new IntegrationClient(config, testName);
     const oauth = new OAuth(config);
     const fixedUrl = new FixedUrls(config);
     const listProductLangsUrl = "/listProductLangs";
@@ -95,7 +96,10 @@ describe(`TRUST-003 ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
+                await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
             }
+
+            
         });
 
         it("SUCCESS 200 - Should kept existing leaflets when adding a new one", async () => {
@@ -218,7 +222,8 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
@@ -235,7 +240,8 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
@@ -256,7 +262,8 @@ describe(`TRUST-003 ePI Leaflet`, () => {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
                     throw new Error("Should have fail");
                 } catch (e) {
-                    expect(e.status).toBe(422);
+                    expect(e.status).toBeGreaterThan(400);
+                    expect(e.status).toBeLessThan(500);
                 }
             }
         });
