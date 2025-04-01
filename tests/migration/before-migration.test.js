@@ -40,12 +40,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
     // Set up reporter
     const reporter = new Reporter(ticket);
-
-    // Create Report
     const step = "STEP1"
-    const p = reporter.generatePath(step);
-
-    fs.mkdirSync(p, { recursive: true });
 
     // Generate Product
     const product = await ModelFactory.product(ticket, {
