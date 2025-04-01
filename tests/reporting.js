@@ -55,6 +55,9 @@ class Reporter {
      _save(step, reference, data, type) {
         const dir = path.join(this._basePath, step);
         try {
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
             const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : ".json");
             console.log(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
             switch (type) {
