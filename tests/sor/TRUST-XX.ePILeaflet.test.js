@@ -4,10 +4,11 @@ const {ModelFactory} = require("../models/factory");
 const {OAuth} = require("../clients/Oauth");
 const {IntegrationClient} = require("../clients/Integration");
 const {Leaflet} = require("../models/Leaflet");
-const {API_MESSAGE_TYPES} = require("../constants");
+const {API_MESSAGE_TYPES, constants} = require("../constants");
 const fs = require("node:fs");
 const path = require("path");
 const {FixedUrls} = require("../clients/FixedUrls");
+const { EPiAuditTest } = require("../utils");
 
 jest.setTimeout(60000);
 
@@ -95,7 +96,10 @@ describe(`${testName} Product`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
+                await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
             }
+
+            
         });
 
         it("SUCCESS 200 - Should kept existing leaflets when adding a new one", async () => {
