@@ -95,6 +95,7 @@ describe(`${testName} Product`, () => {
                 expect(response.status).toEqual(422);
                 expect(response.statusText).toEqual("Unprocessable Entity");
                 await AuditLogChecker.assertAuditLogSnapshot();
+                return;
             }
             throw new Error(`Request should have failed with 422 status code when invalid GTIN`);
         });
