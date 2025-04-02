@@ -79,7 +79,6 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // Save audit information
     reporter.outputJSON(step, "base-prod-created-audit", audit1);
 
-
     // Generate Updated Product
     const updatedMedicalName = "Updated Medical Name";
 
