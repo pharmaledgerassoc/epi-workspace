@@ -110,8 +110,10 @@ describe(`${testName} Product`, () => {
                 const response = e?.response || {};
                 expect(response.status).toEqual(422);
                 expect(response.statusText).toEqual("Unprocessable Entity");
+                await AuditLogChecker.assertAuditLogSnapshot();
+                return;
             }
-            await AuditLogChecker.assertAuditLogSnapshot();
+            throw new Error(`Request should have failed with 422 status code when GTIN in parameter and body mismatch`);
         });
 
         it("FAIL 422 - Should throw Unprocessable Entity when mandatory fields are empty (TRUST-69)", async () => {
