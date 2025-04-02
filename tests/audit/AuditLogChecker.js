@@ -33,19 +33,37 @@ class AuditLogChecker {
             throw new Error("Unexpected changes detected in the audit log");
     }
 
+    static reportAudit(step, gtin, batch, data){
+        const testName = expect.getState().currentTestName
+        const reference = testName.split(" - ").pop();
+        let referenceStr = "AUDIT-";
+        if(gtin)
+            referenceStr += `gtin=${gtin}--`;
+        if(batch)
+            referenceStr += `batch=${batch}--`;
+    
+        referenceStr += reference 
+
+        this.client.reporter.outputPayload(step,referenceStr,data,"json", true);
+    }
+
     /**
      * Test the audit logs
      * @param {string} gtin - The GTIN of the product.
+     * @param {string | undefined} [batch] - batch number
+     * @param {string} step - test step
      * @param {string} reason - audit expected reason
      * @param {Object | undefined} [oldObject]  - original object to compare (if undefined it means it is a creation)
      * @param {Object | undefined} [newObject]  - new object to compare after the action
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
      */
-    static async assertAuditLog(gtin, reason, oldObject, newObject, itFailed = false) {
+    static async assertAuditLog(gtin, batch, step, reason, oldObject, newObject, itFailed = false) {
         const auditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
         const audit = auditResponse.data[0];
         expect(audit.itemCode).toEqual(gtin);
         expect(audit.reason).toEqual(reason);
+
+        AuditLogChecker.reportAudit(step, gtin, batch, audit);
 
         if (itFailed)
             return audit;
@@ -64,6 +82,7 @@ class AuditLogChecker {
 
     /**
      * Test the leaflets audit logs
+     * @param {string} step  - test step
      * @param {string} gtin  - leaflet gtin
      * @param {string} reason - audit expected reason
      * @param {string} epiLanguage  - leaflet's expected language
@@ -72,11 +91,13 @@ class AuditLogChecker {
      * @param {string | undefined} [batch=undefined]  - leaflet's batch
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
      */
-    static async assertEPIAuditLog(gtin, reason, epiLanguage, epiType, epiMarket, batch = undefined, itFailed = false) {
+    static async assertEPIAuditLog(step, gtin, reason, epiLanguage, epiType, epiMarket, batch = undefined, itFailed = false) {
         const epiAuditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
         const audit = epiAuditResponse.data[0];
         expect(audit.itemCode).toEqual(gtin);
         expect(audit.reason).toEqual(reason);
+
+        AuditLogChecker.reportAudit(step, gtin, batch, audit);
 
         if (itFailed)
             return audit;
