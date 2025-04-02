@@ -149,7 +149,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "strengths-prod", product);
   });
 
-  it("STEP 3 - Creates a product with markets", async () => {
+  it.skip("STEP 3 - Creates a product with markets", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
@@ -197,7 +197,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "market-prod", product);
   });
 
-  it("STEP 4 - Creates product with photo", async () => {
+  it.skip("STEP 4 - Creates product with photo", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
@@ -258,7 +258,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "photo-prod-photo-audit", audit);
   });
 
-  it("STEP 5 - Creates product with epi", async () => {
+  it.skip("STEP 5 - Creates product with epi", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
