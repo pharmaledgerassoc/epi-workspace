@@ -131,9 +131,13 @@ describe(`TRUST-125 After Migration Test`, () => {
     // Get audit log and validate
     const audit3 = await AuditLogChecker.assertAuditLog(
       GTIN,
+      undefined,
+      step,
       constants.OPERATIONS.UPDATE_PRODUCT,
       baseProduct,
-      updatedProduct
+      updatedProduct,
+      false,
+      false
     );
   });
 
@@ -229,9 +233,13 @@ describe(`TRUST-125 After Migration Test`, () => {
     // Get audit log and validate
     const audit3 = await AuditLogChecker.assertAuditLog(
       GTIN,
+      undefined,
+      step,
       constants.OPERATIONS.UPDATE_PRODUCT,
       baseProduct,
-      updatedProduct
+      updatedProduct,
+      false,
+      false
     );
   });
 
@@ -322,9 +330,13 @@ describe(`TRUST-125 After Migration Test`, () => {
     // Get audit log and validate
     const audit3 = await AuditLogChecker.assertAuditLog(
       GTIN,
+      undefined,
+      step,
       constants.OPERATIONS.UPDATE_PRODUCT,
       baseProduct,
-      updatedProduct
+      updatedProduct,
+      false,
+      false
     );
   });
 });
