@@ -13,14 +13,10 @@ class AuditLogChecker {
      * @throws {Error} If the audit log data is not an array.
      */
     static async storeAuditLogSnapshot() {
-        try {
-            const {data} = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, undefined, "timestamp > 0", "desc");
-            if (!Array.isArray(data))
-                throw new Error(`Expected an array but received ${typeof data}`);
-            this.auditLogLength = data.length;
-        } catch (e) {
-            throw e;
-        }
+        const {data} = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, undefined, "timestamp > 0", "desc");
+        if (!Array.isArray(data))
+            throw new Error(`Expected an array but received ${typeof data}`);
+        this.auditLogLength = data.length;
     }
 
     /**
@@ -29,15 +25,12 @@ class AuditLogChecker {
      * @throws {Error} If the audit log data is not an array or if unexpected changes are detected.
      */
     static async assertAuditLogSnapshot() {
-        try {
-            const {data} = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, undefined, "timestamp > 0", "desc");
-            if (!Array.isArray(data))
-                throw new Error(`Expected an array but received ${typeof data}`);
-            if (data.length !== this.auditLogLength)
-                throw new Error("Unexpected changes detected in the audit log");
-        } catch (e) {
-            throw e;
-        }
+        const {data} = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACTION, undefined, undefined, "timestamp > 0", "desc");
+        if (!Array.isArray(data))
+            throw new TypeError(`Expected an array but received ${typeof data}`);
+
+        if (data.length !== this.auditLogLength)
+            throw new Error("Unexpected changes detected in the audit log");
     }
 
     /**
@@ -80,8 +73,8 @@ class AuditLogChecker {
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
      */
     static async assertEPIAuditLog(gtin, reason, epiLanguage, epiType, epiMarket, batch = undefined, itFailed = false) {
-        const auditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
-        const audit = auditResponse.data[0];
+        const epiAuditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
+        const audit = epiAuditResponse.data[0];
         expect(audit.itemCode).toEqual(gtin);
         expect(audit.reason).toEqual(reason);
 
