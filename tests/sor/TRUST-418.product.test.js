@@ -11,7 +11,7 @@ const {constants} = require("../constants");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI ? 3 : 1;
+const multiplier = isCI ? 4 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 5 * 1000;
 
