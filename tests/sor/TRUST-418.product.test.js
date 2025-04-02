@@ -10,8 +10,11 @@ const {getRandomNumber} = require("../utils");
 const {constants} = require("../constants");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
-jest.setTimeout(60000);
-const timeoutBetweenTests = 5000;
+const isCI = !!process.env.CI; // works for travis, github and gitlab
+const multiplier = isCI? 3 : 1;
+jest.setTimeout(multiplier * 60 * 1000);
+const timeoutBetweenTests = multiplier * 5 * 1000;
+
 const testName = "TRUST-418";
 
 describe(`${testName} Product`, () => {
