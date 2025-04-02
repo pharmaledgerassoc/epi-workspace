@@ -196,7 +196,6 @@ describe(`TRUST-125 After Migration Test`, () => {
 
     expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));
 
-    //TODO: Estou aqui
     // Generate Base Product
     const baseProduct = await ModelFactory.product(
       ticket,
