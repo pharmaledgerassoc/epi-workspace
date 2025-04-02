@@ -633,7 +633,7 @@ describe(`${testName} ePI Leaflet`, () => {
         let GTIN = "";
         let BATCH_NUMBER = "";
         beforeAll(async () => {
-            const ticket = "TRUST-XX ePI";
+            const ticket = `${testName} ePI`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
             expect(addProductRes.status).toBe(200);

@@ -39,7 +39,7 @@ describe(`${testName} Product`, () => {
 
     describe(`${productUrl} (POST)`, () => {
 
-        it("SUCCESS 200 - Should create a product properly (TRUST-67, TRUST-109, TRUST-375)", async () => {
+        it("SUCCESS 200 - Should create a product properly (TRUST-67, TRUST-109, TRUST-375, TRUST-377)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const product = await ModelFactory.product(ticket, {
                 markets: [{

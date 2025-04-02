@@ -49,7 +49,7 @@ describe(`${testName} Batch`, () => {
     });
 
     describe(`${batchUrl} (POST)`, () => {
-        it("SUCCESS 200 - Should create a batch properly (TRUST-109)", async () => {
+        it("SUCCESS 200 - Should create a batch properly (TRUST-109, TRUST-378)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const batch = await ModelFactory.batch(ticket, PRODUCT.productCode, {
                 packagingSiteName: ticket,
