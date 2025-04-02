@@ -8,12 +8,10 @@ const {API_MESSAGE_TYPES, constants} = require("../constants");
 const fs = require("node:fs");
 const path = require("path");
 const {FixedUrls} = require("../clients/FixedUrls");
-const { EPiAuditTest } = require("../utils");
+const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 jest.setTimeout(60000);
-
-const timeoutBetweenTests = 10000;
-
+const timeoutBetweenTests = 5000;
 const testName = "TRUST-420";
 
 describe(`${testName} ePI Leaflet`, () => {
@@ -32,7 +30,7 @@ describe(`${testName} ePI Leaflet`, () => {
     const XML_FILE_CONTENT_FR = (fs.readFileSync(path.join(__dirname, "..", "resources", "xml_content_example_fr.txt"), {encoding: 'utf-8'})).trim();
     const XML_FILE_WITH_IMG = (fs.readFileSync(path.join(__dirname, "..", "resources", "xml_content_with_img.txt"), {encoding: 'utf-8'})).trim();
     const IMG_FILE_NAME = "figure_010_1295_1485_3620_1050.png";
-    const IMG_FILE_CONTENT = (fs.readFileSync(path.join(__dirname, "..", "resources", "figure_010_1295_1485_3620_1050.png.txt"), {encoding: 'utf-8'})).trim();
+    const IMG_FILE_CONTENT = (fs.readFileSync(path.join(__dirname, "..", "resources", `${IMG_FILE_NAME}.txt`), {encoding: 'utf-8'})).trim();
 
     const ePIBaseURL = "/epi";
 
@@ -41,6 +39,7 @@ describe(`${testName} ePI Leaflet`, () => {
         // store auth SSO token
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
+        AuditLogChecker.setApiClient(client);
 
         const ticket = testName
         const product = await ModelFactory.product(ticket, {
@@ -96,10 +95,10 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
-                await EPiAuditTest(client, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
             }
 
-            
+
         });
 
         it("SUCCESS 200 - Should kept existing leaflets when adding a new one", async () => {
@@ -110,12 +109,16 @@ describe(`${testName} ePI Leaflet`, () => {
             }));
             expect(res1.status).toBe(200);
 
+            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
+
             const res2 = await client.addLeaflet(GTIN, undefined, "no", API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
                 productCode: GTIN,
                 language: "no",
                 xmlFileContent: XML_FILE_CONTENT
             }));
             expect(res2.status).toBe(200);
+
+            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, "no", API_MESSAGE_TYPES.EPI.LEAFLET);
 
             const getResponse = await client.getLeaflet(GTIN, undefined, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(getResponse.status).toBe(200);
@@ -133,6 +136,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 for (let market of markets) {
                     const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, market, leaflet);
                     expect(res.status).toBe(200);
+                    await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, market)
                 }
             }
         });
@@ -152,10 +156,12 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of [API_MESSAGE_TYPES.EPI.LEAFLET]) {
                 const res = await client.addLeaflet(leaflet.productCode, BATCH_NUMBER, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, undefined, BATCH_NUMBER);
             }
         });
 
         it("FAIL 415 - Should throw when mandatory fields are empty (TRUST-193)", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: LANG,
@@ -172,6 +178,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     const response = e?.response || {};
                     expect(response.status).toEqual(415);
+                    await AuditLogChecker.assertAuditLogSnapshot();
                     continue;
                 }
                 throw new Error(`Request should have failed with 422 status code when ${field} is empty`);
@@ -179,6 +186,7 @@ describe(`${testName} ePI Leaflet`, () => {
         });
 
         it("FAIL 400 - Should fail when try to add a prescribingInfo leaflet on batch level (TRUST-392)", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
@@ -192,9 +200,11 @@ describe(`${testName} ePI Leaflet`, () => {
                 expect(e.status).toBe(400);
                 expect(e.response.data).toEqual(`Invalid epi type: ${API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO}.`);
             }
+            await AuditLogChecker.assertAuditLogSnapshot();
         });
 
         it("FAIL 400 - Should fail when try to add a leaflet with ePI Market on batch level (TRUST-391)", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 batchNumber: BATCH_NUMBER,
@@ -206,11 +216,13 @@ describe(`${testName} ePI Leaflet`, () => {
                 await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO, "GE", leaflet);
             } catch (e) {
                 expect(e.status).toBe(415);
+                await AuditLogChecker.assertAuditLogSnapshot();
                 //expect(e.response.data).toEqual("Markets are not available at the epi batch level.");
             }
         });
 
         it("FAIL 422 - Should fail when try to add a leaflet without image", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "it",
@@ -224,11 +236,13 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
+                    await AuditLogChecker.assertAuditLogSnapshot();
                 }
             }
         });
 
         it("FAIL 422 - Should fail when try to add a invalid XML content (TRUST-191)", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "it",
@@ -242,11 +256,13 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
+                    await AuditLogChecker.assertAuditLogSnapshot();
                 }
             }
         });
 
         it("FAIL 422 - Should fail when try to add a invalid otherFiles content (TRUST-193)", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             const leaflet = new Leaflet({
                 productCode: GTIN,
                 language: "pl",
@@ -264,6 +280,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
+                    await AuditLogChecker.assertAuditLogSnapshot();
                 }
             }
         });
@@ -365,6 +382,8 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.updateLeaflet(GTIN, undefined, LANG, leafletType, payload);
                 expect(res.status).toBe(200);
 
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined);
+
                 const getResponse = await client.getLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(getResponse.status).toBe(200);
                 expect(getResponse.data).toMatchObject({
@@ -385,6 +404,9 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.updateLeaflet(GTIN, BATCH_NUMBER, LANG, leafletType, payload);
                 expect(res.status).toBe(200);
 
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined, BATCH_NUMBER);
+
+
                 const getResponse = await client.getLeaflet(GTIN, BATCH_NUMBER, LANG, leafletType);
                 expect(getResponse.status).toBe(200);
                 expect(getResponse.data).toMatchObject({
@@ -395,6 +417,7 @@ describe(`${testName} ePI Leaflet`, () => {
         });
 
         it("FAIL 422 - Should fail when upload a invalid XML leaflet for PRODUCT", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             for (let leafletType of [API_MESSAGE_TYPES.EPI.LEAFLET]) {
                 try {
                     await client.updateLeaflet(GTIN, undefined, LANG, leafletType, new Leaflet({
@@ -406,11 +429,13 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     expect(e.status).toBe(422);
                     expect(e.response.data.message).toEqual("Payload validation failed");
+                    await AuditLogChecker.assertAuditLogSnapshot();
                 }
             }
         });
 
         it("FAIL 422 - Should fail when upload a invalid XML leaflet for BATCH", async () => {
+            await AuditLogChecker.storeAuditLogSnapshot();
             for (let leafletType of [API_MESSAGE_TYPES.EPI.LEAFLET]) {
                 try {
                     await client.updateLeaflet(GTIN, BATCH_NUMBER, LANG, leafletType, new Leaflet({
@@ -423,6 +448,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 } catch (e) {
                     expect(e.status).toBe(422);
                     expect(e.response.data.message).toEqual("Payload validation failed");
+                    await AuditLogChecker.assertAuditLogSnapshot();
                 }
             }
         });
@@ -476,6 +502,8 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(res.status).toBe(200);
 
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, undefined);
+
                 try {
                     await client.getLeaflet(GTIN, undefined, LANG, leafletType);
                     throw new Error(`Should throw for /${GTIN}/${LANG}/${leafletType}`)
@@ -490,8 +518,10 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType, MARKET);
                 expect(res.status).toBe(200);
 
+                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, MARKET);
+
                 try {
-                    await client.getLeaflet(GTIN, undefined, LANG, leafletType);
+                    const leaflet = await client.getLeaflet(GTIN, undefined, LANG, leafletType);
                     throw new Error(`Should throw for /${GTIN}/${LANG}/${leafletType}/${MARKET}`)
                 } catch (e) {
                     expect(e.status).toEqual(404);
@@ -502,6 +532,9 @@ describe(`${testName} ePI Leaflet`, () => {
         it("SUCCESS 200 - Should delete a leaflet from a BATCH properly (TRUST-118)", async () => {
             const res = await client.deleteLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(res.status).toBe(200);
+
+            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, BATCH_NUMBER);
+
 
             try {
                 await client.getLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
