@@ -68,9 +68,6 @@ describe(`TRUST-125 After Migration Test`, () => {
     // Get Product and compare
     const productResponse1 = await client.getProduct(GTIN);
 
-    //TODO: Find the reason why product recall changes from false to ""
-    productResponse1.data.productRecall = product.productRecall;
-
     expect(productResponse1.data).toEqual(expect.objectContaining(product));
     expect(productResponse1.data.version).toEqual(2);
 
@@ -157,9 +154,6 @@ describe(`TRUST-125 After Migration Test`, () => {
 
     // Get Product and compare
     const productResponse1 = await client.getProduct(GTIN);
-
-    //TODO: Find the reason why product recall changes from false to ""
-    productResponse1.data.productRecall = product.productRecall;
 
     expect(productResponse1.data).toEqual(expect.objectContaining(product));
     expect(productResponse1.data.version).toEqual(2);
