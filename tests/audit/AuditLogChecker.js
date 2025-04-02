@@ -56,6 +56,7 @@ class AuditLogChecker {
      * @param {Object | undefined} [oldObject]  - original object to compare (if undefined it means it is a creation)
      * @param {Object | undefined} [newObject]  - new object to compare after the action
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
+     * @param {boolean} [reportAudit=true]  - If you wish to save the audit on a file set to true. Defaults to true.
      */
     static async assertAuditLog(gtin, batch, step, reason, oldObject, newObject, itFailed = false, reportAudit = true) {
         const auditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
