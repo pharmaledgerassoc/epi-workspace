@@ -147,13 +147,14 @@ describe(`${testName} Product`, () => {
             const product = await ModelFactory.product(ticket);
             try {
                 await client.addProduct(product.productCode, {...product, dummyProperty: "no matter value"});
-                throw new Error("Request should have failed with 422 status code");
             } catch (e) {
                 const response = e?.response || {};
                 expect(response.status).toEqual(422);
                 expect(response.statusText).toEqual("Unprocessable Entity");
+                await AuditLogChecker.assertAuditLogSnapshot();
+                return;
             }
-            await AuditLogChecker.assertAuditLogSnapshot();
+            throw new Error("Request should have failed with 422 status code");
         });
 
     });
