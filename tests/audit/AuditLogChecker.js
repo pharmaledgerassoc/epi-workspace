@@ -42,14 +42,16 @@ class AuditLogChecker {
 
     /**
      * Test the audit logs
+     * @param {string} gtin - The GTIN of the product.
      * @param {string} reason - audit expected reason
      * @param {Object | undefined} [oldObject]  - original object to compare (if undefined it means it is a creation)
      * @param {Object | undefined} [newObject]  - new object to compare after the action
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
      */
-    static async assertAuditLog(reason, oldObject, newObject, itFailed = false) {
+    static async assertAuditLog(gtin, reason, oldObject, newObject, itFailed = false) {
         const auditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
         const audit = auditResponse.data[0];
+        expect(audit.itemCode).toEqual(gtin);
         expect(audit.reason).toEqual(reason);
 
         if (itFailed)
