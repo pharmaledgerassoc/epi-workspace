@@ -11,7 +11,7 @@ const {FixedUrls} = require("../clients/FixedUrls");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI? 3 : 1;
+const multiplier = isCI? 4 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 15 * 1000;
 
@@ -105,7 +105,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
+                await AuditLogChecker.assertEPIAuditLog("POST", GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType);
             }
 
 
@@ -119,7 +119,7 @@ describe(`${testName} ePI Leaflet`, () => {
             }));
             expect(res1.status).toBe(200);
 
-            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
+            await AuditLogChecker.assertEPIAuditLog("POST", GTIN, constants.OPERATIONS.ADD_LEAFLET, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
 
             const res2 = await client.addLeaflet(GTIN, undefined, "no", API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
                 productCode: GTIN,
@@ -128,7 +128,7 @@ describe(`${testName} ePI Leaflet`, () => {
             }));
             expect(res2.status).toBe(200);
 
-            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, "no", API_MESSAGE_TYPES.EPI.LEAFLET);
+            await AuditLogChecker.assertEPIAuditLog("POST", GTIN, constants.OPERATIONS.ADD_LEAFLET, "no", API_MESSAGE_TYPES.EPI.LEAFLET);
 
             const getResponse = await client.getLeaflet(GTIN, undefined, "mk", API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(getResponse.status).toBe(200);
@@ -146,7 +146,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 for (let market of markets) {
                     const res = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, market, leaflet);
                     expect(res.status).toBe(200);
-                    await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, market)
+                    await AuditLogChecker.assertEPIAuditLog("POST", GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, market)
                 }
             }
         });
@@ -166,7 +166,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of [API_MESSAGE_TYPES.EPI.LEAFLET]) {
                 const res = await client.addLeaflet(leaflet.productCode, BATCH_NUMBER, leaflet.language, leafletType, undefined, leaflet);
                 expect(res.status).toBe(200);
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, undefined, BATCH_NUMBER);
+                await AuditLogChecker.assertEPIAuditLog("POST", GTIN, constants.OPERATIONS.ADD_LEAFLET, leaflet.language, leafletType, undefined, BATCH_NUMBER);
             }
         });
 
@@ -394,7 +394,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.updateLeaflet(GTIN, undefined, LANG, leafletType, payload);
                 expect(res.status).toBe(200);
 
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined);
+                await AuditLogChecker.assertEPIAuditLog("PUT", GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined);
 
                 const getResponse = await client.getLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(getResponse.status).toBe(200);
@@ -416,7 +416,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.updateLeaflet(GTIN, BATCH_NUMBER, LANG, leafletType, payload);
                 expect(res.status).toBe(200);
 
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined, BATCH_NUMBER);
+                await AuditLogChecker.assertEPIAuditLog("PUT", GTIN, constants.OPERATIONS.UPDATE_LEAFLET, LANG, leafletType, undefined, BATCH_NUMBER);
 
 
                 const getResponse = await client.getLeaflet(GTIN, BATCH_NUMBER, LANG, leafletType);
@@ -514,7 +514,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(res.status).toBe(200);
 
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, undefined);
+                await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, undefined);
 
                 try {
                     await client.getLeaflet(GTIN, undefined, LANG, leafletType);
@@ -530,7 +530,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType, MARKET);
                 expect(res.status).toBe(200);
 
-                await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, MARKET);
+                await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, MARKET);
 
                 try {
                     const leaflet = await client.getLeaflet(GTIN, undefined, LANG, leafletType);
@@ -545,7 +545,7 @@ describe(`${testName} ePI Leaflet`, () => {
             const res = await client.deleteLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(res.status).toBe(200);
 
-            await AuditLogChecker.assertEPIAuditLog(GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, BATCH_NUMBER);
+            await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, BATCH_NUMBER);
 
 
             try {

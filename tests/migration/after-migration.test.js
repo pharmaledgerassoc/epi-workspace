@@ -6,15 +6,19 @@ const { OAuth } = require("../clients/Oauth");
 const { IntegrationClient } = require("../clients/Integration");
 const { UtilsService } = require("../clients/utils");
 const { FixedUrls } = require("../clients/FixedUrls");
-const { Leaflet } = require("../models/Leaflet");
+// const { Leaflet } = require("../models/Leaflet");
 const { Reporter } = require("../reporting");
-const { ProductAndBatchAuditTest, EPiAuditTest } = require("../utils");
+// const { ProductAndBatchAuditTest, EPiAuditTest } = require("../utils");
 // const { getRandomNumber } = require("../utils");
-const fs = require("node:fs");
-const path = require("path");
+// const fs = require("node:fs");
+// const path = require("path");
 const { constants } = require("../constants");
+const { AuditLogChecker } = require("../audit/AuditLogChecker");
 
-jest.setTimeout(60000);
+const isCI = !!process.env.CI; // works for travis, github and gitlab
+const multiplier = isCI ? 3 : 1;
+jest.setTimeout(multiplier * 60 * 1000);
+const timeoutBetweenTests = multiplier * 5 * 1000;
 
 describe(`TRUST-125 After Migration Test`, () => {
   // retrieve integration api client
@@ -24,137 +28,303 @@ describe(`TRUST-125 After Migration Test`, () => {
   // const productUrl = "/product";
   // const listProductsUrl = "/listProducts";
 
-  const image =
-    "data:image/jpeg;base64,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";
+  // const image =
+  //   "data:image/jpeg;base64,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";
 
   beforeAll(async () => {
     const token = await oauth.getAccessToken(); // log in to SSO
     // store auth SSO token
     client.setSharedToken(token);
     fixedUrl.setSharedToken(token);
+    AuditLogChecker.setApiClient(client);
   });
 
-  // it("STEP 1 - Retrieves a base product and update it", async () => {
-  //   const { ticket } = UtilsService.getTicketId(
-  //     expect.getState().currentTestName
-  //   );
+  afterEach((cb) => {
+    console.log(
+      `Finished test: ${expect.getState().currentTestName}. waiting for ${
+        timeoutBetweenTests / 1000
+      }s...`
+    );
+    setTimeout(() => {
+      cb();
+    }, timeoutBetweenTests);
+  });
 
-  //   // Set up reporter
-  //   const reporter = new Reporter(ticket);
-  //   const step = "STEP1";
+  it("STEP 1 - Retrieves a base product and update it", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
 
-  //   // Retrieve Cached Product
-  //   const product = reporter.retrievePayload(step, "base-prod");
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP1";
 
-  //   // Get Product and compare
-  //   let productResponse = await client.getProduct(product.productCode);
-  //   expect(productResponse.data).toEqual(expect.objectContaining(product));
+    // Retrieve Cached Product Get Response
+    const product = reporter.retrievePayload(step, "base-prod");
 
-  //   // Get Audit and test it
-  //   const audit1 = reporter.retrievePayload(step, "base-prod-created-audit");
-  //   let auditRes1 = await client.filterAuditLogs(
-  //     constants.AUDIT_LOG_TYPES.USER_ACCTION,
-  //     undefined,
-  //     1,
-  //     `timestamp == ${audit1.__timestamp}`,
-  //     "desc"
-  //   );
-  //   expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
+    // Cache GTIN
+    const GTIN = product.productCode;
 
-  //   const audit2 = reporter.retrievePayload(step, "base-prod-updated-audit");
-  //   let auditRes2 = await client.filterAuditLogs(
-  //     constants.AUDIT_LOG_TYPES.USER_ACCTION,
-  //     undefined,
-  //     1,
-  //     `timestamp == ${audit2.__timestamp}`,
-  //     "desc"
-  //   );
-  //   expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));  
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
 
-  //   const updated = await ModelFactory.product(ticket, productResponse.data);
-  //   const updatedMedicalName = "After Migration Medical Name";
-  //   updated.nameMedicinalProduct = updatedMedicalName;
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(2);
 
-  //   // Update Product
-  //   res = await client.updateProduct(updated.productCode, updated);
-  //   expect(res.status).toBe(200);
+    // Get audit log and validate
+    const audit1 = reporter.retrievePayload(step, "base-prod-created-audit");
 
-  //   // Get Product and compare
-  //   let response = await client.getProduct(updated.productCode);
-  //   expect(response.data).toEqual(expect.objectContaining(updated));
-  //   expect(response.data.nameMedicinalProduct).toEqual(
-  //     updatedMedicalName
-  //   );
+    let auditRes1 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit1.__timestamp}`,
+      "desc"
+    );
 
-  //   // Get Audit and validate
-  //   let updateAudit = await ProductAndBatchAuditTest(
-  //     client,
-  //     constants.OPERATIONS.UPDATE_PRODUCT,
-  //     productResponse.data,
-  //     response.data
-  //   );
-  // });
+    expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
 
-  // it("STEP 2 - Creates a product with strengths and update it", async () => {
-  //   const { ticket } = UtilsService.getTicketId(
-  //     expect.getState().currentTestName
-  //   );
+    // Get audit log and validate
+    const audit2 = reporter.retrievePayload(step, "base-prod-updated-audit");
 
-  //   // Set up reporter
-  //   const reporter = new Reporter(ticket);
-  //   const step = "STEP2";
+    let auditRes2 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit2.__timestamp}`,
+      "desc"
+    );
 
-  //   // Retrieve Cached Product
-  //   const product = reporter.retrievePayload(step, "strengths-prod");
+    expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));
 
-  //   delete product.version
-  //   delete product.epiProtocol
-  //   delete product.lockId
-  //   product.productRecall = !!product.productRecall
+    // Generate Base Product
+    const baseProduct = await ModelFactory.product(
+      ticket,
+      productResponse1.data
+    );
 
-  //   // Get Product and compare
-  //   let productResponse = await client.getProduct(product.productCode);
-  //   expect(productResponse.data).toEqual(expect.objectContaining(product));
-  //   expect(productResponse.data.strengths.length).toEqual(2);
-  //   expect(productResponse.data.strengths[0]).toEqual(product.strengths[0]);
-  //   expect(productResponse.data.strengths[1]).toEqual(product.strengths[1]);
+    // Generate Updated Product
+    const updatedMedicalName = "After Migration Medical Name";
 
-  //   // Get Audit and test it
-  //   const audit1 = reporter.retrievePayload(step, "strengths-prod-created-audit");
-  //   let auditRes1 = await client.filterAuditLogs(
-  //     constants.AUDIT_LOG_TYPES.USER_ACCTION,
-  //     undefined,
-  //     1,
-  //     `timestamp == ${audit1.__timestamp}`,
-  //     "desc"
-  //   );
-  //   expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: [],
+      strengths: [],
+      nameMedicinalProduct: updatedMedicalName,
+    });
 
-  //   const updated = await ModelFactory.product(ticket, productResponse.data);
-  //   const strengths = [
-  //     {
-  //       substance: "Dipiloma",
-  //       strength: "500mg",
-  //     }
-  //   ]
-  //   updated.strengths = strengths;
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
 
-  //   // Update Product
-  //   res = await client.updateProduct(updated.productCode, updated);
-  //   expect(res.status).toBe(200);
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
 
-  //   // Get Product and compare
-  //   let response = await client.getProduct(updated.productCode);
-  //   expect(response.data).toEqual(expect.objectContaining(updated));
-  //   expect(response.data.strengths.length).toEqual(1);
-  //   expect(response.data.strengths[0]).toEqual(updated.strengths[0]);
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.nameMedicinalProduct).toEqual(
+      updatedMedicalName
+    );
+    expect(productResponse2.data.version).toEqual(3);
 
-  //   // Get Audit and validate
-  //   let updateAudit = await ProductAndBatchAuditTest(
-  //     client,
-  //     constants.OPERATIONS.UPDATE_PRODUCT,
-  //     productResponse.data,
-  //     response.data
-  //   );
-  // });
+    // Get audit log and validate
+    const audit3 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      baseProduct,
+      updatedProduct
+    );
+  });
+
+  it("STEP 2 - Retrieves a product with strengths and update it", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
+
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP2";
+
+    // Retrieve Cached Product Get Response
+    const product = reporter.retrievePayload(step, "strengths-prod");
+
+    // Cache GTIN
+    const GTIN = product.productCode;
+
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
+
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(2);
+
+    // Get audit log and validate
+    const audit1 = reporter.retrievePayload(
+      step,
+      "strengths-prod-created-audit"
+    );
+
+    let auditRes1 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit1.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
+
+    // Get audit log and validate
+    const audit2 = reporter.retrievePayload(
+      step,
+      "strengths-prod-updated-audit"
+    );
+
+    let auditRes2 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit2.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));
+
+    // Generate Base Product
+    const baseProduct = await ModelFactory.product(
+      ticket,
+      productResponse1.data
+    );
+
+    // Generate Updated Product
+    const updatedStrengths = [
+      {
+        substance: "Dipiloma",
+        strength: "500mg",
+      },
+    ];
+
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: [],
+      strengths: updatedStrengths,
+    });
+
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
+
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.strengths.length).toEqual(1);
+    expect(productResponse2.data.strengths[0]).toEqual(
+      updatedProduct.strengths[0]
+    );
+    expect(productResponse2.data.version).toEqual(3);
+
+    // Get audit log and validate
+    const audit3 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      baseProduct,
+      updatedProduct
+    );
+  });
+
+  it("STEP 3 - Retrieves a product with markets and update it", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
+
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP3";
+
+    // Retrieve Cached Product Get Response
+    const product = reporter.retrievePayload(step, "markets-prod");
+
+    // Cache GTIN
+    const GTIN = product.productCode;
+
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
+
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(2);
+
+    // Get audit log and validate
+    const audit1 = reporter.retrievePayload(step, "markets-prod-created-audit");
+
+    let auditRes1 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit1.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
+
+    // Get audit log and validate
+    const audit2 = reporter.retrievePayload(step, "markets-prod-updated-audit");
+
+    let auditRes2 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit2.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));
+
+    // Generate Base Product
+    const baseProduct = await ModelFactory.product(
+      ticket,
+      productResponse1.data
+    );
+
+    // Generate Updated Product
+    const updatedMarkets = [
+      {
+        marketId: "IN",
+        nationalCode: "NC001",
+        mahAddress: "221B Baker Street",
+        mahName: `${ticket} MAH`,
+        legalEntityName: `${ticket} Legal Entity`,
+      },
+    ];
+
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: updatedMarkets,
+      strengths: [],
+    });
+
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
+
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.markets.length).toEqual(1);
+    expect(productResponse2.data.markets[0]).toEqual(updatedProduct.markets[0]);
+    expect(productResponse2.data.version).toEqual(3);
+
+    // Get audit log and validate
+    const audit3 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      baseProduct,
+      updatedProduct
+    );
+  });
 });

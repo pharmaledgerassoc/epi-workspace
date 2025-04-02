@@ -12,7 +12,7 @@ const {constants} = require("../constants");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI? 3 : 1;
+const multiplier = isCI? 4 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 5 * 1000;
 
@@ -66,7 +66,7 @@ describe(`${testName} Batch`, () => {
             expect(batchResponse.data).toEqual(expect.objectContaining(batch));
             expect(batchResponse.data.version).toEqual(1);
 
-            await AuditLogChecker.assertAuditLog(batch.productCode, constants.OPERATIONS.CREATE_BATCH, undefined, batch);
+            await AuditLogChecker.assertAuditLog(batch.productCode,batch.batchNumber, "POST", constants.OPERATIONS.CREATE_BATCH, undefined, batch);
         });
 
         it("FAIL 422 - Should throw Unprocessable Entity when mandatory fields are empty (TRUST-110)", async () => {
@@ -220,7 +220,7 @@ describe(`${testName} Batch`, () => {
             const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
             expect(getBatchResponse.data.version).toBeGreaterThan(1);
-            await AuditLogChecker.assertAuditLog(batch.productCode, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, batch);
+            await AuditLogChecker.assertAuditLog(batch.productCode, batch.batchNumber, "PUT", constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, batch);
         });
 
         it("SUCCESS 200 - Should update a batch according to India data specification (TRUST-376)", async () => {
@@ -243,7 +243,7 @@ describe(`${testName} Batch`, () => {
 
             const getBatchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
             expect(getBatchResponse.data).toEqual(expect.objectContaining(batch));
-            await AuditLogChecker.assertAuditLog(batch.productCode, constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, getBatchResponse.data);
+            await AuditLogChecker.assertAuditLog(batch.productCode, batch.batchNumber, "PUT",constants.OPERATIONS.UPDATE_BATCH, {...BATCH}, getBatchResponse.data);
         });
 
         it("SUCCESS 200 - Should recall and unrecall a batch properly (TRUST-352)", async () => {
@@ -253,7 +253,7 @@ describe(`${testName} Batch`, () => {
 
             await client.updateBatch(batch.productCode, batch.batchNumber, batch);
             try {
-                await AuditLogChecker.assertAuditLog(batch.productCode, constants.OPERATIONS.UPDATE_BATCH, {
+                await AuditLogChecker.assertAuditLog(batch.productCode, batch.batchNumber, "PUT", constants.OPERATIONS.UPDATE_BATCH, {
                     ...batch,
                     batchRecall: false
                 }, {...batch, batchRecall: true});
@@ -268,7 +268,7 @@ describe(`${testName} Batch`, () => {
 
             await client.updateBatch(batch.productCode, batch.batchNumber, {...batch, batchRecall: false});
             try {
-                await AuditLogChecker.assertAuditLog(batch.productCode, constants.OPERATIONS.UPDATE_BATCH, {
+                await AuditLogChecker.assertAuditLog(batch.productCode, batch.batchNumber, "PUT", constants.OPERATIONS.UPDATE_BATCH, {
                     ...batch,
                     batchRecall: true
                 }, {...batch, batchRecall: false});
