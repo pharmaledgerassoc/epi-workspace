@@ -96,7 +96,7 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "base-prod-updated-audit", audit);
 
     // Save updated product information
-    reporter.outputJSON(step, "base-prod", product);
+    reporter.outputJSON(step, "base-prod", productResponse.data);
   });
 
   it("STEP 2 - Creates a product with strengths", async () => {

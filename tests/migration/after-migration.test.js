@@ -34,7 +34,7 @@ describe(`TRUST-125 After Migration Test`, () => {
     fixedUrl.setSharedToken(token);
   });
 
-  it("STEP 1 - Retrieves a base product", async () => {
+  it("STEP 1 - Retrieves a base product and update it", async () => {
     const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
@@ -50,45 +50,48 @@ describe(`TRUST-125 After Migration Test`, () => {
     let productResponse = await client.getProduct(product.productCode);
     expect(productResponse.data).toEqual(expect.objectContaining(product));
 
-    // const oldProd = productResponse.data;
+    // Get Audit and test it
+    const audit1 = reporter.retrievePayload(step, "base-prod-created-audit");
+    let auditRes1 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit1.__timestamp}`,
+      "desc"
+    );
+    expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
 
-    // // Get Audit and validate
-    // let audit = await ProductAndBatchAuditTest(
-    //   client,
-    //   constants.OPERATIONS.CREATE_PRODUCT,
-    //   undefined,
-    //   productResponse.data
-    // );
+    const audit2 = reporter.retrievePayload(step, "base-prod-updated-audit");
+    let auditRes2 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit2.__timestamp}`,
+      "desc"
+    );
+    expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));  
 
-    // // Save audit information
-    // reporter.outputJSON(step, "base-prod-created-audit", audit);
+    const updated = await ModelFactory.product(ticket, productResponse.data);
+    const updatedMedicalName = "After Migration Medical Name";
+    updated.nameMedicinalProduct = updatedMedicalName;
 
-    // const updatedMedicalName = "Updated Medical Name";
-    // product.nameMedicinalProduct = updatedMedicalName;
+    // Update Product
+    res = await client.updateProduct(updated.productCode, updated);
+    expect(res.status).toBe(200);
 
-    // // Update Product
-    // res = await client.updateProduct(product.productCode, product);
-    // expect(res.status).toBe(200);
+    // Get Product and compare
+    let response = await client.getProduct(updated.productCode);
+    expect(response.data).toEqual(expect.objectContaining(updated));
+    expect(response.data.nameMedicinalProduct).toEqual(
+      updatedMedicalName
+    );
 
-    // // Get Product and compare
-    // productResponse = await client.getProduct(product.productCode);
-    // expect(productResponse.data).toEqual(expect.objectContaining(product));
-    // expect(productResponse.data.nameMedicinalProduct).toEqual(
-    //   updatedMedicalName
-    // );
-
-    // // Get Audit and validate
-    // audit = await ProductAndBatchAuditTest(
-    //   client,
-    //   constants.OPERATIONS.UPDATE_PRODUCT,
-    //   oldProd,
-    //   productResponse.data
-    // );
-
-    // // Save audit information
-    // reporter.outputJSON(step, "base-prod-updated-audit", audit);
-
-    // // Save updated product information
-    // reporter.outputJSON(step, "base-prod", product);
+    // Get Audit and validate
+    let updateAudit = await ProductAndBatchAuditTest(
+      client,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      productResponse.data,
+      response.data
+    );
   });
 });
