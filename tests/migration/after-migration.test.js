@@ -147,7 +147,7 @@ describe(`TRUST-125 After Migration Test`, () => {
 
     // Set up reporter
     const reporter = new Reporter(ticket);
-    const step = "STEP1";
+    const step = "STEP2";
 
     // Retrieve Cached Product Get Response
     const product = reporter.retrievePayload(step, "strengths-prod");
@@ -204,12 +204,16 @@ describe(`TRUST-125 After Migration Test`, () => {
     );
 
     // Generate Updated Product
-    const updatedMedicalName = "After Migration Medical Name";
+    const updatedStrengths = [
+      {
+        substance: "Dipiloma",
+        strength: "500mg",
+      },
+    ];
 
     const updatedObject = Object.assign({}, productResponse1.data, {
       markets: [],
-      strengths: [],
-      nameMedicinalProduct: updatedMedicalName,
+      strengths: updatedStrengths,
     });
 
     const updatedProduct = await ModelFactory.product(ticket, updatedObject);
@@ -223,8 +227,9 @@ describe(`TRUST-125 After Migration Test`, () => {
     expect(productResponse2.data).toEqual(
       expect.objectContaining(updatedProduct)
     );
-    expect(productResponse2.data.nameMedicinalProduct).toEqual(
-      updatedMedicalName
+    expect(productResponse2.data.strengths.length).toEqual(1);
+    expect(productResponse2.data.strengths[0]).toEqual(
+      updatedProduct.strengths[0]
     );
     expect(productResponse2.data.version).toEqual(3);
 
