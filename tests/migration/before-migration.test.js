@@ -1,11 +1,11 @@
 const { getConfig } = require("../conf");
 const config = getConfig();
-const {ModelFactory} = require("../models/factory");
+const { ModelFactory } = require("../models/factory");
 // const { Product } = require("../models/Product");
 const { OAuth } = require("../clients/Oauth");
-const {IntegrationClient} = require("../clients/Integration");
+const { IntegrationClient } = require("../clients/Integration");
 const { UtilsService } = require("../clients/utils");
-const {FixedUrls} = require("../clients/FixedUrls");
+const { FixedUrls } = require("../clients/FixedUrls");
 // const { Leaflet } = require("../models/Leaflet");
 const { Reporter } = require("../reporting");
 // const { ProductAndBatchAuditTest, EPiAuditTest } = require("../utils");
@@ -13,7 +13,7 @@ const { Reporter } = require("../reporting");
 // const fs = require("node:fs");
 // const path = require("path");
 const { constants } = require("../constants");
-const {AuditLogChecker} = require("../audit/AuditLogChecker");
+const { AuditLogChecker } = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
 const multiplier = isCI ? 3 : 1;
@@ -40,14 +40,18 @@ describe(`TRUST-125 Before Migration Test`, () => {
   });
 
   afterEach((cb) => {
-    console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+    console.log(
+      `Finished test: ${expect.getState().currentTestName}. waiting for ${
+        timeoutBetweenTests / 1000
+      }s...`
+    );
     setTimeout(() => {
-        cb();
+      cb();
     }, timeoutBetweenTests);
   });
 
   it("STEP 1 - Creates and updates a base product", async () => {
-    const { ticket} = UtilsService.getTicketId(
+    const { ticket } = UtilsService.getTicketId(
       expect.getState().currentTestName
     );
 
@@ -74,7 +78,12 @@ describe(`TRUST-125 Before Migration Test`, () => {
     expect(productResponse1.data.version).toEqual(1);
 
     // Get audit log and validate
-    const audit1 = await AuditLogChecker.assertAuditLog(GTIN, constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
+    const audit1 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      product
+    );
 
     // Save audit information
     reporter.outputJSON(step, "base-prod-created-audit", audit1);
@@ -82,10 +91,10 @@ describe(`TRUST-125 Before Migration Test`, () => {
     // Generate Updated Product
     const updatedMedicalName = "Updated Medical Name";
 
-    const updatedObject = Object.assign({}, productResponse1.data,{
+    const updatedObject = Object.assign({}, productResponse1.data, {
       markets: [],
       strengths: [],
-      nameMedicinalProduct: updatedMedicalName
+      nameMedicinalProduct: updatedMedicalName,
     });
 
     const updatedProduct = await ModelFactory.product(ticket, updatedObject);
@@ -96,73 +105,137 @@ describe(`TRUST-125 Before Migration Test`, () => {
 
     // Get Product and compare
     const productResponse2 = await client.getProduct(GTIN);
-    expect(productResponse2.data).toEqual(expect.objectContaining(updatedProduct));
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
     expect(productResponse2.data.nameMedicinalProduct).toEqual(
       updatedMedicalName
     );
     expect(productResponse2.data.version).toEqual(2);
 
     // Get audit log and validate
-    const audit2 = await AuditLogChecker.assertAuditLog(GTIN, constants.OPERATIONS.UPDATE_PRODUCT, product, updatedProduct);
+    const audit2 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      product,
+      updatedProduct
+    );
 
     // Save audit information
-    reporter.outputJSON(step, "base-prod-update-audit", audit2);
+    reporter.outputJSON(step, "base-prod-updated-audit", audit2);
 
     // Save updated product information
     reporter.outputJSON(step, "base-prod", productResponse2.data);
-  })
+  });
 
+  it("STEP 2 - Creates and updates a product with strengths", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
 
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP2";
 
-  // it.skip("STEP 2 - Creates a product with strengths", async () => {
-  //   const { ticket } = UtilsService.getTicketId(
-  //     expect.getState().currentTestName
-  //   );
+    // Generate Product
+    const product = await ModelFactory.product(ticket, {
+      markets: [],
+      strengths: [
+        {
+          substance: "Dipiloma",
+          strength: "500mg",
+        },
+        {
+          substance: "Paracetomol",
+          strength: "200mg",
+        },
+      ],
+    });
 
-  //   // Set up reporter
-  //   const reporter = new Reporter(ticket);
-  //   const step = "STEP2";
+    // Cache GTIN
+    const GTIN = product.productCode;
 
-  //   // Generate Product
-  //   const product = await ModelFactory.product(ticket, {
-  //     markets: [],
-  //     strengths: [
-  //       {
-  //         substance: "Dipiloma",
-  //         strength: "500mg",
-  //       },
-  //       {
-  //         substance: "Paracetomol",
-  //         strength: "200mg",
-  //       },
-  //     ],
-  //   });
+    // Create Product
+    const res1 = await client.addProduct(GTIN, product);
+    expect(res1.status).toBe(200);
 
-  //   // Create Product
-  //   const res = await client.addProduct(product.productCode, product);
-  //   expect(res.status).toBe(200);
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(1);
+    expect(productResponse1.data.strengths.length).toEqual(2);
+    expect(productResponse1.data.strengths[0]).toEqual(product.strengths[0]);
+    expect(productResponse1.data.strengths[1]).toEqual(product.strengths[1]);
 
-  //   // Get Product and compare
-  //   const productResponse = await client.getProduct(product.productCode);
-  //   expect(productResponse.data).toEqual(expect.objectContaining(product));
-  //   expect(productResponse.data.strengths.length).toEqual(2);
-  //   expect(productResponse.data.strengths[0]).toEqual(product.strengths[0]);
-  //   expect(productResponse.data.strengths[1]).toEqual(product.strengths[1]);
+    // Get audit log and validate
+    const audit1 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      product
+    );
 
-  //   // Get Audit and validate
-  //   let audit = await ProductAndBatchAuditTest(
-  //     client,
-  //     constants.OPERATIONS.CREATE_PRODUCT,
-  //     undefined,
-  //     productResponse.data
-  //   );
+    // Save audit information
+    reporter.outputJSON(step, "strengths-prod-created-audit", audit1);
 
-  //   // Save audit information
-  //   reporter.outputJSON(step, "strengths-prod-created-audit", audit);
+    // Generate Updated Product
+    const updatedStrengths = [
+      {
+        substance: "Dipiloma",
+        strength: "500mg",
+      },
+      {
+        substance: "Paracetomol",
+        strength: "200mg",
+      },
+      {
+        substance: "Paracetomil",
+        strength: "200mg",
+      },
+    ];
 
-  //   // Create Report
-  //   reporter.outputJSON(step, "strengths-prod", product);
-  // });
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: [],
+      strengths: updatedStrengths,
+    });
+
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
+
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.strengths.length).toEqual(3);
+    expect(productResponse2.data.strengths[0]).toEqual(
+      updatedProduct.strengths[0]
+    );
+    expect(productResponse2.data.strengths[1]).toEqual(
+      updatedProduct.strengths[1]
+    );
+    expect(productResponse2.data.strengths[2]).toEqual(
+      updatedProduct.strengths[2]
+    );
+    expect(productResponse2.data.version).toEqual(2);
+
+    // Get audit log and validate
+    const audit2 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      product,
+      updatedProduct
+    );
+
+    // Save audit information
+    reporter.outputJSON(step, "strengths-prod-updated-audit", audit2);
+
+    // Save updated product information
+    reporter.outputJSON(step, "strengths-prod", productResponse2.data);
+  });
 
   // it.skip("STEP 3 - Creates a product with markets", async () => {
   //   const { ticket } = UtilsService.getTicketId(
