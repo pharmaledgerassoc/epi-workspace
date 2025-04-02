@@ -234,4 +234,97 @@ describe(`TRUST-125 After Migration Test`, () => {
       updatedProduct
     );
   });
+
+  it("STEP 3 - Retrieves a product with markets and update it", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
+
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP3";
+
+    // Retrieve Cached Product Get Response
+    const product = reporter.retrievePayload(step, "markets-prod");
+
+    // Cache GTIN
+    const GTIN = product.productCode;
+
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
+
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(2);
+
+    // Get audit log and validate
+    const audit1 = reporter.retrievePayload(step, "markets-prod-created-audit");
+
+    let auditRes1 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit1.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes1.data[0]).toEqual(expect.objectContaining(audit1));
+
+    // Get audit log and validate
+    const audit2 = reporter.retrievePayload(step, "markets-prod-updated-audit");
+
+    let auditRes2 = await client.filterAuditLogs(
+      constants.AUDIT_LOG_TYPES.USER_ACCTION,
+      undefined,
+      1,
+      `timestamp == ${audit2.__timestamp}`,
+      "desc"
+    );
+
+    expect(auditRes2.data[0]).toEqual(expect.objectContaining(audit2));
+
+    // Generate Base Product
+    const baseProduct = await ModelFactory.product(
+      ticket,
+      productResponse1.data
+    );
+
+    // Generate Updated Product
+    const updatedMarkets = [
+      {
+        marketId: "IN",
+        nationalCode: "NC001",
+        mahAddress: "221B Baker Street",
+        mahName: `${ticket} MAH`,
+        legalEntityName: `${ticket} Legal Entity`,
+      },
+    ];
+
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: updatedMarkets,
+      strengths: [],
+    });
+
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
+
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.markets.length).toEqual(1);
+    expect(productResponse2.data.markets[0]).toEqual(updatedProduct.markets[0]);
+    expect(productResponse2.data.version).toEqual(3);
+
+    // Get audit log and validate
+    const audit3 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      baseProduct,
+      updatedProduct
+    );
+  });
 });
