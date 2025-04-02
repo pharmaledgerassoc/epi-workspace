@@ -57,13 +57,14 @@ class AuditLogChecker {
      * @param {Object | undefined} [newObject]  - new object to compare after the action
      * @param {boolean} [itFailed=false]  - if it is failed action doesn't compare details
      */
-    static async assertAuditLog(gtin, batch, step, reason, oldObject, newObject, itFailed = false) {
+    static async assertAuditLog(gtin, batch, step, reason, oldObject, newObject, itFailed = false, reportAudit = true) {
         const auditResponse = await this.client.filterAuditLogs(constants.constants.AUDIT_LOG_TYPES.USER_ACCTION, undefined, 1, "timestamp > 0", "desc");
         const audit = auditResponse.data[0];
         expect(audit.itemCode).toEqual(gtin);
         expect(audit.reason).toEqual(reason);
 
-        AuditLogChecker.reportAudit(step, gtin, batch, audit);
+        if(reportAudit)
+            AuditLogChecker.reportAudit(step, gtin, batch, audit);
 
         if (itFailed)
             return audit;
