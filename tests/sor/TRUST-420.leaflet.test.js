@@ -10,8 +10,11 @@ const path = require("path");
 const {FixedUrls} = require("../clients/FixedUrls");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
-jest.setTimeout(60000);
-const timeoutBetweenTests = 5000;
+const isCI = !!process.env.CI; // works for travis, github and gitlab
+const multiplier = isCI? 3 : 1;
+jest.setTimeout(multiplier * 60 * 1000);
+const timeoutBetweenTests = multiplier * 15 * 1000;
+
 const testName = "TRUST-420";
 
 describe(`${testName} ePI Leaflet`, () => {
@@ -69,6 +72,13 @@ describe(`${testName} ePI Leaflet`, () => {
         const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
         expect(batchResponse.status).toBe(200);
         BATCH_NUMBER = batchResponse.data.batchNumber;
+    });
+
+    afterEach((cb) => {
+        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+        setTimeout(() => {
+            cb()
+        }, timeoutBetweenTests)
     });
 
     describe(`${ePIBaseURL} (POST)`, () => {
@@ -633,7 +643,7 @@ describe(`${testName} ePI Leaflet`, () => {
         let GTIN = "";
         let BATCH_NUMBER = "";
         beforeAll(async () => {
-            const ticket = "TRUST-XX ePI";
+            const ticket = `${testName} ePI`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
             expect(addProductRes.status).toBe(200);

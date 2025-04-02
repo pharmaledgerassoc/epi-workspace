@@ -11,8 +11,11 @@ const {FixedUrls} = require("../clients/FixedUrls");
 const {constants} = require("../constants");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
-jest.setTimeout(60000);
-const timeoutBetweenTests = 5000;
+const isCI = !!process.env.CI; // works for travis, github and gitlab
+const multiplier = isCI? 3 : 1;
+jest.setTimeout(multiplier * 60 * 1000);
+const timeoutBetweenTests = multiplier * 5 * 1000;
+
 const testName = "TRUST-419";
 
 describe(`${testName} Batch`, () => {
@@ -49,7 +52,7 @@ describe(`${testName} Batch`, () => {
     });
 
     describe(`${batchUrl} (POST)`, () => {
-        it("SUCCESS 200 - Should create a batch properly (TRUST-109)", async () => {
+        it("SUCCESS 200 - Should create a batch properly (TRUST-109, TRUST-378)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const batch = await ModelFactory.batch(ticket, PRODUCT.productCode, {
                 packagingSiteName: ticket,
