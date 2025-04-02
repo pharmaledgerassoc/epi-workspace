@@ -11,7 +11,7 @@ const {constants} = require("../constants");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI? 3 : 1;
+const multiplier = isCI ? 3 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 5 * 1000;
 
@@ -63,7 +63,7 @@ describe(`${testName} Product`, () => {
             expect(productResponse.data).toEqual(expect.objectContaining(product));
             expect(productResponse.data.version).toEqual(1);
 
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
+            await AuditLogChecker.assertAuditLog(product.productCode, constants.OPERATIONS.CREATE_PRODUCT, undefined, product);
         });
 
         it.skip("SUCCESS 200 - Should create a product with no duplicate strengths", async () => {
@@ -236,7 +236,7 @@ describe(`${testName} Product`, () => {
             const getProductResponse = await client.getProduct(productUpdate.productCode);
             expect(getProductResponse.data).toMatchObject(productUpdate);
             expect(getProductResponse.data.version).toBeGreaterThan(version);
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, product, productUpdate);
+            await AuditLogChecker.assertAuditLog(productUpdate.productCode, constants.OPERATIONS.UPDATE_PRODUCT, product, productUpdate);
         });
 
         it("SUCCESS 200 - Should recall and unrecall a product properly (TRUST-352)", async () => {
@@ -244,7 +244,10 @@ describe(`${testName} Product`, () => {
             expect(data.productRecall).toBeFalsy();
 
             await client.updateProduct(product.productCode, new Product({...data, productRecall: true}));
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, {...data, productRecall: false}, {...data, productRecall: true});
+            await AuditLogChecker.assertAuditLog(product.productCode, constants.OPERATIONS.UPDATE_PRODUCT, {
+                ...data,
+                productRecall: false
+            }, {...data, productRecall: true});
 
             const getAfterUpdateTrueRes = await client.getProduct(product.productCode);
             expect(getAfterUpdateTrueRes.data.productCode).toEqual(product.productCode);
@@ -254,7 +257,10 @@ describe(`${testName} Product`, () => {
             const getAfterUpdateFalseRes = await client.getProduct(product.productCode);
             expect(getAfterUpdateFalseRes.data.productCode).toEqual(product.productCode);
             expect(getAfterUpdateFalseRes.data.productRecall).toBeFalsy();
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, {...data, productRecall: true}, {...data, productRecall: false});
+            await AuditLogChecker.assertAuditLog(product.productCode, constants.OPERATIONS.UPDATE_PRODUCT, {
+                ...data,
+                productRecall: true
+            }, {...data, productRecall: false});
         });
 
         it("SUCCESS 200 - Should update market segment properly (TRUST-104, TRUST-105, TRUST-106, TRUST-375)", async () => {
@@ -289,7 +295,7 @@ describe(`${testName} Product`, () => {
             const response = await client.getProduct(productCode);
             expect(response.data).toEqual(expect.objectContaining(updatedProduct));
             expect(response.data.markets).toMatchObject(updatedProduct.markets);
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, data, updatedProduct);
+            await AuditLogChecker.assertAuditLog(productCode, constants.OPERATIONS.UPDATE_PRODUCT, data, updatedProduct);
 
             const noMarketUpdate = new Product({
                 ...response.data,
@@ -299,7 +305,7 @@ describe(`${testName} Product`, () => {
             const noMarketsUpdateResponse = await client.getProduct(productCode);
             expect(noMarketsUpdateResponse.data).toEqual(expect.objectContaining(noMarketUpdate));
             expect(noMarketsUpdateResponse.data.markets).toEqual([]);
-            await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, updatedProduct, noMarketUpdate);
+            await AuditLogChecker.assertAuditLog(productCode, constants.OPERATIONS.UPDATE_PRODUCT, updatedProduct, noMarketUpdate);
         });
 
         it("FAIL 422 - Should throw if GTIN in parameter and body mismatch on update (TRUST-181)", async () => {
@@ -386,7 +392,7 @@ describe(`${testName} Product`, () => {
             for (const [index, response] of responses.entries()) {
                 if (response.status === "fulfilled") {
                     expect(response.value).toEqual(expect.objectContaining(expectedUpdates[index]));
-                    await AuditLogChecker.assertAuditLog(constants.OPERATIONS.UPDATE_PRODUCT, data, expectedUpdates[index]);
+                    await AuditLogChecker.assertAuditLog(expectedUpdates[index].productCode, constants.OPERATIONS.UPDATE_PRODUCT, data, expectedUpdates[index]);
                 }
             }
         });
