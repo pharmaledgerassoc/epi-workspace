@@ -384,7 +384,7 @@ describe(`${testName} ePI Leaflet`, () => {
             expect(res.status).toBe(200);
         });
 
-        it("SUCCESS 200 - Should update a leaflet for a PRODUCT properly (TRUST-117)", async () => {
+        it("SUCCESS 200 - Should update a leaflet for a PRODUCT properly (TRUST-117, TRUST-354)", async () => {
             for (let leafletType of EPI_TYPES) {
                 const payload = new Leaflet({
                     productCode: GTIN,
