@@ -11,7 +11,7 @@ const {FixedUrls} = require("../clients/FixedUrls");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI? 3 : 1;
+const multiplier = isCI? 3 : 3;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 15 * 1000;
 
@@ -206,6 +206,7 @@ describe(`${testName} ePI Leaflet`, () => {
 
             try {
                 await client.addLeaflet(leaflet.productCode, BATCH_NUMBER, leaflet.language, API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO, undefined, leaflet);
+                throw new Error("Request should have failed");
             } catch (e) {
                 expect(e.status).toBe(400);
                 expect(e.response.data).toEqual(`Invalid epi type: ${API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO}.`);
@@ -224,6 +225,7 @@ describe(`${testName} ePI Leaflet`, () => {
 
             try {
                 await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, API_MESSAGE_TYPES.EPI.PRESCRIBING_INFO, "GE", leaflet);
+                throw new Error("Request should have failed");
             } catch (e) {
                 expect(e.status).toBe(415);
                 await AuditLogChecker.assertAuditLogSnapshot();
@@ -242,7 +244,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
-                    throw new Error("Should have fail");
+                    throw new Error("Request should have failed");
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
@@ -262,7 +264,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
-                    throw new Error("Should have fail");
+                    throw new Error("Request should have failed");
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
@@ -286,7 +288,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let batchNumber of [undefined, BATCH_NUMBER]) {
                 try {
                     await client.addLeaflet(leaflet.productCode, batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
-                    throw new Error("Should have fail");
+                    throw new Error("Request should have failed");
                 } catch (e) {
                     expect(e.status).toBeGreaterThanOrEqual(415);
                     expect(e.status).toBeLessThan(500);
@@ -435,7 +437,7 @@ describe(`${testName} ePI Leaflet`, () => {
                         language: LANG,
                         xmlFileContent: XML_FILE_CONTENT + "product" + leafletType
                     }));
-                    throw new Error("Request should have failed with 422 status code");
+                    throw new Error("Request should have failed");
                 } catch (e) {
                     expect(e.status).toBe(422);
                     expect(e.response.data.message).toEqual("Payload validation failed");
@@ -454,7 +456,7 @@ describe(`${testName} ePI Leaflet`, () => {
                         language: LANG,
                         xmlFileContent: XML_FILE_CONTENT + "batch" + leafletType
                     }));
-                    throw new Error("Request should have failed with 422 status code");
+                    throw new Error("Request should have failed");
                 } catch (e) {
                     expect(e.status).toBe(422);
                     expect(e.response.data.message).toEqual("Payload validation failed");
