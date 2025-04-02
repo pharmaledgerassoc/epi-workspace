@@ -237,6 +237,124 @@ describe(`TRUST-125 Before Migration Test`, () => {
     reporter.outputJSON(step, "strengths-prod", productResponse2.data);
   });
 
+  it("STEP 3 - Creates and updates a product with markets", async () => {
+    const { ticket } = UtilsService.getTicketId(
+      expect.getState().currentTestName
+    );
+
+    // Set up reporter
+    const reporter = new Reporter(ticket);
+    const step = "STEP3";
+
+    // Generate Product
+    const product = await ModelFactory.product(ticket, {
+      markets: [
+        {
+          marketId: "IN",
+          nationalCode: "NC001",
+          mahAddress: "221B Baker Street",
+          mahName: `${ticket} MAH`,
+          legalEntityName: `${ticket} Legal Entity`,
+        },
+        {
+          marketId: "BR",
+          nationalCode: "NC001",
+          mahAddress: "221B Baker Street",
+          mahName: `${ticket} MAH`,
+          legalEntityName: `${ticket} Legal Entity`,
+        },
+      ],
+      strengths: [],
+    });
+
+    // Cache GTIN
+    const GTIN = product.productCode;
+
+    // Create Product
+    const res1 = await client.addProduct(GTIN, product);
+    expect(res1.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse1 = await client.getProduct(GTIN);
+    expect(productResponse1.data).toEqual(expect.objectContaining(product));
+    expect(productResponse1.data.version).toEqual(1);
+    expect(productResponse1.data.markets.length).toEqual(2);
+    expect(productResponse1.data.markets[0]).toEqual(product.markets[0]);
+    expect(productResponse1.data.markets[1]).toEqual(product.markets[1]);
+
+    // Get audit log and validate
+    const audit1 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.CREATE_PRODUCT,
+      undefined,
+      product
+    );
+
+    // Save audit information
+    reporter.outputJSON(step, "markets-prod-created-audit", audit1);
+
+    // Generate Updated Product
+    const updatedMarkets = [
+      {
+        marketId: "IN",
+        nationalCode: "NC001",
+        mahAddress: "221B Baker Street",
+        mahName: `${ticket} MAH`,
+        legalEntityName: `${ticket} Legal Entity`,
+      },
+      {
+        marketId: "BR",
+        nationalCode: "NC001",
+        mahAddress: "221B Baker Street",
+        mahName: `${ticket} MAH`,
+        legalEntityName: `${ticket} Legal Entity`,
+      },
+      {
+        marketId: "CA",
+        nationalCode: "NC001",
+        mahAddress: "221B Baker Street",
+        mahName: `${ticket} MAH`,
+        legalEntityName: `${ticket} Legal Entity`,
+      },
+    ];
+
+    const updatedObject = Object.assign({}, productResponse1.data, {
+      markets: updatedMarkets,
+      strengths: [],
+    });
+
+    const updatedProduct = await ModelFactory.product(ticket, updatedObject);
+
+    // Update Product
+    const res2 = await client.updateProduct(GTIN, updatedProduct);
+    expect(res2.status).toBe(200);
+
+    // Get Product and compare
+    const productResponse2 = await client.getProduct(GTIN);
+    expect(productResponse2.data).toEqual(
+      expect.objectContaining(updatedProduct)
+    );
+    expect(productResponse2.data.markets.length).toEqual(3);
+    expect(productResponse2.data.markets[0]).toEqual(updatedProduct.markets[0]);
+    expect(productResponse2.data.markets[1]).toEqual(updatedProduct.markets[1]);
+    expect(productResponse2.data.markets[2]).toEqual(updatedProduct.markets[2]);
+    expect(productResponse2.data.version).toEqual(2);
+
+    // Get audit log and validate
+    const audit2 = await AuditLogChecker.assertAuditLog(
+      GTIN,
+      constants.OPERATIONS.UPDATE_PRODUCT,
+      product,
+      updatedProduct
+    );
+
+    // Save audit information
+    reporter.outputJSON(step, "markets-prod-updated-audit", audit2);
+
+    // Save updated product information
+    reporter.outputJSON(step, "markets-prod", productResponse2.data);
+  });
+
   // it.skip("STEP 3 - Creates a product with markets", async () => {
   //   const { ticket } = UtilsService.getTicketId(
   //     expect.getState().currentTestName
@@ -249,13 +367,13 @@ describe(`TRUST-125 Before Migration Test`, () => {
   //   // Generate Product
   //   const product = await ModelFactory.product(ticket, {
   //     markets: [
-  //       {
-  //         marketId: "IN",
-  //         nationalCode: "NC001",
-  //         mahAddress: "221B Baker Street",
-  //         mahName: `${ticket} MAH`,
-  //         legalEntityName: `${ticket} Legal Entity`,
-  //       },
+  // {
+  //   marketId: "IN",
+  //   nationalCode: "NC001",
+  //   mahAddress: "221B Baker Street",
+  //   mahName: `${ticket} MAH`,
+  //   legalEntityName: `${ticket} Legal Entity`,
+  // },
   //     ],
   //     strengths: [],
   //   });
