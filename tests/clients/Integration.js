@@ -22,6 +22,10 @@ class IntegrationClient extends ApiClient {
         this.step = step;
     }
 
+    async get (endpoint){
+        return this.send(`${this.getBaseURL()}${endpoint}`, 'GET');
+    }
+
     getEpiProductUrl(gtin, language, epiType, ePIMarket) {
         const baseEndpoint = `${this.getBaseURL()}/epi/${gtin}/${language}/${epiType}`;
         return ePIMarket ? `${baseEndpoint}/${ePIMarket}` : baseEndpoint;
