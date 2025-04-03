@@ -172,8 +172,15 @@ class Reporter {
 
         pushTable()
 
-        const json2md = require("json2md");
-        const txt = json2md(text)
+        let txt;
+
+        try {
+            const json2md = require("json2md");
+            txt = json2md(text)
+        } catch (e) {
+            throw new Error(`Could not convert JSON to Markdown - ${e.message}`);
+        }
+
         return this._save(step, reference, txt, "md");
     }
     //

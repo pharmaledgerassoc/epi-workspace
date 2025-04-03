@@ -157,11 +157,19 @@ class IntegrationClient extends ApiClient {
         return this.send(`${this.getBaseURL()}/batch/${gtin}/${batchNumber}`, 'GET');
     };
 
+    async getObjectStatus(productCode, batchNumber) {
+        let endpoint = `${this.getBaseURL()}/integration/objectStatus/${productCode}`;
+        if (batchNumber) {
+            endpoint += `/${encodeURIComponent(batchNumber)}`;
+        }
+        return this.send(endpoint, 'GET');
+    };
+
     getBaseURL() {
         return `${this.config.sor_endpoint}/integration`;
     }
 
-    async send(endpoint, method, data, responseType = "json") {
+    async send(endpoint, method, data = undefined, responseType = "json") {
         //add domain and subdomain as query parameters
         //check if the endpoint already has query parameters
 
