@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { addAttach, addMsg } = require("jest-html-reporters/helper");
 
 /**
  * @description A class for handling test case reporting.
@@ -39,7 +40,7 @@ class Reporter {
      * @param {string} step - The step identifier within the test case.
      * @param {string} reference - The reference name for the file.
      * @param {Buffer|string|Object} data - The data to be saved.
-     * @param {"json" | "image" | "text"} type
+     * @param {"json" | "image" | "text" | "md"} type
      * @param trim
      * @throws {Error} If directory creation or file writing fails.
      *
@@ -53,17 +54,22 @@ class Reporter {
      *   end
      *   S->>FS: Write file
      */
-     _save(step, reference, data, type, trim = false) {
+     async _save(step, reference, data, type, trim = false) {
         const dir = path.join(this._basePath, step);
         try {
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-            }
-            const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : ".json");
+            // if (!fs.existsSync(dir)) {
+            //     fs.mkdirSync(dir, { recursive: true });
+            // }
+            const extension = type === "image" ? ".png" : (type === "text" ? ".txt" : (type === "md" ? ".md" : ".json"));
             console.log(`Storing Reporting artifact ${reference}${extension} for ${this.testCase} step ${step}`);
+            let file = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 17) + `-${reference}${extension}`
             switch (type) {
                 case "image":
                     data = Buffer.from(data);
+                    await addAttach({
+                        attach: data,
+                        description: file
+                    })
                     break;
                 case "json":
                     if (trim){
@@ -73,13 +79,17 @@ class Reporter {
                             delete data["config"];
                     }
                     data = JSON.stringify(data, null, 2);
-                    break;
+                case "md":
                 case "text":
+                    await addMsg({
+                        message: `${step ? `${step.toUpperCase()} - ` : ""}artifact: ${file}\n${data}`
+                    });
                     break
                 default:
                     console.log(`Unsupported type ${type}. assuming text`);
             }
-            fs.writeFileSync(path.join(dir, new Date().toISOString().replace(/[-:.]/g, '').slice(0, 17) + `-${reference}${extension}`), data, 'utf8');
+
+            // fs.writeFileSync(path.join(dir, file), data, 'utf8');
         } catch (e){
             throw new Error(`Could not store Reporting artifact ${reference} under ${dir} - ${e.message}`);
         }
@@ -118,9 +128,70 @@ class Reporter {
      *   O->>O: Stringify JSON
      *   O->>S: Call _save with JSON string
      */
-    outputJSON(step, reference, json, trim = false){
-        this._save(step, reference, json, "json", trim);
+    async outputJSON(step, reference, json, trim = false){
+        return this._save(step, reference, json, "json", trim);
     }
+
+    async outputMDTable(step, reference, json, titles, headers, keys){
+        const text = []
+
+        function pushHeader(txt) {
+            text.push({h3: txt})
+        }
+
+        function pushParagraph(txt) {
+            text.push({p: txt});
+        }
+
+        function pushTable(){
+            text.push({table: {
+                    headers: headers,
+                    rows: Object.entries(json).reduce((accum, [key, val]) => {
+                        const row = []
+                        for (let i = 0; i < headers.length; i++) {
+                            if (i === 0){
+                                row.push(key)
+                            } else {
+                                row.push(val[keys[i - 1]])
+                            }
+                        }
+                        accum.push(row)
+                        return accum;
+                    }, [])
+                }
+            })
+        }
+
+        titles = typeof titles === "string" ? [titles] : titles;
+        for (let i = 0; i < titles.length; i++) {
+            if (i === 0)
+                pushHeader(titles[i]);
+            else
+                pushParagraph(titles[i])
+        }
+
+        pushTable()
+
+        const json2md = require("json2md");
+        const txt = json2md(text)
+        return this._save(step, reference, txt, "md");
+    }
+    //
+    // async outputGraph(step, reference, json, titles, headers){
+    //     const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+    //
+    //     const width = 600; //px
+    //     const height = 800; //px
+    //     const backgroundColour = 'white'; // Uses https://www.w3schools.com/tags/canvas_fillstyle.asp
+    //     const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColour});
+    //     const configuration = {
+    //         ... // See https://www.chartjs.org/docs/latest/configuration
+    //     };
+    //     const image = await chartJSNodeCanvas.renderToBuffer(configuration);
+    //     const dataUrl = await chartJSNodeCanvas.renderToDataURL(configuration);
+    //     const stream = chartJSNodeCanvas.renderToStream(configuration);
+    //
+    // }
 
     /**
      * @description Outputs an image to a file.
@@ -136,8 +207,8 @@ class Reporter {
      *   participant S as _save
      *   O->>S: Call _save with image buffer
      */
-    outputImage(step, reference, buffer){
-        this._save(step, reference, buffer, "image");
+    async outputImage(step, reference, buffer){
+        return this._save(step, reference, buffer, "image");
     }
 }
 

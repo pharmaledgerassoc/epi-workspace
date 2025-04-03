@@ -198,7 +198,7 @@ class IntegrationClient extends ApiClient {
                 const self = this;
 
                 function referenceFromUrl(url, response = false) {
-                    const name = [method, response ? "response" : "payload", ...url.split('/')].join('-');
+                    const name = [method, response ? "response" : "payload", url].join(' ');
                     const cached = Object.keys(self.cached)
                         .filter(k => k.includes(name));
 

@@ -61,8 +61,9 @@ apihub-root/external-volume/metadata/
 workdocs/uml/*.png
 workdocs/coverage/**/*
 workdocs/reports/**/*
-!workdocs/reports/html/.gitkeep
+!workdocs/reports/evidences
 workdocs/reports/junit/.gitkeep
+workdocs/temp
 tests/config/test.config.json
 .browserstack*
 browserstack.yml
@@ -75,3 +76,4 @@ browserstack.yml
 /playwright/.cache/
 *ob_test_*
 jest_browserstack.config.js
+.aws*.sh

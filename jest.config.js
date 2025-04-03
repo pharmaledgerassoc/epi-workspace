@@ -46,6 +46,17 @@ module.exports = {
     ["./node_modules/jest-html-reporter", {
       "pageTitle": "ePI e2e tests",
       "outputPath": "./workdocs/reports/html/test-results.html"
+    }],
+    ["jest-html-reporters", {
+      publicPath: "./workdocs/resources/reports",
+      filename: "report.html",
+      openReport: true,
+      expand: true,
+      pageTitle: "ePI e2e tests",
+      stripSkippedTest: true,
+      darkTheme: true,
+      enableMergeData: true,
+      dataMergeLevel: 2
     }]
   ],
 };

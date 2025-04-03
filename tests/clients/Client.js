@@ -54,19 +54,19 @@ class ApiClient {
         return `${this.config.sor_endpoint}/integration`;
     }
 
-    async send(endpoint, method, data, step, reference){
+    async send(endpoint, method, data, step){
         if (typeof data === "object") {
             data = JSON.stringify(data);
         }
         const self = this;
         function referenceFromUrl(url, response = false){
-            const name = [method, response ? "response" : "payload",...url.split('/')].join('-');
+            const name = [method, response ? "response" : "payload", url].join(' ');
             const cached = Object.keys(self.cached)
                 .filter(k => k.includes(name));
 
             if (cached.length){
                 const arr = cached.pop().split('-');
-                const last = parseInt(arr[arr.length - 1]);
+                const last = parseInt(arr[arr.length - 1]) || 0;
 
                 self.cached[`${name}-${last + 1}`] = response.data;
                 return name;
