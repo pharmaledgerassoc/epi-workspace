@@ -141,7 +141,7 @@ describe(`${testName} Product`, () => {
             }
         });
 
-        it("FAIL 422 - Should throw Unprocessable Entity when invalid property is provided", async () => {
+        it("FAIL 422 - Should throw Unprocessable Entity when invalid property is provided (TRUST-410)", async () => {
             await AuditLogChecker.storeAuditLogSnapshot();
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const product = await ModelFactory.product(ticket);

@@ -91,7 +91,7 @@ describe(`${testName} Batch`, () => {
             }
         });
 
-        it("FAIL 422 - Should throw Unprocessable Entity when invalid property is provided", async () => {
+        it("FAIL 422 - Should throw Unprocessable Entity when invalid property is provided (TRUST-410)", async () => {
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const batch = await ModelFactory.batch(ticket, PRODUCT.productCode);
             await AuditLogChecker.storeAuditLogSnapshot();
