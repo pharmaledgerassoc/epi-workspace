@@ -372,6 +372,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(res.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             }
 
             // add for batch
@@ -479,6 +480,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafetProductResponse.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 const leafetMarketResponse = await client.addLeaflet(GTIN, undefined, LANG, leafletType, MARKET, new Leaflet({
                     productCode: GTIN,
@@ -486,6 +488,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafetMarketResponse.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 // add for batch
                 const leafletBatchResponse = await client.addLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, new Leaflet({
@@ -495,6 +498,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafletBatchResponse.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             }
         });
 
@@ -561,7 +565,7 @@ describe(`${testName} ePI Leaflet`, () => {
         let GTIN = "";
 
         beforeAll(async () => {
-            const ticket = "TRUST-XX ePI";
+            const ticket = `${testName} ePI`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
             expect(addProductRes.status).toBe(200);
@@ -580,6 +584,7 @@ describe(`${testName} ePI Leaflet`, () => {
                 leaflet.language = "pl";
                 const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res2.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             }
         });
 
@@ -606,7 +611,7 @@ describe(`${testName} ePI Leaflet`, () => {
         const MARKETS = ["AF", "AL"];
 
         beforeAll(async () => {
-            const ticket = "TRUST-XX ePI Market";
+            const ticket = `${testName} ePI Market`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
             expect(addProductRes.status).toBe(200);
@@ -627,6 +632,7 @@ describe(`${testName} ePI Leaflet`, () => {
                     leaflet.language = "pl";
                     const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, epiMarket, leaflet);
                     expect(res2.status).toBe(200);
+                    await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
                 }
             }
         });
@@ -682,10 +688,12 @@ describe(`${testName} ePI Leaflet`, () => {
 
             const res1 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
             expect(res1.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
             leaflet.language = "ja";
             const res2 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
             expect(res2.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         afterEach((cb) => {
