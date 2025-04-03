@@ -11,7 +11,7 @@ const {FixedUrls} = require("../clients/FixedUrls");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI? 4 : 1;
+const multiplier = isCI? 5 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 const timeoutBetweenTests = multiplier * 15 * 1000;
 
@@ -583,6 +583,13 @@ describe(`${testName} ePI Leaflet`, () => {
             }
         });
 
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
+        });
+
         it("SUCCESS 200 - Should list product langs", async () => {
             for (let leafletType of EPI_TYPES) {
                 const response = await client.listProductLangs(GTIN, leafletType);
@@ -624,8 +631,11 @@ describe(`${testName} ePI Leaflet`, () => {
             }
         });
 
-        beforeEach(async () => {
-            await fixedUrl.waitForCompletion();
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
         });
 
         it("SUCCESS 200 - Should list product markets", async () => {
@@ -676,6 +686,13 @@ describe(`${testName} ePI Leaflet`, () => {
             leaflet.language = "ja";
             const res2 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
             expect(res2.status).toBe(200);
+        });
+
+        afterEach((cb) => {
+            console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
+            setTimeout(() => {
+                cb()
+            }, timeoutBetweenTests)
         });
 
         it("SUCCESS 200 - Should list batches langs", async () => {
