@@ -86,7 +86,7 @@ describe(`${testName} Product`, () => {
             await AuditLogChecker.storeAuditLogSnapshot();
             const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
             const product = await ModelFactory.product(ticket);
-            product.productCode = (getRandomNumber() * 100).toString().slice(0, 14);
+            product.productCode = "12345678912301"; // check digit should be 5 instead 1
 
             try {
                 await client.addProduct(product.productCode, product);
