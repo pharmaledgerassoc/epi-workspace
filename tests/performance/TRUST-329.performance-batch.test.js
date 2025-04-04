@@ -96,7 +96,7 @@ describe(`${testName} - Performance tests for batches`, () => {
                     index: i + 1,
                     batchNumber: el.batchNumber,
                     timeTaken: el.timeTaken / 1000,
-                    errors: el.errors
+                    errors: el.errors || "none"
                 }
 
             }), [
