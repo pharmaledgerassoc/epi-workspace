@@ -8,7 +8,7 @@ class SORTestSequencer extends Sequencer {
     sort(tests) {
         const copyTests = [...tests];
         return copyTests.sort((testA, testB) => {
-            const regexp = /(?:TRUST|LWA)-(\d+)\.(\w+)\.test\.js$/g;
+            const regexp = /(?:TRUST|LWA)-(\d+)\.([\w-]+)\.test\.js$/g;
             const numberA = parseInt(regexp.exec(testA.path)[1]);
             regexp.lastIndex = 0;
             const numberB = parseInt(regexp.exec(testB.path)[1]);

@@ -4,26 +4,22 @@ const {IntegrationClient} = require("../clients/Integration");
 const {OAuth} = require("../clients/Oauth");
 const {FixedUrls} = require("../clients/FixedUrls");
 const {AuditLogChecker} = require("../audit/AuditLogChecker");
-const {API_MESSAGE_TYPES} = require("../constants");
-const {Leaflet} = require("../models/Leaflet");
-const {convertLeafletFolderToObject} = require("../utils");
-const path = require("path");
 const {Reporter} = require("../reporting");
 
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI ? 3 : 1;
+const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || isCI ? 3 : 1;
 jest.setTimeout(multiplier * 60 * 1000);
 
 const config = require("../conf").getConfig();
 
-const SLEEP_INTERVAL = 0;
-const SEQUENTIAL_REQUESTS = 100;
-const MAX_TRIES = 2;
+const SLEEP_INTERVAL = parseInt(process.env["SLEEP_INTERVAL"] || "0") || 0;
+const SEQUENTIAL_REQUESTS = parseInt(process.env["SEQUENTIAL_REQUESTS"] || "0") || 10;
 
 const testName = "TRUST-329"
 
 const client = new IntegrationClient(config, testName);
+const reporter = new Reporter(testName)
 const oauth = new OAuth(config);
 const fixedUrl = new FixedUrls(config);
 
@@ -46,10 +42,8 @@ describe(`${testName} - Performance tests for batches`, () => {
 
     let productCode, elapsed;
 
-    const Stats = {
-        successes: [],
-        failures: []
-    }
+    const Stats = []
+    const Stats2 = []
 
     async function iterator(func, batchNumber){
         return new Promise(async (resolve, reject) => {
@@ -66,10 +60,6 @@ describe(`${testName} - Performance tests for batches`, () => {
                 return reject(e);
             }
 
-            Stats.successes.push({
-                timeTaken: timeTaken,
-                batchNumber: batchNumber
-            });
             resolve(res);
         });
 
@@ -81,7 +71,7 @@ describe(`${testName} - Performance tests for batches`, () => {
         return product;
     }
 
-    async function addBatch(gtin, batchNumber, i){
+    async function addBatch(gtin, batchNumber){
         const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
         const batch = await ModelFactory.batch(ticket, gtin, {
             batchNumber: batchNumber
@@ -94,62 +84,55 @@ describe(`${testName} - Performance tests for batches`, () => {
 
     beforeAll(async () => {
         await refreshAuth()
-        const {ticket} = UtilsService.getTicketId(expect.getState().currentTestName);
-        const product = await addProduct(ticket);
+        const product = await addProduct(testName);
         productCode = product.productCode;
     })
 
-    afterAll(() => {
-        const totalEndTime = Date.now();
-        console.log(`Total time to complete all ${TOTAL_REQUESTS} requests: ${(totalEndTime - startTime) / 1000} seconds`);
-        reporter.outputMDTable("Results", "performance-results", Object.entries(Stats).reduce((accum, [key, val]) => {
-            accum[key] = {
-                timeTaken: val.timeTaken / 1000,
-                accumTime: val.accumTime / 1000,
-                errors: val.errors
-            }
-            return accum;
-        }, {}), [
-            `Performance Results for ${TOTAL_REQUESTS}`,
-            `Divided into ${ProcessingIntervals.length} stages with ${INTERVAL_BEFORE_SLEEP} requests divided into ${INTERVAL_BEFORE_SLEEP/CONCURRENT_REQUESTS} bursts of ${CONCURRENT_REQUESTS} concurrent requests`
-        ], [
-            "Segment",
-            "Time Taken (s)",
-            "Accumulated Time",
-            "Errors"
-        ], [
-            "timeTaken",
-            "accumTime",
-            "errors"
-        ]);
-    })
+    describe("First Pass - Creation of batches in sequence", () => {
 
-    for (let i = 0; i < SEQUENTIAL_REQUESTS; i++) {
-        it(`Creates batch #${i + 1} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
-            return new Promise(async (resolve, reject) => {
-                const batchNumber = Date.now().toString(36).replace(".", "").toUpperCase()
-
-                function callback(err){
-                    if (err)
-                        return reject(err);
-                    return resolve()
+        afterAll(async () => {
+            await reporter.outputMDTable("Results", "performance-results", Stats.map((el, i) => {
+                return {
+                    index: i + 1,
+                    batchNumber: el.batchNumber,
+                    timeTaken: el.timeTaken / 1000,
+                    errors: el.errors
                 }
+
+            }), [
+                `Performance Results for ${SEQUENTIAL_REQUESTS} batch creation`,
+                `For product ${productCode} with no leaflets`
+            ], [
+                "index",
+                "Batch Number",
+                "Time Taken (s)",
+                "Errors"
+            ], [
+                "batchNumber",
+                "timeTaken",
+                "errors"
+            ]);
+        })
+
+        for (let i = 0; i < SEQUENTIAL_REQUESTS; i++) {
+            it(`Creates batch #${i + 1} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
+                const batchNumber = Date.now().toString(36).replace(".", "").toUpperCase()
 
                 startTime = Date.now()
                 let timeTaken;
 
                 let err;
                 try {
-                    const batch = await addBatch(productCode, batchNumber, i);
+                    const batch = await addBatch(productCode, batchNumber);
                     timeTaken = Date.now() - startTime;
-                    Stats.successes.push({
+                    Stats.push({
                         timeTaken: timeTaken,
                         batchNumber: batchNumber
                     });
                 } catch (e) {
                     console.log(`Failed to create batch ${i + 1} - ${batchNumber}. Adding to failures`);
                     timeTaken = Date.now() - startTime;
-                    Stats.errors.push({
+                    Stats.push({
                         timeTaken: timeTaken,
                         batchNumber: batchNumber,
                         error: e
@@ -157,47 +140,89 @@ describe(`${testName} - Performance tests for batches`, () => {
                     err = e;
                 }
 
-                if (i === SEQUENTIAL_REQUESTS - 1 || !SLEEP_INTERVAL){
-                    callback(err);
+
+                if (i === SEQUENTIAL_REQUESTS - 1 || !SLEEP_INTERVAL) {
+                    if (err) throw err;
                 } else {
-                    setTimeout(() => {
-                        callback(err)
-                    }, SLEEP_INTERVAL * 1000)
+                    await new Promise(resolve => setTimeout(resolve, SLEEP_INTERVAL * 1000));
+                    if (err) throw err;
                 }
             })
+        }
+    })
+
+    describe("Second pass. Retries failures and retrieves object status for repeat failures", () => {
+
+        afterAll(async() => {
+            if (Stats2.length)
+                await reporter.outputMDTable("Retry", "performance-results", Stats2.reduce((accum, [key, val]) => {
+                    accum[key] = {
+                        batchNumber: val.batchNumber,
+                        timeTaken: val.timeTaken / 1000,
+                        errors: val.errors
+                    }
+                    return accum;
+                }, {}), [
+                    `Performance Results for ${SEQUENTIAL_REQUESTS} batch creation - Retry failures`,
+                    `For product ${productCode} with no leaflets`
+                ], [
+                    "index",
+                    "Batch Number",
+                    "Time Taken (s)",
+                    "Errors"
+                ], [
+                    "batchNumber",
+                    "timeTaken",
+                    "errors"
+                ]);
         })
-    }
 
-    for (let i = 0; i < Stats.failures.length; i++) {
-        it(`Retries batch #${i + 1} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
-            return new Promise(async (resolve, reject) => {
-                const batchNumber = Date.now().toString(36).replace(".", "").toUpperCase()
+        const filteredStats = Stats.filter(el =>!!el.error);
 
-                function callback(err) {
-                    if (err)
-                        return reject(err);
-                    return resolve()
-                }
+        for (let i = 0; i < filteredStats.length; i++) {
+            it(`Retries batch #${filteredStats[i].batchNumber} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
 
                 startTime = Date.now()
+                let timeTaken;
 
                 let err;
                 try {
-                    const batch = await addBatch(productCode, batchNumber, i);
+                    const batch = await addBatch(productCode, filteredStats[i].batchNumber);
+                    timeTaken = Date.now() - startTime;
+                    Stats2.push({
+                        timeTaken: timeTaken,
+                        batchNumber: filteredStats[i].batchNumber
+                    });
                 } catch (e) {
-                    console.log(`Failed to create batch ${i + 1} - ${batchNumber}. Retrying..`);
-                    err = e;
+                    console.log(`Failed to create batch ${filteredStats[i].batchNumber} for the second time`);
+                    timeTaken = Date.now() - startTime;
+                    Stats2.push({
+                        timeTaken: timeTaken,
+                        batchNumber: filteredStats[i].batchNumber,
+                        error: e
+                    });
+                    console.log(`Retrieving ObjectStatus for batch ${filteredStats[i].batchNumber}`);
+                    try {
+                        const status = await client.getObjectStatus(productCode, filteredStats[i].batchNumber);
+                        await reporter.outputPayload("ObjectStatus", `object-status-${filteredStats[i].batchNumber}`, status, "json");
+                    } catch (er) {
+                        console.log(`Failed to get ObjectStatus for batch ${filteredStats[i].batchNumber}`);
+                        err = e;
+                    }
                 }
 
                 if (i === SEQUENTIAL_REQUESTS - 1 || !SLEEP_INTERVAL) {
-                    callback(err);
+                    if (err) throw err;
                 } else {
-                    setTimeout(() => {
-                        callback(err)
-                    }, SLEEP_INTERVAL * 1000)
-                }
-            })
+                    await new Promise(resolve => setTimeout(resolve, SLEEP_INTERVAL * 1000));
+                    if (err) throw err;            }
+            });
+        }
+    })
 
-        });
-    }
+    it("waits until fixedUrls is finished", async () => {
+        startTime = Date.now()
+        await fixedUrl.waitForCompletion();
+        elapsed = Date.now() - startTime;
+    })
 })

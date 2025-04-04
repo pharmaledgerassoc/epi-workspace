@@ -12,17 +12,17 @@ const {Reporter} = require("../reporting");
 
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = isCI ? 3 : 1;
+const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || isCI ? 3 : 1;
 jest.setTimeout(multiplier * 60 * 10 * 1000);
 
 const config = require("../conf").getConfig();
 
-const SLEEP_INTERVAL = 60;
-const INTERVAL_BEFORE_SLEEP = 10;
-const TOTAL_REQUESTS = 100;
-const CONCURRENT_REQUESTS = 10;
+const SLEEP_INTERVAL = parseInt(process.env["SLEEP_INTERVAL"] || "0") || 60
+const REQUESTS_BEFORE_SLEEP = parseInt(process.env["REQUESTS_BEFORE_SLEEP"] || "0") || 100;
+const TOTAL_REQUESTS = parseInt(process.env["TOTAL_REQUESTS"] || "0") || 1000;
+const CONCURRENT_REQUESTS = parseInt(process.env["CONCURRENT_REQUESTS"] || "0") || 10;
 const PATH_TO_LEAFLET_FOLDER = "tests/resources/performance"
-const MAX_TRIES = 3;
+const MAX_TRIES = parseInt(process.env["MAX_TRIES"] || "0") || 3;
 
 const PRODUCTS = {
     PRODUCT_A: "productA",
@@ -53,7 +53,7 @@ async function refreshAuth(){
 
 describe(`${testName} - Performance tests`, () => {
 
-    const ProcessingIntervals = new Array(TOTAL_REQUESTS/INTERVAL_BEFORE_SLEEP).fill(0).map((_, i) => (i + 1) * INTERVAL_BEFORE_SLEEP);
+    const ProcessingIntervals = new Array(TOTAL_REQUESTS/REQUESTS_BEFORE_SLEEP).fill(0).map((_, i) => (i + 1) * REQUESTS_BEFORE_SLEEP);
 
     const reporter = new Reporter(testName);
 
@@ -123,10 +123,10 @@ describe(`${testName} - Performance tests`, () => {
         await refreshAuth()
     })
 
-    afterAll(() => {
+    afterAll(async () => {
         const totalEndTime = Date.now();
         console.log(`Total time to complete all ${TOTAL_REQUESTS} requests: ${(totalEndTime - startTime) / 1000} seconds`);
-        reporter.outputMDTable("Results", "performance-results", Object.entries(Stats).reduce((accum, [key, val]) => {
+        await reporter.outputMDTable("Results", "performance-results", Object.entries(Stats).reduce((accum, [key, val]) => {
             accum[key] = {
                 timeTaken: val.timeTaken / 1000,
                 accumTime: val.accumTime / 1000,
@@ -135,7 +135,7 @@ describe(`${testName} - Performance tests`, () => {
             return accum;
         }, {}), [
             `Performance Results for ${TOTAL_REQUESTS}`,
-            `Divided into ${ProcessingIntervals.length} stages with ${INTERVAL_BEFORE_SLEEP} requests divided into ${INTERVAL_BEFORE_SLEEP/CONCURRENT_REQUESTS} bursts of ${CONCURRENT_REQUESTS} concurrent requests`
+            `Divided into ${ProcessingIntervals.length} stages with ${REQUESTS_BEFORE_SLEEP} requests divided into ${REQUESTS_BEFORE_SLEEP/CONCURRENT_REQUESTS} bursts of ${CONCURRENT_REQUESTS} concurrent requests`
         ], [
             "Segment",
             "Time Taken (s)",
@@ -151,9 +151,9 @@ describe(`${testName} - Performance tests`, () => {
     for(let i = 0; i < ProcessingIntervals.length; i++) {
         const stage = ProcessingIntervals[i];
 
-        describe(`STEP ${i + 1} - Processing stage ${i + 1} with ${stage - i * INTERVAL_BEFORE_SLEEP} records`, () => {
+        describe(`STEP ${i + 1} - Processing stage ${i + 1} with ${stage - i * REQUESTS_BEFORE_SLEEP} records`, () => {
 
-            for(let e = 0; e < (stage - i * INTERVAL_BEFORE_SLEEP)/CONCURRENT_REQUESTS; e++) {
+            for(let e = 0; e < (stage - i * REQUESTS_BEFORE_SLEEP)/CONCURRENT_REQUESTS; e++) {
                 it(`Processing batch ${e + 1} with ${CONCURRENT_REQUESTS} concurrent requests`, async () => {
                     return new Promise(async (resolve, reject) => {
                         const vals = new Array(CONCURRENT_REQUESTS).fill(0).map((e, i) => i + 1);
@@ -192,7 +192,7 @@ describe(`${testName} - Performance tests`, () => {
 
                         const error = errs.length ? new Error(`Requests ${errs.join(", ")} have failed`) : undefined;
 
-                        if (e === (stage - i * INTERVAL_BEFORE_SLEEP)/CONCURRENT_REQUESTS - 1 && i === ProcessingIntervals.length - 1){
+                        if (e === (stage - i * REQUESTS_BEFORE_SLEEP)/CONCURRENT_REQUESTS - 1 && i === ProcessingIntervals.length - 1){
                             callback(error);
                         } else {
                             setTimeout(() => {
