@@ -189,6 +189,14 @@ npm run freeze
 7. commit the new version of the octopus.json file obtained with the freeze command.
 
 
+### Testing via port forward
+
+```shell
+aws eks --region eu-west-1 update-kubeconfig --name <env>-<mah>
+kubectl get pods # <== get the id of the pod to port forward to
+kubectl port-forward <id> 8080:8080 # <== use the id from previous command
+```
+
 ### Configuring Domain for ApiHub Mapping Engine usage
 
 1. Find the domain configuration in ```/apihub-root/external-volume/config/domains/<domainName.json>```

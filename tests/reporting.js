@@ -1,5 +1,7 @@
 const path = require('path');
 const fs = require('fs');
+// if (!process.env.JEST_HTML_REPORTERS_TEMP_DIR_PATH)
+//     process.env.JEST_HTML_REPORTERS_TEMP_DIR_PATH = path.join(process.cwd(), "./workdocs/reports")
 const { addAttach, addMsg } = require("jest-html-reporters/helper");
 
 /**

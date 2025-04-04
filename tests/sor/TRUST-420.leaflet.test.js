@@ -12,8 +12,8 @@ const {AuditLogChecker} = require("../audit/AuditLogChecker");
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
 const multiplier = isCI? 5 : 1;
-jest.setTimeout(multiplier * 60 * 1000);
-const timeoutBetweenTests = multiplier * 15 * 1000;
+jest.setTimeout(multiplier * 60 * 5 * 1000);
+const timeoutBetweenTests = multiplier * 10 * 1000;
 
 const testName = "TRUST-420";
 
@@ -74,21 +74,16 @@ describe(`${testName} ePI Leaflet`, () => {
         BATCH_NUMBER = batchResponse.data.batchNumber;
     });
 
-    afterEach((cb) => {
-        console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-        setTimeout(() => {
-            cb()
-        }, timeoutBetweenTests)
-    });
-
     describe(`${ePIBaseURL} (POST)`, () => {
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
+
+        afterAll(async () => {
+            await fixedUrl.waitForCompletion();
+        })
 
         const LANG = "de";
         it("SUCCESS 200 - Should add a leaflet for a PRODUCT (TRUST-111, TRUST-392, TRUST-393)", async () => {
@@ -301,11 +296,9 @@ describe(`${testName} ePI Leaflet`, () => {
 
     describe(`${ePIBaseURL} (GET)`, () => {
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         const LANG = "fr";
@@ -355,11 +348,9 @@ describe(`${testName} ePI Leaflet`, () => {
 
     describe(`${ePIBaseURL} (PUT)`, () => {
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         const LANG = "ar";
@@ -383,7 +374,13 @@ describe(`${testName} ePI Leaflet`, () => {
                 xmlFileContent: XML_FILE_CONTENT
             }));
             expect(res.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
+
         });
+
+        afterAll(async () => {
+            await fixedUrl.waitForCompletion();
+        })
 
         it("SUCCESS 200 - Should update a leaflet for a PRODUCT properly (TRUST-117, TRUST-354)", async () => {
             for (let leafletType of EPI_TYPES) {
@@ -480,6 +477,8 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafetProductResponse.status).toBe(200);
+                console.log(`Prerequisite: Created leaflet in ${LANG} for GTIN ${GTIN} for test DELETE`);
+
                 await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 const leafetMarketResponse = await client.addLeaflet(GTIN, undefined, LANG, leafletType, MARKET, new Leaflet({
@@ -488,6 +487,8 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafetMarketResponse.status).toBe(200);
+                console.log(`Prerequisite: Created leaflet in ${LANG} for GTIN ${GTIN} for test DELETE`);
+
                 await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 // add for batch
@@ -498,20 +499,20 @@ describe(`${testName} ePI Leaflet`, () => {
                     xmlFileContent: XML_FILE_CONTENT
                 }));
                 expect(leafletBatchResponse.status).toBe(200);
+                console.log(`Prerequisite: Created leaflet in ${LANG} for GTIN ${GTIN} for test DELETE`);
+
                 await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             }
         });
 
-        // beforeEach(async () => {
-        //     await fixedUrl.waitForCompletion();
-        // });
-
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
+
+        afterAll(async () => {
+            await fixedUrl.waitForCompletion();
+        })
 
         it("SUCCESS 200 - Should delete a leaflet from a PRODUCT properly (TRUST-118)", async () => {
             for (let leafletType of EPI_TYPES) {
@@ -568,7 +569,9 @@ describe(`${testName} ePI Leaflet`, () => {
             const ticket = `${testName} ePI`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
+            console.log(`Prerequisite: Created product with GTIN ${product.productCode} for test ${ticket}`);
             expect(addProductRes.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             GTIN = product.productCode;
 
             for (let leafletType of EPI_TYPES) {
@@ -580,19 +583,22 @@ describe(`${testName} ePI Leaflet`, () => {
 
                 const res1 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res1.status).toBe(200);
+                console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
+
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 leaflet.language = "pl";
                 const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, undefined, leaflet);
                 expect(res2.status).toBe(200);
+                console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
+
                 await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
             }
         });
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         it("SUCCESS 200 - Should list product langs", async () => {
@@ -614,6 +620,10 @@ describe(`${testName} ePI Leaflet`, () => {
             const ticket = `${testName} ePI Market`;
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
+            console.log(`Prerequisite: Created product with GTIN ${product.productCode} for test ${ticket}`);
+
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
+
             expect(addProductRes.status).toBe(200);
             GTIN = product.productCode;
 
@@ -627,21 +637,23 @@ describe(`${testName} ePI Leaflet`, () => {
 
                     const res1 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, epiMarket, leaflet);
                     expect(res1.status).toBe(200);
+                    console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
 
+                    await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                     leaflet.language = "pl";
                     const res2 = await client.addLeaflet(leaflet.productCode, undefined, leaflet.language, leafletType, epiMarket, leaflet);
                     expect(res2.status).toBe(200);
+                    console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
+
                     await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
                 }
             }
         });
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         it("SUCCESS 200 - Should list product markets", async () => {
@@ -665,6 +677,9 @@ describe(`${testName} ePI Leaflet`, () => {
             const product = await ModelFactory.product(ticket);
             const addProductRes = await client.addProduct(product.productCode, product);
             expect(addProductRes.status).toBe(200);
+            console.log(`Prerequisite: Created product with GTIN ${product.productCode} for test ${ticket}`);
+
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
             const productResponse = await client.getProduct(product.productCode);
             expect(productResponse.status).toBe(200);
@@ -673,10 +688,17 @@ describe(`${testName} ePI Leaflet`, () => {
 
             const batch = await ModelFactory.batch(ticket, GTIN);
             const addBatchRes = await client.addBatch(batch.productCode, batch.batchNumber, batch);
+            console.log(`Prerequisite: Created batch ${batch.batchNumber} for GTIN ${product.productCode} for test ${ticket}`);
+
             expect(addBatchRes.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
             const batchResponse = await client.getBatch(batch.productCode, batch.batchNumber);
+            console.log(`Prerequisite: Created batch ${batch.batchNumber} for GTIN ${product.productCode} for test ${ticket}`);
+
             expect(batchResponse.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
+
             BATCH_NUMBER = batchResponse.data.batchNumber;
 
             const leaflet = new Leaflet({
@@ -688,19 +710,21 @@ describe(`${testName} ePI Leaflet`, () => {
 
             const res1 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
             expect(res1.status).toBe(200);
+            console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
+
             await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
             leaflet.language = "ja";
             const res2 = await client.addLeaflet(leaflet.productCode, leaflet.batchNumber, leaflet.language, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, leaflet);
             expect(res2.status).toBe(200);
+            console.log(`Prerequisite: Created leaflet in ${leaflet.language} for GTIN ${product.productCode} for test ${ticket}`);
+
             await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
-        afterEach((cb) => {
+        afterEach(async () => {
             console.log(`Finished test: ${expect.getState().currentTestName}. waiting for ${timeoutBetweenTests / 1000}s...`);
-            setTimeout(() => {
-                cb()
-            }, timeoutBetweenTests)
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
         });
 
         it("SUCCESS 200 - Should list batches langs", async () => {
