@@ -66,8 +66,8 @@ export class BatchesPage extends CommonPresenterClass {
         const viewEditClass = "view-details pointer";
 
         return `
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.inventedName)}</div>
-        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.nameMedicinalProduct)}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.inventedName || batch.name)}</div>
+        <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.nameMedicinalProduct || batch.description)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.productCode)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(batch.batchNumber)}</div>
         <div ${lastRowItem ? "" : `class="${classCellBorder}"`}><label class="date-col-label">${this.getFormattedDate(batch.expiryDate, "/")}</label><br><label class="gs1-col-label">(${batch.expiryDate})</label></div>
