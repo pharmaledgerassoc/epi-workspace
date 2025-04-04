@@ -518,6 +518,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType);
                 expect(res.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, undefined);
 
@@ -534,6 +535,7 @@ describe(`${testName} ePI Leaflet`, () => {
             for (let leafletType of EPI_TYPES) {
                 const res = await client.deleteLeaflet(GTIN, undefined, LANG, leafletType, MARKET);
                 expect(res.status).toBe(200);
+                await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
                 await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, leafletType, MARKET);
 
@@ -549,6 +551,7 @@ describe(`${testName} ePI Leaflet`, () => {
         it("SUCCESS 200 - Should delete a leaflet from a BATCH properly (TRUST-118)", async () => {
             const res = await client.deleteLeaflet(GTIN, BATCH_NUMBER, LANG, API_MESSAGE_TYPES.EPI.LEAFLET);
             expect(res.status).toBe(200);
+            await new Promise(resolve => setTimeout(resolve, timeoutBetweenTests));
 
             await AuditLogChecker.assertEPIAuditLog("DELETE", GTIN, constants.OPERATIONS.DELETE_LEAFLET, LANG, API_MESSAGE_TYPES.EPI.LEAFLET, undefined, BATCH_NUMBER);
 
