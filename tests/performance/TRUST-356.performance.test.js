@@ -12,7 +12,7 @@ const {Reporter} = require("../reporting");
 
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || isCI ? 3 : 1;
+const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || (isCI ? 3 : 1);
 jest.setTimeout(multiplier * 60 * 10 * 1000);
 
 const config = require("../conf").getConfig();

@@ -8,13 +8,13 @@ const {Reporter} = require("../reporting");
 
 
 const isCI = !!process.env.CI; // works for travis, github and gitlab
-const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || isCI ? 3 : 1;
+const multiplier = parseInt(process.env["TIMEOUT_MULTIPLIER"] || "0") || (isCI ? 3 : 1);
 jest.setTimeout(multiplier * 60 * 1000);
 
 const config = require("../conf").getConfig();
 
 const SLEEP_INTERVAL = parseInt(process.env["SLEEP_INTERVAL"] || "0") || 0;
-const SEQUENTIAL_REQUESTS = parseInt(process.env["SEQUENTIAL_REQUESTS"] || "0") || 10;
+const SEQUENTIAL_REQUESTS = parseInt(process.env["SEQUENTIAL_REQUESTS"] || "0") || 100;
 
 const testName = "TRUST-329"
 
