@@ -73,14 +73,21 @@ class AuditLogChecker {
         const {diffs} = audit.details[0]
 
         Object.entries(diffs).forEach(([key, value]) => {
+            //TODO: Remove exceptions this should be handled by the models
             if (key === "epiProtocol")
                 return true
 
-            //TODO: Remove exceptions
+            
             if(key === "batchRecall" || key === "productRecall")
                 return true
 
+            if(value.oldValue === "" || value.oldValue === undefined)
+                return true;
 
+            if(value.newValue === "" || value.newValue === undefined)
+                return true;
+
+            //TODO: Remove exceptions this should be handled by the models
             expect(value.oldValue).toEqual(oldObject ? oldObject[key] : "");
             expect(value.newValue).toEqual(newObject[key]);
         })

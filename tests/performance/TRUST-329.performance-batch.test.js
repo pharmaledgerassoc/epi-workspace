@@ -116,6 +116,7 @@ describe(`${testName} - Performance tests for batches`, () => {
 
         for (let i = 0; i < SEQUENTIAL_REQUESTS; i++) {
             it(`Creates batch #${i + 1} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
+                console.log(`STATUS: ${i}/${SEQUENTIAL_REQUESTS}`);
                 const batchNumber = Date.now().toString(36).replace(".", "").toUpperCase()
 
                 startTime = Date.now()
@@ -181,7 +182,7 @@ describe(`${testName} - Performance tests for batches`, () => {
 
         for (let i = 0; i < filteredStats.length; i++) {
             it(`Retries batch #${filteredStats[i].batchNumber} in sequence with timeout between requests ${SLEEP_INTERVAL}`, async () => {
-
+                console.log(`STATUS: ${i}/${filteredStats.length}`);
                 startTime = Date.now()
                 let timeTaken;
 
