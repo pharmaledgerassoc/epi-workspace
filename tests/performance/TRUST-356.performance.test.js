@@ -38,15 +38,18 @@ const client = new IntegrationClient(config, testName);
 const oauth = new OAuth(config);
 const fixedUrl = new FixedUrls(config);
 
+let oAuthToken = multiplier * 10
+
 async function refreshAuth(){
     try {
+        console.log(`Refreshing auth token... ${oAuthToken} retries left`);
         const token = await oauth.getAccessToken(); // log in to SSO
         // store auth SSO token
         client.setSharedToken(token);
         fixedUrl.setSharedToken(token);
         AuditLogChecker.setApiClient(client);
     } catch (e) {
-        console.error("Failed to refresh auth token. Retrying..");
+        console.error("Failed to refresh auth token");
         throw e
     }
 }
@@ -74,7 +77,11 @@ describe(`${testName} - Performance tests`, () => {
                 res = await func();
             } catch (e) {
                 if (e.status === 401) {
-                    console.log("Failed due to token expiration. Retrying..");
+                    console.log(`Failed due to token expiration. ${e}`);
+                    if (--oAuthToken <= 0) {
+                        console.log("Failed due to token expiration. no more retries left Aborting test...");
+                        return reject(new Error("Failed due to token expiration"));
+                    }
                     await refreshAuth();
                     return resolve(await iterator(func, count));
                 } else if(count < MAX_TRIES){
