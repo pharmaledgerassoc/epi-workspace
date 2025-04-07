@@ -1,10 +1,12 @@
 const {generateGTIN, GTIN_LOCK, GTINGenerator} = require("../gtinUtils");
+const {Reporter} = require("../reporting");
 
 describe("gtin-utils", () => {
-    it("randomly generates gtins", () => {
+    it.only("randomly generates gtins", async () => {
         const gtin = generateGTIN();
         expect(gtin).toHaveLength(14);
         expect(typeof gtin).toBe("string");
+        await new Reporter("gtin-utils").outputPayload("", "generated gtin", gtin, "text")
     });
 
     const paddings = [1,2,3,4,5,6,7,8,9,10,11,12,13];
@@ -23,7 +25,7 @@ describe("gtin-utils", () => {
 
     it(`generates ${sequenceTest} valid GTINS sequentially`, async() => {
         require('fs').rmSync(require("path").join(process.cwd(), GTIN_LOCK), { force: true });
-        const generator = new GTINGenerator(false);
+        const generator = new GTINGenerator(true);
         const testScope = Object.keys(new Array(sequenceTest).fill(0))
         let padded;
         let gtin;

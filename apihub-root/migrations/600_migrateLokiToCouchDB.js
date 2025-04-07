@@ -26,7 +26,7 @@ const FIXED_URL_TABLE_INDEXES = "url"
 
 let dbService;
 
-const mapRecordToCouchDB = (record) => {
+const mapRecordToCouchDB = (record, tableName) => {
     delete record.meta;
     delete record.$loki;
     record["timestamp"] = record.__timestamp;
@@ -36,6 +36,9 @@ const mapRecordToCouchDB = (record) => {
     if(!record.timestamp)
         delete record.timestamp;
 
+    if((tableName || "").toLowerCase().includes("audit"))
+        record.pk = (record.pk || "").replaceAll("_", "m");
+
     return record
 }
 
@@ -43,7 +46,7 @@ const migrateTable = async (dbPath, tableName, records) => {
 
     for (let record of records) {
         try {
-            const processedRecord = mapRecordToCouchDB(record)
+            const processedRecord = mapRecordToCouchDB(record, tableName);
 
             await insertRecord(dbPath, tableName, processedRecord.pk, processedRecord);
         } catch (e) {

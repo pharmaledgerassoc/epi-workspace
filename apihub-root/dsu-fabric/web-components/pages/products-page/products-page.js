@@ -40,8 +40,8 @@ export class ProductsPage extends CommonPresenterClass {
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
         return `
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.inventedName)}</div>
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.nameMedicinalProduct)}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.inventedName || product.name)}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.nameMedicinalProduct || product.description)}</div>
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.productCode}</div>
             <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">${this.editModeLabel}</div>
         `;
