@@ -13,6 +13,12 @@ export class AddEpiModal {
             stringHTML += `<option ${!language.disabled || "disabled"} ${!language.selected || "selected"} value="${language.value}" lang-label="${language.label}">${language.label}</option>`;
         }
         this.languageOptions = stringHTML;
+
+        let countriesStringHTML = "";
+        for(let country of gtinResolver.Countries.getListAsVM()){  
+            countriesStringHTML += `<option id="${country.value}" value="${country.value}">${country.label}</option>`;
+        }
+        this.countries = countriesStringHTML;
     }
 
     afterRender() {
@@ -121,7 +127,7 @@ export class AddEpiModal {
                     let fileContent = await gtinResolver.DSUFabricUtils.getFileContentAsBuffer(file);
                     resultObject.otherFilesContent.push({
                         filename: file.name,
-                        fileContent: gtinResolver.utils.getImageAsBase64(fileContent)
+                        fileContent: gtinResolver.utils.getImageAsBase64(fileContent,file.type)
                     })
                 }
             }

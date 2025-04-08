@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TRUST-356.performance.test.js" type="JavaScriptTestRunnerJest" folderName="SOR" nameIsGenerated="true">
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$" />
+    <jest-options value="--coverage   --detectOpenHandles" />
+    <envs>
+      <env name="JEST_HTML_REPORTERS_PAGE_TITLE" value="TRUST-356 - Automated SOR Performance Tests" />
+      <env name="JEST_HTML_REPORTERS_PUBLIC_PATH" value="./workdocs/reports/evidences/TRUST-356" />
+    </envs>
+    <scope-kind value="TEST_FILE" />
+    <test-file value="$PROJECT_DIR$/tests/sor/TRUST-356.performance.test.js" />
+    <method v="2" />
+  </configuration>
+</component>

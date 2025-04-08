@@ -49,13 +49,38 @@ export class StrengthsManagementModal {
         return !webSkel.appServices.hasCodeOrHTML(element.value);
     }
 
+    invalidStrengthInput(element) {
+        return !webSkel.appServices.hasCodeOrHTML(element.value) && !(typeof element.value === "string" && element.value.trim().length === 0);
+    }
+
+    sanitizeSpaces(input) {
+        if (typeof input === 'string')
+            return input.trim();
+
+        if (typeof input === 'object' && input !== null) {
+            for (const key in input) {
+                if (input.hasOwnProperty(key)) {
+                    if (typeof input[key] === 'string') {
+                        input[key] = input[key].trim();
+                    } else if (typeof input[key] === 'object') {
+                        this.sanitizeSpaces(input[key]);
+                    }
+                }
+            }
+        }
+        return input;
+    }
+
     async addStrength(_target) {
-        const conditions = {"hasCodeOrHTML": {fn: this.hasCodeOrHTML, errorMessage: "Invalid input!"}};
+        const conditions = {
+            "hasCodeOrHTML": {fn: this.hasCodeOrHTML, errorMessage: "Invalid input!"},
+            "invalidStrengthInput": {fn: this.invalidStrengthInput, errorMessage: "Invalid input: the value contains HTML tags or only spaces"}
+        };
         let formData = await webSkel.extractFormInformation(this.element.querySelector("form"), conditions);
         if (formData.isValid) {
             let resultObject = {};
             Object.keys(formData.data).forEach(key => {
-                resultObject[key] = formData.data[key] || "";
+                resultObject[key] = this.sanitizeSpaces(formData.data[key] || "");
             });
             if (this.id) {
                 resultObject.id = this.id;

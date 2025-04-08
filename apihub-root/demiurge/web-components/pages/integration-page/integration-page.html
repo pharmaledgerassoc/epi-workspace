@@ -1,0 +1,24 @@
+<div class="page-header">Integration</div>
+<form class="integration-form $$state">
+    <div class="form-item">
+        <label for="tokenEndpoint" class="form-label">Token endpoint</label>
+        <input class="form-input" type="text" id="tokenEndpoint" data-id="tokenEndpoint" name="tokenEndpoint" required>
+    </div>
+    <div class="form-item">
+        <label for="clientId" class="form-label">Client ID</label>
+        <input class="form-input" type="text" id="clientId" data-id="clientId" name="clientId" required>
+    </div>
+    <div class="form-item">
+        <label for="clientSecret" class="form-label">Client Secret</label>
+        <input class="form-input" type="text" id="clientSecret" data-id="clientSecret" name="clientSecret" required>
+    </div>
+    <div class="form-item">
+        <label for="scope" class="form-label">Scope</label>
+        <input class="form-input" type="text" id="scope" data-id="scope" name="scope" required>
+    </div>
+    <button class="default-button" data-local-action="authorizeRequest">Authorize</button>
+</form>
+<div class="authorization-success-section $$state">
+    <div class="bottom-margin">Integration user is authorized</div>
+    <button class="default-button" data-local-action="revokeAuthorization">Revoke authorization</button>
+</div>

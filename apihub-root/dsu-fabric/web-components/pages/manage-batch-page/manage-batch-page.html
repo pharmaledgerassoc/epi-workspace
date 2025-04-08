@@ -43,15 +43,15 @@
                 </div>
                 <input userRights="$$userRights" type="text" class="text-input" name="packagingSiteName"
                        id="packagingSiteName" autocomplete="off"
-                       placeholder="Add site name" value="$$packagingSiteName" data-condition="otherFieldsCondition">
+                       placeholder="Add site name" value="$$packagingSiteName" data-condition="otherFieldsCondition" data-no-sanitize="true">
             </div>
             <div userRights="$$userRights" class="form-field-container">
-                <div class="form-field" id="date">
+                <div class="form-field width-expand" id="date">
                     <div class="label-container">
-                        <label class="label" for="expiryDate">Expiry date</label>
+                        <label class="label" for="enableExpiryDay">Expiry date</label>
                         <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
                     </div>
-                    <div id="custom-date-icon">
+                    <div id="expiryDateContainer" class="custom-date-input" data-input-name="expiryDate">
                         <svg id="svg1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                             <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
                             <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/>
@@ -73,12 +73,81 @@
                 </div>
             </div>
 
-            <div class="form-buttons">
-                <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button>
-                <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction"
-                        $$formActionButtonState userRights="$$userRights">$$formActionButtonText
-                </button>
+            <div class="form-field material-code">
+                <div class="label-container">
+                    <label class="label" for="importLicenseNumber" userRights="$$userRights">Import License Number</label>
+                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                </div>
+                <input userRights="$$userRights" type="text" class="text-input" name="importLicenseNumber"
+                       id="importLicenseNumber"
+                       placeholder="Add Import License Number"
+                       value="$$importLicenseNumber">
             </div>
+            
+
+            <div class="form-field-container" userRights="$$userRights">
+                <div class="form-field width-expand">
+                    <div class="label-container">
+                        <label class="label" for="manufacturerName" userRights="$$userRights">Manufacturer Name</label>
+                        <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                    </div>
+                    <input userRights="$$userRights" type="text" class="text-input" name="manufacturerName"
+                           id="manufacturerName" autocomplete="off"
+                           placeholder="Add Manufacturer Name" value="$$manufacturerName">
+                </div>
+
+                <div userRights="$$userRights" class="form-field width-1-3">
+                    <div class="label-container">  
+                        <label class="label" for="dateOfManufacturing">Date of Manufacturing</label>
+                        <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                    </div>
+                    <div id="dateOfManufacturingContainer" class="custom-date-input" data-input-name="dateOfManufacturing">
+                        <svg id="svg1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/>
+                        </svg>
+                        <svg id="svg2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                            <path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192h80v56H48V192zm0 104h80v64H48V296zm128 0h96v64H176V296zm144 0h80v64H320V296zm80-48H320V192h80v56zm0 160v40c0 8.8-7.2 16-16 16H320V408h80zm-128 0v56H176V408h96zm-144 0v56H64c-8.8 0-16-7.2-16-16V408h80zM272 248H176V192h96v56z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="form-field-container address-field" userRights="$$userRights">
+                <div class="form-field label width-1-1">
+                    <div class="label-container">
+                        <label class="label" for="inputAddAddress" userRights="$$userRights">Add Manufacturer Address</label>
+                    </div>
+                </div>
+                <div class="form-field width-1-1">
+                    <input userRights="$$userRights" id="inputAddAddress"  type="text" class="text-input ignore-changes" autocomplete="off"
+                    placeholder="Use button add to confirm input" value="$$manufacturerAddress1">
+                       
+                    <button class="button-add" id="buttonAddAddress" type="button">+ Add</button>
+                </div>
+            </div>
+
+            <div id="addressContainers">
+                <div class="remove-padding-top width-1-1" hidden id="sampleAddressField">
+                    <div class="label-container">
+                        <label class="label" for="packagingSiteName" userRights="$$userRights"></label>
+                        <button class="edit icon-button" type="button">
+                            <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                        </button>
+                        <button class="remove icon-button" type="button">
+                            <img class="icon" src="./assets/icons/thrash.svg" alt="pen-square">    
+                        </button>
+                        <button class="save icon-button " type="button">
+                            <img class="icon" src="./assets/icons/check.svg" alt="pen-square">    
+                        </button>
+                    </div>
+                    <input type="text" class="text-input " name="manufacturerAddress5"
+                           id="manufacturerAddress5" autocomplete="off"
+                           placeholder="Add Address Line 5" value="$$manufacturerAddress5">
+                </div>
+                <div id="fields"></div>
+            </div>
+
         </div>
 
         <div class="column-right">
@@ -98,6 +167,26 @@
                 </textarea>
             </div>
             <epis-tab data-presenter="epis-tab" data-units="$$leafletsInfo"></epis-tab>
+
+            <div class="form-field advanced-settings">
+                <div class="label-container">
+                    <label class="label" for="batchRecall" userRights="$$userRights">Advanced Settings</label>
+                    <img class="pen-square" src="./assets/icons/pen-square.svg" alt="pen-square">
+                </div>
+                <div class="advanced-settings-container"> 
+                    <input userRights="$$userRights" type="checkbox" class="text-input" name="batchRecall" id="batchRecall">
+                    <input userRights="$$userRights" type="text" class="recall-check" name="recallLabel" id="recallLabel" value="Mark Batch as Recalled (Enabled only for Brazil)" disabled>
+                </div>
+            </div>
+
+            <div class="form-buttons">
+                <button class="default-button" data-local-action="navigateToBatchesPage">Cancel</button> 
+                <button class="default-button" id="formActionButton" data-local-action="$$formActionButtonFunction"
+                        $$formActionButtonState userRights="$$userRights">$$formActionButtonText
+                </button>
+            </div>
         </div>
     </form>
 </div>
+
+

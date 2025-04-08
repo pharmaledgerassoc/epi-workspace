@@ -1,4 +1,5 @@
 export default {
+    YES: 'Yes',
     'PACKAGES_STORAGE_PATH': "/app/data/packages.json",
     'DATA_STORAGE_PATH': "/app/data",
     'PRODUCTS_TABLE': "products",
@@ -29,7 +30,14 @@ export default {
         PRODUCT: "Product",
         BATCH: "Batch",
         PRODUCT_PHOTO: "ProductPhoto",
-        EPI: {LEAFLET: "leaflet", SMPC: "smpc"}
+        EPI: {
+            LEAFLET: "leaflet",
+            PRESCRIBING_INFO: "prescribingInfo",
+            SMPC: "smpc"
+        }
+    },
+    ACTIONS: {
+        DELETE: "delete"
     },
     EPI_ACTIONS: {
         ADD: "add",
@@ -81,8 +89,10 @@ export default {
             internalMaterialCode: "Internal material code",
             strength: "Strength",
             photo: "Product Photo",
+            productRecall: "Mark Product as Recalled",
+            recalled: "Yes",
             /*         patientLeafletInfo: "Patient Specific Information Leaflet",*/
-            markets: "Markets management"
+            markets: "Markets management",
         },
         BATCH: {
             batchNumber: "Batch",
@@ -90,7 +100,17 @@ export default {
             expiryDate: "Expiry date",
             enableExpiryDay: "Enable day selection",
             gtin: "Product Code",
-            productName: "Product Brand/Invented name"
+            productName: "Product Brand/Invented name",
+            batchRecall: "Mark Batch as Recalled",
+            recalled: "Yes",
+            importLicenseNumber: "Import License Number", 
+            manufacturerName: "Manufacturer Name",
+            dateOfManufacturing: "Date of Manufacturing",
+            manufacturerAddress1: "Address Line 1",
+            manufacturerAddress2: "Address Line 2",
+            manufacturerAddress3: "Address Line 3",
+            manufacturerAddress4: "Address Line 4",
+            manufacturerAddress5: "Address Line 5",
         }
     },
     OBJECT_AVAILABILITY_STATUS: {

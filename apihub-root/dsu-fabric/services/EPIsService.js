@@ -49,15 +49,16 @@ export class EPIsService {
         };
     }
 
-    getEpiModelObject(payload, language, epiType) {
+    getEpiModelObject(payload, language, epiType, ePIMarket) {
         let epiFiles = [payload.xmlFileContent, ...payload.otherFilesContent];
         return {
             id: webSkel.appServices.generateID(16),
             language: language,
+            type: epiType,
+            ePIMarket: ePIMarket,
             xmlFileContent: payload.xmlFileContent,
             otherFilesContent: payload.otherFilesContent,
-            filesCount: epiFiles.length,
-            type: epiType
+            filesCount: epiFiles.length
         }
     }
 
@@ -65,12 +66,12 @@ export class EPIsService {
         let epiUnitElement = webSkel.getClosestParentElement(eventTarget, ".epi-unit");
         let id = epiUnitElement.getAttribute("data-id");
         let epiUnit = epiUnits.find(unit => unit.id === id);
-        epiUnit.action = "delete";
+        epiUnit.action = constants.EPI_ACTIONS.DELETE;
         return epiUnit;
     }
 
     async validateEPIFilesContent(epiFiles) {
-        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp"];
+        let acceptedFormats = ["text/xml", "image/jpg", "image/jpeg", "image/png", "image/gif", "image/bmp","video/mp4"];
         let returnMsg = "";
         let toastMessage = "Uploaded XML file contains unknown image reference";
         try {
@@ -98,13 +99,13 @@ export class EPIsService {
                 return {isValid: false, message: returnMsg};
             }
 
-            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img");
+            let leafletHtmlImages = htmlXMLContent.querySelectorAll("img, source");
             let uploadedImageNames = Object.keys(epiImages);
             let differentCaseImgFiles = [];
             let missingImgFiles = [];
             let htmlImageNames = Array.from(leafletHtmlImages).map(img => img.getAttribute("src"));
 
-            let dataUrlRegex = new RegExp(/^\s*data:([a-z]+\/[a-z]+(;[a-z-]+=[a-z-]+)?)?(;base64)?,[a-z0-9!$&',()*+;=\-._~:@/?%\s]*\s*$/i);
+            let dataUrlRegex = gtinResolver.mediaUrlRegex;
             let hasUnsupportedEmbeddedImage = false;
 
             htmlImageNames.forEach(imgName => {
@@ -152,7 +153,7 @@ export class EPIsService {
                     if (batchNumber) {
                         await $$.promisify(webSkel.client.addBatchEPI)(productCode, batchNumber, EPI.language, EPI.type, epiPayload);
                     } else {
-                        await $$.promisify(webSkel.client.addProductEPI)(productCode, EPI.language, EPI.type, epiPayload);
+                        await $$.promisify(webSkel.client.addProductEPI)(productCode, EPI.language, EPI.type, EPI.ePIMarket, epiPayload);
                     }
                 }
 
@@ -160,7 +161,7 @@ export class EPIsService {
                     if (batchNumber) {
                         await $$.promisify(webSkel.client.updateBatchEPI)(productCode, batchNumber, EPI.language, EPI.type, epiPayload);
                     } else {
-                        await $$.promisify(webSkel.client.updateProductEPI)(productCode, EPI.language, EPI.type, epiPayload);
+                        await $$.promisify(webSkel.client.updateProductEPI)(productCode, EPI.language, EPI.type, EPI.ePIMarket, epiPayload);
                     }
                 }
 
@@ -168,11 +169,11 @@ export class EPIsService {
                     if (batchNumber) {
                         await $$.promisify(webSkel.client.deleteBatchEPI)(productCode, batchNumber, EPI.language, EPI.type);
                     } else {
-                        await $$.promisify(webSkel.client.deleteProductEPI)(productCode, EPI.language, EPI.type);
+                        await $$.promisify(webSkel.client.deleteProductEPI)(productCode, EPI.language, EPI.type, EPI.ePIMarket);
                     }
                 }
             } catch (e) {
-                failedEpiOperations.push(`${EPI.action} ${EPI.language} ${EPI.type} - failed<br>`);
+                failedEpiOperations.push(`${EPI.action} ${EPI.language} ${EPI.type} ${EPI.ePIMarket ? EPI.ePIMarket + " " : ""}- failed<br>`);
             }
         }
         if (failedEpiOperations.length > 0) {
@@ -187,11 +188,13 @@ export class EPIsService {
         let EPIs = [];
         let failedEPIs = [];
         let epiLanguages = [];
+        let epiAvailableMarkets = {}; // {[market]: ["en", "pt"], [market2]: [...]}
         try {
             if (batchNumber) {
                 epiLanguages = await $$.promisify(webSkel.client.listBatchLangs)(productCode, batchNumber, epiType);
             } else {
                 epiLanguages = await $$.promisify(webSkel.client.listProductLangs)(productCode, epiType);
+                epiAvailableMarkets = await $$.promisify(webSkel.client.listProductMarkets)(productCode, epiType);
             }
 
             if (epiLanguages.length > 0) {
@@ -209,19 +212,31 @@ export class EPIsService {
                     webSkel.notificationHandler.reportUserRelevantWarning(toastContent);
                 }
             }
+
+            if (Object.keys(epiAvailableMarkets).length > 0) {
+                for (const [epiLang, epiMarkets] of Object.entries(epiAvailableMarkets)) {
+                    for (const epiMarket of epiMarkets) {
+                        const epiPayload = await this.retrieveEPI(productCode, batchNumber, epiLang, epiType, epiMarket);
+                        EPIs.push(webSkel.appServices.getEpiModelObject(epiPayload, epiLang, epiType, epiMarket));
+                    }
+                }
+            }
+
         } catch (err) {
             webSkel.notificationHandler.reportUserRelevantError(webSkel.appServices.getToastListContent(`Something went wrong!!!<br> Couldn't retrieve all EPI data for batch ${batchNumber} and product code: ${productCode}. <br> Please check your network connection and configuration and try again.`), err);
         }
+
         return EPIs
     }
 
-    async retrieveEPI(productCode, batchNumber, epiLanguage, epiType, version) {
-        if (batchNumber) {
-            return await $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguage, epiType, version);
-        } else {
-            return await $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguage, epiType, version);
-        }
+    async retrieveEPI(productCode, batchNumber, epiLanguage, epiType, epiMarket, version) {
+        if (batchNumber)
+            return $$.promisify(webSkel.client.getBatchEPIs)(productCode, batchNumber, epiLanguage, epiType, version);
 
+        if (epiMarket)
+            return $$.promisify(webSkel.client.getProductEPIsByMarket)(productCode, epiLanguage, epiType, epiMarket, version);
+
+        return $$.promisify(webSkel.client.getProductEPIs)(productCode, epiLanguage, epiType, version);
     }
 
 }

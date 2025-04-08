@@ -40,8 +40,8 @@ export class ProductsPage extends CommonPresenterClass {
         const classCellBorder = "cell-border-bottom";
         const viewEditClass = "view-details pointer";
         return `
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.inventedName)}</div>
-            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.nameMedicinalProduct)}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.inventedName || product.name)}</div>
+            <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${webSkel.sanitize(product.nameMedicinalProduct || product.description)}</div>
             <div ${lastRowItem ? "" : `class="${classCellBorder}"`}>${product.productCode}</div>
             <div class="${createClassString(viewEditClass, lastRowItem ? "" : classCellBorder)}" data-local-action="viewProductDetails ${product.productCode}">${this.editModeLabel}</div>
         `;
@@ -106,7 +106,7 @@ export class ProductsPage extends CommonPresenterClass {
             this.inputValue = formData.data.productCode;
             this.focusInput = "true";
             this.setPaginationDefaultValues();
-            let products = await webSkel.appServices.getProducts(undefined, ["__timestamp > 0", `productCode == ${this.inputValue}`]);
+            let products = await webSkel.appServices.getProducts(undefined, ["timestamp > 0", `productCode == ${this.inputValue}`]);
             if (products.length > 0) {
                 this.products = products;
                 this.searchResultIcon = "<img class='result-icon' src='./assets/icons/check.svg' alt='check'>";
@@ -130,7 +130,7 @@ export class ProductsPage extends CommonPresenterClass {
         if (!_target.classList.contains("disabled") && this.previousPageFirstElements.length > 0) {
             this.firstElementTimestamp = this.previousPageFirstElements.pop();
             this.lastElementTimestamp = undefined;
-            this.loadProducts([`__timestamp <= ${this.firstElementTimestamp}`]);
+            this.loadProducts([`timestamp <= ${this.firstElementTimestamp}`]);
         }
     }
 
@@ -139,7 +139,7 @@ export class ProductsPage extends CommonPresenterClass {
             this.previousPageFirstElements.push(this.firstElementTimestamp);
             this.firstElementTimestamp = this.lastElementTimestamp;
             this.lastElementTimestamp = undefined;
-            this.loadProducts([`__timestamp < ${this.firstElementTimestamp}`]);
+            this.loadProducts([`timestamp < ${this.firstElementTimestamp}`]);
         }
     }
 }

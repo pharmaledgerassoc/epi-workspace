@@ -67,6 +67,31 @@ function renderToast(type, message, timeoutValue = 5000) {
     }, timeoutValue)
 }
 
+function renderDateInput(container, isRequired = false, dateInput, value = null) {  
+    const hasInput = container.querySelector('input[type="date"]');
+    if(!hasInput) {
+        const name = container.getAttribute('data-input-name') || 'date';
+        if(!dateInput)
+            dateInput = webSkel.appServices.createDateInput('date', name, null, isRequired);
+        if(value !== null && value !== undefined) 
+            webSkel.appServices.updateUIDate(dateInput, value)
+        if(container.classList.contains('custom-date-input'))
+            container.classList.add('custom-date-input');
+        container.append(dateInput);   
+    } 
+
+}   
+
+function parseFormData(data) {
+    Object.keys(data).forEach(key => {
+        const value = data[key];
+        if(typeof value === 'string' && !!value) 
+            data[key] = value.replace(/\s+/g, ' ').trimEnd();
+    })
+    
+    return data;
+}
+
 function parseCookies(cookies) {
     const parsedCookies = {};
     if (!cookies) {
@@ -266,5 +291,7 @@ export {
     getTextDirection,
     changeSidebarFromURL,
     generateRandom,
-    setHealthyAuthorizationInfo
+    setHealthyAuthorizationInfo,
+    renderDateInput,
+    parseFormData 
 }

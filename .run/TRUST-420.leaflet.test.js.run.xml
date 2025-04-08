@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TRUST-420.leaflet.test.js" type="JavaScriptTestRunnerJest" folderName="SOR">
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$" />
+    <jest-options value="--runInBand --coverage  --detectOpenHandles" />
+    <envs>
+      <env name="JEST_HTML_REPORTERS_PAGE_TITLE" value="TRUST-420 - Automated SOR Leaflet Tests" />
+      <env name="JEST_HTML_REPORTERS_PUBLIC_PATH" value="./workdocs/reports/evidences/TRUST-420" />
+      <env name="JEST_HTML_REPORTERS_TEMP_DIR_PATH" value=".workdocs/temp" />
+    </envs>
+    <scope-kind value="TEST_FILE" />
+    <test-file value="$PROJECT_DIR$/tests/sor/TRUST-420.leaflet.test.js" />
+    <method v="2" />
+  </configuration>
+</component>

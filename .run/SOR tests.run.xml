@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SOR tests" type="JavaScriptTestRunnerJest" folderName="SOR">
+    <node-interpreter value="project" />
+    <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$" />
+    <jest-options value="--runInBand --coverage  --testPathPattern=&quot;/tests/sor&quot; --detectOpenHandles" />
+    <envs />
+    <scope-kind value="DIRECTORY" />
+    <method v="2" />
+  </configuration>
+</component>
