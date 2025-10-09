@@ -1,393 +1,384 @@
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="document">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="section" maxOccurs="unbounded" minOccurs="0">
-          <xs:complexType>
-            <xs:choice maxOccurs="unbounded" minOccurs="0">
-              <xs:element name="header">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="b">
-                      <xs:complexType mixed="true">
-                        <xs:sequence>
-                          <xs:element name="span" minOccurs="0">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="class"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="p">
-                <xs:complexType mixed="true">
-                  <xs:sequence>
-                    <xs:element type="xs:string" name="i" minOccurs="0"/>
-                    <xs:element type="xs:string" name="sup" minOccurs="0"/>
-                    <xs:element name="b" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element type="xs:string" name="i"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element type="xs:string" name="sub" minOccurs="0"/>
-                    <xs:element name="video" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="source">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:string" name="src"/>
-                                  <xs:attribute type="xs:string" name="type"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="chapter" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType>
-                              <xs:simpleContent>
-                                <xs:extension base="xs:string">
-                                  <xs:attribute type="xs:time" name="timestamp" use="optional"/>
-                                  <xs:attribute type="xs:string" name="label" use="optional"/>
-                                </xs:extension>
-                              </xs:simpleContent>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                        <xs:attribute type="xs:short" name="width"/>
-                        <xs:attribute type="xs:byte" name="height"/>
-                        <xs:attribute type="xs:string" name="controls"/>
-                        <xs:attribute type="xs:string" name="title"/>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="div">
-                <xs:complexType mixed="true">
-                  <xs:sequence>
-                    <xs:element type="xs:string" name="p" minOccurs="0"/>
-                    <xs:element name="div" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="figure">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="img">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:string" name="src"/>
-                                        <xs:attribute type="xs:string" name="alt"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="p">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element type="xs:string" name="b"/>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                        <xs:attribute type="xs:string" name="style"/>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                  <xs:attribute type="xs:string" name="style" use="optional"/>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="table">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="caption">
-                      <xs:complexType mixed="true">
-                        <xs:sequence>
-                          <xs:element name="b" minOccurs="0">
-                            <xs:complexType mixed="true">
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="u"/>
-                                <xs:element type="xs:byte" name="sup"/>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="thead" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="tr">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="th" maxOccurs="unbounded" minOccurs="0">
-                                  <xs:complexType mixed="true">
-                                    <xs:sequence>
-                                      <xs:element type="xs:string" name="b" minOccurs="0"/>
-                                    </xs:sequence>
-                                    <xs:attribute type="xs:string" name="scope" use="optional"/>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="style" use="optional"/>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="tr" maxOccurs="unbounded" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="th" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType mixed="true">
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="i" maxOccurs="unbounded" minOccurs="0"/>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="scope" use="optional"/>
-                              <xs:attribute type="xs:string" name="valign" use="optional"/>
-                              <xs:attribute type="xs:byte" name="colspan" use="optional"/>
-                              <xs:attribute type="xs:byte" name="rowspan" use="optional"/>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="td" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType mixed="true">
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="p" maxOccurs="unbounded" minOccurs="0"/>
-                              </xs:sequence>
-                              <xs:attribute type="xs:string" name="valign" use="optional"/>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="tbody" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="tr" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType>
-                              <xs:choice maxOccurs="unbounded" minOccurs="0">
-                                <xs:element type="xs:short" name="td"/>
-                                <xs:element name="th">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:string" name="scope" use="optional"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:choice>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="tfoot" minOccurs="0">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="tr">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="th">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:string" name="scope"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="td">
-                                  <xs:complexType>
-                                    <xs:simpleContent>
-                                      <xs:extension base="xs:string">
-                                        <xs:attribute type="xs:byte" name="colspan"/>
-                                      </xs:extension>
-                                    </xs:simpleContent>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                  <xs:attribute type="xs:byte" name="cellspacing" use="optional"/>
-                  <xs:attribute type="xs:byte" name="border" use="optional"/>
-                  <xs:attribute type="xs:string" name="width" use="optional"/>
-                  <xs:attribute type="xs:string" name="style" use="optional"/>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="section">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="table">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element name="caption">
-                            <xs:complexType mixed="true">
-                              <xs:sequence>
-                                <xs:element type="xs:string" name="b"/>
-                                <xs:element type="xs:string" name="i"/>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="thead">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="tr">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="th" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element type="xs:string" name="b"/>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:string" name="scope" use="optional"/>
-                                          <xs:attribute type="xs:string" name="width" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="tr" maxOccurs="unbounded" minOccurs="0">
-                            <xs:complexType>
-                              <xs:sequence>
-                                <xs:element name="th" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element type="xs:string" name="p"/>
-                                    </xs:sequence>
-                                    <xs:attribute type="xs:string" name="scope"/>
-                                    <xs:attribute type="xs:string" name="width"/>
-                                    <xs:attribute type="xs:byte" name="rowspan"/>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element name="td" maxOccurs="unbounded" minOccurs="0">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="p" maxOccurs="unbounded" minOccurs="0">
-                                        <xs:complexType mixed="true">
-                                          <xs:sequence>
-                                            <xs:element name="figure" minOccurs="0">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element name="img">
-                                                    <xs:complexType>
-                                                      <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                          <xs:attribute type="xs:string" name="src"/>
-                                                          <xs:attribute type="xs:string" name="alt"/>
-                                                        </xs:extension>
-                                                      </xs:simpleContent>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                  <xs:element name="p">
-                                                    <xs:complexType>
-                                                      <xs:sequence>
-                                                        <xs:element type="xs:string" name="b"/>
-                                                      </xs:sequence>
-                                                      <xs:attribute type="xs:byte" name="page"/>
-                                                    </xs:complexType>
-                                                  </xs:element>
-                                                </xs:sequence>
-                                                <xs:attribute type="xs:byte" name="page"/>
-                                                <xs:attribute type="xs:string" name="class"/>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:byte" name="page" use="optional"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="figure" minOccurs="0">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="img">
-                                              <xs:complexType>
-                                                <xs:simpleContent>
-                                                  <xs:extension base="xs:string">
-                                                    <xs:attribute type="xs:string" name="src"/>
-                                                    <xs:attribute type="xs:string" name="alt"/>
-                                                  </xs:extension>
-                                                </xs:simpleContent>
-                                              </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="p">
-                                              <xs:complexType>
-                                                <xs:sequence>
-                                                  <xs:element type="xs:string" name="b"/>
-                                                </xs:sequence>
-                                                <xs:attribute type="xs:byte" name="page"/>
-                                              </xs:complexType>
-                                            </xs:element>
-                                          </xs:sequence>
-                                          <xs:attribute type="xs:byte" name="page"/>
-                                          <xs:attribute type="xs:string" name="class"/>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                    <xs:attribute type="xs:string" name="valign" use="optional"/>
-                                    <xs:attribute type="xs:string" name="width" use="optional"/>
-                                  </xs:complexType>
-                                </xs:element>
-                              </xs:sequence>
-                            </xs:complexType>
-                          </xs:element>
-                        </xs:sequence>
-                        <xs:attribute type="xs:byte" name="cellspacing"/>
-                        <xs:attribute type="xs:byte" name="border"/>
-                        <xs:attribute type="xs:string" name="width"/>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="figure">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name="img">
-                      <xs:complexType>
-                        <xs:simpleContent>
-                          <xs:extension base="xs:string">
-                            <xs:attribute type="xs:string" name="src"/>
-                            <xs:attribute type="xs:string" name="alt"/>
-                          </xs:extension>
-                        </xs:simpleContent>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="p">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element type="xs:string" name="b"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-            </xs:choice>
-            <xs:attribute type="xs:byte" name="level" use="optional"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute type="xs:string" name="type"/>
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+    <!-- Attribute groups -->
+    <xs:attributeGroup name="basicAttributes">
+        <xs:attribute name="class" type="xs:string"/>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="styledAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="style" type="xs:string" />
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="sectionAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="level" type="xs:positiveInteger"/>
+        <xs:attribute name="page" type="xs:string"/>
+        <xs:attribute name="left" type="xs:string"/>
+        <xs:attribute name="top" type="xs:string"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="listAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="type">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                <xs:pattern value="(1|a|A|i|I)" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="data-type">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">        
+                   <xs:pattern value="(decimal|decimal-leading-zero|lower-roman|upper-roman|lower-alpha|upper-alpha|lower-latin|upper-latin|armenian|georgian|hebrew|cjk-ideographic|hiragana|katakana|hiragana-iroha|katakana-iroha|none)" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="style">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="list-style-type\s*:\s*(disc|circle|square|none)\s*;?" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="listLineAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="data-enum" type="xs:string" />
+        <xs:attribute name="style">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="list-style-type\s*:\s*(disc|circle|square|none)\s*;?" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="tableAttributes">
+        <xs:attributeGroup ref="styledAttributes"/>
+        <xs:attribute name="cellspacing" type="xs:string"/>
+        <xs:attribute name="cellpadding" type="xs:string"/>
+        <xs:attribute name="border" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="height" type="xs:string"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="cellAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="colspan" type="xs:positiveInteger"/>
+        <xs:attribute name="rowspan" type="xs:positiveInteger"/>
+        <xs:attribute name="scope" type="xs:string"/>
+        <xs:attribute name="valign" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="align" type="xs:string"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="videoAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="src" type="xs:string"/>
+        <xs:attribute name="alt" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="height" type="xs:string"/>
+        <xs:attribute name="controls" type="xs:boolean"/>
+        <xs:attribute name="autoplay" type="xs:boolean"/>
+        <xs:attribute name="loop" type="xs:boolean"/>
+        <xs:attribute name="muted" type="xs:boolean"/>
+        <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="title" type="xs:string" use="optional"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="imageAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="src" type="xs:string"/>
+        <xs:attribute name="alt" type="xs:string"/>
+        <xs:attribute name="title" type="xs:string"/>
+        <xs:attribute name="height" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+    </xs:attributeGroup>
+
+    <xs:attributeGroup name="documentAttributes">
+        <xs:attributeGroup ref="basicAttributes"/>
+        <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="version" type="xs:string"/>
+    </xs:attributeGroup>
+   
+
+    <!-- Type for document -->
+    <xs:complexType name="documentType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="section" type="sectionType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="documentAttributes"/>
     </xs:complexType>
-  </xs:element>
+
+    <!-- Type for sections -->
+    <xs:complexType name="sectionType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- Can contain any element -->
+            <xs:element name="header" type="headerType"/>
+            <xs:element name="p" type="pType"/>
+            <xs:element name="div" type="blockContentType"/>
+            <xs:element name="ul" type="listType"/>
+            <xs:element name="ol" type="listType"/>
+            <xs:element name="br" type="xs:string"/>
+            <xs:element name="hr" type="xs:string"/>
+            <xs:element name="table" type="tableType"/>
+            <xs:element name="img" type="imageType"/>
+            <xs:element name="figure" type="blockContentType"/>
+            <xs:element name="video" type="videoType"/>
+            <xs:element name="section" type="sectionType"/>
+            <xs:element name="caption" type="blockContentType"/>
+
+            
+            <!-- Inline elements also allowed in sections -->
+            <xs:element name="b" type="inlineTextType"/>
+            <xs:element name="i" type="inlineTextType"/>
+            <xs:element name="u" type="inlineTextType"/>
+            <xs:element name="sup" type="inlineTextType"/>
+            <xs:element name="sub" type="inlineTextType"/>
+            <xs:element name="span" type="inlineTextType"/>
+            <xs:element name="ins" type="inlineTextType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="sectionAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for sections headers -->
+    <xs:complexType name="headerType" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="p"/>
+    	    <xs:element name="br" type="xs:string" />
+            <xs:element name="hr" type="xs:string"/>
+            <xs:element name="b" type="inlineTextType"/>
+            <xs:element name="i" type="inlineTextType"/>
+            <xs:element name="u" type="inlineTextType"/>
+            <xs:element name="sup" type="inlineTextType"/>
+            <xs:element name="sub" type="inlineTextType"/>
+            <xs:element name="span" type="inlineTextType"/>
+            <xs:element name="ins" type="inlineTextType"/>
+		</xs:choice>
+		 <xs:attributeGroup ref="styledAttributes"/>
+	</xs:complexType>
+
+    <!-- type for Paragrahs  -->
+    <xs:complexType name="pType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="figure" type="blockContentType"/>
+            <xs:element name="p" type="pType"/>
+            <xs:element name="i" type="inlineTextType"/>
+            <xs:element name="b" type="inlineTextType"/>
+            <xs:element name="u" type="inlineTextType"/>
+            <xs:element name="ins" type="inlineTextType"/>
+            <xs:element name="div" type="blockContentType"/>
+            <xs:element name="sub" type="inlineTextType"/>
+            <xs:element name="sup" type="inlineTextType"/>
+            <xs:element name="br" type="xs:string"/>
+            <xs:element name="hr" type="xs:string"/>
+            <xs:element name="a" type="anchorType"/>
+            <xs:element name="ul" type="listType"/>
+            <xs:element name="ol" type="listType"/>
+            <xs:element name="video" type="videoType"/>
+            <xs:element name="img" type="imageType"/>
+            <xs:element name="caption" type="blockContentType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="sectionAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for inline text elements that can contain other inline elements -->
+    <xs:complexType name="inlineTextType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="b" type="inlineTextType"/>
+            <xs:element name="i" type="inlineTextType"/>
+            <xs:element name="u" type="inlineTextType"/>
+            <xs:element name="sup" type="inlineTextType"/>
+            <xs:element name="sub" type="inlineTextType"/>
+            <xs:element name="span" type="inlineTextType"/>
+            <xs:element name="ins" type="inlineTextType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="basicAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for elements that can contain any block or inline content -->
+    <xs:complexType name="blockContentType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- Inline elements -->
+            <xs:element name="b" type="inlineTextType" />
+            <xs:element name="i" type="inlineTextType" />
+            <xs:element name="u" type="inlineTextType" />
+            <xs:element name="sup" type="inlineTextType" />
+            <xs:element name="sub" type="inlineTextType" />
+            <xs:element name="span" type="inlineTextType" />
+            <xs:element name="a" type="anchorType" />
+            
+            <!-- Block elements -->
+            <xs:element name="p" type="pType"/>
+            <xs:element name="br" type="xs:string"/>
+            <xs:element name="hr" type="xs:string"/>
+
+            <xs:element name="div" type="blockContentType"/>
+            <xs:element name="header" type="headerType"/>
+            
+            <!-- Lists -->
+            <xs:element name="ul" type="listType"/>
+            <xs:element name="ol" type="listType"/>
+            <xs:element name="caption" type="blockContentType"/>
+
+            <!-- Tables -->
+            <xs:element name="table" type="tableType"/>
+            
+            <!-- Media -->
+            <xs:element name="img" type="imageType"/>
+            <xs:element name="figure" type="blockContentType"/>
+            <xs:element name="video" type="videoType"/>
+            
+            <!-- Sections -->
+            <xs:element name="section" type="sectionType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="styledAttributes"/>
+    </xs:complexType>
+
+
+    <!-- Specific type for lists -->
+    <xs:complexType name="listLineType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- Inline elements -->
+            <xs:element name="b" type="inlineTextType" />
+            <xs:element name="i" type="inlineTextType" />
+            <xs:element name="u" type="inlineTextType" />
+            <xs:element name="sup" type="inlineTextType" />
+            <xs:element name="sub" type="inlineTextType" />
+            <xs:element name="span" type="inlineTextType" />
+            <xs:element name="a" type="anchorType" />
+            
+            <!-- Block elements -->
+            <xs:element name="p" type="pType"/>
+            <xs:element name="br" type="xs:string"/>
+            <xs:element name="hr" type="xs:string"/>
+            <xs:element name="div" type="blockContentType"/>
+            
+            <!-- Lists -->
+            <xs:element name="ul" type="listType"/>
+            <xs:element name="ol" type="listType"/>
+            
+            <!-- Media -->
+            <xs:element name="img" type="imageType"/>
+            <xs:element name="figure" type="blockContentType"/>
+            <xs:element name="video" type="videoType"/>
+
+            <xs:element name="table" type="tableType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="listLineAttributes"/>
+    </xs:complexType>
+
+    <xs:complexType name="listType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="li" type="listLineType"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="listAttributes"/>
+    </xs:complexType>
+
+
+    <!-- Specific type for tables -->
+    <xs:complexType name="tableType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="caption" type="blockContentType"/>
+            <xs:element name="thead" type="tableGroupType"/>
+            <xs:element name="tbody" type="tableGroupType"/>
+            <xs:element name="tfoot" type="tableGroupType"/>
+            <xs:element name="tr" type="rowType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="tableAttributes"/>
+    </xs:complexType>
+
+    <!--Type for html anchors -->
+    <xs:complexType name="anchorType" mixed="true">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="href" type="xs:anyURI" use="required"/>
+                <xs:attribute name="target" type="xs:string" />
+                <xs:attribute name="rel" type="xs:string" />
+                <xs:attribute name="title" type="xs:string" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- Type for table groups (thead, tbody, tfoot) -->
+    <xs:complexType name="tableGroupType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="tr" type="rowType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="basicAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for table rows -->
+    <xs:complexType name="rowType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="th" type="cellType"/>
+            <xs:element name="td" type="cellType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="styledAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for table cells -->
+    <xs:complexType name="cellType" mixed="true">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- Can contain any block or inline content -->
+            <xs:element name="b" type="inlineTextType"/>
+            <xs:element name="i" type="inlineTextType"/>
+            <xs:element name="u" type="inlineTextType"/>
+            <xs:element name="sup" type="inlineTextType"/>
+            <xs:element name="sub" type="inlineTextType"/>
+            <xs:element name="span" type="inlineTextType"/>
+            <xs:element name="p" type="pType"/>
+            <xs:element name="div" type="blockContentType"/>
+            <xs:element name="br" type="xs:string"/>
+            <xs:element name="hr" type="xs:string"/>
+            <xs:element name="ul" type="listType"/>
+            <xs:element name="ol" type="listType"/>
+            <xs:element name="table" type="tableType"/>
+            <xs:element name="img" type="imageType"/>
+            <xs:element name="figure" type="blockContentType"/>
+            <xs:element name="video" type="videoType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="cellAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for images -->
+    <xs:complexType name="imageType">
+        <xs:attributeGroup ref="imageAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for videos -->
+    <xs:complexType name="videoType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="source" type="sourceType"/>
+            <xs:element name="chapter" type="chapterType"/>
+        </xs:choice>
+        <xs:attributeGroup ref="videoAttributes"/>
+    </xs:complexType>
+
+    <!-- Type for video chapters -->
+    <xs:complexType name="chapterType">
+        <xs:choice>
+            <xs:element name="description" type="xs:string" minOccurs="0"/>
+        </xs:choice>
+        <xs:attribute name="timestamp" type="xs:string" />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="id" type="xs:string" />
+        <xs:attribute name="title" type="xs:string" />
+        <xs:attribute name="start" type="xs:integer" />
+        <xs:attribute name="end" type="xs:integer" />
+    </xs:complexType>
+
+    <!-- Type for video source -->
+    <xs:complexType name="sourceType">
+        <xs:attributeGroup ref="videoAttributes"/>
+    </xs:complexType>
+
+    <!-- Root elements -->
+    <xs:element name="document" type="documentType"/>
+    <xs:element name="root" type="documentType"/>
+
 </xs:schema>

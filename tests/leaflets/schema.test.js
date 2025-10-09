@@ -22,6 +22,11 @@ describe("Leaflet Schema", () => {
         schemaContent = readFileContent('../resources/leaflet-schema.xsd');
     });
 
+    it("Must be a valid Schema", async () => {
+       const validate = libxmljs.parseXml(schemaContent);
+       expect(validate.errors.length).toBe(0);
+    });
+
     it("Must be a valid Leaflet", async () => {
        const isValid = validateXmlContent(validXmlContent)
        expect(isValid).toBe(true);

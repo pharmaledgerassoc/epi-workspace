@@ -29,6 +29,7 @@
     "test:performance:batch": "JEST_HTML_REPORTERS_PAGE_TITLE=\"TRUST-329 Automated Batch Performance Tests\" JEST_HTML_REPORTERS_PUBLIC_PATH=./workdocs/reports/evidences/TRUST-329 jest --runInBand --coverage --testPathPattern=\"/tests/performance/TRUST-329.performance-batch.test.js\" --detectOpenHandles",
     "test:performance:full": "JEST_HTML_REPORTERS_PAGE_TITLE=\"TRUST-356 Automated Performance Tests\" JEST_HTML_REPORTERS_PUBLIC_PATH=./workdocs/reports/evidences/TRUST-356 jest --runInBand --coverage --testPathPattern=\"/tests/performance/TRUST-356.performance.test.js\" --detectOpenHandles",
     "test:unit": "jest --coverage --testPathPattern=\"/tests/unit\" --detectOpenHandles",
+    "test:schema": "jest --coverage --testPathPattern=\"/tests/leaflets\" --detectOpenHandles",
     "test-browserstack": "browserstack-node-sdk jest tests/browserstack/browserstack.test.js",
     "test-browserstack-preqa": "LWA=preqa npm run test-browserstack",
     "test-browserstack-qa": "LWA=plaqa npm run test-browserstack",
